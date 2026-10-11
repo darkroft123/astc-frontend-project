@@ -177,10 +177,11 @@ export function JustificationsListView() {
     } finally {
       setIsLoading(false);
     }
-  }, [page, filters, dateRange, token]);
+  }, [page, filters.user, filters.status, dateRange.fromDate, dateRange.toDate, token]);
 
-  useEffect(() => { setPage(1); }, [filters, dateRange]);
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   useEffect(() => {
     if (!token) return;
@@ -311,7 +312,10 @@ export function JustificationsListView() {
           description="Revisión, aprobación y gestión de solicitudes de justificación del equipo"
           period={dateRange.period}
           dateRange={dateRange}
-          onPeriodChange={setDateRange}
+          onPeriodChange={(range) => {
+            setDateRange(range);
+            setPage(1);
+          }}
         />
 
         {/* MÉTRICAS + FILTROS */}
@@ -345,11 +349,14 @@ export function JustificationsListView() {
               <select
                 className="border border-slate-300 rounded-md px-3 py-1.5 text-sm min-w-[150px]"
                 value={filters.user}
-                onChange={(e) => setFilters({ ...filters, user: e.target.value })}
+                onChange={(e) => {
+                  setFilters(prev => ({ ...prev, user: e.target.value }));
+                  setPage(1);
+                }}
               >
                 <option value="all">Todos</option>
                 {userOptions.map(u => (
-                  <option key={u.id} value={u.name}>{u.name}</option>
+                  <option key={u.id} value={u.id}>{u.name}</option>
                 ))}
               </select>
             </div>
@@ -359,7 +366,10 @@ export function JustificationsListView() {
               <select
                 className="border border-slate-300 rounded-md px-3 py-1.5 text-sm min-w-[130px]"
                 value={filters.status}
-                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                onChange={(e) => {
+                  setFilters(prev => ({ ...prev, status: e.target.value }));
+                  setPage(1);
+                }}
               >
                 <option value="SUBMITTED">Pendientes</option>
                 <option value="PENDING">Borradores</option>
