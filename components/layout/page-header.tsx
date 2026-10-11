@@ -55,18 +55,20 @@ export default function PageHeader({
     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-border pb-4 mb-6 gap-3">
       <div className="min-w-0 flex-1">
         {categoryTag && (
-          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-            <span className="px-2.5 py-0.5 text-[10px] font-extrabold rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80 uppercase tracking-wider shrink-0">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <span className="font-mono text-[10.5px] leading-[15.8px] font-light uppercase tracking-[0.15em] text-[#38bdf8]">
               {categoryTag.badge}
             </span>
-            <span className="text-xs text-muted-foreground font-medium truncate">• {categoryTag.text}</span>
+            <span className="font-sans text-[16px] leading-[24px] font-light text-slate-400">
+              • {categoryTag.text}
+            </span>
           </div>
         )}
 
-        <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight leading-tight">{title}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-tight">{title}</h1>
 
         {description && (
-          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 leading-normal">{description}</p>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1 leading-normal">{description}</p>
         )}
 
         {showDateRange && (

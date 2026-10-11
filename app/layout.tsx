@@ -1,15 +1,21 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 
 import { AuthProvider } from "@/app/jwt/auth/auth.provider";
 import { Toaster } from "@/components/ui/toaster";
 
-const inter = localFont({
-  src: "../public/fonts/Inter-Regular.woff2",
-  variable: "--font-inter",
-  weight: "400",
+const hankenGrotesk = Hanken_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-hanken",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -29,8 +35,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={`${inter.className} font-sans antialiased min-h-screen overflow-x-hidden`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+      <body className={`${hankenGrotesk.className} ${hankenGrotesk.variable} ${jetbrainsMono.variable} font-sans antialiased min-h-screen overflow-x-hidden`}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <AuthProvider>{children}</AuthProvider>
           <Toaster />
         </ThemeProvider>

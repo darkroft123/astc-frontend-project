@@ -40,38 +40,41 @@
 }
 
 .dark {
-  --background: oklch(0.13 0.01 260);
-  --foreground: oklch(0.97 0 0);
-  --card: oklch(0.17 0.01 260);
-  --card-foreground: oklch(0.97 0 0);
-  --popover: oklch(0.17 0.01 260);
-  --popover-foreground: oklch(0.97 0 0);
-  --primary: oklch(0.58 0.15 255);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.22 0.015 260);
-  --secondary-foreground: oklch(0.97 0 0);
-  --muted: oklch(0.20 0.01 260);
-  --muted-foreground: oklch(0.65 0.02 260);
-  --accent: oklch(0.22 0.02 255);
-  --accent-foreground: oklch(0.97 0 0);
-  --destructive: oklch(0.45 0.18 25);
-  --destructive-foreground: oklch(0.97 0 0);
-  --border: oklch(0.24 0.015 260);
-  --input: oklch(0.22 0.015 260);
-  --ring: oklch(0.58 0.15 255);
-  --chart-1: oklch(0.58 0.15 255);
-  --chart-2: oklch(0.65 0.18 35);
-  --chart-3: oklch(0.70 0.15 85);
-  --chart-4: oklch(0.60 0.20 280);
-  --chart-5: oklch(0.75 0.15 60);
-  --sidebar: oklch(0.12 0.015 260);
-  --sidebar-foreground: oklch(0.97 0 0);
-  --sidebar-primary: oklch(0.58 0.15 255);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.20 0.02 255);
-  --sidebar-accent-foreground: oklch(0.97 0 0);
-  --sidebar-border: oklch(0.22 0.015 260);
-  --sidebar-ring: oklch(0.58 0.15 255);
+  --background: #0d0f18;
+  --foreground: #f8fafc;
+  --card: #131625;
+  --card-foreground: #f8fafc;
+  --popover: #131625;
+  --popover-foreground: #f8fafc;
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --secondary: #1e2238;
+  --secondary-foreground: #f8fafc;
+  --muted: #181c2e;
+  --muted-foreground: #94a3b8;
+  --accent: #221b4a;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.06);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: #8b5cf6;
+  --chart-1: #8b5cf6;
+  --chart-2: #38bdf8;
+  --chart-3: #10b981;
+  --chart-4: #f59e0b;
+  --chart-5: #ef4444;
+  --sidebar: #10121d;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #8b5cf6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #221b4a;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: #8b5cf6;
+  --vulcan: #10121d;
+  --vulcan-card: #141726;
+  --vulcan-stroke: rgba(255, 255, 255, 0.06);
 }
 
 @theme inline {

@@ -5,20 +5,26 @@ import { cn } from "@/lib/utils";
 
 export function ThemeToggle({ className }: { className?: string }) {
   const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
 
   return (
     <button
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
       className={cn(
-        "p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 transition-colors",
+        "w-full flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-400 hover:text-white hover:bg-white/[0.04] transition-colors",
         className
       )}
-      title={theme === "dark" ? "Modo claro" : "Modo oscuro"}
     >
-      {theme === "dark" ? (
-        <Sun className="h-5 w-5" />
+      {isDark ? (
+        <>
+          <Moon className="h-4 w-4 shrink-0 text-slate-400" />
+          <span>Tema oscuro</span>
+        </>
       ) : (
-        <Moon className="h-5 w-5" />
+        <>
+          <Sun className="h-4 w-4 shrink-0 text-amber-400" />
+          <span>Tema claro</span>
+        </>
       )}
     </button>
   );
