@@ -237,4 +237,5 @@ export function PmSidebar() {
     </aside>
   );
 }
+export const PMSidebar = PmSidebar;
 export default PmSidebar;
