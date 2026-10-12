@@ -32,14 +32,14 @@ export function DataTable<T = any>({
 
         <table className="w-full text-sm min-w-[500px]">
 
-          <thead className="sticky top-0 bg-gradient-to-r from-[#1E3A8A] to-[#1E40AF] text-white z-10">
+          <thead className="sticky top-0 bg-muted/80 dark:bg-[#181b2d] backdrop-blur text-muted-foreground dark:text-slate-300 z-10 border-b border-border">
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className={`text-left text-xs uppercase tracking-widest font-extrabold ${
-                    compact ? "px-3 py-3" : "px-5 py-4"
-                  } border-b border-blue-900/40 text-white ${col.hideOnMobile ? "hidden sm:table-cell" : ""}`}
+                  className={`text-left font-mono text-[11px] uppercase tracking-wider font-semibold ${
+                    compact ? "px-3 py-3" : "px-5 py-3.5"
+                  } ${col.hideOnMobile ? "hidden sm:table-cell" : ""}`}
                 >
                   {col.header}
                 </th>

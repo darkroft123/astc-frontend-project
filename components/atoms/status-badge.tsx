@@ -1,9 +1,6 @@
-"use client";
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import type { AttendanceStatus, JustificationStatus, AlertStatus } from '@/lib/graphql/types';
+import { cn } from "@/lib/utils";
 
-type StatusType = AttendanceStatus | JustificationStatus | AlertStatus | string;
+type StatusType = string;
 
 interface StatusBadgeProps {
   status: StatusType;
@@ -11,87 +8,90 @@ interface StatusBadgeProps {
 }
 
 const statusStyles: Record<string, string> = {
-  // Attendance
-  ASISTENCIA: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30",
-  FALTA: "bg-red-500/10 text-red-600 border border-red-500/30",
-  TARDE: "bg-amber-500/10 text-amber-600 border border-amber-500/30",
-  JUSTIFICADO: "bg-blue-500/10 text-blue-600 border border-blue-500/30",
-
-  ON_TIME: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30",
-  ON_TIME_CHECKED_OUT: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30",
-  LATE: "bg-amber-500/10 text-amber-600 border border-amber-500/30",
-  LATE_CHECKED_OUT: "bg-amber-500/10 text-amber-600 border border-amber-500/30",
-  EARLY: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30",
-  OUTSIDE_SCHEDULE: "bg-zinc-500/10 text-zinc-600 border border-zinc-500/30",
-  OUTSIDE_SCHEDULE_CHECKED_OUT: "bg-zinc-500/10 text-zinc-600 border border-zinc-500/30",
-  EARLY_DEPARTURE: "bg-orange-500/10 text-orange-600 border border-orange-500/30",
-  OVERTIME: "bg-indigo-500/10 text-indigo-600 border border-indigo-500/30",
-  HORAS_EXTRAS: "bg-indigo-500/10 text-indigo-600 border border-indigo-500/30",
-  CHECKED_IN: "bg-blue-500/10 text-blue-600 border border-blue-500/30",
-  PRESENTE: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30",
-  UNJUSTIFIED: "bg-red-500/10 text-red-600 border border-red-500/30",
-
-  // Justification
-  PENDING: "bg-amber-500/10 text-amber-600 border border-amber-500/30",
-  PENDIENTE: "bg-amber-500/10 text-amber-600 border border-amber-500/30",
-  SUBMITTED: "bg-blue-500/10 text-blue-600 border border-blue-500/30",
-  OBSERVATION: "bg-orange-500/10 text-orange-600 border border-orange-500/30",
-  OBSERVADO: "bg-orange-500/10 text-orange-600 border border-orange-500/30",
-  APPROVED: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30",
-  REJECTED: "bg-red-500/10 text-red-600 border border-red-500/30",
-  APROBADA: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30",
-  RECHAZADA: "bg-red-500/10 text-red-600 border border-red-500/30",
-
-  // Alert
-  CANCELADA: "bg-slate-500/10 text-slate-400 border border-slate-500/30",
-  RESUELTA: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30",
+  ON_TIME:
+    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/60",
+  ON_TIME_CHECKED_OUT:
+    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/60",
+  LATE:
+    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/60",
+  LATE_CHECKED_OUT:
+    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/60",
+  EARLY:
+    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/60",
+  EARLY_CHECKED_OUT:
+    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/60",
+  OUTSIDE_SCHEDULE:
+    "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-400 dark:border-rose-800/60",
+  OUTSIDE_SCHEDULE_CHECKED_OUT:
+    "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-400 dark:border-rose-800/60",
+  EARLY_DEPARTURE:
+    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/60",
+  CHECKED_IN:
+    "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/60 dark:text-sky-400 dark:border-sky-800/60",
+  CHECKED_OUT:
+    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/60",
+  PRESENTE:
+    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/60",
+  FALTA:
+    "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-400 dark:border-rose-800/60",
+  TARDE:
+    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/60",
+  PENDING:
+    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/60",
+  SUBMITTED:
+    "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/60 dark:text-sky-400 dark:border-sky-800/60",
+  OBSERVATION:
+    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/60",
+  APPROVED:
+    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/60",
+  REJECTED:
+    "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-400 dark:border-rose-800/60",
+  JUSTIFICADO:
+    "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/60 dark:text-sky-400 dark:border-sky-800/60",
+  VACACIONES:
+    "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/60 dark:text-purple-400 dark:border-purple-800/60",
 };
 
 const statusLabels: Record<string, string> = {
-  ASISTENCIA: "Asistencia",
-  FALTA: "Falta",
-  TARDE: "Tardanza",
-  JUSTIFICADO: "Justificado",
-  ON_TIME: "Puntual",
-  ON_TIME_CHECKED_OUT: "Jornada Completa",
-  LATE: "Tardanza",
-  LATE_CHECKED_OUT: "Tardanza (Salida)",
-  EARLY: "Puntual",
-  OUTSIDE_SCHEDULE: "Fuera de Horario",
-  OUTSIDE_SCHEDULE_CHECKED_OUT: "Fuera de Horario",
-  EARLY_DEPARTURE: "Salida Temprana",
-  OVERTIME: "Horas Extras",
-  HORAS_EXTRAS: "Horas Extras",
-  CHECKED_IN: "Entrada Registrada",
+  ON_TIME: "A tiempo",
+  ON_TIME_CHECKED_OUT: "A tiempo (Salida)",
+  LATE: "Tarde",
+  LATE_CHECKED_OUT: "Tarde (Salida)",
+  EARLY: "Entrada anticipada",
+  EARLY_CHECKED_OUT: "Salida anticipada",
+  OUTSIDE_SCHEDULE: "Fuera de horario",
+  OUTSIDE_SCHEDULE_CHECKED_OUT: "Fuera de horario",
+  EARLY_DEPARTURE: "Salida temprana",
+  CHECKED_IN: "Entrada registrada",
+  CHECKED_OUT: "Salida registrada",
   PRESENTE: "Presente",
-  UNJUSTIFIED: "Falta",
-  ABSENT: "Falta",
-  PENDING: "Pendiente",
-  PENDIENTE: "Pendiente",
-  SUBMITTED: "Enviado",
-  OBSERVATION: "Observado",
-  OBSERVADO: "Observado",
-  APPROVED: "Aprobado",
-  REJECTED: "Rechazado",
-  APROBADA: "Aprobada",
-  RECHAZADA: "Rechazada",
-  CANCELADA: "Cancelada",
-  RESUELTA: "Resuelta",
+  FALTA: "Falta",
+  TARDE: "Tarde",
+  PENDING: "Borrador",
+  SUBMITTED: "Pendiente",
+  OBSERVATION: "Observación",
+  APPROVED: "Aprobada",
+  REJECTED: "Rechazada",
+  JUSTIFICADO: "Justificado",
+  VACACIONES: "Vacaciones",
 };
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
-  const normalizedStatus = status?.toUpperCase() || "PENDIENTE";
+  const normalizedKey = status ? String(status).toUpperCase() : "";
+  const label = statusLabels[normalizedKey] || status || "";
+  const style =
+    statusStyles[normalizedKey] ||
+    "bg-muted text-muted-foreground border border-border";
 
   return (
-    <Badge
-      variant="outline"
+    <span
       className={cn(
-        "font-medium rounded-full px-3 py-1 text-xs transition-all hover:scale-105",
-        statusStyles[normalizedStatus] || "bg-slate-500/10 text-slate-400 border-slate-500/30",
+        "inline-flex items-center rounded-full px-2.5 py-0.5 font-mono text-[10.5px] uppercase tracking-wider font-semibold border shadow-xs transition-colors",
+        style,
         className
       )}
     >
-      {statusLabels[normalizedStatus] || normalizedStatus}
-    </Badge>
+      {label}
+    </span>
   );
 }

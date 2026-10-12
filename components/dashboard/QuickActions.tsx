@@ -1,70 +1,85 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { BarChart3, FileText, AlertCircle, FolderKanban, Clock, CalendarClock, ScanFace } from "lucide-react";
+import {
+  BarChart3,
+  FileText,
+  AlertCircle,
+  FolderKanban,
+  Clock,
+  CalendarClock,
+  ScanFace,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function QuickActions() {
   const router = useRouter();
 
   return (
-    <Card className="w-full h-full rounded-2xl border border-border bg-card shadow-sm">
-      <CardContent className="p-4 h-full flex flex-col">
+    <Card className="w-full h-full rounded-3xl border border-border bg-card shadow-sm">
+      <CardContent className="p-5 h-full flex flex-col justify-between">
         <div className="mb-4">
-          <h3 className="font-semibold text-xl">Acciones Rápidas</h3>
-          <p className="text-sm text-zinc-500 mt-1">
-            Gestiona el equipo de forma inmediata
+          <h3 className="font-sans font-bold text-lg text-foreground tracking-tight">
+            Acciones Rápidas
+          </h3>
+          <p className="font-sans text-xs text-muted-foreground mt-0.5">
+            Gestiona el equipo y los registros de forma inmediata
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-2.5 mt-auto">
-          <Button
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-auto">
+          {/* Registrar (Primary Gradient) */}
+          <button
             onClick={() => router.push("/pm/registrar")}
-            className="h-full min-h-[52px] w-full justify-center text-sm font-medium bg-emerald-600 hover:bg-emerald-700 rounded-xl flex-col gap-1.5"
+            className="min-h-[58px] p-3 w-full justify-center text-xs font-bold bg-gradient-to-r from-[#3B82F6] via-[#6366F1] to-[#8B5CF6] hover:opacity-95 text-white shadow-[0_4px_25px_rgba(99,102,241,0.45)] border border-white/10 rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
           >
-            <ScanFace className="w-5 h-5" /> Registrar
-          </Button>
+            <ScanFace className="w-5 h-5 shrink-0" />
+            <span>Registrar</span>
+          </button>
 
-          <Button
+          {/* Asistencias */}
+          <button
             onClick={() => router.push("/pm/asistencias")}
-            className="h-full min-h-[52px] w-full justify-center text-sm font-medium bg-violet-600 hover:bg-violet-700 rounded-xl flex-col gap-1.5"
+            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-indigo-500/10 hover:bg-indigo-500/15 border border-indigo-500/25 text-indigo-600 dark:text-indigo-400 rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
           >
-            <BarChart3 className="w-5 h-5" /> Asistencias
-          </Button>
+            <BarChart3 className="w-5 h-5 shrink-0" />
+            <span>Asistencias</span>
+          </button>
 
-          <Button
+          {/* Justificaciones */}
+          <button
             onClick={() => router.push("/pm/justificaciones")}
-            className="h-full min-h-[52px] w-full justify-center text-sm font-medium bg-violet-600 hover:bg-violet-700 rounded-xl flex-col gap-1.5"
+            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/25 text-amber-600 dark:text-amber-400 rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
           >
-            <FileText className="w-5 h-5" /> Justificaciones
-          </Button>
+            <FileText className="w-5 h-5 shrink-0" />
+            <span>Justificaciones</span>
+          </button>
 
-          <Button
+          {/* Alertas */}
+          <button
             onClick={() => router.push("/pm/alertas")}
-            className="h-full min-h-[52px] w-full justify-center text-sm font-medium bg-orange-500 hover:bg-orange-600 rounded-xl flex-col gap-1.5"
+            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-rose-500/10 hover:bg-rose-500/15 border border-rose-500/25 text-rose-600 dark:text-rose-400 rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
           >
-            <AlertCircle className="w-5 h-5" /> Alertas
-          </Button>
+            <AlertCircle className="w-5 h-5 shrink-0" />
+            <span>Alertas</span>
+          </button>
 
-          <Button
+          {/* Proyectos */}
+          <button
             onClick={() => router.push("/pm/proyectos")}
-            className="h-full min-h-[52px] w-full justify-center text-sm font-medium bg-orange-500 hover:bg-orange-600 rounded-xl flex-col gap-1.5"
+            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-sky-500/10 hover:bg-sky-500/15 border border-sky-500/25 text-sky-600 dark:text-sky-400 rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
           >
-            <FolderKanban className="w-5 h-5" /> Proyectos
-          </Button>
+            <FolderKanban className="w-5 h-5 shrink-0" />
+            <span>Proyectos</span>
+          </button>
 
-          <Button
-            onClick={() => router.push("/pm/historial-asistencias")}
-            className="h-full min-h-[52px] w-full justify-center text-sm font-medium bg-blue-600 hover:bg-blue-700 rounded-xl flex-col gap-1.5"
-          >
-            <Clock className="w-5 h-5" /> Historial de Asistencias
-          </Button>
-
-          <Button
+          {/* Horarios */}
+          <button
             onClick={() => router.push("/pm/asignacion-horarios")}
-            className="h-full min-h-[52px] w-full justify-center text-sm font-medium bg-emerald-600 hover:bg-emerald-700 rounded-xl flex-col gap-1.5"
+            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
           >
-            <CalendarClock className="w-5 h-5" /> Horarios
-          </Button>
+            <CalendarClock className="w-5 h-5 shrink-0" />
+            <span>Horarios</span>
+          </button>
         </div>
       </CardContent>
     </Card>
