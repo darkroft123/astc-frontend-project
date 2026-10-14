@@ -12,28 +12,28 @@ type MetricCardProps = {
 export function SubMetricCard({ label, value, icon, color = "zinc", className }: MetricCardProps) {
   const colorStyles = {
     green: {
-      card: "border-emerald-500/20 bg-emerald-500/[0.04] dark:bg-emerald-950/20",
-      iconBox: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+      card: "border-green/20 bg-green/10",
+      iconBox: "text-green-ink bg-green/10 border-green/20",
       value: "text-foreground",
-      label: "text-emerald-600 dark:text-emerald-400 font-semibold",
+      label: "text-green-ink font-semibold",
     },
     red: {
-      card: "border-rose-500/20 bg-rose-500/[0.04] dark:bg-rose-950/20",
-      iconBox: "text-rose-500 bg-rose-500/10 border-rose-500/20",
+      card: "border-red/20 bg-red/10",
+      iconBox: "text-red-ink bg-red/10 border-red/20",
       value: "text-foreground",
-      label: "text-rose-600 dark:text-rose-400 font-semibold",
+      label: "text-red-ink font-semibold",
     },
     amber: {
-      card: "border-amber-500/20 bg-amber-500/[0.04] dark:bg-amber-950/20",
-      iconBox: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+      card: "border-amber/20 bg-amber/10",
+      iconBox: "text-amber-ink bg-amber/10 border-amber/20",
       value: "text-foreground",
-      label: "text-amber-600 dark:text-amber-400 font-semibold",
+      label: "text-amber-ink font-semibold",
     },
     blue: {
-      card: "border-blue-500/20 bg-blue-500/[0.04] dark:bg-blue-950/20",
-      iconBox: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+      card: "border-primary/20 bg-primary/10",
+      iconBox: "text-primary bg-primary/10 border-primary/20",
       value: "text-foreground",
-      label: "text-blue-600 dark:text-blue-400 font-semibold",
+      label: "text-primary font-semibold",
     },
     zinc: {
       card: "border-border bg-card",

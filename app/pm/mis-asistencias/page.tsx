@@ -216,14 +216,14 @@ export default function AttendanceHistoryPage() {
       key: "checkIn",
       header: "ENTRADA",
       render: (r) => (
-        <span className="text-zinc-600 font-mono text-sm">{formatLocalTimeWrapper(r.checkIn, projectTimezone)}</span>
+        <span className="text-text-2 font-mono text-sm">{formatLocalTimeWrapper(r.checkIn, projectTimezone)}</span>
       ),
     },
     {
       key: "checkOut",
       header: "SALIDA",
       render: (r) => (
-        <span className="text-zinc-600 font-mono text-sm">{formatLocalTimeWrapper(r.checkOut, projectTimezone)}</span>
+        <span className="text-text-2 font-mono text-sm">{formatLocalTimeWrapper(r.checkOut, projectTimezone)}</span>
       ),
     },
     {
@@ -240,7 +240,7 @@ export default function AttendanceHistoryPage() {
 
         return isValidPhoto ? (
           <div
-            className="group relative w-14 h-14 rounded-xl overflow-hidden border-2 border-blue-200 hover:border-blue-500 cursor-pointer shadow-sm transition-all duration-200 bg-muted shrink-0"
+            className="group relative w-14 h-14 rounded-xl overflow-hidden border-2 border-line hover:border-primary cursor-pointer shadow-sm transition-all duration-200 bg-muted shrink-0"
             onClick={() => setSelectedPhotoUrl(photoSrc!)}
             title="Clic para ampliar foto"
           >
@@ -248,12 +248,12 @@ export default function AttendanceHistoryPage() {
               src={photoSrc!}
               alt="Foto de asistencia" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" onError={(e) => { (e.currentTarget.parentElement as HTMLElement).innerHTML = '<div class="w-full h-full flex flex-col items-center justify-center text-muted-foreground"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span class="text-[9px]">Sin foto</span></div>'; }}
             />
-            <div className="absolute inset-0 bg-blue-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
+            <div className="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
               <Camera className="w-4 h-4 text-white drop-shadow" />
             </div>
           </div>
         ) : (
-          <div className="w-14 h-14 rounded-xl bg-zinc-100/80 border border-border flex flex-col items-center justify-center gap-0.5 text-muted-foreground">
+          <div className="w-14 h-14 rounded-xl bg-raised/80 border border-border flex flex-col items-center justify-center gap-0.5 text-muted-foreground">
             <Camera className="w-4 h-4 text-muted-foreground" />
             <span className="text-[9px] font-medium">Sin foto</span>
           </div>
@@ -273,7 +273,7 @@ export default function AttendanceHistoryPage() {
   if (isBlocked) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -295,7 +295,7 @@ export default function AttendanceHistoryPage() {
         />
 
         {/* MAIN CARD */}
-        <Card className="flex-1 border-0 shadow-sm ring-1 ring-zinc-200/50 bg-card rounded-2xl overflow-hidden flex flex-col">
+        <Card className="flex-1 border-0 shadow-sm ring-1 ring-line/50 bg-card rounded-2xl overflow-hidden flex flex-col">
           <CardContent className="p-4 flex-1 flex flex-col overflow-hidden">
 
             {/* TOOLBAR: Metrics + Filters */}
@@ -312,7 +312,7 @@ export default function AttendanceHistoryPage() {
               {/* FILTERS */}
               <div className="flex flex-wrap items-end gap-3 lg:ml-auto">
                 <div className="flex flex-col w-full sm:w-auto sm:min-w-[180px]">
-                  <label className="text-[10px] font-bold text-zinc-500 mb-1 uppercase tracking-wider">
+                  <label className="text-[10px] font-bold text-text-3 mb-1 uppercase tracking-wider">
                     Buscar Fecha
                   </label>
                   <div className="relative">
@@ -321,13 +321,13 @@ export default function AttendanceHistoryPage() {
                       placeholder="YYYY-MM-DD..."
                       value={searchDate}
                       onChange={(e) => setSearchDate(e.target.value)}
-                      className="pl-9 h-9 text-xs rounded-md border-border focus:ring-blue-500"
+                      className="pl-9 h-9 text-xs rounded-md border-border focus:ring-primary"
                     />
                   </div>
                 </div>
 
                 <div className="flex flex-col w-full sm:w-auto sm:min-w-[140px]">
-                  <label className="text-[10px] font-bold text-zinc-500 mb-1 uppercase tracking-wider">
+                  <label className="text-[10px] font-bold text-text-3 mb-1 uppercase tracking-wider">
                     Filtrar Estado
                   </label>
                   <Select
@@ -353,7 +353,7 @@ export default function AttendanceHistoryPage() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setCurrentPage(1)}
-                  className="h-9 px-3 text-xs gap-2 border border-border bg-card text-zinc-700 hover:bg-background"
+                  className="h-9 px-3 text-xs gap-2 border border-border bg-card text-text-2 hover:bg-background"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   Actualizar
@@ -377,7 +377,7 @@ export default function AttendanceHistoryPage() {
         {/* PAGINATION: Centered Status Bar */}
         <div className="flex justify-center pb-2">
           <div className="flex items-center gap-4 bg-card border border-border rounded-lg px-5 py-2 shadow-sm">
-            <p className="text-xs text-zinc-600 font-medium">
+            <p className="text-xs text-text-2 font-medium">
               Página <span className="font-bold text-foreground">{currentPage}</span> de {pagination.totalPages}
             </p>
             
@@ -402,7 +402,7 @@ export default function AttendanceHistoryPage() {
               </Button>
             </div>
 
-            <p className="text-xs text-zinc-400 italic">
+            <p className="text-xs text-text-4 italic">
               {pagination.total} registros totales
             </p>
           </div>

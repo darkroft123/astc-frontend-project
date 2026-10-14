@@ -260,9 +260,9 @@ export function JustificationsListView() {
   const totalPages = Math.ceil(total / size);
 
   const columns: Column<JustificationRow>[] = [
-    { key: "usuario", header: "USUARIO", render: (r) => <span className="font-medium text-xs text-slate-800">{r.usuario}</span> },
-    { key: "motivo", header: "MOTIVO", render: (r) => <span className="text-slate-600 text-xs line-clamp-2 max-w-md">{r.motivo}</span> },
-    { key: "fecha", header: "FECHA", render: (r) => <span className="text-slate-700 text-xs">{r.fecha}</span> },
+    { key: "usuario", header: "USUARIO", render: (r) => <span className="font-medium text-xs text-foreground">{r.usuario}</span> },
+    { key: "motivo", header: "MOTIVO", render: (r) => <span className="text-text-2 text-xs line-clamp-2 max-w-md">{r.motivo}</span> },
+    { key: "fecha", header: "FECHA", render: (r) => <span className="text-text-2 text-xs">{r.fecha}</span> },
     { key: "estado", header: "ESTADO", render: (r) => <StatusBadge status={r.estado as any} /> },
     {
       key: "acciones",
@@ -270,7 +270,7 @@ export function JustificationsListView() {
       render: (r) => (
         <div className="flex items-center gap-1.5">
           <Link href={`/pm/justificaciones/${r.id}`}>
-            <Button size="sm" variant="outline" title="Ver detalle" className="h-7 w-7 p-0 border-slate-200 text-slate-600 hover:bg-slate-50">
+            <Button size="sm" variant="outline" title="Ver detalle" className="h-7 w-7 p-0 border-line text-text-2 hover:bg-raised">
               <Eye className="w-3.5 h-3.5" />
             </Button>
           </Link>
@@ -281,7 +281,7 @@ export function JustificationsListView() {
                 variant="ghost"
                 title="Aprobar justificación"
                 onClick={() => handleQuickApprove(r.id)}
-                className="h-7 w-7 p-0 text-emerald-600 hover:bg-emerald-50"
+                className="h-7 w-7 p-0 text-green-ink hover:bg-green/10"
               >
                 <CheckCheck className="w-3.5 h-3.5" />
               </Button>
@@ -290,7 +290,7 @@ export function JustificationsListView() {
                 variant="ghost"
                 title="Rechazar justificación"
                 onClick={() => handleQuickReject(r.id)}
-                className="h-7 w-7 p-0 text-rose-600 hover:bg-rose-50"
+                className="h-7 w-7 p-0 text-red-ink hover:bg-red/10"
               >
                 <XCircle className="w-3.5 h-3.5" />
               </Button>
@@ -302,7 +302,7 @@ export function JustificationsListView() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-5 py-5">
 
         {/* HEADER */}
@@ -331,9 +331,9 @@ export function JustificationsListView() {
           <div className="flex flex-wrap gap-3 items-end">
 
             <div className="flex flex-col">
-              <label className="text-[9px] text-slate-500 mb-1">PROYECTO</label>
+              <label className="text-[9px] text-text-4 mb-1">PROYECTO</label>
               <select
-                className="border border-slate-300 rounded-md px-3 py-1.5 text-sm min-w-[150px]"
+                className="border border-line-2 rounded-md px-3 py-1.5 text-sm min-w-[150px]"
                 value={filters.project}
                 onChange={(e) => handleProjectFilterChange(e.target.value)}
               >
@@ -345,9 +345,9 @@ export function JustificationsListView() {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[9px] text-slate-500 mb-1">USUARIO</label>
+              <label className="text-[9px] text-text-4 mb-1">USUARIO</label>
               <select
-                className="border border-slate-300 rounded-md px-3 py-1.5 text-sm min-w-[150px]"
+                className="border border-line-2 rounded-md px-3 py-1.5 text-sm min-w-[150px]"
                 value={filters.user}
                 onChange={(e) => {
                   setFilters(prev => ({ ...prev, user: e.target.value }));
@@ -362,9 +362,9 @@ export function JustificationsListView() {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[9px] text-slate-500 mb-1">ESTADO</label>
+              <label className="text-[9px] text-text-4 mb-1">ESTADO</label>
               <select
-                className="border border-slate-300 rounded-md px-3 py-1.5 text-sm min-w-[130px]"
+                className="border border-line-2 rounded-md px-3 py-1.5 text-sm min-w-[130px]"
                 value={filters.status}
                 onChange={(e) => {
                   setFilters(prev => ({ ...prev, status: e.target.value }));
@@ -383,7 +383,7 @@ export function JustificationsListView() {
             <Button
               onClick={fetchData}
               variant="ghost"
-              className="h-9 px-4 gap-2 text-sm border border-slate-200 bg-card text-zinc-700 hover:bg-slate-50"
+              className="h-9 px-4 gap-2 text-sm border border-line bg-card text-text-2 hover:bg-raised"
             >
               <RefreshCw className="w-4 h-4" />
               Actualizar
@@ -404,13 +404,13 @@ export function JustificationsListView() {
 
         {/* PAGINACIÓN */}
         <div className="flex justify-center mt-5">
-          <div className="flex items-center gap-3 bg-card border border-slate-200 rounded-lg px-5 py-2 shadow-sm text-sm">
+          <div className="flex items-center gap-3 bg-card border border-line rounded-lg px-5 py-2 shadow-sm text-sm">
             <p>Página <span className="font-semibold">{page}</span> de {totalPages}</p>
             <div className="flex gap-1">
               <Button variant="outline" size="sm" className="h-8 p-0" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p-1))}>Anterior</Button>
               <Button variant="outline" size="sm" className="h-8 p-0" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Siguiente</Button>
             </div>
-            <p className="text-slate-500 text-xs">{total} registros</p>
+            <p className="text-text-4 text-xs">{total} registros</p>
           </div>
         </div>
       </div>

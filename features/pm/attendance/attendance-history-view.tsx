@@ -221,7 +221,7 @@ export function AttendanceHistoryView() {
       header: "COLABORADOR",
       render: (r) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center font-bold text-blue-700 dark:text-blue-300 text-xs shrink-0 overflow-hidden border border-blue-200">
+          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs shrink-0 overflow-hidden border border-line">
             {r.photoUrl ? (
               <img
                 src={formatAvatarUrl(r.photoUrl) || ""}
@@ -266,7 +266,7 @@ export function AttendanceHistoryView() {
       header: "ENTRADA",
       render: (r) => (
         <div className="flex flex-col">
-          <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+          <span className="text-xs font-bold text-green-ink">
             {r.checkInFormatted}
           </span>
           {r.photoUrl && (
@@ -275,7 +275,7 @@ export function AttendanceHistoryView() {
                 setPhotoModalUrl(formatAvatarUrl(r.photoUrl));
                 setPhotoModalOpen(true);
               }}
-              className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5 mt-0.5"
+              className="text-[10px] text-link hover:underline flex items-center gap-0.5 mt-0.5"
             >
               <Camera className="w-3 h-3" /> Ver foto
             </button>
@@ -287,7 +287,7 @@ export function AttendanceHistoryView() {
       key: "checkOut",
       header: "SALIDA",
       render: (r) => (
-        <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
+        <span className="text-xs font-bold text-amber-ink">
           {r.checkOutFormatted}
         </span>
       ),
@@ -377,7 +377,7 @@ export function AttendanceHistoryView() {
               <Button
                 onClick={handleExport}
                 size="sm"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold gap-1.5 h-8 shadow-sm"
+                className="bg-green hover:bg-green/90 text-white rounded-xl text-xs font-bold gap-1.5 h-8 shadow-sm"
               >
                 <Download className="w-3.5 h-3.5" /> Exportar CSV
               </Button>
@@ -392,7 +392,7 @@ export function AttendanceHistoryView() {
               <select
                 value={selectedProjectId}
                 onChange={(e) => handleProjectSelect(e.target.value)}
-                className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-medium focus:ring-2 focus:ring-primary focus:outline-none"
               >
                 <option value="all">Todos los Proyectos ({projects.length})</option>
                 {projects.map((p) => (
@@ -410,7 +410,7 @@ export function AttendanceHistoryView() {
               <select
                 value={selectedUserId}
                 onChange={(e) => setSelectedUserId(e.target.value)}
-                className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-medium focus:ring-2 focus:ring-primary focus:outline-none"
               >
                 <option value="all">Todos los Colaboradores ({users.length})</option>
                 {users.map((u) => (
@@ -428,7 +428,7 @@ export function AttendanceHistoryView() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-medium focus:ring-2 focus:ring-primary focus:outline-none"
               >
                 <option value="all">Todos los Estados</option>
                 <option value="PRESENTE">Presente</option>

@@ -214,7 +214,7 @@ export function ScheduleManagementView() {
       key: "projectName",
       header: "PROYECTO",
       render: (r) => (
-        <span className={`text-sm ${r.projectId ? "text-zinc-700" : "text-zinc-400"}`}>
+        <span className={`text-sm ${r.projectId ? "text-text-2" : "text-text-4"}`}>
           {r.projectName}
         </span>
       ),
@@ -224,7 +224,7 @@ export function ScheduleManagementView() {
       header: "ENTRADA",
       hideOnMobile: true,
       render: (r) => (
-        <span className={r.hasOverride ? "text-violet-700 font-medium" : "text-zinc-700"}>
+        <span className={r.hasOverride ? "text-primary font-medium" : "text-text-2"}>
           {r.effectiveStartHour}
         </span>
       ),
@@ -234,7 +234,7 @@ export function ScheduleManagementView() {
       header: "SALIDA",
       hideOnMobile: true,
       render: (r) => (
-        <span className={r.hasOverride ? "text-violet-700 font-medium" : "text-zinc-700"}>
+        <span className={r.hasOverride ? "text-primary font-medium" : "text-text-2"}>
           {r.effectiveEndHour}
         </span>
       ),
@@ -252,14 +252,14 @@ export function ScheduleManagementView() {
           : r.shiftType || "—";
         if (r.hasOverride) return (
           <div className="flex items-center gap-1">
-            <span className="text-xs px-2 py-1 rounded-full bg-violet-100 text-violet-700 font-medium">PERS.</span>
-            {shiftLabel && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-50 text-violet-500">{shiftLabel}</span>}
+            <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium">PERS.</span>
+            {shiftLabel && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">{shiftLabel}</span>}
           </div>
         );
         return (
           <div className="flex items-center gap-1">
-            <span className="text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">PROY.</span>
-            {shiftLabel && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600">{shiftLabel}</span>}
+            <span className="text-xs px-2 py-1 rounded-full bg-green/10 text-green-ink">PROY.</span>
+            {shiftLabel && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green/10 text-green-ink">{shiftLabel}</span>}
           </div>
         );
       },
@@ -285,7 +285,7 @@ export function ScheduleManagementView() {
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-7 gap-1 text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                className="h-7 gap-1 text-xs text-amber-ink hover:text-amber-ink hover:bg-amber/10"
                 onClick={() => handleReset(r.userId, r.projectId)}
                 disabled={resettingId === `${r.userId}:${r.projectId}`}
               >
@@ -328,7 +328,7 @@ export function ScheduleManagementView() {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <SubMetricCard label="TOTAL" value={total} icon={<Clock className="w-5 h-5" />} />
-                <SubMetricCard label="PERSONALIZADOS" value={withOverride} color="violet" icon={<Users className="w-5 h-5" />} />
+                <SubMetricCard label="PERSONALIZADOS" value={withOverride} color="blue" icon={<Users className="w-5 h-5" />} />
                 <SubMetricCard label="PROYECTO" value={withDefault} color="green" icon={<CheckCircle2 className="w-5 h-5" />} />
                 <SubMetricCard label="SIN PROYECTO" value={withoutProject} color="red" icon={<XCircle className="w-5 h-5" />} />
               </div>
@@ -374,7 +374,7 @@ export function ScheduleManagementView() {
               </div>
 
               <div className="ml-auto flex gap-2">
-                <Button variant="ghost" onClick={loadData} className="border border-slate-200 bg-card text-zinc-700 hover:bg-slate-50">
+                <Button variant="ghost" onClick={loadData} className="border border-line bg-card text-text-2 hover:bg-raised">
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Actualizar
                 </Button>

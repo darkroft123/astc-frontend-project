@@ -111,30 +111,31 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const displayEmail = user?.email || "pm@joyit.io";
   const avatarSrc = formatAvatarUrl(user?.avatarUrl);
 
+  const roleLabel = role === "PROJECT_MANAGER" ? "JEFE DE PROYECTO" : "JEFE DE PROYECTO";
+
   return (
     <div className="flex flex-col h-full">
-      {/* 1. Perfil del usuario (Figma Spec) */}
+      {/* 1. Perfil del usuario */}
       <div className="flex items-center gap-3 px-1 mb-3">
-        <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-[#8B5CF6] via-[#6366F1] to-[#38BDF8] flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-[0_0_14px_rgba(139,92,246,0.25)]">
+        <div className="h-11 w-11 rounded-[14px] bg-brand-gradient flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm">
           {getInitials(displayName)}
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-[15px] leading-[22.5px] text-white truncate capitalize">
+          <p className="font-semibold text-[15px] leading-[22.5px] text-foreground truncate capitalize">
             {displayName}
           </p>
-          <p className="font-normal text-[12px] leading-[18px] text-slate-400 truncate mt-0.5">
+          <p className="font-normal text-[12.5px] leading-[18px] text-text-4 truncate mt-0.5">
             {displayEmail}
           </p>
         </div>
       </div>
 
-      {/* 2. Tarjeta del Rol (Figma Spec) */}
-      <div className="bg-[#141726] border border-white/[0.06] rounded-2xl p-3.5 mb-4">
-        {/* Rol con JetBrains Mono */}
+      {/* 2. Tarjeta del Rol */}
+      <div className="bg-raised border border-line rounded-[16px] p-3.5 mb-4">
         <div>
-          <span className="font-mono text-[10.5px] leading-[15.8px] uppercase tracking-[0.15em] text-[#fbbf24] font-normal">
-            JEFE DE PROYECTO
+          <span className="font-mono text-[10.5px] leading-[15.8px] uppercase tracking-[0.05em] text-amber font-medium">
+            {roleLabel}
           </span>
         </div>
 
@@ -150,13 +151,13 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
                 window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: val }));
               }
             }}
-            className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-2.5 py-1.5 text-[11px] text-slate-300 focus:outline-none focus:ring-1 focus:ring-violet-500 cursor-pointer"
+            className="w-full bg-field border border-line-2 rounded-[12px] px-2.5 py-1.5 text-[11px] text-text-2 focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
           >
-            <option value="all" className="bg-[#141726] text-white">
+            <option value="all" className="bg-surface text-foreground">
               Todos mis proyectos ({projects.length})
             </option>
             {projects.map((p) => (
-              <option key={p.id} value={p.id} className="bg-[#141726] text-white">
+              <option key={p.id} value={p.id} className="bg-surface text-foreground">
                 {p.name}
               </option>
             ))}
@@ -164,7 +165,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         </div>
       </div>
 
-      {/* 2. Menú de navegación (Figma Spec) */}
+      {/* 3. Menú de navegación */}
       <nav
         className="flex-1 space-y-1 overflow-y-auto no-scrollbar pr-0.5"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
@@ -187,23 +188,24 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
               href={item.href}
               onClick={onNavigate}
               className={cn(
-                "flex items-center justify-between rounded-xl px-3.5 py-2.5 text-[15px] leading-[22.5px] font-normal transition-all group",
+                "flex items-center justify-between rounded-[11px] px-3.5 py-2.5 text-[15px] leading-[22.5px] font-normal transition-all group",
                 isActive
-                  ? "bg-[#221b4a] text-white border border-violet-500/30 shadow-[0_0_15px_rgba(139,92,246,0.12)] font-medium"
-                  : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
+                  ? "bg-raised text-foreground border border-primary/30 shadow-sm font-medium"
+                  : "text-text-3 hover:text-foreground hover:bg-raised"
               )}
             >
               <div className="flex items-center gap-3">
                 <item.icon
+                  strokeWidth={2}
                   className={cn(
-                    "h-4 w-4 shrink-0 transition-colors",
-                    isActive ? "text-violet-400" : "text-slate-400 group-hover:text-white"
+                    "h-[18px] w-[18px] shrink-0 transition-colors",
+                    isActive ? "text-primary" : "text-text-3 group-hover:text-foreground"
                   )}
                 />
                 <span className="truncate">{displayNameItem}</span>
               </div>
               {item.name === "Notificaciones" && (
-                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#ef4444] text-white font-bold text-[10px] px-1.5 shadow-[0_0_8px_rgba(239,68,68,0.4)] shrink-0">
+                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red text-white font-bold text-[10px] px-1.5 shrink-0">
                   {unreadCount > 9 ? "9+" : unreadCount > 0 ? unreadCount : "1"}
                 </span>
               )}
@@ -212,17 +214,17 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         })}
       </nav>
 
-      {/* 3. Footer */}
-      <div className="border-t border-white/[0.06] pt-4 mt-auto space-y-1">
+      {/* 4. Footer */}
+      <div className="border-t border-line pt-4 mt-auto space-y-1">
         <ThemeToggle />
         <button
           onClick={() => {
             logout();
             onNavigate?.();
           }}
-          className="w-full flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-red-950/20 hover:border hover:border-red-800/30 transition-all group"
+          className="w-full flex items-center gap-3 rounded-[11px] px-3.5 py-2.5 text-[15px] font-normal text-text-3 hover:text-red-ink hover:bg-red/10 transition-all group"
         >
-          <LogOut className="h-4 w-4 shrink-0 text-slate-400 group-hover:text-red-400 transition-colors" />
+          <LogOut strokeWidth={2} className="h-[18px] w-[18px] shrink-0 text-text-3 group-hover:text-red-ink transition-colors" />
           <span>Cerrar sesión</span>
         </button>
       </div>
@@ -232,7 +234,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
 export function PmSidebar() {
   return (
-    <aside className="hidden md:flex w-64 h-screen fixed left-0 top-0 z-50 bg-[#10121d] border-r border-white/[0.06] flex-col overflow-hidden px-4 py-5">
+    <aside className="hidden md:flex w-[268px] h-screen fixed left-0 top-0 z-50 bg-sidebar border-r border-line flex-col overflow-hidden px-4 py-5">
       <SidebarNav />
     </aside>
   );

@@ -30,7 +30,7 @@ export function QuickActions() {
           {/* Registrar (Primary Gradient) */}
           <button
             onClick={() => router.push("/pm/registrar")}
-            className="min-h-[58px] p-3 w-full justify-center text-xs font-bold bg-gradient-to-r from-[#3B82F6] via-[#6366F1] to-[#8B5CF6] hover:opacity-95 text-white shadow-[0_4px_25px_rgba(99,102,241,0.45)] border border-white/10 rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
+            className="min-h-[58px] p-3 w-full justify-center text-xs font-bold bg-brand-gradient hover:opacity-95 text-primary-foreground shadow-md border border-line rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
           >
             <ScanFace className="w-5 h-5 shrink-0" />
             <span>Registrar</span>
@@ -39,7 +39,7 @@ export function QuickActions() {
           {/* Asistencias */}
           <button
             onClick={() => router.push("/pm/asistencias")}
-            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-indigo-500/10 hover:bg-indigo-500/15 border border-indigo-500/25 text-indigo-600 dark:text-indigo-400 rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
+            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-primary/10 hover:bg-primary/15 border border-primary/20 text-primary rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
           >
             <BarChart3 className="w-5 h-5 shrink-0" />
             <span>Asistencias</span>
@@ -48,7 +48,7 @@ export function QuickActions() {
           {/* Justificaciones */}
           <button
             onClick={() => router.push("/pm/justificaciones")}
-            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/25 text-amber-600 dark:text-amber-400 rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
+            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-amber/10 hover:bg-amber/15 border border-amber/20 text-amber-ink rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
           >
             <FileText className="w-5 h-5 shrink-0" />
             <span>Justificaciones</span>
@@ -57,7 +57,7 @@ export function QuickActions() {
           {/* Alertas */}
           <button
             onClick={() => router.push("/pm/alertas")}
-            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-rose-500/10 hover:bg-rose-500/15 border border-rose-500/25 text-rose-600 dark:text-rose-400 rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
+            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-red/10 hover:bg-red/15 border border-red/20 text-red-ink rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
           >
             <AlertCircle className="w-5 h-5 shrink-0" />
             <span>Alertas</span>
@@ -66,7 +66,7 @@ export function QuickActions() {
           {/* Proyectos */}
           <button
             onClick={() => router.push("/pm/proyectos")}
-            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-sky-500/10 hover:bg-sky-500/15 border border-sky-500/25 text-sky-600 dark:text-sky-400 rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
+            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-cyan/10 hover:bg-cyan/15 border border-cyan/20 text-cyan rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
           >
             <FolderKanban className="w-5 h-5 shrink-0" />
             <span>Proyectos</span>
@@ -75,7 +75,7 @@ export function QuickActions() {
           {/* Horarios */}
           <button
             onClick={() => router.push("/pm/asignacion-horarios")}
-            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
+            className="min-h-[58px] p-3 w-full justify-center text-xs font-semibold bg-green/10 hover:bg-green/15 border border-green/20 text-green-ink rounded-2xl flex flex-col items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
           >
             <CalendarClock className="w-5 h-5 shrink-0" />
             <span>Horarios</span>

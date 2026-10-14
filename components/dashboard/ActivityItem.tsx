@@ -24,22 +24,22 @@ export function ActivityItem({
     switch (color) {
       case "emerald":
         return {
-          badgeBg: "bg-emerald-50 text-emerald-700 border-emerald-200/60 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800",
-          icon: <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />,
-          iconBadgeBg: "bg-emerald-500",
+          badgeBg: "bg-green/10 text-green-ink border-green/20",
+          icon: <CheckCircle2 className="w-3 h-3 text-green-ink" />,
+          iconBadgeBg: "bg-green-ink",
         };
       case "amber":
         return {
-          badgeBg: "bg-amber-50 text-amber-700 border-amber-200/60 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-800",
-          icon: <FileText className="w-3 h-3 text-amber-600 dark:text-amber-400" />,
-          iconBadgeBg: "bg-amber-500",
+          badgeBg: "bg-amber/10 text-amber-ink border-amber/20",
+          icon: <FileText className="w-3 h-3 text-amber-ink" />,
+          iconBadgeBg: "bg-amber-ink",
         };
       case "blue":
       default:
         return {
-          badgeBg: "bg-blue-50 text-blue-700 border-blue-200/60 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-800",
-          icon: <Clock className="w-3 h-3 text-blue-600 dark:text-blue-400" />,
-          iconBadgeBg: "bg-blue-600",
+          badgeBg: "bg-primary/10 text-primary border-primary/20",
+          icon: <Clock className="w-3 h-3 text-primary" />,
+          iconBadgeBg: "bg-primary",
         };
     }
   };
@@ -54,7 +54,7 @@ export function ActivityItem({
             {avatarSrc ? (
               <AvatarImage src={avatarSrc} alt={name} className="object-cover" />
             ) : null}
-            <AvatarFallback className="bg-gradient-to-br from-violet-500 to-indigo-600 text-white font-bold text-xs">
+            <AvatarFallback className="bg-brand-gradient text-white font-bold text-xs">
               {initials.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -70,7 +70,7 @@ export function ActivityItem({
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-foreground truncate group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+          <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
             {name}
           </p>
           <div className="flex items-center gap-1.5 mt-0.5">

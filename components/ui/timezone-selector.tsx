@@ -56,7 +56,7 @@ export function TimezoneSelector({
           aria-expanded={open}
           className={cn(
             "h-10 w-full justify-between border rounded-lg px-3 text-sm font-normal bg-background",
-            !value && "text-zinc-400",
+            !value && "text-text-4",
             className
           )}
         >
@@ -64,7 +64,7 @@ export function TimezoneSelector({
             <Globe className="h-4 w-4 shrink-0 text-muted-foreground" />
             {selectedLabel || placeholder}
           </span>
-          <ChevronsUpDown className="h-4 w-4 shrink-0 text-zinc-400 opacity-50" />
+          <ChevronsUpDown className="h-4 w-4 shrink-0 text-text-4 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -73,7 +73,7 @@ export function TimezoneSelector({
       >
         <Command shouldFilter={false}>
           <div className="flex items-center border-b px-3">
-            <Search className="h-4 w-4 shrink-0 text-zinc-400 mr-2" />
+            <Search className="h-4 w-4 shrink-0 text-text-4 mr-2" />
             <CommandInput
               placeholder="Buscar por pais, ciudad o zona horaria..."
               value={search}
@@ -103,7 +103,7 @@ export function TimezoneSelector({
                   />
                   <span className="flex-1 text-sm">
                     {tz.label}{" "}
-                    <span className="text-zinc-400 text-xs">
+                    <span className="text-text-4 text-xs">
                       ({tz.value})
                     </span>
                   </span>

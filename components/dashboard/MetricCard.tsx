@@ -16,52 +16,52 @@ const colorStyles: Record<
 > = {
   emerald: {
     iconBg:
-      "bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/25 text-emerald-600 dark:text-emerald-400",
+      "bg-green/10 border-green/20 text-green-ink",
     badge:
-      "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/60",
-    accent: "text-emerald-600 dark:text-emerald-400",
+      "bg-green/10 text-green-ink border-green/20",
+    accent: "text-green-ink",
   },
   amber: {
     iconBg:
-      "bg-amber-500/10 dark:bg-amber-500/15 border-amber-500/25 text-amber-600 dark:text-amber-400",
+      "bg-amber/10 border-amber/20 text-amber-ink",
     badge:
-      "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/60",
-    accent: "text-amber-600 dark:text-amber-400",
+      "bg-amber/10 text-amber-ink border-amber/20",
+    accent: "text-amber-ink",
   },
   rose: {
     iconBg:
-      "bg-rose-500/10 dark:bg-rose-500/15 border-rose-500/25 text-rose-600 dark:text-rose-400",
+      "bg-red/10 border-red/20 text-red-ink",
     badge:
-      "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-400 dark:border-rose-800/60",
-    accent: "text-rose-600 dark:text-rose-400",
+      "bg-red/10 text-red-ink border-red/20",
+    accent: "text-red-ink",
   },
   blue: {
     iconBg:
-      "bg-sky-500/10 dark:bg-sky-500/15 border-sky-500/25 text-sky-600 dark:text-sky-400",
+      "bg-primary/10 border-primary/20 text-primary",
     badge:
-      "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/60 dark:text-sky-400 dark:border-sky-800/60",
-    accent: "text-sky-600 dark:text-sky-400",
+      "bg-primary/10 text-primary border-primary/20",
+    accent: "text-primary",
   },
   sky: {
     iconBg:
-      "bg-sky-500/10 dark:bg-sky-500/15 border-sky-500/25 text-sky-600 dark:text-sky-400",
+      "bg-cyan/10 border-cyan/20 text-cyan",
     badge:
-      "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/60 dark:text-sky-400 dark:border-sky-800/60",
-    accent: "text-sky-600 dark:text-sky-400",
+      "bg-cyan/10 text-cyan border-cyan/20",
+    accent: "text-cyan",
   },
   indigo: {
     iconBg:
-      "bg-indigo-500/10 dark:bg-indigo-500/15 border-indigo-500/25 text-indigo-600 dark:text-indigo-400",
+      "bg-primary/10 border-primary/20 text-primary",
     badge:
-      "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-400 dark:border-indigo-800/60",
-    accent: "text-indigo-600 dark:text-indigo-400",
+      "bg-primary/10 text-primary border-primary/20",
+    accent: "text-primary",
   },
   violet: {
     iconBg:
-      "bg-purple-500/10 dark:bg-purple-500/15 border-purple-500/25 text-purple-600 dark:text-purple-400",
+      "bg-primary/10 border-primary/20 text-primary",
     badge:
-      "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/60 dark:text-purple-400 dark:border-purple-800/60",
-    accent: "text-purple-600 dark:text-purple-400",
+      "bg-primary/10 text-primary border-primary/20",
+    accent: "text-primary",
   },
 };
 

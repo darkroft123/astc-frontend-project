@@ -309,8 +309,8 @@ export default function ScheduleForm({
       <div className="max-w-5xl mx-auto px-4 py-4">
 
         <div className="flex items-center gap-2 mb-6">
-          <div className="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center shadow-sm">
-            <CalendarDays className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-sm">
+            <CalendarDays className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
             <h1 className="text-lg font-bold text-foreground">
@@ -333,7 +333,7 @@ export default function ScheduleForm({
             
             {/* USER & PROJECT SELECTION */}
             <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100">
+              <CardHeader className="pb-3 bg-raised/50 border-b border-line">
                 <CardTitle className="text-sm">1. Asignación</CardTitle>
                 <CardDescription className="text-xs">Selecciona el usuario y el proyecto</CardDescription>
               </CardHeader>
@@ -371,7 +371,7 @@ export default function ScheduleForm({
 
             {/* SHIFT TYPE SELECTOR */}
             <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100">
+              <CardHeader className="pb-3 bg-raised/50 border-b border-line">
                 <CardTitle className="text-sm">2. Tipo de Turno</CardTitle>
                 <CardDescription className="text-xs">Elige la modalidad de horario</CardDescription>
               </CardHeader>
@@ -387,10 +387,10 @@ export default function ScheduleForm({
                         onClick={() => setShiftType(t.key)}
                         className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 text-xs font-medium transition-all
                           ${isActive
-                            ? "bg-violet-600/10 text-violet-700 border-violet-600 shadow-sm"
+                            ? "bg-primary/10 text-primary border-primary shadow-sm"
                             : "border-border bg-background text-muted-foreground hover:border-border hover:bg-muted"}`}
                       >
-                        <Icon className={`w-5 h-5 ${isActive ? "text-violet-600" : "text-zinc-400"}`} />
+                        <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-text-4"}`} />
                         <span className="text-center leading-tight font-semibold">{t.label}</span>
                       </button>
                     );
@@ -405,7 +405,7 @@ export default function ScheduleForm({
             {/* SPECIFIC CONFIGURATION */}
             {(shiftType === "REGULAR" || shiftType === "TRANSITORY") && (
               <Card className="border-border shadow-sm">
-                <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100">
+                <CardHeader className="pb-3 bg-raised/50 border-b border-line">
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-sm flex items-center gap-2">
@@ -417,8 +417,8 @@ export default function ScheduleForm({
                   </div>
                 </CardHeader>
                 <CardContent className="pt-4 space-y-4">
-                  <div className="flex gap-3 bg-blue-50/50 text-blue-800 p-3 rounded-lg border border-blue-100 text-xs">
-                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-600" />
+                  <div className="flex gap-3 bg-primary/10 text-text-2 p-3 rounded-lg border border-line text-xs">
+                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-primary" />
                     <p>
                       {shiftType === "REGULAR"
                         ? "Horario laboral de Lunes a Viernes. Sábados y Domingos son descanso automático (no se exige marcar ni genera falta). Ideal para personal administrativo u oficina."
@@ -426,16 +426,16 @@ export default function ScheduleForm({
                     </p>
                   </div>
                   {(shiftType === "REGULAR" || shiftType === "TRANSITORY") && (
-                    <div className="flex gap-2 bg-muted/50 p-2 rounded-lg border border-zinc-100">
+                    <div className="flex gap-2 bg-muted/50 p-2 rounded-lg border border-line">
                       <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-background" onClick={() => { setStartHour("08:00"); setEndHour("17:00"); }}>Día</Button>
                       <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-background" onClick={() => { setStartHour("14:00"); setEndHour("22:00"); }}>Tarde</Button>
                       <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-background" onClick={() => { setStartHour("22:00"); setEndHour("06:00"); }}>
-                        Noche <span className="text-[9px] text-zinc-400 ml-1">22:00–06:00</span>
+                        Noche <span className="text-[9px] text-text-4 ml-1">22:00–06:00</span>
                       </Button>
                     </div>
                   )}
                   {(shiftType === "REGULAR" || shiftType === "TRANSITORY") && startHour === "22:00" && endHour === "06:00" && (
-                    <div className="flex gap-2 bg-amber-50/50 text-amber-700 p-2 rounded-lg border border-amber-200 text-[10px]">
+                    <div className="flex gap-2 bg-amber/10 text-amber-ink p-2 rounded-lg border border-amber/20 text-[10px]">
                       <Info className="w-3 h-3 shrink-0 mt-0.5" />
                       <p>Turno nocturno: la jornada cruza la medianoche. El sistema evaluará la asistencia entre las 22:00 y las 06:00 del día siguiente.</p>
                     </div>
@@ -451,7 +451,7 @@ export default function ScheduleForm({
                     </div>
                   </div>
                   {shiftType === "TRANSITORY" && (
-                    <div className="grid grid-cols-2 gap-4 pt-2 border-t border-zinc-100">
+                    <div className="grid grid-cols-2 gap-4 pt-2 border-t border-line">
                       <div className="space-y-1.5">
                         <Label className="text-xs text-muted-foreground">Válido desde</Label>
                         <Input type="date" value={validFrom} onChange={(e) => setValidFrom(e.target.value)} />
@@ -468,7 +468,7 @@ export default function ScheduleForm({
 
             {shiftType === "FLEXIBLE" && (
               <Card className="border-border shadow-sm">
-                <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100">
+                <CardHeader className="pb-3 bg-raised/50 border-b border-line">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <CalendarDays className="w-4 h-4 text-muted-foreground" />
                     3. Horario Flexible
@@ -476,8 +476,8 @@ export default function ScheduleForm({
                   <CardDescription className="text-xs mt-1">Configura horas distintas por día</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-4 space-y-3">
-                  <div className="flex gap-3 bg-blue-50/50 text-blue-800 p-3 rounded-lg border border-blue-100 text-xs mb-4">
-                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-600" />
+                  <div className="flex gap-3 bg-primary/10 text-text-2 p-3 rounded-lg border border-line text-xs mb-4">
+                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-primary" />
                     <p>
                       El sistema evaluará la asistencia de forma distinta según el día de la semana. Los días en los que dejes las horas vacías, el sistema entenderá que el empleado está en su día libre y <strong>no generará faltas automáticas</strong>.
                     </p>
@@ -492,14 +492,14 @@ export default function ScheduleForm({
                       </div>
                     );
                   })}
-                  <p className="text-[10px] text-zinc-400 mt-2 text-center bg-muted/50 py-1 rounded">Deja vacío si es día libre</p>
+                  <p className="text-[10px] text-text-4 mt-2 text-center bg-muted/50 py-1 rounded">Deja vacío si es día libre</p>
                 </CardContent>
               </Card>
             )}
 
             {shiftType.startsWith("ROTATING") && (
               <Card className="border-border shadow-sm">
-                <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100">
+                <CardHeader className="pb-3 bg-raised/50 border-b border-line">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <Repeat className="w-4 h-4 text-muted-foreground" />
                     3. Turno Rotativo
@@ -507,13 +507,13 @@ export default function ScheduleForm({
                   <CardDescription className="text-xs mt-1">Ciclos de trabajo y descanso</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-4 space-y-4">
-                  <div className="flex gap-3 bg-blue-50/50 text-blue-800 p-3 rounded-lg border border-blue-100 text-xs">
-                    <Info className="w-5 h-5 shrink-0 mt-0.5 text-blue-600" />
+                  <div className="flex gap-3 bg-primary/10 text-text-2 p-3 rounded-lg border border-line text-xs">
+                    <Info className="w-5 h-5 shrink-0 mt-0.5 text-primary" />
                     <div className="space-y-2">
                       <p>
                         El sistema calculará un ciclo continuo a partir de la Fecha de inicio. Exigirá asistencia por <strong>{rotationWorkDays} días</strong> consecutivos y luego apagará todas las alertas de falta automática por <strong>{rotationRestDays} días</strong>.
                       </p>
-                      <div className="bg-card/50 p-2 rounded border border-blue-200/50">
+                      <div className="bg-card/50 p-2 rounded border border-line">
                         <span className="font-semibold block mb-1">¿Cómo lo calcula el sistema?</span>
                         <ul className="list-disc pl-4 space-y-1">
                           <li>Suma el total de días del ciclo ({rotationWorkDays} + {rotationRestDays} = {rotationWorkDays + rotationRestDays} días).</li>
@@ -534,19 +534,19 @@ export default function ScheduleForm({
                     </div>
                   </div>
 
-                  <div className="p-3 bg-violet-50/50 border border-violet-100 rounded-lg text-center">
-                    <p className="text-xs text-violet-700 font-medium">Ciclo total de {rotationWorkDays + rotationRestDays} días: {rotationWorkDays}d trabajo &rarr; {rotationRestDays}d descanso</p>
+                  <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg text-center">
+                    <p className="text-xs text-primary font-medium">Ciclo total de {rotationWorkDays + rotationRestDays} días: {rotationWorkDays}d trabajo &rarr; {rotationRestDays}d descanso</p>
                   </div>
 
-                  <div className="flex gap-2 bg-muted/50 p-2 rounded-lg border border-zinc-100">
+                  <div className="flex gap-2 bg-muted/50 p-2 rounded-lg border border-line">
                     <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-background" onClick={() => { setRotationStartHour("08:00"); setRotationEndHour("20:00"); }}>Día</Button>
                     <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-background" onClick={() => { setRotationStartHour("14:00"); setRotationEndHour("22:00"); }}>Tarde</Button>
                     <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-background" onClick={() => { setRotationStartHour("22:00"); setRotationEndHour("06:00"); }}>
-                      Noche <span className="text-[9px] text-zinc-400 ml-1">22:00–06:00</span>
+                      Noche <span className="text-[9px] text-text-4 ml-1">22:00–06:00</span>
                     </Button>
                   </div>
                   {rotationStartHour === "22:00" && rotationEndHour === "06:00" && (
-                    <div className="flex gap-2 bg-amber-50/50 text-amber-700 p-2 rounded-lg border border-amber-200 text-[10px]">
+                    <div className="flex gap-2 bg-amber/10 text-amber-ink p-2 rounded-lg border border-amber/20 text-[10px]">
                       <Info className="w-3 h-3 shrink-0 mt-0.5" />
                       <p>Turno nocturno: la jornada cruza la medianoche. El sistema evaluará la asistencia entre las 22:00 y las 06:00 del día siguiente.</p>
                     </div>
@@ -561,7 +561,7 @@ export default function ScheduleForm({
                       <Input type="time" value={rotationEndHour} onChange={(e) => setRotationEndHour(e.target.value)} />
                     </div>
                   </div>
-                  <div className="space-y-1.5 pt-2 border-t border-zinc-100">
+                  <div className="space-y-1.5 pt-2 border-t border-line">
                     <Label className="text-xs text-muted-foreground">Fecha de inicio del ciclo</Label>
                     <Input type="date" value={validFrom} onChange={(e) => setValidFrom(e.target.value)} />
                     <p className="text-[10px] text-muted-foreground">El sistema empezará a contar el ciclo desde esta fecha. Si no se asigna, usará la fecha actual como inicio.</p>
@@ -572,7 +572,7 @@ export default function ScheduleForm({
 
             {/* CONFIGURACIÓN GENERAL */}
             <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100">
+              <CardHeader className="pb-3 bg-raised/50 border-b border-line">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <Settings className="w-4 h-4 text-muted-foreground" />
                   4. Reglas Generales
@@ -597,21 +597,21 @@ export default function ScheduleForm({
 
             {/* RESUMEN */}
             {(selectedUserId && selectedProjectId) && (
-              <Card className="bg-violet-600/5 border-violet-600/20 shadow-sm">
+              <Card className="bg-primary/10 border-primary/20 shadow-sm">
                 <CardContent className="p-4 flex items-center justify-between">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <SelectedIcon className="w-4 h-4 text-violet-700" />
+                      <SelectedIcon className="w-4 h-4 text-primary" />
                       <p className="text-sm font-medium text-foreground">
                         {selectedUser?.firstName} {selectedUser?.lastName}
                       </p>
                     </div>
-                    <p className="text-[11px] text-zinc-500 mb-1">Proyecto: {selectedProject?.name}</p>
+                    <p className="text-[11px] text-text-4 mb-1">Proyecto: {selectedProject?.name}</p>
                     <p className="text-xs text-muted-foreground">
                       {SHIFT_TYPES.find(s => s.key === shiftType)?.label} | Tolerancia: {graceMinutes}m
                     </p>
                   </div>
-                  <Button onClick={handleSubmit} disabled={isSubmitting} className="shrink-0 shadow-sm bg-violet-600 hover:bg-violet-700">
+                  <Button onClick={handleSubmit} disabled={isSubmitting} className="shrink-0 shadow-sm bg-primary hover:bg-primary/90">
                     <Save className="w-4 h-4 mr-2" />
                     {isSubmitting ? "Guardando..." : "Guardar"}
                   </Button>
@@ -624,7 +624,7 @@ export default function ScheduleForm({
         {/* BOTTOM ACTIONS - If not selected project/user, show a generic save button to keep layout consistent */}
         {(!selectedUserId || !selectedProjectId) && (
           <div className="flex justify-end mt-6 pt-4 border-t border-border">
-            <Button disabled={true} className="bg-zinc-200 text-muted-foreground">
+            <Button disabled={true} className="bg-inset text-text-5">
               <Save className="w-4 h-4 mr-2" />
               Completa los datos
             </Button>

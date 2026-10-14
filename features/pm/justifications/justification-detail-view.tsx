@@ -100,7 +100,7 @@ function formatDate(value?: string | null) {
   } catch { return value; }
 }
 
-const dotColors: Record<string, string> = { PENDING: "#3b82f6", SUBMITTED: "#3b82f6", OBSERVATION: "#f97316", APPROVED: "#10b981", REJECTED: "#ef4444" };
+const dotColors: Record<string, string> = { PENDING: "var(--blue)", SUBMITTED: "var(--blue)", OBSERVATION: "var(--amber)", APPROVED: "var(--green)", REJECTED: "var(--red)" };
 const historyIcons: Record<string, any> = { PENDING: FileText, SUBMITTED: FileText, OBSERVATION: FileText, APPROVED: FileText, REJECTED: FileText };
 function eventLabel(e: any) {
   if (!e.previousStatus && e.newStatus === "PENDING") return "Justificación creada";
@@ -211,7 +211,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
   if (isLoading) {
     return (
       <div className="min-h-screen bg-muted/50 flex items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600" />
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary" />
       </div>
     );
   }
@@ -220,7 +220,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
     return (
       <div className="min-h-screen bg-muted/50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-red-600">Justificación no encontrada</p>
+          <p className="text-xl text-red-ink">Justificación no encontrada</p>
         </div>
       </div>
     );
@@ -253,7 +253,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
                 onClick={() => processJustification("observation")}
                 variant="outline"
                 size="sm"
-                className="h-8 text-xs px-3 border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 rounded-xl"
+                className="h-8 text-xs px-3 border-amber/30 text-amber-ink hover:bg-amber/10 rounded-xl"
                 disabled={isProcessing}
               >
                 Solicitar Observación
@@ -262,7 +262,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
                 onClick={() => processJustification("reject")}
                 variant="outline"
                 size="sm"
-                className="h-8 text-xs px-3 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl"
+                className="h-8 text-xs px-3 border-red/30 text-red-ink hover:bg-red/10 rounded-xl"
                 disabled={isProcessing}
               >
                 Rechazar
@@ -270,7 +270,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
               <Button
                 onClick={() => processJustification("approve")}
                 size="sm"
-                className="h-8 text-xs px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs"
+                className="h-8 text-xs px-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-xs"
                 disabled={isProcessing}
               >
                 {isProcessing ? "Procesando..." : "Aprobar Justificación"}
@@ -337,7 +337,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
                 <div className="mt-5 pt-4 border-t border-border">
                   <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5">Documento Adjunto</h4>
                   <div className="flex items-center gap-3 bg-muted/40 p-3.5 rounded-xl border border-border">
-                    <FileText className="h-8 w-8 text-red-600 shrink-0" />
+                    <FileText className="h-8 w-8 text-red-ink shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-foreground truncate">Comprobante adjunto</p>
                     </div>
@@ -350,7 +350,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
                       {showPreview ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                       {showPreview ? "Ocultar" : "Previsualizar"}
                     </Button>
-                    <Button asChild size="sm" className="h-8 text-xs px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+                    <Button asChild size="sm" className="h-8 text-xs px-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg">
                       <a href={justification.documentUrl} target="_blank" rel="noopener noreferrer">
                         <Download className="mr-1.5 h-3.5 w-3.5" />
                         Descargar
@@ -396,7 +396,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
               <div className="relative pl-7 max-h-[300px] overflow-y-auto pr-1">
                 <div className="absolute left-[11px] top-1 bottom-1 w-0.5 bg-border rounded-full" />
                 {justification.history.map((entry: any, idx: number, arr: any[]) => {
-                  const color = dotColors[entry.newStatus] || "#3b82f6";
+                  const color = dotColors[entry.newStatus] || "var(--blue)";
                   const HIcon = historyIcons[entry.newStatus] || FileText;
                   const isLast = idx === arr.length - 1;
                   return (
@@ -405,7 +405,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
                         <HIcon className="w-2.5 h-2.5 text-white" />
                       </div>
                       <div className="bg-card rounded-xl border border-border shadow-xs overflow-hidden">
-                        <div className="flex items-center justify-between px-3 py-1.5 border-b border-border" style={{ backgroundColor: color + "0D" }}>
+                        <div className="flex items-center justify-between px-3 py-1.5 border-b border-border" style={{ backgroundColor: `color-mix(in srgb, ${color} 5%, transparent)` }}>
                           <p className="text-xs font-bold text-foreground">{eventLabel(entry)}</p>
                           <p className="text-[10px] text-muted-foreground font-mono">{entry.changedAt ? formatDate(entry.changedAt) : "-"}</p>
                         </div>
@@ -435,23 +435,23 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
             </h3>
 
             {isRejected && justification.comment ? (
-              <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl p-3.5 mb-3">
-                <p className="text-xs text-red-800 dark:text-red-300 font-medium">El PM indicó:</p>
-                <p className="text-xs text-red-700 dark:text-red-400 mt-0.5">{justification.comment}</p>
+              <div className="bg-red/10 border border-red/20 rounded-xl p-3.5 mb-3">
+                <p className="text-xs text-red-ink font-medium">El PM indicó:</p>
+                <p className="text-xs text-red-ink mt-0.5">{justification.comment}</p>
               </div>
             ) : isObservation && justification.comment ? (
-              <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl p-3.5 mb-3">
-                <p className="text-xs text-amber-800 dark:text-amber-300 font-medium">Correcciones solicitadas:</p>
-                <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">{justification.comment}</p>
+              <div className="bg-amber/10 border border-amber/20 rounded-xl p-3.5 mb-3">
+                <p className="text-xs text-amber-ink font-medium">Correcciones solicitadas:</p>
+                <p className="text-xs text-amber-ink mt-0.5">{justification.comment}</p>
               </div>
             ) : isPending && justification.comment ? (
               <div className="bg-muted/40 border border-border rounded-xl p-3.5 mb-3">
                 <p className="text-xs text-foreground">{justification.comment}</p>
               </div>
             ) : isApproved && justification.comment ? (
-              <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl p-3.5 mb-3">
-                <p className="text-xs text-emerald-800 dark:text-emerald-300 font-medium">Comentario del PM:</p>
-                <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-0.5">{justification.comment}</p>
+              <div className="bg-green/10 border border-green/20 rounded-xl p-3.5 mb-3">
+                <p className="text-xs text-green-ink font-medium">Comentario del PM:</p>
+                <p className="text-xs text-green-ink mt-0.5">{justification.comment}</p>
               </div>
             ) : null}
             

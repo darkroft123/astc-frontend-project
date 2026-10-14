@@ -11,11 +11,11 @@ import { Input } from "@/components/ui/input";
 import { DataTable, Column } from "@/components/DataTable";
 import { Loader2, Plus, Clock, Repeat, CalendarDays, CalendarRange, CheckCircle, AlertTriangle, Search } from "lucide-react";
 const SHIFT_LABELS: Record<string, { label: string; icon: any; color: string }> = {
-  REGULAR: { label: "Regular", icon: Clock, color: "text-emerald-600 bg-emerald-50 border-emerald-200" },
-  ROTATING_4X4: { label: "Rotativo 4x4", icon: Repeat, color: "text-blue-600 bg-blue-50 border-blue-200" },
-  ROTATING_7X7: { label: "Rotativo 7x7", icon: Repeat, color: "text-blue-600 bg-blue-50 border-blue-200" },
-  FLEXIBLE: { label: "Flexible", icon: CalendarDays, color: "text-violet-600 bg-violet-50 border-violet-200" },
-  TRANSITORY: { label: "Transitorio", icon: CalendarRange, color: "text-amber-600 bg-amber-50 border-amber-200" },
+  REGULAR: { label: "Regular", icon: Clock, color: "text-green-ink bg-green/10 border-green/20" },
+  ROTATING_4X4: { label: "Rotativo 4x4", icon: Repeat, color: "text-primary bg-primary/10 border-primary/20" },
+  ROTATING_7X7: { label: "Rotativo 7x7", icon: Repeat, color: "text-primary bg-primary/10 border-primary/20" },
+  FLEXIBLE: { label: "Flexible", icon: CalendarDays, color: "text-primary bg-primary/10 border-primary/20" },
+  TRANSITORY: { label: "Transitorio", icon: CalendarRange, color: "text-amber-ink bg-amber/10 border-amber/20" },
 };
 
 const DAYS_ORDER = [
@@ -56,31 +56,31 @@ function TemplatePreview({ template, projects, onAssign, onClose }: {
       <div className="space-y-4">
         <div className="bg-background rounded-xl p-4 text-sm space-y-2">
           <div className="flex justify-between">
-            <span className="text-zinc-500">Proyecto</span>
+            <span className="text-text-4">Proyecto</span>
             <span className="font-medium">{project?.name || template.projectId}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-500">Tolerancia</span>
+            <span className="text-text-4">Tolerancia</span>
             <span className="font-medium">{template.graceMinutes} min</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-500">Corte falta</span>
+            <span className="text-text-4">Corte falta</span>
             <span className="font-medium">{template.absenceCutoffTime?.substring(0, 5) || "-"}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-500">Zona horaria</span>
+            <span className="text-text-4">Zona horaria</span>
             <span className="font-medium">{template.timezone || "America/Lima"}</span>
           </div>
         </div>
 
         {template.shiftType === "REGULAR" || template.shiftType === "TRANSITORY" ? (
-          <div className="bg-blue-50/50 rounded-xl p-4 text-sm">
-            <p className="font-semibold text-blue-800 mb-2">Horario</p>
-            <p className="text-blue-700">
+          <div className="bg-primary/10 rounded-xl p-4 text-sm">
+            <p className="font-semibold text-foreground mb-2">Horario</p>
+            <p className="text-text-2">
               {template.workStartTime?.substring(0, 5)} - {template.workEndTime?.substring(0, 5)}
             </p>
             {template.shiftType === "TRANSITORY" && (template.validFrom || template.validUntil) && (
-              <div className="flex gap-4 mt-2 text-xs text-blue-600">
+              <div className="flex gap-4 mt-2 text-xs text-primary">
                 {template.validFrom && <span>Desde: {template.validFrom}</span>}
                 {template.validUntil && <span>Hasta: {template.validUntil}</span>}
               </div>
@@ -89,15 +89,15 @@ function TemplatePreview({ template, projects, onAssign, onClose }: {
         ) : null}
 
         {template.shiftType === "FLEXIBLE" ? (
-          <div className="bg-violet-50/50 rounded-xl p-4 text-sm">
-            <p className="font-semibold text-violet-800 mb-2">Horarios por día</p>
+          <div className="bg-primary/10 rounded-xl p-4 text-sm">
+            <p className="font-semibold text-foreground mb-2">Horarios por día</p>
             <div className="space-y-1">
               {DAYS_ORDER.map((day) => {
                 const start = template[`${day.key}Start`];
                 const end = template[`${day.key}End`];
                 return (
                   <div key={day.key} className="flex justify-between text-xs">
-                    <span className="text-violet-700">{day.label}</span>
+                    <span className="text-text-2">{day.label}</span>
                     <span className="font-medium">{start && end ? `${start.substring(0, 5)} - ${end.substring(0, 5)}` : "Libre"}</span>
                   </div>
                 );
@@ -107,19 +107,19 @@ function TemplatePreview({ template, projects, onAssign, onClose }: {
         ) : null}
 
         {template.shiftType?.startsWith("ROTATING") ? (
-          <div className="bg-blue-50/50 rounded-xl p-4 text-sm space-y-2">
-            <p className="font-semibold text-blue-800 mb-2">Turno Rotativo</p>
+          <div className="bg-primary/10 rounded-xl p-4 text-sm space-y-2">
+            <p className="font-semibold text-foreground mb-2">Turno Rotativo</p>
             <div className="flex justify-between text-xs">
-              <span className="text-blue-700">Ciclo</span>
+              <span className="text-text-2">Ciclo</span>
               <span className="font-medium">{template.rotationWorkDays}d trabajo / {template.rotationRestDays}d descanso</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span className="text-blue-700">Horario</span>
+              <span className="text-text-2">Horario</span>
               <span className="font-medium">{template.rotationShiftStartTime?.substring(0, 5)} - {template.rotationShiftEndTime?.substring(0, 5)}</span>
             </div>
             {template.validFrom && (
               <div className="flex justify-between text-xs">
-                <span className="text-blue-700">Inicio ciclo</span>
+                <span className="text-text-2">Inicio ciclo</span>
                 <span className="font-medium">{template.validFrom}</span>
               </div>
             )}
@@ -217,7 +217,7 @@ export function ScheduleListView() {
       header: "PROYECTO",
       render: (r) => {
         const p = projects.find(proj => proj.id === r.projectId);
-        return <span className="text-xs text-zinc-500 font-medium">{p?.name || r.projectId}</span>;
+        return <span className="text-xs text-text-4 font-medium">{p?.name || r.projectId}</span>;
       }
     },
     {
@@ -243,11 +243,11 @@ export function ScheduleListView() {
       key: "hours",
       header: "HORARIO",
       render: (r) => {
-        if (r.shiftType === "FLEXIBLE") return <span className="text-zinc-500 text-xs">Varios horarios</span>;
+        if (r.shiftType === "FLEXIBLE") return <span className="text-text-4 text-xs">Varios horarios</span>;
         if (r.shiftType?.startsWith("ROTATING")) {
-          return <span className="text-zinc-700 text-xs font-mono">{r.rotationShiftStartTime?.substring(0,5)} - {r.rotationShiftEndTime?.substring(0,5)}</span>;
+          return <span className="text-text-2 text-xs font-mono">{r.rotationShiftStartTime?.substring(0,5)} - {r.rotationShiftEndTime?.substring(0,5)}</span>;
         }
-        return <span className="text-zinc-700 text-xs font-mono">{r.workStartTime?.substring(0,5)} - {r.workEndTime?.substring(0,5)}</span>;
+        return <span className="text-text-2 text-xs font-mono">{r.workStartTime?.substring(0,5)} - {r.workEndTime?.substring(0,5)}</span>;
       }
     },
     {
@@ -293,7 +293,7 @@ export function ScheduleListView() {
   return (
     <div className="space-y-6">
       <Card className="border-border shadow-sm">
-        <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <CardHeader className="pb-3 bg-raised/50 border-b border-line flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <CardTitle className="text-base">Horarios del Proyecto</CardTitle>
             <CardDescription className="text-xs">
@@ -305,14 +305,14 @@ export function ScheduleListView() {
               <Search className="w-4 h-4 absolute left-3 top-2.5 text-muted-foreground" />
               <Input
                 placeholder="Buscar por proyecto u horario..."
-                className="pl-9 bg-white"
+                className="pl-9 bg-field"
                 value={searchTerm}
                 onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
               />
             </div>
             <Button
               onClick={() => router.push("/pm/creacion-horarios")}
-              className="bg-primary text-white shrink-0"
+              className="bg-primary text-primary-foreground shrink-0"
             >
               <Plus className="w-4 h-4 mr-1.5" />
               Crear Horario
@@ -326,7 +326,7 @@ export function ScheduleListView() {
             </div>
           ) : filteredTemplates.length === 0 ? (
             <div className="text-center p-12 text-muted-foreground">
-              <Clock className="w-12 h-12 mx-auto text-zinc-300 mb-3" />
+              <Clock className="w-12 h-12 mx-auto text-text-5 mb-3" />
               <p className="text-sm font-medium text-muted-foreground">No hay horarios configurados</p>
               <p className="text-xs mt-1">Crea horarios para tus proyectos.</p>
             </div>
@@ -410,7 +410,7 @@ export function ScheduleListView() {
             <DialogHeader>
               <DialogTitle className="text-xl">Sobrescribir Horarios</DialogTitle>
               <DialogDescription>
-                <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto my-4" />
+                <AlertTriangle className="w-12 h-12 text-amber mx-auto my-4" />
                 Se ha detectado que <strong>{pendingAssignment.membersWithSchedule.length}</strong> de los {pendingAssignment.members.length} miembros del proyecto ya tienen un horario personalizado asignado.
                 <br /><br />
                 ¿Qué deseas hacer?
@@ -419,7 +419,7 @@ export function ScheduleListView() {
             <div className="flex flex-col gap-3 pt-4">
               <Button 
                 variant="default" 
-                className="w-full justify-start text-left bg-blue-600 hover:bg-blue-700"
+                className="w-full justify-start text-left bg-primary hover:bg-primary/90"
                 onClick={async () => {
                   await executeAssignment(pendingAssignment.template, pendingAssignment.members);
                   setPendingAssignment(null);
@@ -450,7 +450,7 @@ export function ScheduleListView() {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full text-zinc-500 hover:text-zinc-700 hover:bg-accent"
+                className="w-full text-text-4 hover:text-text-2 hover:bg-accent"
                 onClick={() => setPendingAssignment(null)}
               >
                 Cancelar

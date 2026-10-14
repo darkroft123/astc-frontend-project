@@ -373,7 +373,7 @@ export function HolidayPMListView() {
           <Button 
             variant="outline" 
             size="sm" 
-            className="h-7 text-xs border-violet-200 text-violet-700 hover:bg-violet-50"
+            className="h-7 text-xs border-primary/20 text-primary hover:bg-primary/10"
             onClick={() => setExceptionsModalUser(r.userId)}
           >
             Ver {userHols.length} días
@@ -410,12 +410,12 @@ export function HolidayPMListView() {
 
             <div className="flex flex-col sm:flex-row sm:items-end gap-3 flex-wrap lg:flex-nowrap mb-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1 w-full sm:w-auto">
-                <SubMetricCard label="COLECCIONES DISPONIBLES" value={availableCollections.length} color="amber" icon={<Layers className="w-5 h-5 text-indigo-500" />} />
-                <SubMetricCard label="TOTAL FERIADOS" value={totalProjectDates} color="green" icon={<CalendarIcon className="w-5 h-5 text-emerald-500" />} />
+                <SubMetricCard label="COLECCIONES DISPONIBLES" value={availableCollections.length} color="amber" icon={<Layers className="w-5 h-5 text-primary" />} />
+                <SubMetricCard label="TOTAL FERIADOS" value={totalProjectDates} color="green" icon={<CalendarIcon className="w-5 h-5 text-green" />} />
               </div>
 
               <div className="flex flex-col w-full sm:w-auto sm:min-w-[200px]">
-                <label className="text-[10px] text-zinc-500 mb-1">Proyecto</label>
+                <label className="text-[10px] text-text-4 mb-1">Proyecto</label>
                 <Select value={selectedProjectId} onValueChange={(val) => { setSelectedProjectId(val); setAssignedCollectionId(null); }}>
                   <SelectTrigger className="h-9 border-border">
                     <SelectValue placeholder="Seleccione Proyecto" />
@@ -429,7 +429,7 @@ export function HolidayPMListView() {
               </div>
 
               <div className="flex flex-col w-full sm:w-auto sm:min-w-[200px]">
-                <label className="text-[10px] text-zinc-500 mb-1">Buscar</label>
+                <label className="text-[10px] text-text-4 mb-1">Buscar</label>
                 <Input
                   placeholder="Feriado o usuario..."
                   className="h-9 text-sm"
@@ -458,7 +458,7 @@ export function HolidayPMListView() {
                       <Button size="sm" variant="outline" onClick={() => setIsLinkModalOpen(true)} className="h-9 text-xs">
                         <LinkIcon className="w-4 h-4 mr-1" /> Enlazar Colección Global
                       </Button>
-                      <Button size="sm" onClick={() => setIsFormOpen(true)} className="h-9 text-xs bg-violet-600 hover:bg-violet-700 text-white shrink-0">
+                      <Button size="sm" onClick={() => setIsFormOpen(true)} className="h-9 text-xs bg-primary hover:bg-primary/90 text-primary-foreground shrink-0">
                         <Plus className="w-4 h-4 mr-1" /> Crear Colección
                       </Button>
                     </div>
@@ -479,7 +479,7 @@ export function HolidayPMListView() {
                               onClick={() => toggleExpand(c.id)}
                             >
                               <div className="flex items-center gap-3">
-                                <div className={`p-2 rounded-md ${c.scope === 'GLOBAL' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400'}`}>
+                                <div className={`p-2 rounded-md ${c.scope === 'GLOBAL' ? 'bg-amber/10 text-amber-ink' : 'bg-green/10 text-green-ink'}`}>
                                   <Layers className="w-5 h-5" />
                                 </div>
                                 <div>
@@ -494,20 +494,20 @@ export function HolidayPMListView() {
                                   disabled={isAssigned}
                                   onClick={(e) => { e.stopPropagation(); setPendingAssignment(c.id); }}
                                   className={`h-8 text-xs font-semibold ${
-                                    isAssigned ? "border-emerald-300 text-emerald-700 bg-emerald-50 hover:bg-emerald-50 opacity-100 dark:border-emerald-800 dark:text-emerald-400 dark:bg-emerald-950/40" : "bg-violet-600 hover:bg-violet-700 text-white"
+                                    isAssigned ? "border-green/20 text-green-ink bg-green/10 hover:bg-green/10 opacity-100" : "bg-primary hover:bg-primary/90 text-primary-foreground"
                                   }`}
                                 >
-                                  {isAssigned ? <><CheckCircle className="w-3.5 h-3.5 mr-1 text-emerald-600 dark:text-emerald-400" /> Asignado</> : "Asignar"}
+                                  {isAssigned ? <><CheckCircle className="w-3.5 h-3.5 mr-1 text-green-ink" /> Asignado</> : "Asignar"}
                                 </Button>
-                                <span className={`text-[10px] px-2 py-1 rounded-full font-medium ${c.scope === 'GLOBAL' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400'}`}>
+                                <span className={`text-[10px] px-2 py-1 rounded-full font-medium ${c.scope === 'GLOBAL' ? 'bg-amber/10 text-amber-ink' : 'bg-green/10 text-green-ink'}`}>
                                   {c.scope}
                                 </span>
                                 {c.scope === 'GLOBAL' ? (
-                                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-500" onClick={(e) => { e.stopPropagation(); handleUnlinkCollection(c.id); }} title="Desvincular Global">
+                                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red" onClick={(e) => { e.stopPropagation(); handleUnlinkCollection(c.id); }} title="Desvincular Global">
                                     <Unlink className="w-4 h-4" />
                                   </Button>
                                 ) : (
-                                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-500" onClick={(e) => { e.stopPropagation(); handleDeleteCollection(c.id); }} title="Eliminar Colección">
+                                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red" onClick={(e) => { e.stopPropagation(); handleDeleteCollection(c.id); }} title="Eliminar Colección">
                                     <Trash2 className="w-4 h-4" />
                                   </Button>
                                 )}
@@ -537,7 +537,7 @@ export function HolidayPMListView() {
                                           </div>
                                         </div>
                                         {c.scope !== 'GLOBAL' && (
-                                          <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDeleteCollectionItem(item.id)} title="Eliminar fecha">
+                                          <Button size="icon" variant="ghost" className="h-8 w-8 text-red opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDeleteCollectionItem(item.id)} title="Eliminar fecha">
                                             <Trash2 className="w-4 h-4" />
                                           </Button>
                                         )}
@@ -571,7 +571,7 @@ export function HolidayPMListView() {
                 </TabsContent>
               </Tabs>
             ) : (
-              <div className="text-center py-10 text-zinc-500 text-sm">
+              <div className="text-center py-10 text-text-4 text-sm">
                 Seleccione un proyecto para visualizar sus feriados.
               </div>
             )}
@@ -598,7 +598,7 @@ export function HolidayPMListView() {
 
               <div className="space-y-5 flex flex-col">
                 <div className="space-y-2">
-                  <Label className="text-sm font-semibold">Nombre de la Colección <span className="text-red-500">*</span></Label>
+                  <Label className="text-sm font-semibold">Nombre de la Colección <span className="text-red">*</span></Label>
                   <Input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="Ej. Feriados Perú 2026" required />
                 </div>
 
@@ -627,7 +627,7 @@ export function HolidayPMListView() {
 
                 <DialogFooter className="pt-2 mt-auto">
                   <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)} disabled={isSubmitting}>Cancelar</Button>
-                  <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700" disabled={isSubmitting}>
+                  <Button type="submit" className="bg-green hover:bg-green/90" disabled={isSubmitting}>
                     {isSubmitting ? "Guardando..." : "Guardar"}
                   </Button>
                 </DialogFooter>
@@ -661,7 +661,7 @@ export function HolidayPMListView() {
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setIsLinkModalOpen(false)}>Cancelar</Button>
-                <Button type="submit" disabled={!selectedGlobalCollection || selectedGlobalCollection === "empty"} className="bg-violet-600 hover:bg-violet-700 text-white">Enlazar</Button>
+                <Button type="submit" disabled={!selectedGlobalCollection || selectedGlobalCollection === "empty"} className="bg-primary hover:bg-primary/90 text-primary-foreground">Enlazar</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -678,7 +678,7 @@ export function HolidayPMListView() {
             </DialogHeader>
             <DialogFooter className="mt-4">
               <Button variant="outline" onClick={() => setPendingAssignment(null)}>Cancelar</Button>
-              <Button onClick={confirmAssignment} className="bg-violet-600 hover:bg-violet-700 text-white">
+              <Button onClick={confirmAssignment} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 Aceptar y Asignar
               </Button>
             </DialogFooter>
@@ -695,12 +695,12 @@ export function HolidayPMListView() {
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleCreateException} className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-              <div className="space-y-3 bg-muted/50 p-4 rounded-lg border border-zinc-100 flex flex-col items-center">
+              <div className="space-y-3 bg-muted/50 p-4 rounded-lg border border-line flex flex-col items-center">
                 <Label className="text-foreground font-semibold mb-2">Fechas de Excepción</Label>
                 <div className="bg-card rounded-md shadow-sm border p-2">
                   <Calendar mode="multiple" selected={exceptionDates} onSelect={(dates) => setExceptionDates(dates as Date[])} className="rounded-md" />
                 </div>
-                <p className="text-xs text-zinc-500 mt-2 text-center">Has seleccionado {exceptionDates.length} días.</p>
+                <p className="text-xs text-text-4 mt-2 text-center">Has seleccionado {exceptionDates.length} días.</p>
               </div>
               <div className="space-y-5 flex flex-col justify-between">
                 <div className="space-y-4">
@@ -721,7 +721,7 @@ export function HolidayPMListView() {
                 </div>
                 <DialogFooter>
                   <Button type="button" variant="outline" onClick={() => setIsExceptionFormOpen(false)}>Cancelar</Button>
-                  <Button type="submit" className="bg-violet-600 hover:bg-violet-700">Guardar Excepción</Button>
+                  <Button type="submit" className="bg-primary hover:bg-primary/90">Guardar Excepción</Button>
                 </DialogFooter>
               </div>
             </form>
@@ -735,29 +735,29 @@ export function HolidayPMListView() {
               <DialogTitle>Días Personalizados</DialogTitle>
             </DialogHeader>
             <div className="py-4 space-y-4 max-h-[400px] overflow-y-auto pr-2">
-              <div className="flex flex-col gap-2 p-3 bg-blue-50 border border-blue-100 rounded-lg">
-                <span className="text-xs font-semibold text-blue-800">Acciones Rápidas:</span>
+              <div className="flex flex-col gap-2 p-3 bg-primary/10 border border-line rounded-lg">
+                <span className="text-xs font-semibold text-primary">Acciones Rápidas:</span>
                 <HolidayImporter onImport={handleImportMemberHolidays} year={year} />
               </div>
               {exceptionsModalUser && filteredExceptions.filter(h => h.targetId === exceptionsModalUser).length > 0 ? (
                 <div className="flex flex-col gap-2">
                   {filteredExceptions.filter(h => h.targetId === exceptionsModalUser).map(h => (
-                    <div key={h.id} className="flex justify-between items-center p-3 border border-zinc-100 rounded-lg bg-zinc-50/50">
+                    <div key={h.id} className="flex justify-between items-center p-3 border border-line rounded-lg bg-raised">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${h.type === "USER_INCLUDE" ? "bg-violet-100 text-violet-700" : "bg-red-100 text-red-700"}`}>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${h.type === "USER_INCLUDE" ? "bg-primary/10 text-primary" : "bg-red/10 text-red-ink"}`}>
                             {h.type === "USER_INCLUDE" ? "DÍA LIBRE" : "DÍA LABORABLE"}
                           </span>
                           <span className="text-xs font-medium text-muted-foreground">{h.date}</span>
                         </div>
                         <p className="text-xs text-muted-foreground">{h.name}</p>
                       </div>
-                      <Button size="sm" variant="ghost" onClick={() => handleDeleteException(h.id)}><X className="w-4 h-4 text-red-500" /></Button>
+                      <Button size="sm" variant="ghost" onClick={() => handleDeleteException(h.id)}><X className="w-4 h-4 text-red" /></Button>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-zinc-500 text-center py-4">No hay días personalizados.</p>
+                <p className="text-sm text-text-4 text-center py-4">No hay días personalizados.</p>
               )}
             </div>
           </DialogContent>

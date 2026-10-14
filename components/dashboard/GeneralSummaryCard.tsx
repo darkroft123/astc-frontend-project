@@ -48,7 +48,7 @@ export function GeneralSummaryCard({
             <h3 className="font-bold text-lg text-foreground">Resumen General</h3>
             <p className="text-xs text-muted-foreground mt-0.5">Estado actual de asistencia del proyecto</p>
           </div>
-          <p className="text-violet-600 dark:text-violet-400 font-semibold text-xs bg-violet-50 dark:bg-violet-950/40 px-2.5 py-1 rounded-full border border-violet-100 dark:border-violet-800">
+          <p className="text-primary font-semibold text-xs bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
             {selectedProject?.name || "Todos"}
           </p>
         </div>
@@ -69,7 +69,7 @@ export function GeneralSummaryCard({
                         cy="50"
                         r={R}
                         fill="none"
-                        stroke="#10b981"
+                        stroke="var(--green)"
                         strokeWidth="12"
                         strokeDasharray={`${attLen} ${C}`}
                         strokeDashoffset="0"
@@ -83,7 +83,7 @@ export function GeneralSummaryCard({
                         cy="50"
                         r={R}
                         fill="none"
-                        stroke="#f43f5e"
+                        stroke="var(--red)"
                         strokeWidth="12"
                         strokeDasharray={`${absLen} ${C}`}
                         strokeDashoffset={-attLen}
@@ -97,7 +97,7 @@ export function GeneralSummaryCard({
                         cy="50"
                         r={R}
                         fill="none"
-                        stroke="#f59e0b"
+                        stroke="var(--amber)"
                         strokeWidth="12"
                         strokeDasharray={`${pendLen} ${C}`}
                         strokeDashoffset={-(attLen + absLen)}

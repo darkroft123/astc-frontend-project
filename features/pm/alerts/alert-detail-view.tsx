@@ -217,8 +217,8 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
     return (
       <div className="min-h-screen bg-muted/50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-          <p className="text-zinc-600 text-sm">Cargando detalle de la alerta...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-text-2 text-sm">Cargando detalle de la alerta...</p>
         </div>
       </div>
     );
@@ -228,7 +228,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
     return (
       <div className="min-h-screen bg-muted/50 flex items-center justify-center">
         <div className="text-center max-w-md p-6 bg-card rounded-2xl border border-border shadow-sm">
-          <AlertTriangle className="mx-auto h-12 w-12 text-amber-500" />
+          <AlertTriangle className="mx-auto h-12 w-12 text-amber-ink" />
           <h2 className="mt-4 text-lg font-semibold text-foreground">No se pudo cargar la alerta</h2>
           <p className="mt-1 text-sm text-muted-foreground">{error || "La alerta no existe o no tienes acceso"}</p>
           <Button onClick={() => router.back()} className="mt-4" size="sm">
@@ -240,12 +240,12 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-12">
+    <div className="min-h-screen bg-raised pb-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         {/* Toast */}
         {message && (
           <div className={`fixed top-4 right-4 z-50 px-5 py-2.5 rounded-xl shadow-lg flex items-center gap-2.5 text-sm font-medium
-            ${message.type === "success" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>
+            ${message.type === "success" ? "bg-green text-white" : "bg-destructive text-white"}`}>
             {message.type === "success" ? <CheckCircle className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
             {message.text}
           </div>
@@ -254,18 +254,18 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
         {/* Header */}
         <div className="flex items-center justify-between">
           <Link href="/pm/alertas">
-            <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-slate-600 hover:text-slate-900">
+            <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-text-2 hover:text-foreground">
               <ArrowLeft className="h-4 w-4" />
               Volver a Alertas
             </Button>
           </Link>
-          <span className="text-xs text-slate-500 font-mono">ID: {alert.id.slice(0, 8)}...</span>
+          <span className="text-xs text-text-4 font-mono">ID: {alert.id.slice(0, 8)}...</span>
         </div>
 
         {/* Banner de Alerta */}
-        <Card className="border-amber-200 bg-amber-50/70 p-5 rounded-2xl shadow-sm">
+        <Card className="border-amber/20 bg-amber/10 p-5 rounded-2xl shadow-sm">
           <div className="flex items-start gap-4">
-            <div className="rounded-xl bg-amber-100 p-3 text-amber-700 shrink-0">
+            <div className="rounded-xl bg-amber/10 p-3 text-amber-ink shrink-0">
               <AlertTriangle className="h-6 w-6" />
             </div>
             <div className="flex-1">
@@ -274,12 +274,12 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
                   {formatAlertType(alert.type)}
                 </h2>
                 <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${
-                  alert.status === "PENDING" ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"
+                  alert.status === "PENDING" ? "bg-amber/10 text-amber-ink" : "bg-green/10 text-green-ink"
                 }`}>
                   {alert.status === "PENDING" ? "Pendiente" : alert.status === "APPROVED" ? "Aprobado" : alert.status === "CANCELLED" ? "Cancelado" : "Revisado"}
                 </span>
               </div>
-              <p className="text-sm text-zinc-700 mt-1 leading-relaxed">
+              <p className="text-sm text-text-2 mt-1 leading-relaxed">
                 {formatAlertMessage(alert.message, alert.type)}
               </p>
             </div>
@@ -288,49 +288,49 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
 
         {/* Grid de Información */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <Card className="border border-slate-200 bg-card rounded-2xl p-5 shadow-sm space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 border-b pb-2">
+          <Card className="border border-line bg-card rounded-2xl p-5 shadow-sm space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-4 border-b pb-2">
               Información de la Alerta
             </h3>
             
             <div className="space-y-3.5 text-sm">
               <div className="flex items-center gap-3">
-                <Briefcase className="h-4 w-4 text-indigo-500 shrink-0" />
+                <Briefcase className="h-4 w-4 text-primary shrink-0" />
                 <div>
-                  <p className="text-[11px] text-slate-500 font-medium">PROYECTO</p>
-                  <p className="font-semibold text-slate-900">{projectName || alert.projectId || "-"}</p>
+                  <p className="text-[11px] text-text-4 font-medium">PROYECTO</p>
+                  <p className="font-semibold text-foreground">{projectName || alert.projectId || "-"}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <User className="h-4 w-4 text-blue-500 shrink-0" />
+                <User className="h-4 w-4 text-primary shrink-0" />
                 <div>
-                  <p className="text-[11px] text-slate-500 font-medium">USUARIO</p>
-                  <p className="font-semibold text-slate-900">{userName || formatUserName(alert.userId)}</p>
+                  <p className="text-[11px] text-text-4 font-medium">USUARIO</p>
+                  <p className="font-semibold text-foreground">{userName || formatUserName(alert.userId)}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <Clock className="h-4 w-4 text-slate-500 shrink-0" />
+                <Clock className="h-4 w-4 text-text-4 shrink-0" />
                 <div>
-                  <p className="text-[11px] text-slate-500 font-medium">FECHA Y HORA</p>
-                  <p className="font-semibold text-slate-900">{formatDateTime(alert.createdAt)}</p>
+                  <p className="text-[11px] text-text-4 font-medium">FECHA Y HORA</p>
+                  <p className="font-semibold text-foreground">{formatDateTime(alert.createdAt)}</p>
                 </div>
               </div>
             </div>
           </Card>
 
-          <Card className="border border-slate-200 bg-card rounded-2xl p-5 shadow-sm space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 border-b pb-2">
+          <Card className="border border-line bg-card rounded-2xl p-5 shadow-sm space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-4 border-b pb-2">
               Ubicación del Registro
             </h3>
 
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-3">
-                <MapPin className="h-4 w-4 text-red-500 shrink-0" />
+                <MapPin className="h-4 w-4 text-red-ink shrink-0" />
                 <div>
-                  <p className="text-[11px] text-slate-500 font-medium">DISTRITO / ZONA</p>
-                  <p className="font-semibold text-slate-900">{district || "Cargando ubicación..."}</p>
+                  <p className="text-[11px] text-text-4 font-medium">DISTRITO / ZONA</p>
+                  <p className="font-semibold text-foreground">{district || "Cargando ubicación..."}</p>
                 </div>
               </div>
 
@@ -340,7 +340,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
                     href={`https://www.google.com/maps?q=${alert.latitude},${alert.longitude}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-medium transition-colors border border-blue-200"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/15 text-xs font-medium transition-colors border border-line"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span>Ver en Google Maps ({alert.latitude.toFixed(4)}, {alert.longitude.toFixed(4)})</span>
@@ -357,7 +357,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
             onClick={() => processAlert("cancel")}
             variant="outline"
             size="sm"
-            className="px-5 border-red-200 hover:bg-red-50 text-red-600 hover:text-red-700 text-xs font-medium"
+            className="px-5 border-red/20 hover:bg-red/10 text-red-ink hover:text-red-ink text-xs font-medium"
             disabled={isProcessing}
           >
             <XCircle className="mr-1.5 h-4 w-4" />
@@ -367,7 +367,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
           <Button
             onClick={() => processAlert("approve")}
             size="sm"
-            className="px-6 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium"
+            className="px-6 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium"
             disabled={isProcessing}
           >
             <CheckCircle className="mr-1.5 h-4 w-4" />

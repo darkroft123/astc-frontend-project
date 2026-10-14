@@ -6,9 +6,9 @@ interface LegendItemProps {
 
 export function LegendItem({ color, label, value }: LegendItemProps) {
   const colorMap: Record<string, string> = {
-    emerald: "bg-emerald-500",
-    rose: "bg-rose-500",
-    amber: "bg-amber-500",
+    emerald: "bg-green",
+    rose: "bg-red",
+    amber: "bg-amber",
   };
 
   return (

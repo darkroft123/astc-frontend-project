@@ -52,28 +52,30 @@ export default function PageHeader({
   const showDateRange = dateRange && dateRange.fromDate && dateRange.toDate;
 
   return (
-    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-border pb-4 mb-6 gap-3">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-line pb-4 mb-6 gap-3">
       <div className="min-w-0 flex-1">
         {categoryTag && (
           <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <span className="font-mono text-[10.5px] leading-[15.8px] font-light uppercase tracking-[0.15em] text-[#38bdf8]">
+            <span className="font-mono text-[10.5px] leading-[15.8px] font-medium uppercase tracking-[0.05em] text-primary">
               {categoryTag.badge}
             </span>
-            <span className="font-sans text-[16px] leading-[24px] font-light text-slate-400">
+            <span className="font-sans text-[15px] leading-[22.5px] font-normal text-text-4">
               • {categoryTag.text}
             </span>
           </div>
         )}
 
-        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-tight">{title}</h1>
+        <h1 className="text-[26px] font-semibold text-foreground tracking-tight leading-tight">
+          {title}
+        </h1>
 
         {description && (
-          <p className="text-xs sm:text-sm text-slate-400 mt-1 leading-normal">{description}</p>
+          <p className="text-[13.5px] text-text-4 mt-1 leading-normal">{description}</p>
         )}
 
         {showDateRange && (
-          <span className="inline-flex items-center gap-1.5 text-xs font-mono text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-950/40 px-2 py-0.5 rounded-md border border-blue-200/60 dark:border-blue-800/60 mt-1.5">
-            <CalendarIcon className="w-3 h-3 shrink-0" />
+          <span className="inline-flex items-center gap-1.5 text-[13px] font-mono text-primary bg-primary/10 px-2 py-0.5 rounded-[7px] border border-primary/20 mt-1.5">
+            <CalendarIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
             {formatDateDisplay(dateRange.fromDate)} → {formatDateDisplay(dateRange.toDate)}
           </span>
         )}

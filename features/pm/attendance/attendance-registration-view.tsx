@@ -198,7 +198,7 @@ export function AttendanceRegistrationView() {
   }, [dateRange, token]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-50 via-white to-zinc-100 pb-8">
+    <div className="min-h-screen bg-raised pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
 
         {/* HEADER COMPACTO */}
@@ -212,7 +212,7 @@ export function AttendanceRegistrationView() {
             </Link>
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-foreground">Registro de Asistencias</h1>
-              <p className="text-zinc-600">{dateRange.label}</p>
+              <p className="text-text-2">{dateRange.label}</p>
             </div>
           </div>
 
@@ -230,7 +230,7 @@ export function AttendanceRegistrationView() {
           <CardContent className="p-5">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
               <h2 className="text-lg font-semibold">Equipo - Registro Diario</h2>
-              <Button className="gap-2 bg-teal-600 hover:bg-teal-700 w-full sm:w-auto" size="sm">
+              <Button className="gap-2 bg-cyan hover:bg-cyan/90 w-full sm:w-auto" size="sm">
                 <Plus className="h-4 w-4" />
                 Registro Masivo
               </Button>
@@ -239,7 +239,7 @@ export function AttendanceRegistrationView() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-full text-sm">
                 <thead>
-                  <tr className="border-b text-zinc-600 text-xs uppercase tracking-wider">
+                  <tr className="border-b text-text-2 text-xs uppercase tracking-wider">
                     <th className="py-3 px-4 text-left font-medium">Colaborador</th>
                     <th className="py-3 px-4 text-left font-medium">Tipo de Horario</th>
                     <th className="py-3 px-4 text-left font-medium">Estado</th>
@@ -252,7 +252,7 @@ export function AttendanceRegistrationView() {
                   {isLoading ? (
                     <tr>
                       <td colSpan={6} className="py-16 text-center">
-                        <Loader2 className="h-6 w-6 animate-spin mx-auto text-teal-600" />
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto text-cyan" />
                       </td>
                     </tr>
                   ) : members.length === 0 ? (
@@ -268,10 +268,10 @@ export function AttendanceRegistrationView() {
                         <td className="py-4 px-4">
                           {member.shiftType ? (
                             <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
-                              member.shiftType.startsWith("ROTATING") ? "bg-violet-50 text-violet-700 border-violet-200" :
-                              member.shiftType === "FLEXIBLE" ? "bg-amber-50 text-amber-700 border-amber-200" :
-                              member.shiftType === "TRANSITORY" ? "bg-sky-50 text-sky-700 border-sky-200" :
-                              "bg-blue-50 text-blue-700 border-blue-200"
+                              member.shiftType.startsWith("ROTATING") ? "bg-primary/10 text-primary border-primary/20" :
+                              member.shiftType === "FLEXIBLE" ? "bg-amber/10 text-amber-ink border-amber/20" :
+                              member.shiftType === "TRANSITORY" ? "bg-cyan/10 text-cyan border-cyan/20" :
+                              "bg-primary/10 text-primary border-primary/20"
                             }`}>
                               {SHIFT_LABELS[member.shiftType] || member.shiftType}
                             </span>
@@ -279,7 +279,7 @@ export function AttendanceRegistrationView() {
                             <span className="text-xs text-muted-foreground">—</span>
                           )}
                           {member.workStartTime && member.workEndTime && (
-                            <span className="block text-[10px] text-zinc-400 mt-0.5">
+                            <span className="block text-[10px] text-text-4 mt-0.5">
                               {member.workStartTime} - {member.workEndTime}
                             </span>
                           )}
@@ -290,12 +290,12 @@ export function AttendanceRegistrationView() {
                         <td className="py-4 px-4 font-mono text-muted-foreground">
                           {member.checkIn || "—"}
                         </td>
-                        <td className="py-4 px-4 text-zinc-600 text-sm">
+                        <td className="py-4 px-4 text-text-2 text-sm">
                           {member.location || "—"}
                         </td>
                         <td className="py-4 px-4 text-center">
                           {member.checkIn ? (
-                            <Badge variant="outline" className="text-emerald-600 text-xs">
+                            <Badge variant="outline" className="text-green-ink text-xs">
                               ? Registrado
                             </Badge>
                           ) : (
@@ -303,7 +303,7 @@ export function AttendanceRegistrationView() {
                               size="sm"
                               onClick={() => registerAttendance(member.userId)}
                               disabled={registeringId === member.userId}
-                              className="bg-teal-600 hover:bg-teal-700 text-xs px-5"
+                              className="bg-cyan hover:bg-cyan/90 text-xs px-5"
                             >
                               {registeringId === member.userId ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />

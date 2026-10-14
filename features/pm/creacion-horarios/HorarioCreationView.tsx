@@ -54,11 +54,11 @@ const ICON_BY_SHIFT: Record<string, typeof Clock> = {
 };
 
 const SHIFT_LABELS: Record<string, { label: string; icon: any; color: string }> = {
-  REGULAR: { label: "Regular", icon: Clock, color: "text-emerald-600 bg-emerald-50 border-emerald-200" },
-  ROTATING_4X4: { label: "Rotativo 4x4", icon: Repeat, color: "text-blue-600 bg-blue-50 border-blue-200" },
-  ROTATING_7X7: { label: "Rotativo 7x7", icon: Repeat, color: "text-blue-600 bg-blue-50 border-blue-200" },
-  FLEXIBLE: { label: "Flexible", icon: CalendarDays, color: "text-violet-600 bg-violet-50 border-violet-200" },
-  TRANSITORY: { label: "Transitorio", icon: CalendarRange, color: "text-amber-600 bg-amber-50 border-amber-200" },
+  REGULAR: { label: "Regular", icon: Clock, color: "text-green-ink bg-green/10 border-green/20" },
+  ROTATING_4X4: { label: "Rotativo 4x4", icon: Repeat, color: "text-primary bg-primary/10 border-primary/20" },
+  ROTATING_7X7: { label: "Rotativo 7x7", icon: Repeat, color: "text-primary bg-primary/10 border-primary/20" },
+  FLEXIBLE: { label: "Flexible", icon: CalendarDays, color: "text-primary bg-primary/10 border-primary/20" },
+  TRANSITORY: { label: "Transitorio", icon: CalendarRange, color: "text-amber-ink bg-amber/10 border-amber/20" },
 };
 
 const DAYS_ORDER = [
@@ -275,10 +275,10 @@ export function HorarioCreationView() {
       <div className="min-h-screen bg-muted/50 flex items-center justify-center px-4 py-8">
         <Card className="w-full max-w-lg text-center">
           <CardContent className="pt-8 pb-8">
-            <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Clock className="w-7 h-7 text-emerald-600" />
+            <div className="w-14 h-14 bg-green/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Clock className="w-7 h-7 text-green-ink" />
             </div>
-            <h2 className="text-lg font-bold text-zinc-900 mb-4">Horario creado exitosamente</h2>
+            <h2 className="text-lg font-bold text-foreground mb-4">Horario creado exitosamente</h2>
             <div className="bg-background rounded-xl p-4 mb-6">
               <p className="text-sm text-muted-foreground">{success}</p>
             </div>
@@ -300,7 +300,7 @@ export function HorarioCreationView() {
       <Dialog open={!!error} onOpenChange={() => setError(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-red-600">Error</DialogTitle>
+            <DialogTitle className="text-red-ink">Error</DialogTitle>
             <DialogDescription>{error}</DialogDescription>
           </DialogHeader>
           <Button onClick={() => setError(null)} variant="destructive">Entendido</Button>
@@ -311,11 +311,11 @@ export function HorarioCreationView() {
       <Dialog open={showOverrideWarning} onOpenChange={setShowOverrideWarning}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-amber-600 flex items-center gap-2">
+            <DialogTitle className="text-amber-ink flex items-center gap-2">
               <Info className="w-5 h-5" />
               Horarios Personalizados Detectados
             </DialogTitle>
-            <DialogDescription className="text-zinc-600 pt-2 text-base">
+            <DialogDescription className="text-text-2 pt-2 text-base">
               Hay <strong>{overrideCount} usuario{overrideCount !== 1 ? 's' : ''}</strong> en este proyecto que ya cuenta{overrideCount !== 1 ? 'n' : ''} con un horario personalizado asignado directamente.
               <br /><br />
               El nuevo horario base del proyecto se creará, pero <strong>no afectará a estos usuarios</strong>, ya que sus horarios personalizados tienen prioridad.
@@ -325,7 +325,7 @@ export function HorarioCreationView() {
             <Button onClick={() => setShowOverrideWarning(false)} variant="outline">
               Cancelar
             </Button>
-            <Button onClick={() => submitShiftTemplate(pendingInput)} className="bg-amber-600 hover:bg-amber-700 text-white">
+            <Button onClick={() => submitShiftTemplate(pendingInput)} className="bg-amber hover:bg-amber/90 text-white">
               Entendido, Guardar Horario
             </Button>
           </div>
@@ -347,7 +347,7 @@ export function HorarioCreationView() {
           <div className="space-y-6">
             {/* PROJECT SELECTION */}
             <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100">
+              <CardHeader className="pb-3 bg-raised border-b border-line">
                 <CardTitle className="text-sm">1. Proyecto</CardTitle>
                 <CardDescription className="text-xs">Selecciona el proyecto al que aplicarás el horario</CardDescription>
               </CardHeader>
@@ -367,7 +367,7 @@ export function HorarioCreationView() {
 
             {/* NAME FIELD */}
             <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100">
+              <CardHeader className="pb-3 bg-raised border-b border-line">
                 <CardTitle className="text-sm">2. Nombre del Horario</CardTitle>
                 <CardDescription className="text-xs">Asigna un nombre para identificar este turno (ej: Mañana, Tarde, Noche, Equipo A)</CardDescription>
               </CardHeader>
@@ -383,7 +383,7 @@ export function HorarioCreationView() {
 
             {/* SHIFT TYPE SELECTOR */}
             <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100">
+              <CardHeader className="pb-3 bg-raised border-b border-line">
                 <CardTitle className="text-sm">3. Tipo de Turno</CardTitle>
                 <CardDescription className="text-xs">Elige la modalidad de horario</CardDescription>
               </CardHeader>
@@ -400,9 +400,9 @@ export function HorarioCreationView() {
                         className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 text-xs font-medium transition-all
                           ${isActive
                             ? "bg-primary/10 text-primary border-primary shadow-sm"
-                            : "border-zinc-100 bg-card text-zinc-500 hover:border-border hover:bg-background"}`}
+                            : "border-line bg-card text-text-4 hover:border-border hover:bg-background"}`}
                       >
-                        <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-zinc-400"}`} />
+                        <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-text-4"}`} />
                         <span className="text-center leading-tight font-semibold">{t.label}</span>
                       </button>
                     );
@@ -417,7 +417,7 @@ export function HorarioCreationView() {
             {/* SPECIFIC CONFIGURATION */}
             {(shiftType === "REGULAR" || shiftType === "TRANSITORY") && (
               <Card className="border-border shadow-sm">
-                <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100">
+                <CardHeader className="pb-3 bg-raised border-b border-line">
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-sm flex items-center gap-2">
@@ -429,8 +429,8 @@ export function HorarioCreationView() {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-4 space-y-4">
-                  <div className="flex gap-3 bg-blue-50/50 text-blue-800 p-3 rounded-lg border border-blue-100 text-xs">
-                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-600" />
+                  <div className="flex gap-3 bg-primary/10 text-primary p-3 rounded-lg border border-line text-xs">
+                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-primary" />
                     <p>
                       {shiftType === "REGULAR"
                         ? "Horario de oficina: los empleados trabajan de Lunes a Viernes con la misma hora de entrada y salida. Sábados y Domingos son descanso automático (no se genera falta por no marcar). Ideal para personal administrativo."
@@ -438,16 +438,16 @@ export function HorarioCreationView() {
                     </p>
                   </div>
                   {(shiftType === "REGULAR" || shiftType === "TRANSITORY") && (
-                    <div className="flex gap-2 bg-muted/50 p-2 rounded-lg border border-zinc-100">
-                      <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-white" onClick={() => { setStartHour("08:00"); setEndHour("17:00"); }}>Día</Button>
-                      <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-white" onClick={() => { setStartHour("14:00"); setEndHour("22:00"); }}>Tarde</Button>
-                      <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-white" onClick={() => { setStartHour("22:00"); setEndHour("06:00"); }}>
-                        Noche <span className="text-[9px] text-zinc-400 ml-1">22:00–06:00</span>
+                    <div className="flex gap-2 bg-muted/50 p-2 rounded-lg border border-line">
+                      <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-card" onClick={() => { setStartHour("08:00"); setEndHour("17:00"); }}>Día</Button>
+                      <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-card" onClick={() => { setStartHour("14:00"); setEndHour("22:00"); }}>Tarde</Button>
+                      <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-card" onClick={() => { setStartHour("22:00"); setEndHour("06:00"); }}>
+                        Noche <span className="text-[9px] text-text-4 ml-1">22:00–06:00</span>
                       </Button>
                     </div>
                   )}
                   {(shiftType === "REGULAR" || shiftType === "TRANSITORY") && startHour === "22:00" && endHour === "06:00" && (
-                    <div className="flex gap-2 bg-amber-50/50 text-amber-700 p-2 rounded-lg border border-amber-200 text-[10px]">
+                    <div className="flex gap-2 bg-amber/10 text-amber-ink p-2 rounded-lg border border-amber/20 text-[10px]">
                       <Info className="w-3 h-3 shrink-0 mt-0.5" />
                       <p>Turno nocturno: la jornada cruza la medianoche. El sistema evaluará la asistencia entre las 22:00 y las 06:00 del día siguiente. Las faltas automáticas solo se generan si la hora actual está dentro de la ventana del turno.</p>
                     </div>
@@ -463,7 +463,7 @@ export function HorarioCreationView() {
                     </div>
                   </div>
                   {shiftType === "TRANSITORY" && (
-                    <div className="grid grid-cols-2 gap-4 pt-2 border-t border-zinc-100">
+                    <div className="grid grid-cols-2 gap-4 pt-2 border-t border-line">
                       <div className="space-y-1.5">
                         <Label className="text-xs text-muted-foreground">Válido desde</Label>
                         <Input type="date" value={validFrom} onChange={(e) => setValidFrom(e.target.value)} />
@@ -480,7 +480,7 @@ export function HorarioCreationView() {
 
             {shiftType === "FLEXIBLE" && (
               <Card className="border-border shadow-sm">
-                <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100">
+                <CardHeader className="pb-3 bg-raised border-b border-line">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <CalendarDays className="w-4 h-4 text-muted-foreground" />
                     4. Horario Flexible
@@ -488,8 +488,8 @@ export function HorarioCreationView() {
                   <CardDescription className="text-xs mt-1">Configura horas distintas por día</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-4 space-y-3">
-                  <div className="flex gap-3 bg-blue-50/50 text-blue-800 p-3 rounded-lg border border-blue-100 text-xs mb-4">
-                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-600" />
+                  <div className="flex gap-3 bg-primary/10 text-primary p-3 rounded-lg border border-line text-xs mb-4">
+                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-primary" />
                     <p>
                       El sistema evaluará la asistencia del equipo de forma distinta según el día de la semana. Los días en los que dejes las horas vacías, el sistema entenderá que el proyecto está inactivo ese día y <strong>no generará faltas automáticas para nadie</strong>.
                     </p>
@@ -504,14 +504,14 @@ export function HorarioCreationView() {
                       </div>
                     );
                   })}
-                  <p className="text-[10px] text-zinc-400 mt-2 text-center bg-muted/50 py-1 rounded">Deja vacío si es día libre</p>
+                  <p className="text-[10px] text-text-4 mt-2 text-center bg-muted/50 py-1 rounded">Deja vacío si es día libre</p>
                 </CardContent>
               </Card>
             )}
 
             {shiftType.startsWith("ROTATING") && (
               <Card className="border-border shadow-sm">
-                <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100">
+                <CardHeader className="pb-3 bg-raised border-b border-line">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <Repeat className="w-4 h-4 text-muted-foreground" />
                     4. Turno Rotativo
@@ -519,13 +519,13 @@ export function HorarioCreationView() {
                   <CardDescription className="text-xs mt-1">Ciclos de trabajo y descanso</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-4 space-y-4">
-                  <div className="flex gap-3 bg-blue-50/50 text-blue-800 p-3 rounded-lg border border-blue-100 text-xs">
-                    <Info className="w-5 h-5 shrink-0 mt-0.5 text-blue-600" />
+                  <div className="flex gap-3 bg-primary/10 text-primary p-3 rounded-lg border border-line text-xs">
+                    <Info className="w-5 h-5 shrink-0 mt-0.5 text-primary" />
                     <div className="space-y-2">
                       <p>
                         El sistema calculará un ciclo continuo a partir de la Fecha de inicio. Exigirá asistencia por <strong>{rotationWorkDays} días</strong> consecutivos y luego apagará todas las alertas de falta automática por <strong>{rotationRestDays} días</strong>. Ideal para régimen minero u obras alejadas.
                       </p>
-                      <div className="bg-card/50 p-2 rounded border border-blue-200/50">
+                      <div className="bg-card/50 p-2 rounded border border-line">
                         <span className="font-semibold block mb-1">¿Cómo lo calcula el sistema?</span>
                         <ul className="list-disc pl-4 space-y-1">
                           <li>Suma el total de días del ciclo ({rotationWorkDays} + {rotationRestDays} = {rotationWorkDays + rotationRestDays} días).</li>
@@ -546,9 +546,9 @@ export function HorarioCreationView() {
                     </div>
                   </div>
 
-                  <div className="bg-card border border-blue-100 rounded-lg overflow-hidden">
-                    <div className="bg-blue-50/50 px-3 py-2 border-b border-blue-100">
-                      <p className="text-xs font-semibold text-blue-800">Vista del ciclo</p>
+                  <div className="bg-card border border-line rounded-lg overflow-hidden">
+                    <div className="bg-primary/10 px-3 py-2 border-b border-line">
+                      <p className="text-xs font-semibold text-primary">Vista del ciclo</p>
                     </div>
                     <div className="p-3">
                       <div className="flex gap-0.5 justify-center flex-wrap">
@@ -557,8 +557,8 @@ export function HorarioCreationView() {
                             key={i}
                             className={`w-7 h-7 rounded flex items-center justify-center text-[9px] font-bold ${
                               i < rotationWorkDays
-                                ? "bg-emerald-500 text-white"
-                                : "bg-zinc-200 text-muted-foreground"
+                                ? "bg-green text-white"
+                                : "bg-inset text-muted-foreground"
                             }`}
                             title={i < rotationWorkDays ? `Día de trabajo ${i + 1}` : `Día de descanso ${i + 1 - rotationWorkDays}`}
                           >
@@ -567,21 +567,21 @@ export function HorarioCreationView() {
                         ))}
                       </div>
                       <div className="flex items-center justify-center gap-4 mt-2 text-[10px]">
-                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-emerald-500 inline-block" /> Trabajo ({rotationWorkDays}d)</span>
-                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-zinc-200 inline-block" /> Descanso ({rotationRestDays}d)</span>
+                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-green inline-block" /> Trabajo ({rotationWorkDays}d)</span>
+                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-inset inline-block" /> Descanso ({rotationRestDays}d)</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex gap-2 bg-muted/50 p-2 rounded-lg border border-zinc-100">
-                    <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-white" onClick={() => { setRotationStartHour("08:00"); setRotationEndHour("20:00"); }}>Día</Button>
-                    <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-white" onClick={() => { setRotationStartHour("14:00"); setRotationEndHour("22:00"); }}>Tarde</Button>
-                    <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-white" onClick={() => { setRotationStartHour("22:00"); setRotationEndHour("06:00"); }}>
-                      Noche <span className="text-[9px] text-zinc-400 ml-1">22:00–06:00</span>
+                  <div className="flex gap-2 bg-muted/50 p-2 rounded-lg border border-line">
+                    <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-card" onClick={() => { setRotationStartHour("08:00"); setRotationEndHour("20:00"); }}>Día</Button>
+                    <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-card" onClick={() => { setRotationStartHour("14:00"); setRotationEndHour("22:00"); }}>Tarde</Button>
+                    <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-card" onClick={() => { setRotationStartHour("22:00"); setRotationEndHour("06:00"); }}>
+                      Noche <span className="text-[9px] text-text-4 ml-1">22:00–06:00</span>
                     </Button>
                   </div>
                   {rotationStartHour === "22:00" && rotationEndHour === "06:00" && (
-                    <div className="flex gap-2 bg-amber-50/50 text-amber-700 p-2 rounded-lg border border-amber-200 text-[10px]">
+                    <div className="flex gap-2 bg-amber/10 text-amber-ink p-2 rounded-lg border border-amber/20 text-[10px]">
                       <Info className="w-3 h-3 shrink-0 mt-0.5" />
                       <p>Turno nocturno: la jornada cruza la medianoche. El sistema evaluará la asistencia entre las 22:00 y las 06:00 del día siguiente.</p>
                     </div>
@@ -596,8 +596,8 @@ export function HorarioCreationView() {
                       <Input type="time" value={rotationEndHour} onChange={(e) => setRotationEndHour(e.target.value)} />
                     </div>
                   </div>
-                  <div className="space-y-1.5 pt-2 border-t border-zinc-100">
-                    <Label className="text-xs text-muted-foreground">Fecha de inicio del ciclo <span className="text-red-500">*</span></Label>
+                  <div className="space-y-1.5 pt-2 border-t border-line">
+                    <Label className="text-xs text-muted-foreground">Fecha de inicio del ciclo <span className="text-red">*</span></Label>
                     <Input type="date" value={validFrom} onChange={(e) => setValidFrom(e.target.value)} required />
                     <p className="text-[10px] text-muted-foreground">El sistema empezará a contar el ciclo desde esta fecha. Es obligatoria para calcular correctamente los días de trabajo y descanso.</p>
                   </div>
@@ -607,7 +607,7 @@ export function HorarioCreationView() {
 
             {/* CONFIGURACIÓN GENERAL */}
             <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-zinc-50/50 border-b border-zinc-100">
+              <CardHeader className="pb-3 bg-raised border-b border-line">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <Settings className="w-4 h-4 text-muted-foreground" />
                   5. Reglas Generales

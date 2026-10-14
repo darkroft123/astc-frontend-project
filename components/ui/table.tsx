@@ -7,7 +7,7 @@ function Table({ className, ...props }: React.ComponentProps<'table'>) {
   return (
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto rounded-2xl border border-border bg-card shadow-sm"
+      className="relative w-full overflow-x-auto rounded-[14px] border border-line bg-card shadow-sm"
     >
       <table
         data-slot="table"
@@ -22,7 +22,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<'thead'>) {
   return (
     <thead
       data-slot="table-header"
-      className={cn('bg-gradient-to-r from-[#1E3A8A] to-[#1E40AF] text-white [&_tr]:border-b border-blue-900/40', className)}
+      className={cn('bg-inset [&_tr]:border-b border-line', className)}
       {...props}
     />
   )
@@ -32,7 +32,7 @@ function TableBody({ className, ...props }: React.ComponentProps<'tbody'>) {
   return (
     <tbody
       data-slot="table-body"
-      className={cn('[&_tr:last-child]:border-0 divide-y divide-border/60', className)}
+      className={cn('[&_tr:last-child]:border-0 divide-y divide-line', className)}
       {...props}
     />
   )
@@ -43,7 +43,7 @@ function TableFooter({ className, ...props }: React.ComponentProps<'tfoot'>) {
     <tfoot
       data-slot="table-footer"
       className={cn(
-        'bg-muted/50 border-t font-medium [&>tr]:last:border-b-0',
+        'bg-inset border-t border-line font-medium [&>tr]:last:border-b-0',
         className,
       )}
       {...props}
@@ -56,7 +56,7 @@ function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
     <tr
       data-slot="table-row"
       className={cn(
-        'hover:bg-blue-50/50 dark:hover:bg-blue-950/20 data-[state=selected]:bg-muted border-b transition-colors',
+        'hover:bg-raised data-[state=selected]:bg-muted border-b border-line transition-colors',
         className,
       )}
       {...props}
@@ -69,7 +69,7 @@ function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
     <th
       data-slot="table-head"
       className={cn(
-        'text-white h-11 px-4 text-left align-middle font-extrabold text-xs uppercase tracking-widest whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
+        'text-text-3 h-11 px-4 text-left align-middle font-mono font-medium text-[10.5px] uppercase tracking-[0.05em] whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
         className,
       )}
       {...props}
@@ -97,7 +97,7 @@ function TableCaption({
   return (
     <caption
       data-slot="table-caption"
-      className={cn('text-muted-foreground mt-4 text-sm', className)}
+      className={cn('text-text-4 mt-4 text-sm', className)}
       {...props}
     />
   )

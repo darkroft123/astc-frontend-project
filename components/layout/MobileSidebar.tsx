@@ -64,7 +64,7 @@ export function MobileSidebar({
       {/* Panel */}
       <div
         className={cn(
-          "fixed top-0 right-0 z-[70] h-full w-80 bg-[#10121d] border-l border-white/[0.06] shadow-2xl transition-transform duration-300 ease-in-out md:hidden flex flex-col p-4",
+          "fixed top-0 right-0 z-[70] h-full w-80 bg-sidebar border-l border-line shadow-2xl transition-transform duration-300 ease-in-out md:hidden flex flex-col p-4",
           open ? "translate-x-0" : "translate-x-full",
           className
         )}
@@ -73,7 +73,7 @@ export function MobileSidebar({
         <div className="flex justify-end pb-2">
           <button
             onClick={() => setOpen(false)}
-            className="p-2 rounded-xl hover:bg-white/[0.06] text-slate-400 hover:text-white transition-colors"
+            className="p-2 rounded-[11px] hover:bg-raised text-text-3 hover:text-foreground transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -93,7 +93,7 @@ export function HamburgerButton() {
   return (
     <button
       onClick={() => setOpen(true)}
-      className="md:hidden p-2 rounded-xl bg-white/[0.04] border border-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors"
+      className="md:hidden p-2 rounded-[11px] bg-raised border border-line text-text-2 hover:text-foreground hover:bg-inset transition-colors"
       aria-label="Abrir menú"
     >
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

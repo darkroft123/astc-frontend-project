@@ -256,19 +256,19 @@ export function AttendanceManagementView() {
         return photoSrc ? (
           <img
             src={photoSrc}
-            alt="Foto de asistencia" className="w-16 h-16 rounded-lg object-cover border border-border cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all shadow-sm" onError={(e) => { (e.currentTarget.parentElement as HTMLElement).innerHTML = '<div class="w-full h-full flex flex-col items-center justify-center text-muted-foreground"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span class="text-[9px]">Sin foto</span></div>'; }}
+            alt="Foto de asistencia" className="w-16 h-16 rounded-lg object-cover border border-border cursor-pointer hover:ring-2 hover:ring-primary transition-all shadow-sm" onError={(e) => { (e.currentTarget.parentElement as HTMLElement).innerHTML = '<div class="w-full h-full flex flex-col items-center justify-center text-muted-foreground"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span class="text-[9px]">Sin foto</span></div>'; }}
             onClick={() => setSelectedPhotoUrl(photoSrc)}
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
           />
         ) : (
           <div className="w-16 h-16 rounded-lg bg-muted border border-border flex items-center justify-center">
-            <span className="text-zinc-400 text-[10px]">Sin foto</span>
+            <span className="text-text-4 text-[10px]">Sin foto</span>
           </div>
         );
       },
     },
-    { key: "registrado", header: "REGISTRO", hideOnMobile: true, render: (r) => <span className="font-mono text-slate-700 text-sm">{r.registrado}</span> },
-    { key: "salida", header: "SALIDA", hideOnMobile: true, render: (r) => <span className="font-mono text-slate-700 text-sm">{r.salida}</span> },
+    { key: "registrado", header: "REGISTRO", hideOnMobile: true, render: (r) => <span className="font-mono text-text-2 text-sm">{r.registrado}</span> },
+    { key: "salida", header: "SALIDA", hideOnMobile: true, render: (r) => <span className="font-mono text-text-2 text-sm">{r.salida}</span> },
     {
       key: "location",
       header: "UBICACIÓN",
@@ -278,7 +278,7 @@ export function AttendanceManagementView() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-raised">
       <div className="max-w-7xl mx-auto px-5 py-5">
 
         {/* HEADER */}
@@ -303,9 +303,9 @@ export function AttendanceManagementView() {
 
           <div className="flex flex-wrap gap-3 items-end">
             <div className="flex flex-col">
-              <label className="text-[9px] text-slate-500 mb-1">PROYECTO</label>
+              <label className="text-[9px] text-text-4 mb-1">PROYECTO</label>
               <select
-                className="border border-slate-300 rounded-md px-3 py-1.5 text-sm min-w-[160px]"
+                className="border border-line-2 rounded-md px-3 py-1.5 text-sm min-w-[160px]"
                 value={selectedProject}
                 onChange={(e) => setSelectedProject(e.target.value)}
               >
@@ -317,9 +317,9 @@ export function AttendanceManagementView() {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[9px] text-slate-500 mb-1">USUARIO</label>
+              <label className="text-[9px] text-text-4 mb-1">USUARIO</label>
               <select
-                className="border border-slate-300 rounded-md px-3 py-1.5 text-sm min-w-[160px]"
+                className="border border-line-2 rounded-md px-3 py-1.5 text-sm min-w-[160px]"
                 value={selectedUser}
                 onChange={(e) => setSelectedUser(e.target.value)}
               >
@@ -333,7 +333,7 @@ export function AttendanceManagementView() {
             <Button
               onClick={fetchAttendance}
               variant="ghost"
-              className="h-9 px-4 gap-2 text-sm border border-slate-200 bg-card text-zinc-700 hover:bg-slate-50"
+              className="h-9 px-4 gap-2 text-sm border border-line bg-card text-text-2 hover:bg-raised"
             >
               <RefreshCw className="w-4 h-4" />
               Actualizar
@@ -354,7 +354,7 @@ export function AttendanceManagementView() {
 
         {/* PAGINACIÓN */}
         <div className="flex justify-center mt-5">
-          <div className="flex items-center gap-3 bg-card border border-slate-200 rounded-lg px-5 py-2 shadow-sm text-sm">
+          <div className="flex items-center gap-3 bg-card border border-line rounded-lg px-5 py-2 shadow-sm text-sm">
             <p>Página <span className="font-semibold">{page}</span> de {totalPages}</p>
             <div className="flex gap-1">
               <Button variant="outline" size="sm" className="h-8 w-8 p-0" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))}>
@@ -364,7 +364,7 @@ export function AttendanceManagementView() {
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
-            <p className="text-slate-500 text-xs">{total} registros</p>
+            <p className="text-text-4 text-xs">{total} registros</p>
           </div>
         </div>
 

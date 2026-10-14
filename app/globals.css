@@ -1,85 +1,151 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
+/* =========================================================================
+   DESIGN SYSTEM · TEMA CLARO (:root)
+   Fuente: OPENCODE_DESIGN_SYSTEM_PROMPT.md
+   ========================================================================= */
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #6366f1;
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #eef2ff;
-  --accent-foreground: #4338ca;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #6366f1;
-  --chart-1: #6366f1;
-  --chart-2: #38bdf8;
-  --chart-3: #10b981;
-  --chart-4: #f59e0b;
-  --chart-5: #ef4444;
-  --radius: 1rem;
+  /* Superficies */
+  --bg: #f5f6fa;
   --sidebar: #ffffff;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: #6366f1;
+  --surface: #ffffff;
+  --raised: #f6f7fb;
+  --field: #ffffff;
+  --inset: #eceef4;
+
+  /* Textos */
+  --text: #11131c;
+  --text-2: #2f3446;
+  --text-3: #4e5468;
+  --text-4: #5d6378;
+  --text-5: #6b7186;
+
+  /* Acentos y Marca */
+  --brand-gradient: linear-gradient(to right, #5b8cff, #a855f7);
+  --violet: #a855f7;
+  --violet-ink: #7c3aed;
+  --blue: #5b8cff;
+  --link: #3b6ef5;
+  --cyan: #0e9fc0;
+
+  /* Estados */
+  --green: #10b981;
+  --green-ink: #047857;
+  --amber: #d97706;
+  --amber-ink: #b45309;
+  --red: #ef4444;
+  --red-ink: #dc2626;
+
+  /* Bordes y Líneas */
+  --line: rgba(17, 24, 39, 0.08);
+  --line-2: rgba(17, 24, 39, 0.115);
+  --line-3: rgba(17, 24, 39, 0.18);
+
+  /* Mapeo Shadcn / Tailwind base */
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--surface);
+  --card-foreground: var(--text);
+  --popover: var(--surface);
+  --popover-foreground: var(--text);
+  --primary: var(--violet);
+  --primary-foreground: #ffffff;
+  --secondary: var(--raised);
+  --secondary-foreground: var(--text-2);
+  --muted: var(--inset);
+  --muted-foreground: var(--text-4);
+  --accent: var(--raised);
+  --accent-foreground: var(--text);
+  --destructive: var(--red);
+  --destructive-foreground: #ffffff;
+  --border: var(--line-2);
+  --input: var(--line-3);
+  --ring: var(--violet);
+
+  /* Sidebar (Shadcn) */
+  --sidebar-foreground: var(--text-2);
+  --sidebar-primary: var(--violet);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eef2ff;
-  --sidebar-accent-foreground: #4338ca;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #6366f1;
+  --sidebar-accent: var(--raised);
+  --sidebar-accent-foreground: var(--text);
+  --sidebar-border: var(--line-2);
+  --sidebar-ring: var(--violet);
+
+  /* Charts */
+  --chart-1: var(--violet);
+  --chart-2: var(--blue);
+  --chart-3: var(--green);
+  --chart-4: var(--amber);
+  --chart-5: var(--red);
+
+  /* Estados semánticos */
+  --success: var(--green);
+  --success-foreground: #ffffff;
+  --warning: var(--amber);
+  --warning-foreground: #ffffff;
+
+  /* Radios del Design System */
+  --radius: 16px;
+  --radius-badge: 7px;
+  --radius-segment: 9px;
+  --radius-nav: 11px;
+  --radius-control: 12px;
+  --radius-kpi: 14px;
+  --radius-card: 16px;
+  --radius-section: 18px;
+  --radius-modal: 20px;
 }
 
+/* =========================================================================
+   DESIGN SYSTEM · TEMA OSCURO (.dark)
+   ========================================================================= */
 .dark {
-  --background: #0d0f18;
-  --foreground: #f8fafc;
-  --card: #131625;
-  --card-foreground: #f8fafc;
-  --popover: #131625;
-  --popover-foreground: #f8fafc;
-  --primary: #8b5cf6;
-  --primary-foreground: #ffffff;
-  --secondary: #1e2238;
-  --secondary-foreground: #f8fafc;
-  --muted: #181c2e;
-  --muted-foreground: #94a3b8;
-  --accent: #221b4a;
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.06);
-  --input: rgba(255, 255, 255, 0.08);
-  --ring: #8b5cf6;
-  --chart-1: #8b5cf6;
-  --chart-2: #38bdf8;
-  --chart-3: #10b981;
-  --chart-4: #f59e0b;
-  --chart-5: #ef4444;
-  --sidebar: #10121d;
-  --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #8b5cf6;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #221b4a;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: rgba(255, 255, 255, 0.06);
-  --sidebar-ring: #8b5cf6;
-  --vulcan: #10121d;
-  --vulcan-card: #141726;
-  --vulcan-stroke: rgba(255, 255, 255, 0.06);
+  /* Superficies */
+  --bg: #080a12;
+  --sidebar: #0c0e18;
+  --surface: #12141f;
+  --raised: #1b1f2e;
+  --field: #242938;
+  --inset: #0f1119;
+
+  /* Textos */
+  --text: #eef0f6;
+  --text-2: #c8cddc;
+  --text-3: #a2a8bd;
+  --text-4: #8f96ae;
+  --text-5: #6f7690;
+
+  /* Acentos y Marca */
+  --brand-gradient: linear-gradient(to right, #5b8cff, #a855f7);
+  --violet: #a855f7;
+  --violet-ink: #c4b5fd;
+  --blue: #5b8cff;
+  --link: #8fb2ff;
+  --cyan: #22c3e6;
+
+  /* Estados */
+  --green: #34d399;
+  --green-ink: #6ee7b7;
+  --amber: #fbbf24;
+  --amber-ink: #fcd34d;
+  --red: #f87171;
+  --red-ink: #fca5a5;
+
+  /* Bordes y Líneas */
+  --line: rgba(255, 255, 255, 0.07);
+  --line-2: rgba(255, 255, 255, 0.10);
+  --line-3: rgba(255, 255, 255, 0.16);
+
+  --sidebar-foreground: var(--text-2);
 }
 
 @theme inline {
-  --font-sans: var(--font-hanken-grotesk), 'SF Pro Display', sans-serif;
-  --font-mono: var(--font-jetbrains-mono), 'Geist Mono', monospace;
+  --font-sans: 'Navigo', var(--font-inter), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', ui-monospace, monospace;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -104,11 +170,37 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Tokens propios del Design System */
   --color-sidebar: var(--sidebar);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-field: var(--field);
+  --color-inset: var(--inset);
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-text-4: var(--text-4);
+  --color-text-5: var(--text-5);
+  --color-violet: var(--violet);
+  --color-violet-ink: var(--violet-ink);
+  --color-blue: var(--blue);
+  --color-link: var(--link);
+  --color-cyan: var(--cyan);
+  --color-green: var(--green);
+  --color-green-ink: var(--green-ink);
+  --color-amber: var(--amber);
+  --color-amber-ink: var(--amber-ink);
+  --color-red: var(--red);
+  --color-red-ink: var(--red-ink);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-line-3: var(--line-3);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
@@ -116,6 +208,10 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@utility bg-brand-gradient {
+  background-image: var(--brand-gradient);
 }
 
 @layer base {

@@ -162,9 +162,9 @@ export function FaltasListView() {
 
   const columns: Column<AbsenceRow>[] = [
     { key: "usuario", header: "USUARIO", render: (r) => <span className="font-medium">{r.usuario}</span> },
-    { key: "fecha", header: "FECHA", render: (r) => <span className="text-slate-700">{r.fecha}</span> },
+    { key: "fecha", header: "FECHA", render: (r) => <span className="text-text-2">{r.fecha}</span> },
     { key: "tipo", header: "TIPO", render: (r) => (
-      <span className="text-slate-600 text-sm">{ABSENCE_TYPE_LABELS[r.tipo] || r.tipo}</span>
+      <span className="text-text-2 text-sm">{ABSENCE_TYPE_LABELS[r.tipo] || r.tipo}</span>
     )},
     {
       key: "justificada",
@@ -172,8 +172,8 @@ export function FaltasListView() {
       render: (r) => (
         <span className={`text-xs px-2.5 py-1 rounded-full font-medium inline-block ${
           r.justificada
-            ? "bg-emerald-100 text-emerald-700"
-            : "bg-red-100 text-red-700"
+            ? "bg-green/10 text-green-ink"
+            : "bg-red/10 text-red-ink"
         }`}>
           {r.justificada ? "JUSTIFICADA" : "SIN JUSTIFICAR"}
         </span>
@@ -195,7 +195,7 @@ export function FaltasListView() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-raised">
       <div className="max-w-7xl mx-auto px-5 py-5">
 
         {/* HEADER */}
@@ -219,7 +219,7 @@ export function FaltasListView() {
 
           <div className="flex items-center gap-2">
             <select
-              className="text-sm border-border bg-card border rounded-lg px-3 py-1.5 text-slate-600"
+              className="text-sm border-border bg-card border rounded-lg px-3 py-1.5 text-text-2"
               value={justifiedFilter}
               onChange={(e) => setJustifiedFilter(e.target.value)}
             >
@@ -244,8 +244,8 @@ export function FaltasListView() {
 
           {/* PAGINACIÓN */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-5 py-3 border-t border-zinc-100">
-              <p className="text-xs text-slate-400">
+            <div className="flex items-center justify-between px-5 py-3 border-t border-line">
+              <p className="text-xs text-text-4">
                 Página {page} de {totalPages}
               </p>
               <div className="flex gap-1.5">

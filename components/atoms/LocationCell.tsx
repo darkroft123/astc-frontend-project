@@ -41,10 +41,10 @@ export function LocationCell({
       href={mapsUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium hover:underline text-xs"
+      className="inline-flex items-center gap-1 text-link hover:text-primary font-medium hover:underline text-xs"
       title={`Coordenadas: ${effectiveLat}, ${effectiveLng} (Ver en Google Maps)`}
     >
-      <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+      <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
       <span className="truncate max-w-[140px]">{district || "Cargando..."}</span>
     </a>
   );

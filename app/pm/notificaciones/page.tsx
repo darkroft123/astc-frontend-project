@@ -151,7 +151,7 @@ export default function NotificationsPage() {
             <h1 className="text-xl font-bold text-foreground tracking-tight">Detalle de Notificación</h1>
           </div>
           <Card className={cn("border-border shadow-md rounded-2xl overflow-hidden relative")}>
-            <div className={cn("absolute top-0 left-0 w-full h-1 bg-gradient-to-r", colors.gradient)} />
+            <div className={cn("absolute top-0 left-0 w-full h-1", colors.gradient)} />
             <CardContent className="p-6">
               <div className="flex items-start gap-4 mb-6">
                 <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm", colors.bg)}>
@@ -171,7 +171,7 @@ export default function NotificationsPage() {
                   Volver a la lista
                 </Button>
                 <Link href={link} className="flex-1">
-                  <Button className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all font-medium">
+                  <Button className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all font-medium">
                     Ver más detalles
                   </Button>
                 </Link>
@@ -189,20 +189,20 @@ export default function NotificationsPage() {
         {/* HEADER */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-violet-600 rounded-2xl flex items-center justify-center shadow-md">
+            <div className="w-12 h-12 bg-brand-gradient rounded-2xl flex items-center justify-center shadow-md">
               <Bell className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground tracking-tight">Notificaciones</h1>
               {unreadCount > 0 ? (
-                <p className="text-sm text-blue-600 font-medium mt-0.5">{unreadCount} sin leer</p>
+                <p className="text-sm text-primary font-medium mt-0.5">{unreadCount} sin leer</p>
               ) : (
                 <p className="text-sm text-muted-foreground font-medium mt-0.5">Estás al día</p>
               )}
             </div>
           </div>
           {unreadCount > 0 && (
-            <Button variant="ghost" size="sm" onClick={markAllRead} className="text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950 font-medium">
+            <Button variant="ghost" size="sm" onClick={markAllRead} className="text-sm text-primary hover:text-primary hover:bg-primary/10 font-medium">
               Marcar todo como leído
             </Button>
           )}
@@ -234,13 +234,13 @@ export default function NotificationsPage() {
               className={cn(
                 "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
                 filter === key
-                  ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
                   : "bg-card text-muted-foreground border-border hover:bg-accent"
               )}
             >
               {label}
               {count != null && count > 0 && (
-                <span className={cn("text-[10px] font-bold px-1.5 py-0.5 rounded-full", filter === key ? "bg-white/20" : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300")}>
+                <span className={cn("text-[10px] font-bold px-1.5 py-0.5 rounded-full", filter === key ? "bg-white/20" : "bg-primary/10 text-primary")}>
                   {count}
                 </span>
               )}
@@ -272,7 +272,7 @@ export default function NotificationsPage() {
                     onClick={() => handleClick(n)}
                     className={cn(
                       "w-full text-left rounded-2xl border transition-all duration-200 hover:scale-[1.01] hover:shadow-md relative overflow-hidden group",
-                      n.read ? "bg-card border-border shadow-sm" : "bg-blue-50/40 dark:bg-blue-950/30 border-blue-200/50 dark:border-blue-800/50 shadow"
+                      n.read ? "bg-card border-border shadow-sm" : "bg-primary/5 border-primary/20 shadow"
                     )}
                   >
                     <div className={cn("absolute left-0 top-0 bottom-0 w-1.5 transition-colors", n.read ? colors.bg.replace('100', '300') : colors.bg.replace('100', '500'))} />
@@ -291,12 +291,12 @@ export default function NotificationsPage() {
                       </div>
                       {!n.read && (
                         <div className="shrink-0 flex items-center justify-center w-6 h-full absolute right-4 top-0 bottom-0">
-                          <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-primary shadow-sm" />
                         </div>
                       )}
                       <button
                         onClick={(e) => handleDelete(n, e)}
-                        className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950 text-muted-foreground hover:text-red-500 absolute right-4 bottom-4"
+                        className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-red/10 text-muted-foreground hover:text-red absolute right-4 bottom-4"
                         title="Eliminar notificación"
                       >
                         <Trash2 className="w-4 h-4" />

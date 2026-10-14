@@ -19,7 +19,7 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
         <MobileSidebar>
           <SidebarNav onNavigate={() => {}} />
         </MobileSidebar>
-        <div className="flex-1 min-w-0 md:ml-64 relative">
+        <div className="flex-1 min-w-0 md:ml-[268px] relative">
           <div className="absolute top-4 right-4 z-50"><NotificationBell /></div>
           <div className="md:hidden p-4"><HamburgerButton /></div>
           <main className="flex-1 overflow-auto p-4 md:p-6 bg-background pb-6 md:pb-6">{children}</main>

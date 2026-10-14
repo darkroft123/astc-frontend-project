@@ -113,8 +113,8 @@ export function HolidayImporter({ onImport, year }: HolidayImporterProps) {
 
   return (
     <>
-      <Button variant="outline" onClick={() => resetState(true)} className="text-zinc-600 bg-white">
-        <Upload className="w-4 h-4 mr-2 text-violet-600" /> Importar Feriados
+      <Button variant="outline" onClick={() => resetState(true)} className="text-text-2 bg-card">
+        <Upload className="w-4 h-4 mr-2 text-primary" /> Importar Feriados
       </Button>
 
       <Dialog open={open} onOpenChange={resetState}>
@@ -128,7 +128,7 @@ export function HolidayImporter({ onImport, year }: HolidayImporterProps) {
 
           <div className="py-2 space-y-4">
             {/* INSTRUCCIONES DE FORMATO REQUERIDAS */}
-            <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-100 text-sm text-blue-800 space-y-2">
+            <div className="bg-primary/10 p-4 rounded-lg border border-line text-sm text-primary space-y-2">
               <p className="font-semibold flex items-center gap-2">
                 <AlertCircle className="w-4 h-4" /> Formato Requerido
               </p>
@@ -137,7 +137,7 @@ export function HolidayImporter({ onImport, year }: HolidayImporterProps) {
                 <li>El formato estricto debe ser: <strong>AAAA-MM-DD, Nombre del feriado</strong></li>
                 <li>Se aceptan separadores como comas (<code>,</code>), guiones (<code>-</code>) o espacios.</li>
               </ul>
-              <div className="font-mono text-xs bg-card p-2 rounded border border-blue-200 mt-2">
+              <div className="font-mono text-xs bg-card p-2 rounded border border-line mt-2">
                 Ejemplos válidos:<br/>
                 2026-12-25, Navidad<br/>
                 2026-01-01 - Año Nuevo<br/>
@@ -160,14 +160,14 @@ export function HolidayImporter({ onImport, year }: HolidayImporterProps) {
                 />
                 
                 {error && (
-                  <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100">
+                  <div className="text-sm text-red-ink bg-red/10 p-3 rounded-lg border border-red/20">
                     {error}
                   </div>
                 )}
 
                 <div className="flex justify-end gap-2 pt-2">
                   <Button variant="outline" onClick={() => resetState(false)}>Cancelar</Button>
-                  <Button onClick={handleImportText} disabled={loading} className="bg-violet-600 hover:bg-violet-700 text-white">
+                  <Button onClick={handleImportText} disabled={loading} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                     {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                     Importar Texto
                   </Button>
@@ -175,11 +175,11 @@ export function HolidayImporter({ onImport, year }: HolidayImporterProps) {
               </TabsContent>
               
               <TabsContent value="csv" className="mt-4 space-y-4">
-                <div className="border-2 border-dashed rounded-lg p-8 text-center flex flex-col items-center justify-center gap-3 bg-muted/50 hover:bg-zinc-100 transition-colors cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                <div className="border-2 border-dashed rounded-lg p-8 text-center flex flex-col items-center justify-center gap-3 bg-muted/50 hover:bg-raised transition-colors cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                   <FileText className="w-10 h-10 text-muted-foreground" />
                   <div>
                     <p className="font-medium text-muted-foreground">Haz clic para subir archivo CSV</p>
-                    <p className="text-xs text-zinc-500 mt-1">El archivo debe seguir el formato requerido (.csv o .txt)</p>
+                    <p className="text-xs text-text-4 mt-1">El archivo debe seguir el formato requerido (.csv o .txt)</p>
                   </div>
                   <input 
                     type="file" 
@@ -191,7 +191,7 @@ export function HolidayImporter({ onImport, year }: HolidayImporterProps) {
                 </div>
 
                 {error && (
-                  <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100 mt-4">
+                  <div className="text-sm text-red-ink bg-red/10 p-3 rounded-lg border border-red/20 mt-4">
                     {error}
                   </div>
                 )}

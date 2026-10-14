@@ -230,9 +230,9 @@ export function AlertsListView() {
   }, [alertsData.items, page, size]);
 
   const columns: Column<AlertRow>[] = [
-    { key: "type", header: "TIPO", render: (r) => <span className="font-semibold text-xs text-slate-800">{formatAlertType(r.type)}</span> },
+    { key: "type", header: "TIPO", render: (r) => <span className="font-semibold text-xs text-foreground">{formatAlertType(r.type)}</span> },
     { key: "status", header: "ESTADO", render: (r) => <StatusBadge status={(r.status ?? "PENDING") as any} /> },
-    { key: "message", header: "MENSAJE", render: (r) => <span className="text-slate-600 text-xs line-clamp-2 max-w-[280px]">{formatAlertMessage(r.message, r.type)}</span> },
+    { key: "message", header: "MENSAJE", render: (r) => <span className="text-text-2 text-xs line-clamp-2 max-w-[280px]">{formatAlertMessage(r.message, r.type)}</span> },
     { 
       key: "project", 
       header: "PROYECTO",
@@ -240,8 +240,8 @@ export function AlertsListView() {
       render: (r) => {
         const proj = projects.find((p) => p.id === r.projectId);
         return (
-          <div className="flex items-center gap-1.5 text-xs font-medium text-slate-700">
-            <FolderKanban className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+          <div className="flex items-center gap-1.5 text-xs font-medium text-text-2">
+            <FolderKanban className="w-3.5 h-3.5 text-primary shrink-0" />
             <span className="truncate max-w-[140px]">{proj?.name || r.projectId || "-"}</span>
           </div>
         );
@@ -251,8 +251,8 @@ export function AlertsListView() {
       key: "date", 
       header: "FECHA", 
       render: (r) => (
-        <div className="flex items-center gap-1.5 text-xs text-slate-600">
-          <Clock className="w-3.5 h-3.5 text-slate-400" />
+        <div className="flex items-center gap-1.5 text-xs text-text-2">
+          <Clock className="w-3.5 h-3.5 text-text-4" />
           <span>{parseAlertDate(r.createdAt)}</span>
         </div>
       ) 
@@ -278,7 +278,7 @@ export function AlertsListView() {
             variant="ghost"
             title="Descartar / Limpiar alerta"
             onClick={() => handleDismissAlert(r.id)}
-            className="h-7 w-7 p-0 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg"
+            className="h-7 w-7 p-0 text-text-4 hover:text-red-ink hover:bg-red/10 rounded-lg"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </Button>
@@ -288,7 +288,7 @@ export function AlertsListView() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-raised">
       <div className="max-w-7xl mx-auto px-5 py-5">
 
         {/* HEADER */}
@@ -315,9 +315,9 @@ export function AlertsListView() {
           {/* FILTROS A LA DERECHA */}
           <div className="flex flex-wrap gap-3">
             <div className="flex flex-col">
-              <label className="text-[9px] text-slate-500 mb-1 font-semibold">PROYECTO</label>
+              <label className="text-[9px] text-text-4 mb-1 font-semibold">PROYECTO</label>
               <select
-                className="border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-full sm:w-48 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="border border-line-2 rounded-lg px-3 py-1.5 text-xs w-full sm:w-48 bg-field focus:outline-none focus:ring-1 focus:ring-primary"
                 value={filters.project}
                 onChange={(e) => setFilters({ ...filters, project: e.target.value })}
               >
@@ -329,9 +329,9 @@ export function AlertsListView() {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[9px] text-slate-500 mb-1 font-semibold">ESTADO</label>
+              <label className="text-[9px] text-text-4 mb-1 font-semibold">ESTADO</label>
               <select
-                className="border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-full sm:w-36 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="border border-line-2 rounded-lg px-3 py-1.5 text-xs w-full sm:w-36 bg-field focus:outline-none focus:ring-1 focus:ring-primary"
                 value={filters.status}
                 onChange={(e) => setFilters({ ...filters, status: e.target.value })}
               >
@@ -344,9 +344,9 @@ export function AlertsListView() {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[9px] text-slate-500 mb-1 font-semibold">USUARIO</label>
+              <label className="text-[9px] text-text-4 mb-1 font-semibold">USUARIO</label>
               <select
-                className="border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-full sm:w-44 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="border border-line-2 rounded-lg px-3 py-1.5 text-xs w-full sm:w-44 bg-field focus:outline-none focus:ring-1 focus:ring-primary"
                 value={filters.user}
                 onChange={(e) => setFilters({ ...filters, user: e.target.value })}
               >
@@ -362,7 +362,7 @@ export function AlertsListView() {
             <Button 
               onClick={fetchAlerts} 
               variant="ghost" 
-              className="h-8 px-3 gap-1.5 text-xs border border-slate-200 bg-card text-zinc-700 hover:bg-slate-50 self-end rounded-lg shadow-sm"
+              className="h-8 px-3 gap-1.5 text-xs border border-line bg-card text-text-2 hover:bg-raised self-end rounded-lg shadow-sm"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Actualizar
@@ -383,13 +383,13 @@ export function AlertsListView() {
 
         {/* PAGINACIÓN */}
         <div className="flex justify-center mt-5">
-          <div className="flex items-center gap-3 bg-card border border-slate-200 rounded-lg px-5 py-2 shadow-sm text-sm">
+          <div className="flex items-center gap-3 bg-card border border-line rounded-lg px-5 py-2 shadow-sm text-sm">
             <p>Página <span className="font-semibold">{page}</span> de {totalPages}</p>
             <div className="flex gap-1">
               <Button variant="outline" size="sm" className="h-8 p-0" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p-1))}>Anterior</Button>
               <Button variant="outline" size="sm" className="h-8 p-0" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Siguiente</Button>
             </div>
-            <p className="text-slate-500 text-xs">{total} registros</p>
+            <p className="text-text-4 text-xs">{total} registros</p>
           </div>
         </div>
       </div>

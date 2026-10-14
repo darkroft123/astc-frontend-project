@@ -239,8 +239,8 @@ export function DashboardView() {
   if (!loadingProjects && activeProjects.length === 0) {
     return (
       <div className="min-h-[75vh] flex flex-col items-center justify-center p-6 text-center">
-        <Card className="max-w-md w-full rounded-3xl border border-amber-200/50 bg-card text-card-foreground shadow-xl p-8">
-          <div className="mx-auto w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mb-6 border border-amber-500/20">
+        <Card className="max-w-md w-full rounded-3xl border border-amber/20 bg-card text-card-foreground shadow-xl p-8">
+          <div className="mx-auto w-16 h-16 rounded-2xl bg-amber/10 text-amber flex items-center justify-center mb-6 border border-amber/20">
             <AlertTriangle className="w-8 h-8" />
           </div>
           <h3 className="font-bold text-2xl mb-3 tracking-tight">Sin Proyectos Asignados</h3>
@@ -294,7 +294,7 @@ export function DashboardView() {
       <div className="p-4 max-w-7xl mx-auto">
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-3">
-            <Card className="lg:col-span-4 bg-gradient-to-br from-primary via-primary to-primary/80 rounded-2xl shadow-md border-0 overflow-hidden text-white">
+            <Card className="lg:col-span-4 bg-brand-gradient rounded-2xl shadow-md border-0 overflow-hidden text-white">
               <CardContent className="p-4 sm:p-5 flex flex-col justify-between h-full space-y-3">
                 <div className="flex items-center gap-3">
                   <Avatar className="w-12 h-12 rounded-full border-2 border-white/40 shadow-sm shrink-0">
@@ -311,7 +311,7 @@ export function DashboardView() {
                     <h2 className="text-base font-bold text-white truncate mt-0.5">
                       {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : (user?.username ?? "Jefe de Proyecto")}
                     </h2>
-                    <p className="text-blue-100 text-xs truncate">
+                    <p className="text-primary-foreground/80 text-xs truncate">
                       {user?.email ?? "—"}
                     </p>
                   </div>
@@ -406,10 +406,10 @@ export function DashboardView() {
                   <div className="h-48 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={chartData}>
-                        <XAxis dataKey="name" stroke="#888888" fontSize={11} />
-                        <YAxis stroke="#888888" fontSize={11} />
+                        <XAxis dataKey="name" stroke="var(--text-4)" fontSize={11} />
+                        <YAxis stroke="var(--text-4)" fontSize={11} />
                         <Tooltip />
-                        <Bar dataKey="value" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="value" fill="var(--violet)" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
