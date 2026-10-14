@@ -24,6 +24,16 @@ export function ThemeToggle({ className }: { className?: string }) {
     >
       {isDark ? (
         <>
+          <Sun
+            className="h-[18px] w-[18px] shrink-0 text-text-3"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <span>Tema claro</span>
+        </>
+      ) : (
+        <>
           <Moon
             className="h-[18px] w-[18px] shrink-0 text-text-3"
             strokeWidth={2}
@@ -31,16 +41,6 @@ export function ThemeToggle({ className }: { className?: string }) {
             strokeLinejoin="round"
           />
           <span>Tema oscuro</span>
-        </>
-      ) : (
-        <>
-          <Sun
-            className="h-[18px] w-[18px] shrink-0 text-amber"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <span>Tema claro</span>
         </>
       )}
     </button>
