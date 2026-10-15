@@ -285,7 +285,7 @@ export default function ScheduleForm({
         <div>
           <Link
             href="/pm/asignacion-horarios"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 transition-colors mb-2"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-violet-ink dark:text-violet hover:text-violet-ink transition-colors mb-2"
           >
             <ChevronLeft className="w-4 h-4" />
             Asignación de horarios
@@ -314,7 +314,7 @@ export default function ScheduleForm({
             {/* STEP 1: Asignación */}
             <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-6 h-6 rounded-full bg-violet text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                   1
                 </div>
                 <div>
@@ -349,7 +349,7 @@ export default function ScheduleForm({
                     <select
                       value={selectedUserId}
                       onChange={(e) => setSelectedUserId(e.target.value)}
-                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                     >
                       <option value="">Seleccionar usuario...</option>
                       {users.map((u) => (
@@ -370,7 +370,7 @@ export default function ScheduleForm({
                     value={selectedProjectId}
                     onChange={(e) => setSelectedProjectId(e.target.value)}
                     disabled={mode === "edit"}
-                    className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                   >
                     <option value="">Seleccionar proyecto...</option>
                     {availableProjects.map((p) => (
@@ -380,7 +380,7 @@ export default function ScheduleForm({
                     ))}
                   </select>
                   {!selectedProjectId && (
-                    <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5 pt-0.5">
+                    <p className="text-xs text-amber-ink dark:text-amber flex items-center gap-1.5 pt-0.5">
                       <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                       Elige un proyecto para continuar.
                     </p>
@@ -392,7 +392,7 @@ export default function ScheduleForm({
             {/* STEP 2: Tipo de turno */}
             <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-6 h-6 rounded-full bg-violet text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                   2
                 </div>
                 <div>
@@ -415,12 +415,12 @@ export default function ScheduleForm({
                       onClick={() => setShiftType(opt.key)}
                       className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-center justify-between ${
                         isSelected
-                          ? "border-purple-600 dark:border-purple-500 bg-purple-50/60 dark:bg-purple-950/25 ring-1 ring-purple-600 dark:ring-purple-500"
+                          ? "border-violet dark:border-violet bg-violet/10 dark:bg-violet/15 ring-1 ring-violet dark:ring-violet"
                           : "border-border bg-card hover:bg-muted/40 text-foreground"
                       }`}
                     >
                       <div>
-                        <p className={`text-sm font-semibold leading-tight ${isSelected ? "text-purple-950 dark:text-purple-200" : "text-foreground"}`}>
+                        <p className={`text-sm font-semibold leading-tight ${isSelected ? "text-violet-ink dark:text-violet-ink" : "text-foreground"}`}>
                           {opt.title}
                         </p>
                         <p className="text-xs text-muted-foreground mt-0.5">
@@ -430,7 +430,7 @@ export default function ScheduleForm({
                       <div
                         className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
                           isSelected
-                            ? "border-purple-600 bg-purple-600 text-white"
+                            ? "border-violet bg-violet text-white"
                             : "border-muted-foreground/40 bg-transparent"
                         }`}
                       >
@@ -450,7 +450,7 @@ export default function ScheduleForm({
             {/* STEP 3: Configuración de horario */}
             <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-6 h-6 rounded-full bg-violet text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                   3
                 </div>
                 <div>
@@ -469,8 +469,8 @@ export default function ScheduleForm({
               {(shiftType === "REGULAR" || shiftType === "TRANSITORY") && (
                 <div className="space-y-4 pt-1">
                   {/* Info banner */}
-                  <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-900/50 text-blue-800 dark:text-blue-300 text-xs flex items-start gap-2.5">
-                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-600 dark:text-blue-400" />
+                  <div className="p-3 rounded-lg bg-blue/10 dark:bg-blue/15 border border-blue/20 dark:border-blue/30 text-blue dark:text-blue text-xs flex items-start gap-2.5">
+                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue dark:text-blue" />
                     <p className="leading-relaxed">
                       Lunes a viernes. Sábados y domingos son descanso automático (no exige marcar ni genera falta).
                     </p>
@@ -535,7 +535,7 @@ export default function ScheduleForm({
                             setStartHour(e.target.value);
                             setQuickTemplate("day");
                           }}
-                          className="w-full h-10 px-3 pr-8 rounded-lg border border-border bg-background text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                          className="w-full h-10 px-3 pr-8 rounded-lg border border-border bg-background text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                         />
                         <Clock className="w-4 h-4 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
                       </div>
@@ -552,7 +552,7 @@ export default function ScheduleForm({
                             setEndHour(e.target.value);
                             setQuickTemplate("day");
                           }}
-                          className="w-full h-10 px-3 pr-8 rounded-lg border border-border bg-background text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                          className="w-full h-10 px-3 pr-8 rounded-lg border border-border bg-background text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                         />
                         <Clock className="w-4 h-4 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
                       </div>
@@ -569,7 +569,7 @@ export default function ScheduleForm({
                           type="date"
                           value={validFrom}
                           onChange={(e) => setValidFrom(e.target.value)}
-                          className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                          className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -580,7 +580,7 @@ export default function ScheduleForm({
                           type="date"
                           value={validUntil}
                           onChange={(e) => setValidUntil(e.target.value)}
-                          className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                          className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                         />
                       </div>
                     </div>
@@ -591,8 +591,8 @@ export default function ScheduleForm({
               {/* ROTATING 4X4 / 7X7 */}
               {shiftType.startsWith("ROTATING") && (
                 <div className="space-y-4 pt-1">
-                  <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-900/50 text-blue-800 dark:text-blue-300 text-xs flex items-start gap-2.5">
-                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-600 dark:text-blue-400" />
+                  <div className="p-3 rounded-lg bg-blue/10 dark:bg-blue/15 border border-blue/20 dark:border-blue/30 text-blue dark:text-blue text-xs flex items-start gap-2.5">
+                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue dark:text-blue" />
                     <p className="leading-relaxed">
                       Ciclo continuo de <strong>{rotationWorkDays} días de trabajo</strong> seguidos de <strong>{rotationRestDays} días de descanso</strong>.
                     </p>
@@ -607,7 +607,7 @@ export default function ScheduleForm({
                         type="time"
                         value={rotationStartHour}
                         onChange={(e) => setRotationStartHour(e.target.value)}
-                        className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -618,7 +618,7 @@ export default function ScheduleForm({
                         type="time"
                         value={rotationEndHour}
                         onChange={(e) => setRotationEndHour(e.target.value)}
-                        className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                       />
                     </div>
                   </div>
@@ -631,7 +631,7 @@ export default function ScheduleForm({
                       type="date"
                       value={validFrom}
                       onChange={(e) => setValidFrom(e.target.value)}
-                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                     />
                   </div>
                 </div>
@@ -640,8 +640,8 @@ export default function ScheduleForm({
               {/* FLEXIBLE */}
               {shiftType === "FLEXIBLE" && (
                 <div className="space-y-3 pt-1">
-                  <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-900/50 text-blue-800 dark:text-blue-300 text-xs flex items-start gap-2.5">
-                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-600 dark:text-blue-400" />
+                  <div className="p-3 rounded-lg bg-blue/10 dark:bg-blue/15 border border-blue/20 dark:border-blue/30 text-blue dark:text-blue text-xs flex items-start gap-2.5">
+                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue dark:text-blue" />
                     <p className="leading-relaxed">
                       Configura horas distintas por día. Los días vacíos se consideran descanso automático.
                     </p>
@@ -680,7 +680,7 @@ export default function ScheduleForm({
             {/* STEP 4: Reglas generales */}
             <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-6 h-6 rounded-full bg-violet text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                   4
                 </div>
                 <div>
@@ -704,7 +704,7 @@ export default function ScheduleForm({
                     max={120}
                     value={graceMinutes}
                     onChange={(e) => setGraceMinutes(parseInt(e.target.value) || 0)}
-                    className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -716,7 +716,7 @@ export default function ScheduleForm({
                       type="time"
                       value={absenceCutoffTime}
                       onChange={(e) => setAbsenceCutoffTime(e.target.value)}
-                      className="w-full h-10 px-3 pr-8 rounded-lg border border-border bg-background text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                      className="w-full h-10 px-3 pr-8 rounded-lg border border-border bg-background text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                     />
                     <Clock className="w-4 h-4 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
                   </div>
@@ -746,7 +746,7 @@ export default function ScheduleForm({
               type="button"
               onClick={handleSubmit}
               disabled={!isFormReady || isSubmitting}
-              className="px-5 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold shadow-sm inline-flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-5 py-2 rounded-lg bg-violet hover:bg-violet/90 text-white text-xs font-semibold shadow-sm inline-flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save className="w-3.5 h-3.5" />
               {isSubmitting ? "Guardando..." : "Guardar horario"}

@@ -26,7 +26,7 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
         </MobileSidebar>
         <div className="flex-1 min-w-0 md:ml-[268px] relative overflow-x-hidden bg-background">
           {/* Ambient light for all screens in dark mode (50px higher, 100px left) */}
-          <div className="absolute top-[-300px] right-0 w-[600px] h-[450px] bg-purple-600/10 dark:bg-purple-600/20 blur-[140px] rounded-full pointer-events-none hidden dark:block z-0" />
+          <div className="absolute top-[-300px] right-0 w-[600px] h-[450px] bg-violet/10 dark:bg-violet/20 blur-[140px] rounded-full pointer-events-none hidden dark:block z-0" />
           <div className="absolute top-[-130px] right-[200px] w-[350px] h-[250px] bg-indigo-500/10 dark:bg-indigo-500/15 blur-[100px] rounded-full pointer-events-none hidden dark:block z-0" />
 
           {!hasInlineBell && (

@@ -206,7 +206,7 @@ export default function AttendancePreviewPage() {
       {/* 1. HEADER */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.15)] shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-violet/20 border border-violet/30 flex items-center justify-center text-violet shadow-[0_0_15px_rgba(168,85,247,0.15)] shrink-0">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
@@ -221,7 +221,7 @@ export default function AttendancePreviewPage() {
 
         <button
           onClick={() => router.push("/pm")}
-          className="h-10 px-6 rounded-xl bg-gradient-to-r from-[#4f46e5] via-[#6366f1] to-[#38bdf8] hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-lg shadow-indigo-500/25 transition-all cursor-pointer flex items-center justify-center"
+          className="h-10 px-6 rounded-xl bg-brand-gradient hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-lg shadow-indigo-500/25 transition-all cursor-pointer flex items-center justify-center"
         >
           Volver al panel principal
         </button>
@@ -232,21 +232,21 @@ export default function AttendancePreviewPage() {
         {/* LEFT COLUMN */}
         <div className="flex-1 w-full min-w-0 space-y-5">
           {/* Card 1: Estado & Horario */}
-          <div className="rounded-2xl border border-emerald-500/30 bg-[#0c1914] dark:bg-[#0c1914] p-5 md:p-6 shadow-sm space-y-4">
+          <div className="rounded-2xl border border-green/30 bg-green/10 dark:bg-green/10 p-5 md:p-6 shadow-sm space-y-4">
             {/* Header row */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
+              <div className="flex items-center gap-2 text-green font-semibold text-sm">
                 <CheckCircle2 className="w-4 h-4 stroke-[2.2]" />
                 <span>Salida registrada</span>
               </div>
-              <span className="bg-[#2a2415] text-[#fbbf24] border border-[#d97706]/40 rounded-full px-3 py-0.5 text-xs font-semibold">
+              <span className="bg-amber/15 text-amber border border-amber/40 rounded-full px-3 py-0.5 text-xs font-semibold">
                 Salida temprana
               </span>
             </div>
 
             {/* Schedule Boxes */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-[#131722]/80 dark:bg-[#131722]/80 border border-border/40 rounded-xl p-3.5">
+              <div className="bg-surface/80 dark:bg-surface/80 border border-border/40 rounded-xl p-3.5">
                 <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider block">
                   ENTRADA
                 </span>
@@ -254,7 +254,7 @@ export default function AttendancePreviewPage() {
                   {project?.workStartTime ? project.workStartTime.slice(0, 5) : "08:00"}
                 </span>
               </div>
-              <div className="bg-[#131722]/80 dark:bg-[#131722]/80 border border-border/40 rounded-xl p-3.5">
+              <div className="bg-surface/80 dark:bg-surface/80 border border-border/40 rounded-xl p-3.5">
                 <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider block">
                   SALIDA
                 </span>
@@ -268,13 +268,13 @@ export default function AttendancePreviewPage() {
             <div className="space-y-2 pt-1 text-xs">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Entrada registrada</span>
-                <span className="text-emerald-400 font-mono font-semibold text-xs">
+                <span className="text-green font-mono font-semibold text-xs">
                   {entryTimeFormatted}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Salida registrada</span>
-                <span className="text-emerald-400 font-mono font-semibold text-xs">
+                <span className="text-green font-mono font-semibold text-xs">
                   {exitTimeFormatted}
                 </span>
               </div>
@@ -282,10 +282,10 @@ export default function AttendancePreviewPage() {
 
             {/* Summary or Action Button */}
             {isBothDone || todayAtt?.checkOut ? (
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 dark:bg-emerald-950/25 p-4 flex flex-col items-center justify-center text-center mt-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 mx-auto mb-1.5" />
+              <div className="rounded-xl border border-green/30 bg-green/15 dark:bg-green/15 p-4 flex flex-col items-center justify-center text-center mt-2">
+                <CheckCircle2 className="w-5 h-5 text-green mx-auto mb-1.5" />
                 <p className="text-sm font-bold text-foreground">¡Jornada de hoy completada!</p>
-                <p className="text-xs text-emerald-400 mt-1">
+                <p className="text-xs text-green mt-1">
                   Entrada {entryTimeFormatted} · Salida {exitTimeFormatted}
                 </p>
               </div>
@@ -293,7 +293,7 @@ export default function AttendancePreviewPage() {
               <button
                 onClick={handleCheckOut}
                 disabled={loading}
-                className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+                className="w-full h-11 rounded-xl bg-gradient-to-r from-green to-teal-500 hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirmar y Marcar Salida"}
               </button>
@@ -301,7 +301,7 @@ export default function AttendancePreviewPage() {
               <button
                 onClick={handleRegisterEntry}
                 disabled={loading}
-                className="w-full h-11 rounded-xl bg-gradient-to-r from-[#4f46e5] via-[#6366f1] to-[#38bdf8] hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+                className="w-full h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirmar y Registrar Entrada"}
               </button>
@@ -312,7 +312,7 @@ export default function AttendancePreviewPage() {
           <div className="rounded-2xl border border-border/70 dark:border-white/5 bg-card p-5 md:p-6 shadow-sm space-y-3.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-violet/20 text-violet flex items-center justify-center shrink-0">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
@@ -320,15 +320,15 @@ export default function AttendancePreviewPage() {
                   <p className="text-xs text-muted-foreground mt-0.5">Motor de reconocimiento facial y geocerca</p>
                 </div>
               </div>
-              <span className="bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-full px-2.5 py-0.5 text-[11px] font-semibold flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+              <span className="bg-violet/20 text-violet border border-violet/30 rounded-full px-2.5 py-0.5 text-[11px] font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet animate-pulse" />
                 IA activa
               </span>
             </div>
 
             {/* Sub-item 1 */}
-            <div className="rounded-xl border border-amber-500/30 bg-[#1c1813] dark:bg-[#1c1813] p-3.5 flex items-start gap-3">
-              <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <div className="rounded-xl border border-amber/30 bg-amber/10 dark:bg-amber/10 p-3.5 flex items-start gap-3">
+              <CheckCircle2 className="w-4 h-4 text-amber shrink-0 mt-0.5" />
               <div>
                 <h4 className="text-xs font-bold text-foreground">Detección facial y anti-spoofing</h4>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
@@ -341,7 +341,7 @@ export default function AttendancePreviewPage() {
 
             {/* Sub-item 2 */}
             <div className="rounded-xl border border-border/40 bg-card/60 dark:bg-card/40 p-3.5 flex items-start gap-3">
-              <MapPin className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+              <MapPin className="w-4 h-4 text-blue shrink-0 mt-0.5" />
               <div>
                 <h4 className="text-xs font-bold text-foreground">Geolocalización y geocerca</h4>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
@@ -356,8 +356,8 @@ export default function AttendancePreviewPage() {
         <div className="w-full lg:w-[380px] shrink-0 space-y-5">
           {/* Card 1: Warning Banner "Asistencia sin foto" */}
           {!base64 ? (
-            <div className="rounded-2xl border border-amber-500/30 bg-[#1c1813] dark:bg-[#1c1813] p-4 flex items-start gap-3 shadow-sm">
-              <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+            <div className="rounded-2xl border border-amber/30 bg-amber/10 dark:bg-amber/10 p-4 flex items-start gap-3 shadow-sm">
+              <AlertTriangle className="w-5 h-5 text-amber shrink-0 mt-0.5" />
               <div>
                 <h4 className="text-xs font-bold text-foreground">Asistencia sin foto</h4>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
@@ -366,8 +366,8 @@ export default function AttendancePreviewPage() {
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl border border-emerald-500/30 bg-[#0a1612] dark:bg-[#0a1612] p-4 flex items-start gap-3 shadow-sm">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+            <div className="rounded-2xl border border-green/30 bg-green/10 dark:bg-green/10 p-4 flex items-start gap-3 shadow-sm">
+              <CheckCircle2 className="w-5 h-5 text-green shrink-0 mt-0.5" />
               <div>
                 <h4 className="text-xs font-bold text-foreground">Foto biométrica capturada</h4>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
@@ -384,14 +384,14 @@ export default function AttendancePreviewPage() {
             </span>
 
             {/* Map Canvas */}
-            <div className="h-[210px] rounded-xl border border-border/50 bg-[#0c0e14] dark:bg-[#0c0e14] relative overflow-hidden flex items-center justify-center">
+            <div className="h-[210px] rounded-xl border border-border/50 bg-sidebar dark:bg-sidebar relative overflow-hidden flex items-center justify-center">
               {/* Decorative Grid */}
               <div
                 className="absolute inset-0 opacity-[0.25]"
                 style={{
                   backgroundImage: `
-                    linear-gradient(to right, #334155 1px, transparent 1px),
-                    linear-gradient(to bottom, #334155 1px, transparent 1px)
+                    linear-gradient(to right, var(--line-3) 1px, transparent 1px),
+                    linear-gradient(to bottom, var(--line-3) 1px, transparent 1px)
                   `,
                   backgroundSize: "28px 28px",
                 }}
@@ -401,13 +401,13 @@ export default function AttendancePreviewPage() {
               <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
                 <button
                   type="button"
-                  className="w-6 h-6 rounded-md bg-[#161a23] border border-white/10 text-muted-foreground hover:text-foreground text-xs flex items-center justify-center font-bold"
+                  className="w-6 h-6 rounded-md bg-surface border border-white/10 text-muted-foreground hover:text-foreground text-xs flex items-center justify-center font-bold"
                 >
                   +
                 </button>
                 <button
                   type="button"
-                  className="w-6 h-6 rounded-md bg-[#161a23] border border-white/10 text-muted-foreground hover:text-foreground text-xs flex items-center justify-center font-bold"
+                  className="w-6 h-6 rounded-md bg-surface border border-white/10 text-muted-foreground hover:text-foreground text-xs flex items-center justify-center font-bold"
                 >
                   −
                 </button>
@@ -415,8 +415,8 @@ export default function AttendancePreviewPage() {
 
               {/* Center Marker & Text */}
               <div className="relative flex flex-col items-center justify-center gap-1.5 z-10">
-                <div className="w-7 h-7 rounded-full bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
-                  <MapPin className="w-4 h-4 fill-blue-500/30 text-blue-400" />
+                <div className="w-7 h-7 rounded-full bg-blue/20 border border-blue/40 flex items-center justify-center text-blue">
+                  <MapPin className="w-4 h-4 fill-blue/30 text-blue" />
                 </div>
                 <span className="text-[11px] text-muted-foreground">Vista de mapa no disponible</span>
               </div>
@@ -425,7 +425,7 @@ export default function AttendancePreviewPage() {
             {/* Coordinates line */}
             <div className="flex items-center justify-between text-xs pt-1">
               <div className="flex items-center gap-1.5 text-foreground font-medium">
-                <MapPin className="w-3.5 h-3.5 text-blue-400" />
+                <MapPin className="w-3.5 h-3.5 text-blue" />
                 <span>Coordenadas GPS</span>
               </div>
               <span className="font-mono text-muted-foreground text-xs">

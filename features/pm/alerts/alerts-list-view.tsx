@@ -251,7 +251,7 @@ export function AlertsListView() {
       {/* 1. TOP HEADER & ACTIONS */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="text-[11px] font-mono tracking-wider text-[#6366f1] dark:text-[#818cf8] uppercase mb-1">
+          <div className="text-[11px] font-mono tracking-wider text-violet-ink uppercase mb-1">
             PANEL DE GESTIÓN · Incidentes
           </div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
@@ -265,7 +265,7 @@ export function AlertsListView() {
         <div className="flex items-center gap-3 self-start md:self-auto">
           <button
             onClick={handleMarkAllAsReviewed}
-            className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#5046e6] via-[#7c3aed] to-[#06b6d4] hover:opacity-95 text-white text-xs md:text-sm font-semibold flex items-center gap-2 shadow-md shadow-indigo-500/20 transition-all cursor-pointer"
+            className="h-10 px-4 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs md:text-sm font-semibold flex items-center gap-2 shadow-md shadow-indigo-500/20 transition-all cursor-pointer"
           >
             <Check className="w-4 h-4 stroke-[2.5]" />
             <span>Marcar todas como revisadas</span>
@@ -278,7 +278,7 @@ export function AlertsListView() {
       {/* 2. PERIOD TABS BAR & CUSTOM RANGE */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 flex-wrap">
         {/* Period Selector Tabs */}
-        <div className="bg-[#f3f4f8] dark:bg-[#14171f] p-1 rounded-xl flex items-center gap-1 border border-border/40 dark:border-white/5 overflow-x-auto max-w-full">
+        <div className="bg-background dark:bg-surface p-1 rounded-xl flex items-center gap-1 border border-border/40 dark:border-white/5 overflow-x-auto max-w-full">
           {(["Hoy", "Esta semana", "Este mes", "3 meses", "6 meses", "9 meses", "Total"] as PeriodTab[]).map(
             (tab) => {
               const isActive = activePeriod === tab;
@@ -288,7 +288,7 @@ export function AlertsListView() {
                   onClick={() => handlePeriodTabClick(tab)}
                   className={`px-3 py-1.5 text-xs rounded-lg transition-all font-medium whitespace-nowrap cursor-pointer ${
                     isActive
-                      ? "bg-white dark:bg-[#202533] text-foreground font-semibold shadow-sm"
+                      ? "bg-white dark:bg-raised text-foreground font-semibold shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -308,7 +308,7 @@ export function AlertsListView() {
             <Calendar className="w-4 h-4 text-muted-foreground" />
             <span>Rango personalizado</span>
           </button>
-          <div className="h-9 px-3.5 rounded-xl border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/70 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs font-mono font-medium flex items-center gap-2">
+          <div className="h-9 px-3.5 rounded-xl border border-blue/20 dark:border-blue/30 bg-blue/10 dark:bg-blue/15 text-blue dark:text-blue text-xs font-mono font-medium flex items-center gap-2">
             <span>{dateBadgeText}</span>
           </div>
         </div>
@@ -366,7 +366,7 @@ export function AlertsListView() {
         {/* 4 KPI METRICS CARDS */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: Total alertas */}
-          <div className="rounded-2xl border border-border/70 dark:border-white/5 bg-background/50 dark:bg-[#151821] p-4 flex flex-col justify-between h-[104px]">
+          <div className="rounded-2xl border border-border/70 dark:border-white/5 bg-background/50 dark:bg-surface p-4 flex flex-col justify-between h-[104px]">
             <div className="flex items-center justify-between">
               <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-500 dark:text-gray-400">
                 <AlertTriangle className="w-4 h-4" />
@@ -377,34 +377,34 @@ export function AlertsListView() {
           </div>
 
           {/* Card 2: Pendientes */}
-          <div className="rounded-2xl border border-amber-500/30 dark:border-amber-500/20 bg-amber-500/[0.03] dark:bg-[#1a1713] p-4 flex flex-col justify-between h-[104px]">
+          <div className="rounded-2xl border border-amber/30 dark:border-amber/20 bg-amber/[0.03] dark:bg-amber/10 p-4 flex flex-col justify-between h-[104px]">
             <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500">
+              <div className="w-7 h-7 rounded-lg bg-amber/10 flex items-center justify-center text-amber">
                 <Clock className="w-4 h-4" />
               </div>
-              <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">Pendientes</span>
+              <span className="text-xs text-amber-ink dark:text-amber font-medium">Pendientes</span>
             </div>
             <div className="text-2xl md:text-3xl font-bold text-foreground">{pendientes}</div>
           </div>
 
           {/* Card 3: Revisadas */}
-          <div className="rounded-2xl border border-emerald-500/30 dark:border-emerald-500/20 bg-emerald-500/[0.03] dark:bg-[#131b17] p-4 flex flex-col justify-between h-[104px]">
+          <div className="rounded-2xl border border-green/30 dark:border-green/20 bg-green/[0.03] dark:bg-green/10 p-4 flex flex-col justify-between h-[104px]">
             <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+              <div className="w-7 h-7 rounded-lg bg-green/10 flex items-center justify-center text-green">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
-              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Revisadas</span>
+              <span className="text-xs text-green-ink dark:text-green font-medium">Revisadas</span>
             </div>
             <div className="text-2xl md:text-3xl font-bold text-foreground">{revisadas}</div>
           </div>
 
           {/* Card 4: % Resueltas */}
-          <div className="rounded-2xl border border-purple-500/30 dark:border-purple-500/20 bg-purple-500/[0.03] dark:bg-[#171422] p-4 flex flex-col justify-between h-[104px]">
+          <div className="rounded-2xl border border-violet/30 dark:border-violet/20 bg-violet/[0.03] dark:bg-violet/10 p-4 flex flex-col justify-between h-[104px]">
             <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500">
+              <div className="w-7 h-7 rounded-lg bg-violet/10 flex items-center justify-center text-violet">
                 <TrendingUp className="w-4 h-4" />
               </div>
-              <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">% Resueltas</span>
+              <span className="text-xs text-violet-ink dark:text-violet font-medium">% Resueltas</span>
             </div>
             <div className="text-2xl md:text-3xl font-bold text-foreground">{porcentaje}%</div>
           </div>
@@ -537,7 +537,7 @@ export function AlertsListView() {
                       {/* TIPO */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
+                          <div className="w-8 h-8 rounded-lg bg-amber/10 flex items-center justify-center text-amber shrink-0">
                             <Clock className="w-4 h-4" />
                           </div>
                           <div>
@@ -554,13 +554,13 @@ export function AlertsListView() {
                       {/* ESTADO */}
                       <td className="py-3.5 px-4">
                         {alert.status === "PENDING" ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber/10 text-amber-ink dark:text-amber border border-amber/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber" />
                             Pendiente
                           </span>
                         ) : alert.status === "APPROVED" || alert.status === "REVIEWED" ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green/10 text-green-ink dark:text-green border border-green/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green" />
                             Revisada
                           </span>
                         ) : (
@@ -580,7 +580,7 @@ export function AlertsListView() {
 
                       {/* PROYECTO */}
                       <td className="py-3.5 px-4">
-                        <span className="inline-block px-2.5 py-0.5 rounded-md text-xs font-mono font-medium bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                        <span className="inline-block px-2.5 py-0.5 rounded-md text-xs font-mono font-medium bg-violet/10 text-violet-ink dark:text-violet border border-violet/20">
                           {getProjectName(alert.projectId)}
                         </span>
                       </td>
@@ -594,7 +594,7 @@ export function AlertsListView() {
 
                       {/* UBICACIÓN */}
                       <td className="py-3.5 px-4">
-                        <span className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400">
+                        <span className="inline-flex items-center gap-1 text-xs font-medium text-blue dark:text-blue">
                           <MapPin className="w-3.5 h-3.5 shrink-0" />
                           <span>Condevilla Señor</span>
                         </span>
@@ -611,7 +611,7 @@ export function AlertsListView() {
                           </Link>
                           <button
                             onClick={() => handleDismissAlert(alert.id)}
-                            className="h-7 w-7 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10 flex items-center justify-center transition-colors cursor-pointer"
+                            className="h-7 w-7 rounded-lg text-muted-foreground hover:text-red hover:bg-red/10 flex items-center justify-center transition-colors cursor-pointer"
                             title="Descartar alerta"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

@@ -137,11 +137,11 @@ export function NotificationBell({ className }: { className?: string } = {}) {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-80 p-0 border-line shadow-xl rounded-[16px] overflow-hidden">
+      <DropdownMenuContent align="end" className="w-80 p-0 border-line shadow-xl rounded-[var(--radius-card)] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-inset border-b border-line">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-brand-gradient rounded-[11px] flex items-center justify-center shadow-sm">
+            <div className="w-8 h-8 bg-brand-gradient rounded-[var(--radius-nav)] flex items-center justify-center shadow-sm">
               <Bell className="w-4 h-4 text-white" strokeWidth={2} />
             </div>
             <div>
@@ -201,7 +201,7 @@ export function NotificationBell({ className }: { className?: string } = {}) {
                       <div className={cn("absolute left-0 top-0 bottom-0 w-1", colors.bg.replace('100', '400'))} />
                     )}
 
-                    <div className={cn("w-9 h-9 rounded-[11px] flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105", colors.bg)}>
+                    <div className={cn("w-9 h-9 rounded-[var(--radius-nav)] flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105", colors.bg)}>
                       <Icon className={cn("w-4 h-4", colors.text)} />
                     </div>
                     <div className="flex-1 min-w-0">

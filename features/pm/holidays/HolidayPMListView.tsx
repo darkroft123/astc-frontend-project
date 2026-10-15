@@ -460,7 +460,7 @@ export function HolidayPMListView() {
       {/* 1. TOP HEADER & CREATE COLLECTION BUTTON */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="text-[11px] font-mono font-medium tracking-wider text-[#7c3aed] uppercase flex items-center gap-1.5">
+          <div className="text-[11px] font-mono font-medium tracking-wider text-violet-ink uppercase flex items-center gap-1.5">
             <span>PANEL DE GESTIÓN</span>
             <span className="text-muted-foreground/60">·</span>
             <span>Calendario</span>
@@ -475,7 +475,7 @@ export function HolidayPMListView() {
 
         <button
           onClick={() => setIsFormOpen(true)}
-          className="h-10 px-5 rounded-xl bg-gradient-to-r from-[#4f46e5] via-[#6366f1] to-[#38bdf8] hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-md shadow-indigo-500/25 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+          className="h-10 px-5 rounded-xl bg-brand-gradient hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-md shadow-indigo-500/25 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>Crear colección</span>
@@ -483,16 +483,16 @@ export function HolidayPMListView() {
       </div>
 
       {/* 2. MAIN CARD CONTAINER */}
-      <div className="rounded-2xl border border-border/70 dark:border-white/5 bg-card/60 dark:bg-[#11131c]/90 p-5 md:p-6 shadow-sm space-y-6">
+      <div className="rounded-2xl border border-border/70 dark:border-white/5 bg-card/60 dark:bg-surface/90 p-5 md:p-6 shadow-sm space-y-6">
         {/* 2.1 TOP 3 KPI METRIC CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
           {/* Card 1: Colecciones disponibles */}
-          <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 dark:bg-[#1a1711] p-4 flex flex-col justify-between h-[88px]">
+          <div className="rounded-2xl border border-amber/20 bg-amber/5 dark:bg-amber/10 p-4 flex flex-col justify-between h-[88px]">
             <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/10 dark:bg-[#2e2315] border border-amber-500/20 flex items-center justify-center text-amber-500">
+              <div className="w-7 h-7 rounded-lg bg-amber/10 dark:bg-amber/15 border border-amber/20 flex items-center justify-center text-amber">
                 <Layers className="w-4 h-4 stroke-[2.2]" />
               </div>
-              <span className="text-[11px] font-medium text-amber-600 dark:text-amber-400">
+              <span className="text-[11px] font-medium text-amber-ink dark:text-amber">
                 Colecciones disponibles
               </span>
             </div>
@@ -502,12 +502,12 @@ export function HolidayPMListView() {
           </div>
 
           {/* Card 2: Asignadas al proyecto */}
-          <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 dark:bg-[#161224] p-4 flex flex-col justify-between h-[88px]">
+          <div className="rounded-2xl border border-violet/20 bg-violet/5 dark:bg-violet/10 p-4 flex flex-col justify-between h-[88px]">
             <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-purple-500/10 dark:bg-[#25183d] border border-purple-500/20 flex items-center justify-center text-purple-400">
+              <div className="w-7 h-7 rounded-lg bg-violet/10 dark:bg-violet/15 border border-violet/20 flex items-center justify-center text-violet">
                 <CheckCircle2 className="w-4 h-4 stroke-[2.2]" />
               </div>
-              <span className="text-[11px] font-medium text-purple-600 dark:text-purple-400">
+              <span className="text-[11px] font-medium text-violet-ink dark:text-violet">
                 Asignadas al proyecto
               </span>
             </div>
@@ -517,12 +517,12 @@ export function HolidayPMListView() {
           </div>
 
           {/* Card 3: Total feriados */}
-          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 dark:bg-[#0e1d17] p-4 flex flex-col justify-between h-[88px]">
+          <div className="rounded-2xl border border-green/20 bg-green/5 dark:bg-green/10 p-4 flex flex-col justify-between h-[88px]">
             <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-emerald-500/10 dark:bg-[#112920] border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <div className="w-7 h-7 rounded-lg bg-green/10 dark:bg-green/15 border border-green/20 flex items-center justify-center text-green">
                 <CalendarIcon className="w-4 h-4 stroke-[2.2]" />
               </div>
-              <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+              <span className="text-[11px] font-medium text-green-ink dark:text-green">
                 Total feriados
               </span>
             </div>
@@ -601,12 +601,12 @@ export function HolidayPMListView() {
         {/* 2.3 TABS BAR & ACTIONS */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
           {/* SEGMENTED TAB SELECTOR */}
-          <div className="inline-flex items-center p-1 rounded-xl bg-muted/60 dark:bg-[#161a23] border border-border/60 dark:border-white/5">
+          <div className="inline-flex items-center p-1 rounded-xl bg-muted/60 dark:bg-surface border border-border/60 dark:border-white/5">
             <button
               onClick={() => setActiveTab("project")}
               className={`px-4 py-2 rounded-lg text-xs transition-all cursor-pointer ${
                 activeTab === "project"
-                  ? "bg-card dark:bg-[#202533] text-foreground dark:text-white shadow-xs font-semibold"
+                  ? "bg-card dark:bg-raised text-foreground dark:text-white shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground font-medium"
               }`}
             >
@@ -616,7 +616,7 @@ export function HolidayPMListView() {
               onClick={() => setActiveTab("members")}
               className={`px-4 py-2 rounded-lg text-xs transition-all cursor-pointer ${
                 activeTab === "members"
-                  ? "bg-card dark:bg-[#202533] text-foreground dark:text-white shadow-xs font-semibold"
+                  ? "bg-card dark:bg-raised text-foreground dark:text-white shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground font-medium"
               }`}
             >
@@ -669,7 +669,7 @@ export function HolidayPMListView() {
                 return (
                   <div
                     key={c.id}
-                    className="rounded-2xl border border-border/70 dark:border-white/5 bg-card/70 dark:bg-[#121620]/70 overflow-hidden shadow-xs transition-all"
+                    className="rounded-2xl border border-border/70 dark:border-white/5 bg-card/70 dark:bg-surface/70 overflow-hidden shadow-xs transition-all"
                   >
                     {/* Header Row */}
                     <div
@@ -678,7 +678,7 @@ export function HolidayPMListView() {
                     >
                       {/* Left: Icon + Title + Meta */}
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-amber-500/10 dark:bg-[#292015] border border-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
+                        <div className="w-9 h-9 rounded-xl bg-amber/10 dark:bg-amber/15 border border-amber/20 flex items-center justify-center text-amber shrink-0">
                           <Layers className="w-4 h-4 stroke-[2.2]" />
                         </div>
                         <div>
@@ -693,7 +693,7 @@ export function HolidayPMListView() {
                       <div className="flex items-center gap-3">
                         {isAssigned ? (
                           <div className="flex items-center gap-3">
-                            <span className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 dark:text-emerald-400 text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1.5">
+                            <span className="bg-green/10 border border-green/30 text-green dark:text-green text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1.5">
                               <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
                               <span>Asignada</span>
                             </span>
@@ -703,7 +703,7 @@ export function HolidayPMListView() {
                                 e.stopPropagation();
                                 handleUnlinkCollection(c.id);
                               }}
-                              className="text-rose-500 hover:text-rose-400 text-xs font-medium px-2 py-1 cursor-pointer transition-colors"
+                              className="text-red hover:text-red-ink text-xs font-medium px-2 py-1 cursor-pointer transition-colors"
                             >
                               Quitar
                             </button>
@@ -725,7 +725,7 @@ export function HolidayPMListView() {
                               e.stopPropagation();
                               setPendingAssignment(c.id);
                             }}
-                            className="h-8 px-4 rounded-xl bg-purple-500/15 dark:bg-[#25183d] border border-purple-500/30 text-purple-600 dark:text-purple-300 hover:bg-purple-500/25 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+                            className="h-8 px-4 rounded-xl bg-violet/15 dark:bg-violet/15 border border-violet/30 text-violet-ink dark:text-violet-ink hover:bg-violet/25 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
                           >
                             <span>Asignar</span>
                             <span className="text-[11px]">&gt;</span>
@@ -736,7 +736,7 @@ export function HolidayPMListView() {
 
                     {/* Expanded Content: Holidays Grid */}
                     {isExpanded && (
-                      <div className="border-t border-border/60 dark:border-white/5 p-4 md:p-5 bg-background/50 dark:bg-[#0c0e14]/40">
+                      <div className="border-t border-border/60 dark:border-white/5 p-4 md:p-5 bg-background/50 dark:bg-sidebar/40">
                         {!c.items || c.items.length === 0 ? (
                           <p className="text-xs text-muted-foreground text-center py-4">
                             Esta colección no tiene fechas asignadas.
@@ -757,11 +757,11 @@ export function HolidayPMListView() {
                               return (
                                 <div
                                   key={item.id}
-                                  className="rounded-xl border border-border/60 dark:border-white/5 bg-card dark:bg-[#161a24] p-3 flex items-center justify-between gap-3 shadow-xs group"
+                                  className="rounded-xl border border-border/60 dark:border-white/5 bg-card dark:bg-surface p-3 flex items-center justify-between gap-3 shadow-xs group"
                                 >
                                   <div className="flex items-center gap-3 min-w-0">
                                     {/* Date Badge */}
-                                    <div className="w-11 h-11 rounded-lg bg-muted/80 dark:bg-[#1d2230] border border-border/60 dark:border-white/5 flex flex-col items-center justify-center shrink-0">
+                                    <div className="w-11 h-11 rounded-lg bg-muted/80 dark:bg-raised border border-border/60 dark:border-white/5 flex flex-col items-center justify-center shrink-0">
                                       <span className="text-[10px] font-mono font-semibold uppercase text-muted-foreground leading-none">
                                         {format(dateObj, "MMM", { locale: es })}
                                       </span>
@@ -783,7 +783,7 @@ export function HolidayPMListView() {
                                     <button
                                       type="button"
                                       onClick={() => handleDeleteCollectionItem(item.id)}
-                                      className="w-7 h-7 rounded-lg text-rose-500 opacity-0 group-hover:opacity-100 hover:bg-rose-500/10 transition-all flex items-center justify-center shrink-0 cursor-pointer"
+                                      className="w-7 h-7 rounded-lg text-red opacity-0 group-hover:opacity-100 hover:bg-red/10 transition-all flex items-center justify-center shrink-0 cursor-pointer"
                                       title="Eliminar fecha"
                                     >
                                       <Trash2 className="w-3.5 h-3.5" />
@@ -813,7 +813,7 @@ export function HolidayPMListView() {
             </div>
 
             {/* Table */}
-            <div className="rounded-2xl border border-border/70 dark:border-white/5 bg-card/50 dark:bg-[#121620]/50 overflow-hidden">
+            <div className="rounded-2xl border border-border/70 dark:border-white/5 bg-card/50 dark:bg-surface/50 overflow-hidden">
               {/* Header */}
               <div className="px-5 py-3 border-b border-border/60 dark:border-white/5 grid grid-cols-12 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
                 <div className="col-span-5">MIEMBRO</div>
@@ -861,11 +861,11 @@ export function HolidayPMListView() {
                         {/* Member column */}
                         <div className="col-span-5 flex items-center gap-3 min-w-0">
                           {initials ? (
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
                               {initials}
                             </div>
                           ) : (
-                            <div className="w-8 h-8 rounded-full bg-muted/80 dark:bg-[#1d2230] text-muted-foreground flex items-center justify-center shrink-0 border border-border/50">
+                            <div className="w-8 h-8 rounded-full bg-muted/80 dark:bg-raised text-muted-foreground flex items-center justify-center shrink-0 border border-border/50">
                               <UserIcon className="w-4 h-4" />
                             </div>
                           )}
@@ -890,7 +890,7 @@ export function HolidayPMListView() {
                               Ver {userExceptions.length} días
                             </button>
                           ) : (
-                            <span className="bg-muted/60 dark:bg-[#1a1f2b] text-muted-foreground text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1.5">
+                            <span className="bg-muted/60 dark:bg-raised text-muted-foreground text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1.5">
                               <span className="text-[8px]">●</span>
                               <span>Sin excepciones</span>
                             </span>
@@ -948,7 +948,7 @@ export function HolidayPMListView() {
             <div className="space-y-5 flex flex-col">
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">
-                  Nombre de la Colección <span className="text-rose-500">*</span>
+                  Nombre de la Colección <span className="text-red">*</span>
                 </Label>
                 <Input
                   value={formName}
@@ -998,7 +998,7 @@ export function HolidayPMListView() {
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="bg-green hover:bg-green/90 text-white"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Guardando..." : "Guardar"}
@@ -1182,7 +1182,7 @@ export function HolidayPMListView() {
                             className={`text-[10px] px-1.5 py-0.5 rounded ${
                               h.type === "USER_INCLUDE"
                                 ? "bg-primary/10 text-primary"
-                                : "bg-rose-500/10 text-rose-500"
+                                : "bg-red/10 text-red"
                             }`}
                           >
                             {h.type === "USER_INCLUDE" ? "DÍA LIBRE" : "DÍA LABORABLE"}
@@ -1196,7 +1196,7 @@ export function HolidayPMListView() {
                         variant="ghost"
                         onClick={() => handleDeleteException(h.id)}
                       >
-                        <X className="w-4 h-4 text-rose-500" />
+                        <X className="w-4 h-4 text-red" />
                       </Button>
                     </div>
                   ))}

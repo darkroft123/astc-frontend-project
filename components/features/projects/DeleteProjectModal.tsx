@@ -16,7 +16,7 @@ export default function DeleteProjectModal({
 }: DeleteProjectModalProps) {
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50">
-      <div className="bg-card border border-border rounded-[20px] shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+      <div className="bg-card border border-border rounded-[var(--radius-modal)] shadow-2xl max-w-md w-full mx-4 overflow-hidden">
         <div className="p-8">
           <div className="flex items-start gap-5">
             <div className="w-14 h-14 rounded-2xl bg-red/10 flex items-center justify-center flex-shrink-0 border border-red/20">

@@ -218,8 +218,8 @@ export function ScheduleManagementView() {
 
         {/* Top Header */}
         <div className="space-y-1">
-          <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 tracking-wider uppercase flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+          <p className="text-xs font-semibold text-violet-ink dark:text-violet tracking-wider uppercase flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-violet" />
             PANEL DE GESTIÓN · Administración
           </p>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
@@ -245,7 +245,7 @@ export function ScheduleManagementView() {
 
           {/* Card 2: Personalizados */}
           <div className="rounded-xl border border-border bg-card p-4 flex items-center gap-4 shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-violet/10 text-violet-ink dark:text-violet flex items-center justify-center shrink-0">
               <User className="w-5 h-5" />
             </div>
             <div>
@@ -256,7 +256,7 @@ export function ScheduleManagementView() {
 
           {/* Card 3: Heredan del proyecto */}
           <div className="rounded-xl border border-border bg-card p-4 flex items-center gap-4 shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-green/10 text-green-ink dark:text-green flex items-center justify-center shrink-0">
               <Folder className="w-5 h-5" />
             </div>
             <div>
@@ -267,7 +267,7 @@ export function ScheduleManagementView() {
 
           {/* Card 4: Sin proyecto */}
           <div className="rounded-xl border border-border bg-card p-4 flex items-center gap-4 shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-red/10 text-red-ink dark:text-red flex items-center justify-center shrink-0">
               <Ban className="w-5 h-5" />
             </div>
             <div>
@@ -292,7 +292,7 @@ export function ScheduleManagementView() {
                   setProjectFilter(e.target.value);
                   setPage(1);
                 }}
-                className="h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                className="h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
               >
                 {projectOptions.map((p) => (
                   <option key={p.id} value={p.id}>{p.name}</option>
@@ -315,7 +315,7 @@ export function ScheduleManagementView() {
                     setSearchTerm(e.target.value);
                     setPage(1);
                   }}
-                  className="w-full h-9 pl-9 pr-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  className="w-full h-9 pl-9 pr-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                 />
               </div>
             </div>
@@ -331,7 +331,7 @@ export function ScheduleManagementView() {
                   setStatusFilter(e.target.value);
                   setPage(1);
                 }}
-                className="h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                className="h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
               >
                 <option value="ALL">Todos</option>
                 <option value="WITH_OVERRIDE">Personalizados</option>
@@ -399,7 +399,7 @@ export function ScheduleManagementView() {
                         {/* Usuario */}
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-950/70 dark:text-purple-300 flex items-center justify-center font-bold text-xs shrink-0 border border-purple-200 dark:border-purple-800/60">
+                            <div className="w-9 h-9 rounded-full bg-violet/15 text-violet-ink dark:bg-violet/15 dark:text-violet-ink flex items-center justify-center font-bold text-xs shrink-0 border border-violet/20 dark:border-violet/25">
                               {getInitials(r.userName)}
                             </div>
                             <div className="min-w-0">
@@ -416,7 +416,7 @@ export function ScheduleManagementView() {
                         {/* Proyecto */}
                         <td className="py-3 px-4">
                           {r.projectId ? (
-                            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/70 dark:border-purple-800/50">
+                            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-violet/10 dark:bg-violet/15 text-violet-ink dark:text-violet-ink border border-violet/20 dark:border-violet/25">
                               {r.projectName}
                             </span>
                           ) : (
@@ -444,24 +444,24 @@ export function ScheduleManagementView() {
                             </span>
                           ) : r.hasOverride ? (
                             <div className="inline-flex items-center gap-1.5 flex-wrap">
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/70 dark:border-purple-800/50">
-                                <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-violet/10 dark:bg-violet/15 text-violet-ink dark:text-violet-ink border border-violet/20 dark:border-violet/25">
+                                <span className="w-1.5 h-1.5 rounded-full bg-violet" />
                                 Personalizado
                               </span>
                               {shiftBadge && (
-                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 border border-cyan-200/70 dark:border-cyan-800/50">
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-cyan/10 dark:bg-cyan/15 text-cyan dark:text-cyan border border-cyan/20 dark:border-cyan/25">
                                   {shiftBadge}
                                 </span>
                               )}
                             </div>
                           ) : (
                             <div className="inline-flex items-center gap-1.5 flex-wrap">
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/50">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green/10 dark:bg-green/15 text-green-ink dark:text-green-ink border border-green/20 dark:border-green/25">
+                                <span className="w-1.5 h-1.5 rounded-full bg-green" />
                                 Del proyecto
                               </span>
                               {shiftBadge && (
-                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 border border-cyan-200/70 dark:border-cyan-800/50">
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-cyan/10 dark:bg-cyan/15 text-cyan dark:text-cyan border border-cyan/20 dark:border-cyan/25">
                                   {shiftBadge}
                                 </span>
                               )}
@@ -490,7 +490,7 @@ export function ScheduleManagementView() {
                                   type="button"
                                   onClick={() => handleReset(r.userId, r.projectId)}
                                   disabled={resettingId === `${r.userId}:${r.projectId}`}
-                                  className="h-7 px-2 rounded-md border border-border bg-background hover:bg-amber-500/10 text-xs font-medium text-amber-600 dark:text-amber-400 inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+                                  className="h-7 px-2 rounded-md border border-border bg-background hover:bg-amber/10 text-xs font-medium text-amber-ink dark:text-amber inline-flex items-center gap-1 transition-colors disabled:opacity-50"
                                 >
                                   <RotateCcw className="w-3 h-3" />
                                   Restablecer

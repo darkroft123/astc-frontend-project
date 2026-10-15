@@ -73,7 +73,7 @@ export function MobileSidebar({
         <div className="flex justify-end pb-2">
           <button
             onClick={() => setOpen(false)}
-            className="p-2 rounded-[11px] hover:bg-raised text-text-3 hover:text-foreground transition-colors"
+            className="p-2 rounded-[var(--radius-nav)] hover:bg-raised text-text-3 hover:text-foreground transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -93,7 +93,7 @@ export function HamburgerButton() {
   return (
     <button
       onClick={() => setOpen(true)}
-      className="md:hidden p-2 rounded-[11px] bg-raised border border-line text-text-2 hover:text-foreground hover:bg-inset transition-colors"
+      className="md:hidden p-2 rounded-[var(--radius-nav)] bg-raised border border-line text-text-2 hover:text-foreground hover:bg-inset transition-colors"
       aria-label="Abrir menú"
     >
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

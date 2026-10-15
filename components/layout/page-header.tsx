@@ -74,7 +74,7 @@ export default function PageHeader({
         )}
 
         {showDateRange && (
-          <span className="inline-flex items-center gap-1.5 text-[13px] font-mono text-primary bg-primary/10 px-2 py-0.5 rounded-[7px] border border-primary/20 mt-1.5">
+          <span className="inline-flex items-center gap-1.5 text-[13px] font-mono text-primary bg-primary/10 px-2 py-0.5 rounded-[var(--radius-badge)] border border-primary/20 mt-1.5">
             <CalendarIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
             {formatDateDisplay(dateRange.fromDate)} → {formatDateDisplay(dateRange.toDate)}
           </span>

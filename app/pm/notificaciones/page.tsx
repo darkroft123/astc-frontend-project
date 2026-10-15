@@ -199,13 +199,13 @@ export default function NotificationsPage() {
             </h1>
           </div>
 
-          <div className="bg-card dark:bg-[#0c0e18] border border-border dark:border-[#1e2235] border-l-2 border-l-amber-400 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="bg-card dark:bg-sidebar border border-border dark:border-raised border-l-2 border-l-amber rounded-2xl p-6 shadow-sm space-y-4">
             <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 dark:bg-[#241c0e] dark:border-[#453316] flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-amber/10 border border-amber/20 dark:bg-amber/15 dark:border-amber/25 flex items-center justify-center shrink-0">
                 {isAttendance ? (
-                  <Clock className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                  <Clock className="w-5 h-5 text-amber dark:text-amber" />
                 ) : (
-                  <FileText className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                  <FileText className="w-5 h-5 text-amber dark:text-amber" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -213,7 +213,7 @@ export default function NotificationsPage() {
                   <h2 className="text-base font-bold text-foreground dark:text-white">
                     {selected.title}
                   </h2>
-                  <span className="text-xs text-muted-foreground dark:text-[#707694]">
+                  <span className="text-xs text-muted-foreground dark:text-text-5">
                     {new Date(selected.createdAt).toLocaleDateString()}
                   </span>
                 </div>
@@ -223,7 +223,7 @@ export default function NotificationsPage() {
               </div>
             </div>
 
-            <div className="bg-muted/40 dark:bg-[#111320] border border-border dark:border-[#1d2030] rounded-xl p-4 text-xs text-foreground/90 dark:text-[#c8cddc] leading-relaxed">
+            <div className="bg-muted/40 dark:bg-surface border border-border dark:border-raised rounded-xl p-4 text-xs text-foreground/90 dark:text-text-2 leading-relaxed">
               {selected.body}
             </div>
 
@@ -248,7 +248,7 @@ export default function NotificationsPage() {
         {/* 1. HEADER */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-[14px] bg-gradient-to-br from-[#38bdf8] via-[#818cf8] to-[#c084fc] flex items-center justify-center text-white shrink-0 shadow-sm">
+            <div className="w-12 h-12 rounded-[var(--radius-kpi)] bg-avatar-gradient flex items-center justify-center text-white shrink-0 shadow-sm">
               <Bell className="w-6 h-6" />
             </div>
             <div>
@@ -279,7 +279,7 @@ export default function NotificationsPage() {
             placeholder="Buscar por título, contenido o código..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-11 pl-10 pr-4 rounded-xl border border-border bg-card dark:bg-[#0d0f19] dark:border-[#1d2030] text-foreground placeholder:text-muted-foreground dark:placeholder-[#5a607f] text-sm outline-none focus:border-primary/50 transition-all shadow-xs"
+            className="w-full h-11 pl-10 pr-4 rounded-xl border border-border bg-card dark:bg-sidebar dark:border-raised text-foreground placeholder:text-muted-foreground dark:placeholder-[#5a607f] text-sm outline-none focus:border-primary/50 transition-all shadow-xs"
           />
         </div>
 
@@ -304,8 +304,8 @@ export default function NotificationsPage() {
                 className={cn(
                   "inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer",
                   isActive
-                    ? "bg-[#3b82f6] text-white shadow-sm font-semibold"
-                    : "bg-card dark:bg-[#111320] text-muted-foreground dark:text-[#8b8fa8] border border-border dark:border-[#1e2030] hover:bg-muted dark:hover:bg-[#171a2b]"
+                    ? "bg-blue text-white shadow-sm font-semibold"
+                    : "bg-card dark:bg-surface text-muted-foreground dark:text-text-4 border border-border dark:border-raised hover:bg-muted dark:hover:bg-raised"
                 )}
               >
                 <span>{label}</span>
@@ -315,7 +315,7 @@ export default function NotificationsPage() {
                       "text-[10px] font-bold px-1.5 py-0.2 rounded-full font-mono",
                       isActive
                         ? "bg-white/20 text-white"
-                        : "bg-primary/10 dark:bg-[#1d2238] text-primary dark:text-[#7c9aff]"
+                        : "bg-primary/10 dark:bg-raised text-primary dark:text-[#7c9aff]"
                     )}
                   >
                     {count}
@@ -329,7 +329,7 @@ export default function NotificationsPage() {
         {/* 4. NOTIFICATIONS LIST */}
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 rounded-full bg-muted/60 dark:bg-[#121422] flex items-center justify-center mb-3 text-muted-foreground">
+            <div className="w-16 h-16 rounded-full bg-muted/60 dark:bg-surface flex items-center justify-center mb-3 text-muted-foreground">
               <Bell className="w-8 h-8 opacity-40" />
             </div>
             <p className="text-foreground font-semibold text-base">
@@ -352,14 +352,14 @@ export default function NotificationsPage() {
                 <div
                   key={n.id}
                   onClick={() => handleClick(n)}
-                  className="w-full text-left rounded-2xl border border-border dark:bg-[#0c0e18] dark:border-[#1e2235] border-l-2 border-l-[#f59e0b] dark:border-l-amber-400 p-4 relative overflow-hidden transition-all duration-200 hover:border-amber-500/50 hover:shadow-sm cursor-pointer flex items-start gap-3.5 group"
+                  className="w-full text-left rounded-2xl border border-border dark:bg-sidebar dark:border-raised border-l-2 border-l-amber dark:border-l-amber p-4 relative overflow-hidden transition-all duration-200 hover:border-amber/50 hover:shadow-sm cursor-pointer flex items-start gap-3.5 group"
                 >
                   {/* ICON BOX */}
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 dark:bg-[#241c0e] dark:border-[#453316] flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-amber/10 border border-amber/20 dark:bg-amber/15 dark:border-amber/25 flex items-center justify-center shrink-0">
                     {isAttendance ? (
-                      <Clock className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                      <Clock className="w-5 h-5 text-amber dark:text-amber" />
                     ) : (
-                      <FileText className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                      <FileText className="w-5 h-5 text-amber dark:text-amber" />
                     )}
                   </div>
 
@@ -370,15 +370,15 @@ export default function NotificationsPage() {
                         {n.title}
                       </p>
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-xs text-muted-foreground dark:text-[#707694]">
+                        <span className="text-xs text-muted-foreground dark:text-text-5">
                           {new Date(n.createdAt).toLocaleDateString()}
                         </span>
                         {!n.read && (
-                          <span className="w-2 h-2 rounded-full bg-[#3b82f6] shrink-0" />
+                          <span className="w-2 h-2 rounded-full bg-blue shrink-0" />
                         )}
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground dark:text-[#8b8fa8] leading-relaxed mt-1 line-clamp-2">
+                    <p className="text-xs text-muted-foreground dark:text-text-4 leading-relaxed mt-1 line-clamp-2">
                       {n.body}
                     </p>
                   </div>
@@ -390,7 +390,7 @@ export default function NotificationsPage() {
 
         {/* 5. PAGINATION */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between pt-4 text-xs text-muted-foreground dark:text-[#707694]">
+          <div className="flex items-center justify-between pt-4 text-xs text-muted-foreground dark:text-text-5">
             <span>
               {filtered.length} notificaciones · Página {currentPage} de {totalPages}
             </span>
