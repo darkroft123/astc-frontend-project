@@ -979,27 +979,34 @@ type GetAllUsersResponse = {
 };
 
 export async function getAllUsers(token: string): Promise<User[]> {
-  const data = await graphqlRequest<GetAllUsersResponse>(
-    `
-    query ListUsers {
-      listUsers {
-        id
-        username
-        email
-        firstName
-        lastName
-        avatarUrl
-        roleId
-        roleCode
-        roleName
+  try {
+    const data = await graphqlRequest<any>(
+      `
+      query ListUsers {
+        listUsers {
+          id
+          username
+          email
+          firstName
+          lastName
+          avatarUrl
+          roleId
+          roleCode
+          roleName
+        }
       }
-    }
-    `,
-    {},
-    token
-  );
+      `,
+      {},
+      token
+    );
 
-  return data.listUsers;
+    const raw = data?.listUsers ?? data?.getAllUsers ?? [];
+    if (Array.isArray(raw)) return raw;
+    if (Array.isArray(raw?.items)) return raw.items;
+    return [];
+  } catch {
+    return [];
+  }
 }
 
 type GetUserResponse = {
@@ -1008,7 +1015,7 @@ type GetUserResponse = {
 
 export async function getUserById(token: string, id: string): Promise<User | null> {
   try {
-    const data = await graphqlRequest<GetUserResponse>(
+    const data = await graphqlRequest<any>(
       `
       query ListUsers {
         listUsers {
@@ -1026,7 +1033,9 @@ export async function getUserById(token: string, id: string): Promise<User | nul
       {},
       token
     );
-    return data.listUsers.find((u) => u.id === id) || null;
+    const raw = data?.listUsers ?? data?.getAllUsers ?? [];
+    const list = Array.isArray(raw) ? raw : Array.isArray(raw?.items) ? raw.items : [];
+    return list.find((u: any) => u.id === id) || null;
   } catch {
     return null;
   }

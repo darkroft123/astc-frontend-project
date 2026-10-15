@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       return NextResponse.json({
         data: {
           getAllUsers: MOCK_USERS,
-          listUsers: { items: MOCK_USERS, total: MOCK_USERS.length },
+          listUsers: MOCK_USERS,
           getUsers: MOCK_USERS,
         },
       });

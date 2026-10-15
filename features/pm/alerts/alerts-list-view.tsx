@@ -93,8 +93,13 @@ export function AlertsListView() {
       getAllProjects(token).catch(() => []),
       getAllUsers(token).catch(() => []),
     ]).then(([projData, userData]) => {
-      setProjects(projData || []);
-      setUsers(userData || []);
+      setProjects(Array.isArray(projData) ? projData : []);
+      const safeUsers = Array.isArray(userData)
+        ? userData
+        : Array.isArray((userData as any)?.items)
+        ? (userData as any).items
+        : [];
+      setUsers(safeUsers);
     });
   }, [token]);
 
@@ -329,8 +334,8 @@ export function AlertsListView() {
               }}
               className="w-full h-10 px-3 rounded-xl border border-border/80 bg-background text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
             >
-              <option value="all">Todos los proyectos ({projects.length || 3})</option>
-              {projects.map((p) => (
+              <option value="all">Todos los proyectos ({Array.isArray(projects) ? projects.length : 3})</option>
+              {Array.isArray(projects) && projects.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
                 </option>
@@ -350,8 +355,8 @@ export function AlertsListView() {
               }}
               className="w-full h-10 px-3 rounded-xl border border-border/80 bg-background text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
             >
-              <option value="all">Todos los usuarios ({users.length || 5})</option>
-              {users.map((u) => (
+              <option value="all">Todos los usuarios ({Array.isArray(users) ? users.length : 5})</option>
+              {Array.isArray(users) && users.map((u) => (
                 <option key={u.id} value={u.id}>
                   {[u.firstName, u.lastName].filter(Boolean).join(" ") || u.username}
                 </option>

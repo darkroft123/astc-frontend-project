@@ -51,12 +51,18 @@ export function VacationApprovalView() {
         getAllUsers(token).catch(() => []),
         getAllProjects(token).catch(() => []),
       ]);
-      setVacations(data || []);
-      setProjects(projectsList || []);
+      setVacations(Array.isArray(data) ? data : []);
+      setProjects(Array.isArray(projectsList) ? projectsList : []);
+
+      const safeUsers = Array.isArray(usersList)
+        ? usersList
+        : Array.isArray((usersList as any)?.items)
+        ? (usersList as any).items
+        : [];
 
       const namesMap: Record<string, string> = {};
-      for (const u of usersList || []) {
-        if (u.id) {
+      for (const u of safeUsers) {
+        if (u && u.id) {
           const name = `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || u.email;
           namesMap[u.id] = name;
         }
