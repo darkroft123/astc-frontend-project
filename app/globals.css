@@ -229,4 +229,13 @@
   code, kbd, samp, pre, .font-mono {
     font-family: var(--font-jetbrains-mono), 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
+
+  .dark main {
+    background-color: var(--background);
+    background-image: 
+      radial-gradient(circle 800px at top right, rgba(168, 85, 247, 0.25) 0%, rgba(99, 102, 241, 0.14) 35%, rgba(56, 189, 248, 0.04) 55%, transparent 75%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
 }
+

@@ -63,7 +63,7 @@ export default function EditSchedulePage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/50 p-4">
+    <div className="min-h-screen bg-transparent p-4">
       <ScheduleForm mode="edit" initialData={schedule} />
     </div>
   );

@@ -3,7 +3,7 @@ import ScheduleForm from "@/components/dashboard/projects/assignaments/Schedule-
 
 export default function AssignSchedulePage() {
   return (
-    <div className="min-h-screen bg-muted/50 p-4">
+    <div className="min-h-screen bg-transparent p-4">
       <ScheduleForm mode="create" />
     </div>
   );
