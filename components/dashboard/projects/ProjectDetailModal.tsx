@@ -14,9 +14,7 @@ import {
   MapPin,
   Loader2,
   Plus,
-  AlertCircle,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   getCollectionsForProject,
   getGlobalCollections,
@@ -88,14 +86,21 @@ export default function ProjectDetailModal({
   const [selectedNewUserRole, setSelectedNewUserRole] = useState("TEAM_MEMBER");
   const [isAddingMember, setIsAddingMember] = useState(false);
 
-  // Normalize members list
   useEffect(() => {
     if (!project) return;
     const members = [...(project.members || [])];
     setMembersList(members);
   }, [project]);
 
-  // Load available users for adding members
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   useEffect(() => {
     if (!token || !showAddMember) return;
     getAllUsers(token)
@@ -122,7 +127,6 @@ export default function ProjectDetailModal({
 
       const holidaysMap = new Map<string, any>();
 
-      // Direct holidays
       if (directHolidays && directHolidays.length > 0) {
         for (const dh of directHolidays) {
           if (dh.date && dh.date.startsWith(`${yr}-`)) {
@@ -131,7 +135,6 @@ export default function ProjectDetailModal({
         }
       }
 
-      // Project collections
       if (projCols && projCols.length > 0) {
         for (const col of projCols) {
           if (col.items) {
@@ -148,7 +151,6 @@ export default function ProjectDetailModal({
         }
       }
 
-      // Fallback to global collections
       if (holidaysMap.size === 0 && globalCols && globalCols.length > 0) {
         const targetGlobalCols = globalAssignedId
           ? globalCols.filter((g: any) => g.id === globalAssignedId)
@@ -260,29 +262,29 @@ export default function ProjectDetailModal({
     return name.slice(0, 2).toUpperCase();
   };
 
-  return (
-    <Dialog open={!!project} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent
-        showCloseButton={false}
-        style={{ transform: "translate(-50%, -50%)" }}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-3xl w-full max-h-[88vh] flex flex-col p-6 sm:p-7 rounded-[28px] border-border/80 bg-card shadow-2xl overflow-hidden z-50"
-      >
-        <DialogTitle className="sr-only">Detalles del Proyecto</DialogTitle>
+  if (!project) return null;
 
-        {/* Top subtle ambient glow */}
-        <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-purple-500/10 via-purple-500/5 to-transparent pointer-events-none rounded-t-[28px]" />
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in-0 duration-200"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="w-full max-w-[620px] bg-card border border-border/80 dark:border-white/10 rounded-[24px] p-5 sm:p-6 shadow-2xl relative text-foreground">
+        {/* Subtle ambient glow on top */}
+        <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-purple-500/15 via-purple-500/5 to-transparent pointer-events-none rounded-t-[24px]" />
 
         {/* Header Row */}
-        <div className="relative flex items-start justify-between gap-4 shrink-0">
-          <div className="flex items-center gap-4">
-            {/* Glowing squircle icon */}
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#6366f1] via-[#8b5cf6] to-[#d946ef] p-0.5 flex items-center justify-center shadow-lg shadow-purple-500/25 shrink-0 text-white">
-              <FolderKanban className="w-7 h-7" />
+        <div className="relative flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#6366f1] via-[#8b5cf6] to-[#d946ef] flex items-center justify-center text-white shadow-md shadow-purple-500/20 shrink-0">
+              <FolderKanban className="w-6 h-6" />
             </div>
 
             <div>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-xl font-bold tracking-tight text-foreground">
                   {project?.name || "gestion de asistencia"}
                 </h2>
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200/70 dark:border-emerald-800/60">
@@ -291,8 +293,7 @@ export default function ProjectDetailModal({
                 </span>
               </div>
 
-              {/* ID Pill */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 mt-1.5 rounded-xl border border-border/80 dark:border-border/60 bg-muted/40 dark:bg-white/[0.03] text-xs font-mono text-muted-foreground">
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 mt-1 rounded-lg border border-border/80 dark:border-border/60 bg-muted/40 dark:bg-white/[0.03] text-[11px] font-mono text-muted-foreground">
                 <span className="font-semibold text-muted-foreground/70">ID</span>
                 <span>{project?.id}</span>
                 <button
@@ -302,32 +303,30 @@ export default function ProjectDetailModal({
                   title="Copiar ID"
                 >
                   {copiedId ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                    <Check className="w-3 h-3 text-emerald-500" />
                   ) : (
-                    <Copy className="w-3.5 h-3.5" />
+                    <Copy className="w-3 h-3" />
                   )}
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Close Button */}
           <button
             type="button"
             onClick={onClose}
-            className="w-10 h-10 rounded-xl border border-border/80 dark:border-border/60 bg-card hover:bg-muted/70 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0"
+            className="w-9 h-9 rounded-xl border border-border/80 dark:border-border/60 bg-card hover:bg-muted/70 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Segmented Tabs Bar */}
-        <div className="bg-muted/40 dark:bg-white/[0.04] p-1.5 rounded-2xl border border-border/60 flex items-center gap-1.5 mt-6 shrink-0">
-          {/* Tab 1: General */}
+        <div className="bg-muted/40 dark:bg-white/[0.04] p-1 rounded-xl border border-border/60 flex items-center gap-1 mt-4">
           <button
             type="button"
             onClick={() => setActiveTab("general")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === "general"
                 ? "bg-white dark:bg-white/10 text-foreground dark:text-white shadow-xs"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
@@ -337,11 +336,10 @@ export default function ProjectDetailModal({
             General
           </button>
 
-          {/* Tab 2: Feriados */}
           <button
             type="button"
             onClick={() => setActiveTab("holidays")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === "holidays"
                 ? "bg-white dark:bg-white/10 text-foreground dark:text-white shadow-xs"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
@@ -350,7 +348,7 @@ export default function ProjectDetailModal({
             <Calendar className="w-3.5 h-3.5" />
             Feriados
             <span
-              className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
+              className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                 activeTab === "holidays"
                   ? "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
                   : "bg-muted text-muted-foreground"
@@ -360,11 +358,10 @@ export default function ProjectDetailModal({
             </span>
           </button>
 
-          {/* Tab 3: Horarios y turnos */}
           <button
             type="button"
             onClick={() => setActiveTab("schedules")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === "schedules"
                 ? "bg-white dark:bg-white/10 text-foreground dark:text-white shadow-xs"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
@@ -374,11 +371,10 @@ export default function ProjectDetailModal({
             Horarios y turnos
           </button>
 
-          {/* Tab 4: Miembros */}
           <button
             type="button"
             onClick={() => setActiveTab("members")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === "members"
                 ? "bg-white dark:bg-white/10 text-foreground dark:text-white shadow-xs"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
@@ -387,7 +383,7 @@ export default function ProjectDetailModal({
             <Users className="w-3.5 h-3.5" />
             Miembros
             <span
-              className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
+              className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                 activeTab === "members"
                   ? "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
                   : "bg-muted text-muted-foreground"
@@ -398,82 +394,77 @@ export default function ProjectDetailModal({
           </button>
         </div>
 
-        {/* Tab Content Container */}
-        <div className="mt-6 space-y-4 overflow-y-auto flex-1 pr-1">
-
-          {/* ===================== TAB 1: GENERAL ===================== */}
+        {/* Tab Content Container - No scrollbars, perfectly sized */}
+        <div className="mt-3.5 space-y-3">
+          {/* TAB 1: GENERAL */}
           {activeTab === "general" && (
-            <div className="space-y-4">
-              {/* Card 1: Descripción */}
-              <div className="rounded-2xl border border-border/70 dark:border-border/60 bg-card/60 p-4 shadow-2xs">
-                <p className="text-[10px] font-mono uppercase tracking-wider font-semibold text-muted-foreground mb-1.5">
+            <div className="space-y-3">
+              {/* Descripción */}
+              <div className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 shadow-2xs">
+                <p className="text-[9px] font-mono uppercase tracking-wider font-semibold text-muted-foreground mb-1">
                   DESCRIPCIÓN DEL PROYECTO
                 </p>
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-xs font-medium text-foreground">
                   {project?.description || project?.name || "gestion de asistencia"}
                 </p>
               </div>
 
-              {/* Card 2: Grid 3 cols */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Periodo */}
-                <div className="rounded-2xl border border-border/70 dark:border-border/60 bg-card/60 p-4 shadow-2xs">
-                  <p className="text-[10px] font-mono uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 mb-2">
-                    <Calendar className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+              {/* 3 Columns Grid */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 shadow-2xs">
+                  <p className="text-[9px] font-mono uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 mb-1.5">
+                    <Calendar className="w-3 h-3 text-purple-600 dark:text-purple-400" />
                     PERIODO
                   </p>
-                  <p className="text-sm font-bold text-foreground">
+                  <p className="text-xs font-bold text-foreground">
                     {formatDateRange()}
                   </p>
                 </div>
 
-                {/* Equipo */}
-                <div className="rounded-2xl border border-border/70 dark:border-border/60 bg-card/60 p-4 shadow-2xs">
-                  <p className="text-[10px] font-mono uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 mb-2">
-                    <Users className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                <div className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 shadow-2xs">
+                  <p className="text-[9px] font-mono uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 mb-1.5">
+                    <Users className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                     EQUIPO
                   </p>
-                  <p className="text-sm font-bold text-foreground">
+                  <p className="text-xs font-bold text-foreground">
                     {membersList.length} colaboradores
                   </p>
                 </div>
 
-                {/* Responsable */}
-                <div className="rounded-2xl border border-border/70 dark:border-border/60 bg-card/60 p-4 shadow-2xs">
-                  <p className="text-[10px] font-mono uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 mb-2">
-                    <ShieldCheck className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+                <div className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 shadow-2xs">
+                  <p className="text-[9px] font-mono uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 mb-1.5">
+                    <ShieldCheck className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
                     RESPONSABLE
                   </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0">
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <div className="w-5 h-5 rounded-full bg-purple-600 text-white font-bold text-[9px] flex items-center justify-center shrink-0">
                       JP
                     </div>
-                    <p className="text-sm font-bold text-foreground">
+                    <p className="text-xs font-bold text-foreground truncate">
                       {pmUsername}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Card 3: Políticas y reglas de asistencia */}
-              <div className="rounded-2xl border border-border/70 dark:border-border/60 bg-card/60 p-5 shadow-2xs">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                    <Clock className="w-4 h-4" />
+              {/* Políticas y reglas */}
+              <div className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-4 shadow-2xs">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-6 h-6 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                    <Clock className="w-3.5 h-3.5" />
                   </div>
-                  <h3 className="font-bold text-base text-foreground">
+                  <h3 className="font-bold text-xs text-foreground">
                     Políticas y reglas de asistencia
                   </h3>
                 </div>
 
-                {/* Grid 6 properties */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-5 gap-x-6 text-sm mb-5">
+                <div className="grid grid-cols-3 gap-y-3.5 gap-x-4 text-xs mb-3.5">
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider mb-1 block">
+                    <span className="text-[9px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
                       PAÍS / SEDE
                     </span>
-                    <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                      <span className="px-1.5 py-0.5 rounded bg-muted border border-border text-[11px] font-mono font-bold text-foreground">
+                    <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
+                      <span className="px-1 py-0.2 rounded bg-muted border border-border text-[10px] font-mono font-bold text-foreground">
                         {countryInfo.code}
                       </span>
                       {countryInfo.country}
@@ -481,67 +472,66 @@ export default function ProjectDetailModal({
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider mb-1 block">
+                    <span className="text-[9px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
                       ZONA HORARIA
                     </span>
-                    <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                      <Globe className="w-4 h-4 text-muted-foreground" />
+                    <span className="font-bold text-xs text-foreground flex items-center gap-1">
+                      <Globe className="w-3 h-3 text-muted-foreground" />
                       {project?.timezone || "America/Lima"}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider mb-1 block">
+                    <span className="text-[9px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
                       TOLERANCIA DE ENTRADA
                     </span>
-                    <span className="font-bold text-sm text-foreground">
+                    <span className="font-bold text-xs text-foreground">
                       {project?.graceMinutes ?? 10} minutos
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider mb-1 block">
+                    <span className="text-[9px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
                       HORARIO BASE
                     </span>
-                    <span className="font-mono font-bold text-sm text-foreground">
+                    <span className="font-mono font-bold text-xs text-foreground">
                       {project?.workStartTime ? project.workStartTime.substring(0, 5) : "08:00"} -{" "}
                       {project?.workEndTime ? project.workEndTime.substring(0, 5) : "17:00"}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider mb-1 block">
+                    <span className="text-[9px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
                       CORTE DE FALTA
                     </span>
-                    <span className="font-mono font-bold text-sm text-foreground">
+                    <span className="font-mono font-bold text-xs text-foreground">
                       {project?.absenceCutoffTime ? project.absenceCutoffTime.substring(0, 5) : "09:30"}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider mb-1 block">
+                    <span className="text-[9px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
                       ELEGIBILIDAD VACACIONES
                     </span>
-                    <span className="font-bold text-sm text-foreground">
+                    <span className="font-bold text-xs text-foreground">
                       {project?.vacationEligibilityDays ?? 0} días
                     </span>
                   </div>
                 </div>
 
-                <div className="border-t border-border/60 pt-4">
-                  {/* GPS Status Banner */}
-                  <div className="rounded-xl border border-amber-300/80 dark:border-amber-900/60 bg-amber-50/40 dark:bg-amber-950/20 p-3.5 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                <div className="border-t border-border/60 pt-3">
+                  <div className="rounded-lg border border-amber-300/70 dark:border-amber-900/40 bg-amber-50/30 dark:bg-amber-950/20 p-2.5 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
                       <MapPin className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                       <div>
-                        <p className="font-semibold text-sm text-foreground">
+                        <p className="font-semibold text-xs text-foreground">
                           {project?.latitude && project?.longitude
                             ? `Ubicación GPS: ${project.latitude}, ${project.longitude}`
                             : "Ubicación GPS sin configurar"}
                         </p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
+                        <p className="text-[10px] text-muted-foreground">
                           {project?.latitude && project?.longitude
-                            ? `Geocerca activa con radio de ${project?.geofenceRadiusMeters || 100} metros.`
+                            ? `Geocerca activa (${project?.geofenceRadiusMeters || 100}m)`
                             : "Sin coordenadas, la geocerca no valida los marcajes."}
                         </p>
                       </div>
@@ -558,7 +548,7 @@ export default function ProjectDetailModal({
                           alert("Para configurar la geocerca, edita la configuración del proyecto.");
                         }
                       }}
-                      className="px-4 py-1.5 rounded-lg border border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300 hover:bg-amber-100/50 dark:hover:bg-amber-950/40 text-xs font-semibold transition-colors"
+                      className="px-3 py-1 rounded-lg border border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300 hover:bg-amber-100/50 dark:hover:bg-amber-950/40 text-[11px] font-semibold transition-colors"
                     >
                       Configurar
                     </button>
@@ -568,28 +558,26 @@ export default function ProjectDetailModal({
             </div>
           )}
 
-          {/* ===================== TAB 2: FERIADOS ===================== */}
+          {/* TAB 2: FERIADOS */}
           {activeTab === "holidays" && (
-            <div className="space-y-4">
-              {/* Header row */}
-              <div className="flex items-center justify-between gap-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-bold text-base text-foreground">
+                  <h3 className="font-bold text-xs text-foreground">
                     Feriados asignados
                   </h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-[10px] text-muted-foreground">
                     {holidays.length} feriados en {holidayYear}
                   </p>
                 </div>
 
-                {/* Year Selector */}
-                <div className="bg-muted/40 dark:bg-white/[0.04] p-1 rounded-xl border border-border/60 flex items-center gap-1">
+                <div className="bg-muted/40 dark:bg-white/[0.04] p-0.5 rounded-lg border border-border/60 flex items-center gap-1">
                   {[currentYear - 1, currentYear, currentYear + 1].map((yr) => (
                     <button
                       key={yr}
                       type="button"
                       onClick={() => setHolidayYear(yr)}
-                      className={`px-3 py-1 rounded-lg text-xs transition-all ${
+                      className={`px-2.5 py-0.5 rounded text-[11px] transition-all ${
                         holidayYear === yr
                           ? "bg-white dark:bg-white/10 text-foreground font-bold shadow-2xs"
                           : "text-muted-foreground hover:text-foreground"
@@ -601,14 +589,13 @@ export default function ProjectDetailModal({
                 </div>
               </div>
 
-              {/* Holidays List */}
               {isLoadingHolidays ? (
-                <div className="py-12 flex items-center justify-center text-muted-foreground gap-2">
-                  <Loader2 className="w-5 h-5 animate-spin text-purple-600" />
-                  <span className="text-xs">Cargando feriados asignados...</span>
+                <div className="py-8 flex items-center justify-center text-muted-foreground gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
+                  <span className="text-xs">Cargando feriados...</span>
                 </div>
               ) : holidays.length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {holidays.map((h, idx) => {
                     const d = new Date(h.date + "T12:00:00");
                     const dayAbbr = d
@@ -626,31 +613,29 @@ export default function ProjectDetailModal({
                     return (
                       <div
                         key={idx}
-                        className="rounded-2xl border border-border/70 dark:border-border/60 bg-card/60 p-3.5 flex items-center justify-between shadow-2xs"
+                        className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 flex items-center justify-between shadow-2xs"
                       >
-                        <div className="flex items-center gap-3.5">
-                          {/* Date box */}
-                          <div className="border border-border/80 dark:border-border/60 rounded-xl p-2 min-w-[54px] text-center bg-muted/20">
-                            <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 block tracking-wider uppercase">
+                        <div className="flex items-center gap-3">
+                          <div className="border border-border/80 dark:border-border/60 rounded-lg p-1.5 min-w-[48px] text-center bg-muted/20">
+                            <span className="text-[9px] font-bold text-purple-600 dark:text-purple-400 block tracking-wider uppercase">
                               {dayAbbr}
                             </span>
-                            <span className="text-lg font-bold text-foreground leading-none block mt-0.5">
+                            <span className="text-base font-bold text-foreground leading-none block mt-0.5">
                               {dayNum}
                             </span>
                           </div>
 
                           <div>
-                            <p className="font-bold text-sm text-foreground">
+                            <p className="font-bold text-xs text-foreground">
                               {h.name}
                             </p>
-                            <p className="text-xs text-muted-foreground capitalize mt-0.5">
+                            <p className="text-[11px] text-muted-foreground capitalize">
                               {fullDateStr}
                             </p>
                           </div>
                         </div>
 
-                        {/* Pill badge */}
-                        <span className="bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200/50 dark:border-blue-900/40 px-3 py-1 rounded-full text-xs font-semibold">
+                        <span className="bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200/50 dark:border-blue-900/40 px-2.5 py-0.5 rounded-full text-[11px] font-semibold">
                           {h.type || "Nacional"}
                         </span>
                       </div>
@@ -658,91 +643,75 @@ export default function ProjectDetailModal({
                   })}
                 </div>
               ) : (
-                <div className="py-12 text-center rounded-2xl border border-dashed border-border/80 bg-muted/20">
-                  <Calendar className="w-8 h-8 mx-auto text-muted-foreground/50 mb-2" />
-                  <p className="text-sm font-semibold text-foreground">
-                    No hay feriados asignados para el año {holidayYear}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    No se han vinculado colecciones de feriados en este periodo.
+                <div className="py-8 text-center rounded-xl border border-dashed border-border/80 bg-muted/20">
+                  <Calendar className="w-6 h-6 mx-auto text-muted-foreground/50 mb-1.5" />
+                  <p className="text-xs font-semibold text-foreground">
+                    No hay feriados asignados para {holidayYear}
                   </p>
                 </div>
               )}
             </div>
           )}
 
-          {/* ===================== TAB 3: HORARIOS Y TURNOS ===================== */}
+          {/* TAB 3: HORARIOS Y TURNOS */}
           {activeTab === "schedules" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold text-base text-foreground">
-                    Horarios y turnos de trabajo
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Horario base configurado y plantillas de turnos vinculadas al proyecto.
-                  </p>
-                </div>
-              </div>
-
-              {/* Base Schedule Card */}
-              <div className="rounded-2xl border border-border/70 dark:border-border/60 bg-card/60 p-4 shadow-2xs space-y-3">
+            <div className="space-y-3">
+              <div className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 shadow-2xs space-y-2">
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                  <h4 className="font-bold text-sm text-foreground">Horario Base del Proyecto</h4>
-                  <span className="ml-auto text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 font-semibold">
+                  <Clock className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                  <h4 className="font-bold text-xs text-foreground">Horario Base del Proyecto</h4>
+                  <span className="ml-auto text-[10px] px-2 py-0.2 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 font-semibold">
                     Predeterminado
                   </span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-muted/30 p-3 rounded-xl border border-border/60 text-xs">
+                <div className="grid grid-cols-3 gap-2 bg-muted/30 p-2.5 rounded-lg border border-border/60 text-[11px]">
                   <div>
-                    <span className="text-muted-foreground block text-[10px] uppercase font-mono tracking-wider">
+                    <span className="text-muted-foreground block text-[9px] uppercase font-mono tracking-wider">
                       Jornada
                     </span>
-                    <span className="font-bold text-foreground font-mono text-xs mt-0.5 block">
+                    <span className="font-bold text-foreground font-mono text-[11px]">
                       {project?.workStartTime ? project.workStartTime.substring(0, 5) : "08:00"} -{" "}
                       {project?.workEndTime ? project.workEndTime.substring(0, 5) : "17:00"}
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-[10px] uppercase font-mono tracking-wider">
+                    <span className="text-muted-foreground block text-[9px] uppercase font-mono tracking-wider">
                       Tolerancia
                     </span>
-                    <span className="font-bold text-foreground text-xs mt-0.5 block">
-                      {project?.graceMinutes ?? 10} minutos
+                    <span className="font-bold text-foreground text-[11px]">
+                      {project?.graceMinutes ?? 10} min
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-[10px] uppercase font-mono tracking-wider">
+                    <span className="text-muted-foreground block text-[9px] uppercase font-mono tracking-wider">
                       Corte de falta
                     </span>
-                    <span className="font-bold text-foreground font-mono text-xs mt-0.5 block">
+                    <span className="font-bold text-foreground font-mono text-[11px]">
                       {project?.absenceCutoffTime ? project.absenceCutoffTime.substring(0, 5) : "09:30"}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Shift Templates List */}
               {isLoadingShifts ? (
-                <div className="py-8 flex items-center justify-center text-muted-foreground gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
+                <div className="py-6 flex items-center justify-center text-muted-foreground gap-2">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-600" />
                   <span className="text-xs">Cargando turnos...</span>
                 </div>
               ) : shiftTemplates.length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {shiftTemplates.map((shift, idx) => (
                     <div
                       key={idx}
-                      className="rounded-2xl border border-border/70 dark:border-border/60 bg-card/60 p-4 shadow-2xs space-y-2"
+                      className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 shadow-2xs space-y-1"
                     >
                       <div className="flex items-center justify-between">
-                        <h4 className="font-bold text-sm text-foreground">{shift.name}</h4>
-                        <span className="text-xs px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/60 font-semibold">
+                        <h4 className="font-bold text-xs text-foreground">{shift.name}</h4>
+                        <span className="text-[10px] px-2 py-0.2 rounded-full bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/60 font-semibold">
                           {shift.shiftType || "REGULAR"}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground font-mono">
+                      <p className="text-[11px] text-muted-foreground font-mono">
                         Horario: {shift.workStartTime?.substring(0, 5) || "08:00"} -{" "}
                         {shift.workEndTime?.substring(0, 5) || "17:00"}
                       </p>
@@ -753,16 +722,15 @@ export default function ProjectDetailModal({
             </div>
           )}
 
-          {/* ===================== TAB 4: MIEMBROS ===================== */}
+          {/* TAB 4: MIEMBROS */}
           {activeTab === "members" && (
-            <div className="space-y-4">
-              {/* Header row */}
-              <div className="flex items-center justify-between gap-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-bold text-base text-foreground">
+                  <h3 className="font-bold text-xs text-foreground">
                     Miembros del proyecto
                   </h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-[10px] text-muted-foreground">
                     {membersList.length} personas asignadas
                   </p>
                 </div>
@@ -770,28 +738,24 @@ export default function ProjectDetailModal({
                 <button
                   type="button"
                   onClick={() => setShowAddMember(!showAddMember)}
-                  className="px-4 py-2 rounded-xl border border-border/80 dark:border-border/60 bg-card hover:bg-muted/70 text-xs font-semibold text-foreground inline-flex items-center gap-1.5 transition-colors shadow-2xs"
+                  className="px-3 py-1 rounded-lg border border-border/80 dark:border-border/60 bg-card hover:bg-muted/70 text-xs font-semibold text-foreground inline-flex items-center gap-1 transition-colors shadow-2xs"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3 h-3" />
                   Agregar
                 </button>
               </div>
 
-              {/* Add Member Drawer / Inline Form */}
               {showAddMember && (
-                <div className="p-4 rounded-2xl border border-purple-300 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/20 space-y-3">
-                  <h4 className="text-xs font-bold text-purple-900 dark:text-purple-200 uppercase tracking-wider">
+                <div className="p-3 rounded-xl border border-purple-300 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/20 space-y-2.5">
+                  <h4 className="text-[10px] font-bold text-purple-900 dark:text-purple-200 uppercase tracking-wider">
                     Asignar nuevo miembro
                   </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground block mb-1">
-                        Colaborador
-                      </label>
                       <select
                         value={selectedNewUserId}
                         onChange={(e) => setSelectedNewUserId(e.target.value)}
-                        className="w-full h-9 px-3 rounded-lg border border-border bg-background text-xs"
+                        className="w-full h-8 px-2 rounded-lg border border-border bg-background text-xs"
                       >
                         <option value="">Selecciona usuario...</option>
                         {allUsers
@@ -804,24 +768,21 @@ export default function ProjectDetailModal({
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground block mb-1">
-                        Rol en el proyecto
-                      </label>
                       <select
                         value={selectedNewUserRole}
                         onChange={(e) => setSelectedNewUserRole(e.target.value)}
-                        className="w-full h-9 px-3 rounded-lg border border-border bg-background text-xs"
+                        className="w-full h-8 px-2 rounded-lg border border-border bg-background text-xs"
                       >
                         <option value="TEAM_MEMBER">Colaborador</option>
                         <option value="PROJECT_MANAGER">Jefe de proyecto</option>
                       </select>
                     </div>
                   </div>
-                  <div className="flex justify-end gap-2 pt-1">
+                  <div className="flex justify-end gap-1.5">
                     <button
                       type="button"
                       onClick={() => setShowAddMember(false)}
-                      className="px-3 py-1.5 rounded-lg border border-border text-xs font-medium"
+                      className="px-2.5 py-1 rounded border border-border text-[11px]"
                     >
                       Cancelar
                     </button>
@@ -829,7 +790,7 @@ export default function ProjectDetailModal({
                       type="button"
                       disabled={!selectedNewUserId || isAddingMember}
                       onClick={handleAddMemberSubmit}
-                      className="px-4 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold disabled:opacity-50"
+                      className="px-3 py-1 rounded bg-purple-600 hover:bg-purple-700 text-white text-[11px] font-semibold disabled:opacity-50"
                     >
                       {isAddingMember ? "Asignando..." : "Asignar"}
                     </button>
@@ -837,8 +798,7 @@ export default function ProjectDetailModal({
                 </div>
               )}
 
-              {/* Members List */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {membersList.map((m, idx) => {
                   const u = m.user;
                   const isPM = m.role === "PROJECT_MANAGER";
@@ -852,28 +812,26 @@ export default function ProjectDetailModal({
                   return (
                     <div
                       key={idx}
-                      className="rounded-2xl border border-border/70 dark:border-border/60 bg-card/60 p-4 flex items-center justify-between shadow-2xs"
+                      className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 flex items-center justify-between shadow-2xs"
                     >
-                      {/* Left: Avatar + Names */}
-                      <div className="flex items-center gap-3.5">
-                        <div className="w-11 h-11 rounded-full bg-purple-600 text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
                           {initials}
                         </div>
 
                         <div>
-                          <p className="font-bold text-sm text-foreground">
+                          <p className="font-bold text-xs text-foreground">
                             {displayName}
                           </p>
-                          <p className="text-xs text-muted-foreground mt-0.5">
+                          <p className="text-[11px] text-muted-foreground">
                             {usernameStr} · {emailStr}
                           </p>
                         </div>
                       </div>
 
-                      {/* Right: Role Badges */}
                       <div className="text-right">
                         <span
-                          className={`inline-block px-3 py-1 rounded-lg text-xs font-medium ${
+                          className={`inline-block px-2.5 py-0.5 rounded-lg text-[11px] font-medium ${
                             isPM
                               ? "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300"
                               : "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400"
@@ -881,7 +839,7 @@ export default function ProjectDetailModal({
                         >
                           {isPM ? "Jefe de proyecto" : "Colaborador"}
                         </span>
-                        <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider block mt-1">
+                        <span className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider block mt-0.5">
                           {isPM ? "PROJECT_MANAGER" : "TEAM_MEMBER"}
                         </span>
                       </div>
@@ -891,9 +849,8 @@ export default function ProjectDetailModal({
               </div>
             </div>
           )}
-
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }
