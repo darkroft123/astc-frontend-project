@@ -29,7 +29,7 @@ const ICON_MAP = {
   UserCog,
 };
 
-export function NotificationBell() {
+export function NotificationBell({ className }: { className?: string } = {}) {
   const { user, hydrated } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
@@ -126,7 +126,7 @@ export function NotificationBell() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative h-10 w-10 hover:bg-raised transition-colors"
+          className={cn("relative h-10 w-10 hover:bg-raised transition-colors rounded-xl border border-border/80 bg-card shadow-sm flex items-center justify-center", className)}
         >
           <Bell className="h-5 w-5 text-text-3" strokeWidth={2} />
           {unreadCount > 0 && (

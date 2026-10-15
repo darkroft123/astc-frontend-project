@@ -12,6 +12,7 @@ const PM_ROLES = ["PROJECT_MANAGER"];
 export default function PmLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isDashboard = pathname === "/pm" || pathname === "/pm/";
+  const hasInlineBell = isDashboard || pathname.startsWith("/pm/alertas");
   const { hydrated, checkingAuth } = useAuthGuard(PM_ROLES);
   if (!hydrated || checkingAuth) {
     return (<div className="min-h-screen flex items-center justify-center">Cargando...</div>);
@@ -28,7 +29,7 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
           <div className="absolute top-[-300px] right-0 w-[600px] h-[450px] bg-purple-600/10 dark:bg-purple-600/20 blur-[140px] rounded-full pointer-events-none hidden dark:block z-0" />
           <div className="absolute top-[-130px] right-[200px] w-[350px] h-[250px] bg-indigo-500/10 dark:bg-indigo-500/15 blur-[100px] rounded-full pointer-events-none hidden dark:block z-0" />
 
-          {!isDashboard && (
+          {!hasInlineBell && (
             <div className="absolute top-4 right-4 z-50">
               <NotificationBell />
             </div>

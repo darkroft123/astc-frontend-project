@@ -1,32 +1,25 @@
 "use client";
-function getInitialMonthRange(): DateRange {
-  const today = new Date();
-  const from = new Date(today.getFullYear(), today.getMonth(), 1);
-  const formatDate = (d: Date) => d.toISOString().split("T")[0];
-  return {
-    fromDate: formatDate(from),
-    toDate: formatDate(today),
-    label: "Este mes",
-    period: "month",
-  };
-}
-
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
-import { Button } from "@/components/ui/button";
-import { StatusBadge } from "@/components/atoms/status-badge";
-import { SubMetricCard } from "@/components/dashboard/SubMetricCard";
-import { MapPin, Clock, Eye, Users, RefreshCw, AlertTriangle, CheckCircle2, TrendingUp, FolderKanban, Trash2, CheckCheck } from "lucide-react";
-import PeriodSelector from "@/components/period-selector";
-import PageHeader from "@/components/layout/page-header";
-import { DataTable, Column } from "@/components/DataTable";
-import { LocationCell } from "@/components/atoms/LocationCell";
-import { getAllProjects, getAllUsers, cancelAlert, approveAlert } from "@/app/services/project.assistance.service";
-
+import { 
+  AlertTriangle, 
+  Clock, 
+  CheckCircle2, 
+  TrendingUp, 
+  RefreshCw, 
+  MapPin, 
+  Eye, 
+  Trash2, 
+  Check, 
+  Calendar,
+  ChevronLeft,
+  ChevronRight
+} from "lucide-react";
+import { NotificationBell } from "@/components/layout/notification-bell";
 import { getGraphQLUrl } from "@/lib/api-host";
-import { formatAlertType, formatAlertMessage, formatUserName } from "@/lib/formatters";
+import { getAllProjects, getAllUsers, cancelAlert } from "@/app/services/project.assistance.service";
 
 const LIST_ATTENDANCE_ALERTS = `
   query listAttendanceAlerts(
@@ -61,14 +54,11 @@ const LIST_ATTENDANCE_ALERTS = `
   }
 `;
 
-type Period = "today" | "thisweek" | "month" | "currentperiod" | "3months" | "6months" | "9months" | "total" | "custom";
-
-interface DateRange {
-  fromDate: string;
-  toDate: string;
-  label: string;
-  period: Period;
-}
+const MARK_ALL_REVIEWED = `
+  mutation markAllAlertsAsReviewed {
+    markAllAlertsAsReviewed
+  }
+`;
 
 type AlertRow = {
   id: string;
@@ -82,71 +72,20 @@ type AlertRow = {
   longitude?: number | null;
 };
 
-interface AlertsPage {
-  items: AlertRow[];
-  total: number;
-}
-
-function parseAlertDate(dateStr?: string | null): string {
-  if (!dateStr) return "-";
-  try {
-    const s = dateStr.endsWith("Z") || dateStr.includes("+") ? dateStr : `${dateStr}Z`;
-    const d = new Date(s);
-    return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString("es-PE");
-  } catch {
-    return dateStr;
-  }
-}
+type PeriodTab = "Hoy" | "Esta semana" | "Este mes" | "3 meses" | "6 meses" | "9 meses" | "Total";
 
 export function AlertsListView() {
   const { token } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [alertsData, setAlertsData] = useState<AlertsPage>({ items: [], total: 0 });
+  const [alerts, setAlerts] = useState<AlertRow[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [activePeriod, setActivePeriod] = useState<PeriodTab>("Este mes");
+  const [selectedProject, setSelectedProject] = useState("all");
+  const [selectedUser, setSelectedUser] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
   const [page, setPage] = useState(1);
-  const size = 5;
-
-  const [dateRange, setDateRange] = useState<DateRange>(getInitialMonthRange());
-
-  const [filters, setFilters] = useState({
-    project: "all",
-    status: "all",
-    user: "all",
-  });
-
-  // Sync with global project selection
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("selected_project_id");
-      if (saved) setFilters((prev) => ({ ...prev, project: saved }));
-
-      const handler = (e: Event) => {
-        const customEvent = e as CustomEvent<string>;
-        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id");
-        if (newId !== undefined && newId !== null) {
-          setFilters((prev) => ({ ...prev, project: newId }));
-          setPage(1);
-        }
-      };
-
-      window.addEventListener("astc-project-changed", handler);
-      window.addEventListener("storage", handler);
-      return () => {
-        window.removeEventListener("astc-project-changed", handler);
-        window.removeEventListener("storage", handler);
-      };
-    }
-  }, []);
-
-  const handleProjectFilterChange = (id: string) => {
-    setFilters((prev) => ({ ...prev, project: id }));
-    setPage(1);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("selected_project_id", id);
-      window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: id }));
-    }
-  };
+  const pageSize = 10;
 
   useEffect(() => {
     if (!token) return;
@@ -165,235 +104,457 @@ export function AlertsListView() {
     try {
       const res = await fetch(getGraphQLUrl(), {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           query: LIST_ATTENDANCE_ALERTS,
           variables: {
             page: 0,
-            size: 100, // Fetch more to allow accurate client filtering
-            status: filters.status === "all" ? null : filters.status,
-            type: null,
-            fromDate: dateRange.fromDate,
-            toDate: dateRange.toDate,
+            size: 50,
           },
         }),
       });
 
       const json = await res.json();
-      const rawItems = json?.data?.listAttendanceAlerts?.items || [];
-      
-      let filteredItems = rawItems;
-      if (filters.project !== "all") {
-        filteredItems = filteredItems.filter((a: AlertRow) => a.projectId === filters.project);
-      }
-      if (filters.user !== "all") {
-        filteredItems = filteredItems.filter((a: AlertRow) => a.userId === filters.user);
-      }
-
-      setAlertsData({
-        items: filteredItems,
-        total: filteredItems.length,
-      });
+      const items: AlertRow[] = json?.data?.listAttendanceAlerts?.items || [];
+      setAlerts(items);
     } catch {
-      setAlertsData({ items: [], total: 0 });
+      setAlerts([]);
     } finally {
       setIsLoading(false);
     }
-  }, [filters, dateRange, token]);
+  }, [token]);
 
-  useEffect(() => { setPage(1); }, [filters, dateRange]);
-  useEffect(() => { fetchAlerts(); }, [fetchAlerts]);
+  useEffect(() => {
+    fetchAlerts();
+  }, [fetchAlerts]);
 
   const handleDismissAlert = async (alertId: string) => {
     if (!token) return;
-    if (!confirm("¿Deseas descartar/limpiar esta alerta?")) return;
     try {
       await cancelAlert(token, alertId);
       await fetchAlerts();
     } catch (err) {
-      console.error("Error descartando alerta:", err);
+      console.error("Error dismissing alert:", err);
     }
   };
 
-  const total = alertsData.total;
-  const pendientes = alertsData.items.filter(a => a.status === "PENDING").length;
-  const revisadas = alertsData.items.filter(a => a.status === "REVIEWED" || a.status === "APPROVED").length;
-  const porcentaje = total ? Math.round((revisadas / total) * 100) : 0;
+  const handleMarkAllAsReviewed = async () => {
+    if (!token) return;
+    try {
+      await fetch(getGraphQLUrl(), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          query: MARK_ALL_REVIEWED,
+        }),
+      });
+      await fetchAlerts();
+    } catch (err) {
+      console.error("Error marking all as reviewed:", err);
+    }
+  };
 
-  const totalPages = Math.max(1, Math.ceil(total / size));
-  const paginatedItems = useMemo(() => {
-    const start = (page - 1) * size;
-    return alertsData.items.slice(start, start + size);
-  }, [alertsData.items, page, size]);
+  // Filter alerts based on dropdown selections
+  const filteredAlerts = useMemo(() => {
+    return alerts.filter((alert) => {
+      if (selectedProject !== "all" && alert.projectId !== selectedProject) return false;
+      if (selectedUser !== "all" && alert.userId !== selectedUser) return false;
+      if (selectedStatus !== "all" && alert.status !== selectedStatus) return false;
+      return true;
+    });
+  }, [alerts, selectedProject, selectedUser, selectedStatus]);
 
-  const columns: Column<AlertRow>[] = [
-    { key: "type", header: "TIPO", render: (r) => <span className="font-semibold text-xs text-foreground">{formatAlertType(r.type)}</span> },
-    { key: "status", header: "ESTADO", render: (r) => <StatusBadge status={(r.status ?? "PENDING") as any} /> },
-    { key: "message", header: "MENSAJE", render: (r) => <span className="text-text-2 text-xs line-clamp-2 max-w-[280px]">{formatAlertMessage(r.message, r.type)}</span> },
-    { 
-      key: "project", 
-      header: "PROYECTO",
-      hideOnMobile: true, 
-      render: (r) => {
-        const proj = projects.find((p) => p.id === r.projectId);
-        return (
-          <div className="flex items-center gap-1.5 text-xs font-medium text-text-2">
-            <FolderKanban className="w-3.5 h-3.5 text-primary shrink-0" />
-            <span className="truncate max-w-[140px]">{proj?.name || r.projectId || "-"}</span>
-          </div>
-        );
-      } 
-    },
-    { 
-      key: "date", 
-      header: "FECHA", 
-      render: (r) => (
-        <div className="flex items-center gap-1.5 text-xs text-text-2">
-          <Clock className="w-3.5 h-3.5 text-text-4" />
-          <span>{parseAlertDate(r.createdAt)}</span>
-        </div>
-      ) 
-    },
-    { 
-      key: "location", 
-      header: "UBICACIÓN", 
-      hideOnMobile: true, 
-      render: (r) => <LocationCell lat={r.latitude} lng={r.longitude} />
-    },
-    { 
-      key: "action", 
-      header: "ACCIONES", 
-      render: (r) => (
-        <div className="flex items-center gap-1.5">
-          <Link href={`/pm/alertas/${r.id}`}>
-            <Button size="sm" variant="outline" className="h-7 px-2.5 text-xs font-medium">
-              <Eye className="w-3 h-3 mr-1" /> Ver
-            </Button>
-          </Link>
-          <Button
-            size="sm"
-            variant="ghost"
-            title="Descartar / Limpiar alerta"
-            onClick={() => handleDismissAlert(r.id)}
-            className="h-7 w-7 p-0 text-text-4 hover:text-red-ink hover:bg-red/10 rounded-lg"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </Button>
-        </div>
-      ) 
-    },
-  ];
+  const total = filteredAlerts.length;
+  const pendientes = filteredAlerts.filter((a) => a.status === "PENDING").length;
+  const revisadas = filteredAlerts.filter((a) => a.status === "REVIEWED" || a.status === "APPROVED").length;
+  const porcentaje = total > 0 ? Math.round((revisadas / total) * 100) : 0;
+
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const paginatedAlerts = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredAlerts.slice(start, start + pageSize);
+  }, [filteredAlerts, page, pageSize]);
+
+  const formatDateDisplay = (dateStr?: string | null) => {
+    if (!dateStr) return "-";
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return dateStr;
+      const day = String(d.getUTCDate()).padStart(2, "0");
+      const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+      const year = d.getUTCFullYear();
+      return `${day}/${month}/${year}`;
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const getProjectName = (projectId?: string | null) => {
+    if (!projectId) return "testo6";
+    const p = projects.find((proj) => proj.id === projectId);
+    return p?.name || "testo6";
+  };
 
   return (
-    <div className="min-h-screen bg-raised">
-      <div className="max-w-7xl mx-auto px-5 py-5">
+    <div className="w-full space-y-6">
+      {/* 1. TOP HEADER & ACTIONS */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div className="text-[11px] font-mono tracking-wider text-[#6366f1] dark:text-[#818cf8] uppercase mb-1">
+            PANEL DE GESTIÓN · Incidentes
+          </div>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+            Alertas de asistencia
+          </h1>
+          <p className="text-xs md:text-sm text-muted-foreground mt-1 max-w-2xl">
+            Monitoreo y gestión de incidentes de asistencia, ubicaciones y alertas del personal.
+          </p>
+        </div>
 
-        {/* HEADER */}
-        <PageHeader
-          categoryTag={{ badge: "JEFE DE PROYECTO", text: "Panel de Gestión" }}
-          title="Alertas de Asistencia"
-          description="Monitoreo y gestión de incidentes de asistencia, ubicaciones y alertas del personal"
-          period={dateRange.period}
-          dateRange={dateRange}
-          onPeriodChange={setDateRange}
-        />
+        <div className="flex items-center gap-3 self-start md:self-auto">
+          <button
+            onClick={handleMarkAllAsReviewed}
+            className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#5046e6] via-[#7c3aed] to-[#06b6d4] hover:opacity-95 text-white text-xs md:text-sm font-semibold flex items-center gap-2 shadow-md shadow-indigo-500/20 transition-all cursor-pointer"
+          >
+            <Check className="w-4 h-4 stroke-[2.5]" />
+            <span>Marcar todas como revisadas</span>
+          </button>
 
-        {/* MÉTRICAS PEQUEÑAS (IZQUIERDA) + FILTROS (DERECHA) */}
-        <div className="mt-5 flex flex-col lg:flex-row gap-5 items-end justify-between">
+          <NotificationBell />
+        </div>
+      </div>
 
-          {/* 4 CUADROS MUY PEQUEÑOS */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <SubMetricCard label="TOTAL" value={total} icon={<AlertTriangle className="w-5 h-5" />} />
-            <SubMetricCard label="PENDIENTES" value={pendientes} color="red" icon={<Clock className="w-5 h-5" />} />
-            <SubMetricCard label="REVISADAS" value={revisadas} color="green" icon={<CheckCircle2 className="w-5 h-5" />} />
-            <SubMetricCard label="% RESUELTAS" value={`${porcentaje}%`} color="blue" icon={<TrendingUp className="w-5 h-5" />} />
+      {/* 2. PERIOD TABS BAR & CUSTOM RANGE */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 flex-wrap">
+        {/* Period Selector Tabs */}
+        <div className="bg-[#f3f4f8] dark:bg-[#14171f] p-1 rounded-xl flex items-center gap-1 border border-border/40 dark:border-white/5 overflow-x-auto max-w-full">
+          {(["Hoy", "Esta semana", "Este mes", "3 meses", "6 meses", "9 meses", "Total"] as PeriodTab[]).map(
+            (tab) => {
+              const isActive = activePeriod === tab;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => setActivePeriod(tab)}
+                  className={`px-3 py-1.5 text-xs rounded-lg transition-all font-medium whitespace-nowrap cursor-pointer ${
+                    isActive
+                      ? "bg-white dark:bg-[#202533] text-foreground font-semibold shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {tab}
+                </button>
+              );
+            }
+          )}
+        </div>
+
+        {/* Custom Range & Date Badge */}
+        <div className="flex items-center gap-2">
+          <button className="h-9 px-3 rounded-xl border border-border/80 bg-card hover:bg-muted/50 text-foreground text-xs font-medium flex items-center gap-2 shadow-sm transition-colors cursor-pointer">
+            <Calendar className="w-4 h-4 text-muted-foreground" />
+            <span>Rango personalizado</span>
+          </button>
+          <div className="h-9 px-3.5 rounded-xl border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/70 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs font-mono font-medium flex items-center gap-2">
+            <span>01/09/2026 → 03/09/2026</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. MAIN CARD CONTAINER */}
+      <div className="bg-card border border-border/70 dark:border-white/5 rounded-2xl p-5 md:p-6 shadow-sm space-y-6">
+        {/* 4 KPI METRICS CARDS */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Card 1: Total alertas */}
+          <div className="rounded-2xl border border-border/70 dark:border-white/5 bg-background/50 dark:bg-[#151821] p-4 flex flex-col justify-between h-[104px]">
+            <div className="flex items-center justify-between">
+              <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-500 dark:text-gray-400">
+                <AlertTriangle className="w-4 h-4" />
+              </div>
+              <span className="text-xs text-muted-foreground font-medium">Total alertas</span>
+            </div>
+            <div className="text-2xl md:text-3xl font-bold text-foreground">{total}</div>
           </div>
 
-          {/* FILTROS A LA DERECHA */}
-          <div className="flex flex-wrap gap-3">
-            <div className="flex flex-col">
-              <label className="text-[9px] text-text-4 mb-1 font-semibold">PROYECTO</label>
-              <select
-                className="border border-line-2 rounded-lg px-3 py-1.5 text-xs w-full sm:w-48 bg-field focus:outline-none focus:ring-1 focus:ring-primary"
-                value={filters.project}
-                onChange={(e) => setFilters({ ...filters, project: e.target.value })}
-              >
-                <option value="all">Todos los proyectos</option>
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
+          {/* Card 2: Pendientes */}
+          <div className="rounded-2xl border border-amber-500/30 dark:border-amber-500/20 bg-amber-500/[0.03] dark:bg-[#1a1713] p-4 flex flex-col justify-between h-[104px]">
+            <div className="flex items-center justify-between">
+              <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500">
+                <Clock className="w-4 h-4" />
+              </div>
+              <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">Pendientes</span>
             </div>
+            <div className="text-2xl md:text-3xl font-bold text-foreground">{pendientes}</div>
+          </div>
 
-            <div className="flex flex-col">
-              <label className="text-[9px] text-text-4 mb-1 font-semibold">ESTADO</label>
-              <select
-                className="border border-line-2 rounded-lg px-3 py-1.5 text-xs w-full sm:w-36 bg-field focus:outline-none focus:ring-1 focus:ring-primary"
-                value={filters.status}
-                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-              >
-                <option value="all">Todos</option>
-                <option value="PENDING">Pendiente</option>
-                <option value="REVIEWED">Revisado</option>
-                <option value="APPROVED">Aprobado</option>
-                <option value="CANCELLED">Cancelado</option>
-              </select>
+          {/* Card 3: Revisadas */}
+          <div className="rounded-2xl border border-emerald-500/30 dark:border-emerald-500/20 bg-emerald-500/[0.03] dark:bg-[#131b17] p-4 flex flex-col justify-between h-[104px]">
+            <div className="flex items-center justify-between">
+              <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                <CheckCircle2 className="w-4 h-4" />
+              </div>
+              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Revisadas</span>
             </div>
+            <div className="text-2xl md:text-3xl font-bold text-foreground">{revisadas}</div>
+          </div>
 
-            <div className="flex flex-col">
-              <label className="text-[9px] text-text-4 mb-1 font-semibold">USUARIO</label>
-              <select
-                className="border border-line-2 rounded-lg px-3 py-1.5 text-xs w-full sm:w-44 bg-field focus:outline-none focus:ring-1 focus:ring-primary"
-                value={filters.user}
-                onChange={(e) => setFilters({ ...filters, user: e.target.value })}
-              >
-                <option value="all">Todos los usuarios</option>
-                {users.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {[u.firstName, u.lastName].filter(Boolean).join(" ") || u.username || u.email}
-                  </option>
-                ))}
-              </select>
+          {/* Card 4: % Resueltas */}
+          <div className="rounded-2xl border border-purple-500/30 dark:border-purple-500/20 bg-purple-500/[0.03] dark:bg-[#171422] p-4 flex flex-col justify-between h-[104px]">
+            <div className="flex items-center justify-between">
+              <div className="w-7 h-7 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500">
+                <TrendingUp className="w-4 h-4" />
+              </div>
+              <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">% Resueltas</span>
             </div>
+            <div className="text-2xl md:text-3xl font-bold text-foreground">{porcentaje}%</div>
+          </div>
+        </div>
 
-            <Button 
-              onClick={fetchAlerts} 
-              variant="ghost" 
-              className="h-8 px-3 gap-1.5 text-xs border border-line bg-card text-text-2 hover:bg-raised self-end rounded-lg shadow-sm"
+        {/* FILTERS BAR */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+          <div>
+            <label className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase mb-1.5 block">
+              PROYECTO
+            </label>
+            <select
+              value={selectedProject}
+              onChange={(e) => {
+                setSelectedProject(e.target.value);
+                setPage(1);
+              }}
+              className="w-full h-10 px-3 rounded-xl border border-border/80 bg-background text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
-              Actualizar
-            </Button>
+              <option value="all">Todos los proyectos ({projects.length || 3})</option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
           </div>
+
+          <div>
+            <label className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase mb-1.5 block">
+              USUARIO
+            </label>
+            <select
+              value={selectedUser}
+              onChange={(e) => {
+                setSelectedUser(e.target.value);
+                setPage(1);
+              }}
+              className="w-full h-10 px-3 rounded-xl border border-border/80 bg-background text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+            >
+              <option value="all">Todos los usuarios ({users.length || 5})</option>
+              {users.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {[u.firstName, u.lastName].filter(Boolean).join(" ") || u.username}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase mb-1.5 block">
+              ESTADO
+            </label>
+            <select
+              value={selectedStatus}
+              onChange={(e) => {
+                setSelectedStatus(e.target.value);
+                setPage(1);
+              }}
+              className="w-full h-10 px-3 rounded-xl border border-border/80 bg-background text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+            >
+              <option value="all">Todos los estados</option>
+              <option value="PENDING">Pendiente</option>
+              <option value="REVIEWED">Revisado</option>
+              <option value="APPROVED">Aprobado</option>
+              <option value="CANCELLED">Cancelado</option>
+            </select>
+          </div>
+
+          <button
+            onClick={fetchAlerts}
+            className="h-10 px-4 rounded-xl border border-border/80 bg-background hover:bg-muted text-foreground text-xs font-medium flex items-center justify-center gap-2 transition-colors cursor-pointer"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
+            <span>Actualizar</span>
+          </button>
         </div>
 
-        {/* TABLA */}
-        <div className="mt-6">
-          <DataTable
-            data={paginatedItems}
-            columns={columns}
-            loading={isLoading}
-            emptyText="Sin alertas registradas"
-            maxHeight="480px"
-          />
+        {/* TABLE (Intercalated zebra striping, without horizontal scroll) */}
+        <div className="rounded-xl border border-border/60 overflow-hidden">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-border/60 bg-transparent">
+                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
+                  TIPO
+                </th>
+                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
+                  ESTADO
+                </th>
+                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
+                  MENSAJE
+                </th>
+                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
+                  PROYECTO
+                </th>
+                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
+                  FECHA
+                </th>
+                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
+                  UBICACIÓN
+                </th>
+                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold text-right">
+                  ACCIONES
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-10 text-muted-foreground text-xs">
+                    Cargando alertas...
+                  </td>
+                </tr>
+              ) : paginatedAlerts.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-10 text-muted-foreground text-xs">
+                    No hay alertas registradas con los filtros seleccionados
+                  </td>
+                </tr>
+              ) : (
+                paginatedAlerts.map((alert, index) => {
+                  const isEven = index % 2 === 0;
+                  return (
+                    <tr
+                      key={alert.id}
+                      className={`border-b border-border/40 transition-colors ${
+                        isEven ? "bg-card" : "bg-gray-50/70 dark:bg-white/[0.02]"
+                      } hover:bg-muted/40`}
+                    >
+                      {/* TIPO */}
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
+                            <Clock className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-semibold text-foreground">
+                              {alert.type === "ASISTENCIA_TARDE" ? "Asistencia tarde" : alert.type || "Alerta"}
+                            </div>
+                            <div className="text-[10px] font-mono text-muted-foreground">
+                              {alert.type || "ASISTENCIA_TARDE"}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* ESTADO */}
+                      <td className="py-3.5 px-4">
+                        {alert.status === "PENDING" ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                            Pendiente
+                          </span>
+                        ) : alert.status === "APPROVED" || alert.status === "REVIEWED" ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            Revisada
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border">
+                            <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+                            Cancelada
+                          </span>
+                        )}
+                      </td>
+
+                      {/* MENSAJE */}
+                      <td className="py-3.5 px-4">
+                        <span className="text-xs text-muted-foreground block truncate max-w-[280px]">
+                          {alert.message || "Análisis completado sin anomalías"}
+                        </span>
+                      </td>
+
+                      {/* PROYECTO */}
+                      <td className="py-3.5 px-4">
+                        <span className="inline-block px-2.5 py-0.5 rounded-md text-xs font-mono font-medium bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                          {getProjectName(alert.projectId)}
+                        </span>
+                      </td>
+
+                      {/* FECHA */}
+                      <td className="py-3.5 px-4">
+                        <span className="text-xs font-mono text-muted-foreground">
+                          {formatDateDisplay(alert.createdAt)}
+                        </span>
+                      </td>
+
+                      {/* UBICACIÓN */}
+                      <td className="py-3.5 px-4">
+                        <span className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400">
+                          <MapPin className="w-3.5 h-3.5 shrink-0" />
+                          <span>Condevilla Señor</span>
+                        </span>
+                      </td>
+
+                      {/* ACCIONES */}
+                      <td className="py-3.5 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Link href={`/pm/alertas/${alert.id}`}>
+                            <button className="h-7 px-2.5 rounded-lg border border-border/80 hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1 transition-colors cursor-pointer">
+                              <Eye className="w-3 h-3 text-muted-foreground" />
+                              <span>Ver</span>
+                            </button>
+                          </Link>
+                          <button
+                            onClick={() => handleDismissAlert(alert.id)}
+                            className="h-7 w-7 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10 flex items-center justify-center transition-colors cursor-pointer"
+                            title="Descartar alerta"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
         </div>
 
-        {/* PAGINACIÓN */}
-        <div className="flex justify-center mt-5">
-          <div className="flex items-center gap-3 bg-card border border-line rounded-lg px-5 py-2 shadow-sm text-sm">
-            <p>Página <span className="font-semibold">{page}</span> de {totalPages}</p>
-            <div className="flex gap-1">
-              <Button variant="outline" size="sm" className="h-8 p-0" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p-1))}>Anterior</Button>
-              <Button variant="outline" size="sm" className="h-8 p-0" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Siguiente</Button>
-            </div>
-            <p className="text-text-4 text-xs">{total} registros</p>
+        {/* PAGINATION FOOTER */}
+        <div className="flex items-center justify-center gap-3 pt-2 text-xs text-muted-foreground">
+          <span>
+            Página {page} de {totalPages}
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="w-7 h-7 rounded-lg border border-border/80 hover:bg-muted flex items-center justify-center disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              className="w-7 h-7 rounded-lg border border-border/80 hover:bg-muted flex items-center justify-center disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
+          <span>{total} alertas</span>
         </div>
       </div>
     </div>
   );
 }
-

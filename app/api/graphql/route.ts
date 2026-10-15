@@ -143,6 +143,49 @@ export async function POST(req: Request) {
     }
 
     // 4. Alerts
+    if (query.includes("getAlertDetail")) {
+      const aid = variables.id;
+      const found = MOCK_ALERTS_LIST.find((a) => a.id === aid) || MOCK_ALERTS_LIST[0];
+      return NextResponse.json({
+        data: {
+          getAlertDetail: found,
+        },
+      });
+    }
+
+    if (query.includes("approveAlert")) {
+      const aid = variables.alertId || variables.id;
+      const found = MOCK_ALERTS_LIST.find((a) => a.id === aid);
+      if (found) found.status = "APPROVED";
+      return NextResponse.json({
+        data: {
+          approveAlert: { id: aid, status: "APPROVED" },
+        },
+      });
+    }
+
+    if (query.includes("cancelAlert") || query.includes("dismissAlert")) {
+      const aid = variables.alertId || variables.id;
+      const found = MOCK_ALERTS_LIST.find((a) => a.id === aid);
+      if (found) found.status = "CANCELLED";
+      return NextResponse.json({
+        data: {
+          cancelAlert: { id: aid, status: "CANCELLED" },
+        },
+      });
+    }
+
+    if (query.includes("markAllAlertsAsReviewed") || query.includes("markAllAsReviewed")) {
+      MOCK_ALERTS_LIST.forEach((a) => {
+        a.status = "REVIEWED";
+      });
+      return NextResponse.json({
+        data: {
+          markAllAlertsAsReviewed: true,
+        },
+      });
+    }
+
     if (query.includes("listAttendanceAlerts") || query.includes("listAlerts")) {
       return NextResponse.json({
         data: {
