@@ -173,12 +173,7 @@ export default function AttendancePreviewPage() {
     }
 
     try {
-      await checkOut(token!, {
-        projectId: project?.id || null,
-        latitude: lat,
-        longitude: lng,
-        photoUrl: base64 || undefined,
-      });
+      await checkOut(token!, project?.id || null, base64 || null, lat, lng);
       clearSaved();
       router.push("/pm/mis-asistencias");
     } catch (err: any) {
@@ -230,10 +225,10 @@ export default function AttendancePreviewPage() {
         </button>
       </div>
 
-      {/* 2. MAIN 2-COLUMN GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* LEFT COLUMN (~60%) */}
-        <div className="lg:col-span-7 space-y-5">
+      {/* 2. MAIN 2-COLUMN LAYOUT */}
+      <div className="flex flex-col lg:flex-row gap-5 items-start w-full">
+        {/* LEFT COLUMN */}
+        <div className="flex-1 w-full min-w-0 space-y-5">
           {/* Card 1: Estado & Horario */}
           <div className="rounded-2xl border border-emerald-500/30 bg-[#0c1914] dark:bg-[#0c1914] p-5 md:p-6 shadow-sm space-y-4">
             {/* Header row */}
@@ -355,8 +350,8 @@ export default function AttendancePreviewPage() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN (~40%) */}
-        <div className="lg:col-span-5 space-y-5">
+        {/* RIGHT COLUMN */}
+        <div className="w-full lg:w-[380px] shrink-0 space-y-5">
           {/* Card 1: Warning Banner "Asistencia sin foto" */}
           {!base64 ? (
             <div className="rounded-2xl border border-amber-500/30 bg-[#1c1813] dark:bg-[#1c1813] p-4 flex items-start gap-3 shadow-sm">

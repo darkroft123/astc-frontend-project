@@ -26,9 +26,10 @@ export const MOCK_PROJECTS = [
     vacationEligibilityDays: 30,
     holidays: ["2026-10-08", "2026-11-01", "2026-12-25"],
     members: [
-      { userId: "pm-001", createdAt: "2026-01-01" },
+      { userId: "user-003", createdAt: "2026-01-01" },
       { userId: "user-002", createdAt: "2026-01-10" },
-      { userId: "user-003", createdAt: "2026-02-01" },
+      { userId: "pm-001", createdAt: "2026-02-01" },
+      { userId: "user-005", createdAt: "2026-03-01" },
     ],
   },
   {
@@ -66,8 +67,8 @@ export const MOCK_PROJECTS = [
 export const MOCK_USERS = [
   {
     id: "pm-001",
-    firstName: "Carlos",
-    lastName: "Mamani",
+    firstName: "",
+    lastName: "",
     username: "jefeproyecto-x",
     email: "pm@astc.com",
     role: "PROJECT_MANAGER",
@@ -75,8 +76,8 @@ export const MOCK_USERS = [
   },
   {
     id: "user-002",
-    firstName: "Carlos",
-    lastName: "Mamani",
+    firstName: "carlos",
+    lastName: "mamani",
     username: "carlos",
     email: "mamanigutierrezcarlos123@gmail.com",
     role: "TEAM_MEMBER",
@@ -84,8 +85,8 @@ export const MOCK_USERS = [
   },
   {
     id: "user-003",
-    firstName: "User",
-    lastName: "Carlos",
+    firstName: "",
+    lastName: "",
     username: "user-carlos",
     email: "user@astc.com",
     role: "TEAM_MEMBER",
@@ -247,6 +248,46 @@ export const MOCK_SCHEDULES = [
     expectedStartTime: "07:00:00",
     expectedEndTime: "19:00:00",
     graceMinutes: 15,
+  },
+];
+
+export const MOCK_COLLECTIONS = [
+  {
+    id: "col-001",
+    name: "reretesteo",
+    scope: "GLOBAL",
+    ownerId: "proj-101",
+    createdAt: "2026-09-01T00:00:00Z",
+    items: [
+      { id: "item-1", collectionId: "col-001", date: "2026-09-12", name: "reretesteo" },
+      { id: "item-2", collectionId: "col-001", date: "2026-09-17", name: "reretesteo" },
+      { id: "item-3", collectionId: "col-001", date: "2026-09-23", name: "reretesteo" },
+    ],
+  },
+  {
+    id: "col-002",
+    name: "feriados",
+    scope: "GLOBAL",
+    ownerId: "proj-101",
+    createdAt: "2026-09-01T00:00:00Z",
+    items: [
+      { id: "item-4", collectionId: "col-002", date: "2026-05-01", name: "Día del Trabajo" },
+      { id: "item-5", collectionId: "col-002", date: "2026-07-28", name: "Fiestas Patrias" },
+      { id: "item-6", collectionId: "col-002", date: "2026-07-29", name: "Fiestas Patrias" },
+    ],
+  },
+  {
+    id: "col-003",
+    name: "feriados2",
+    scope: "GLOBAL",
+    ownerId: "proj-101",
+    createdAt: "2026-09-01T00:00:00Z",
+    items: [
+      { id: "item-7", collectionId: "col-003", date: "2026-08-30", name: "Santa Rosa de Lima" },
+      { id: "item-8", collectionId: "col-003", date: "2026-10-08", name: "Combate de Angamos" },
+      { id: "item-9", collectionId: "col-003", date: "2026-11-01", name: "Todos los Santos" },
+      { id: "item-10", collectionId: "col-003", date: "2026-12-25", name: "Navidad" },
+    ],
   },
 ];
 

@@ -11,6 +11,7 @@ import {
   MOCK_SCHEDULES,
   MOCK_NOTIFICATIONS,
   MOCK_USERS,
+  MOCK_COLLECTIONS,
 } from "@/lib/mock-data";
 
 export async function POST(req: Request) {
@@ -78,6 +79,17 @@ export async function POST(req: Request) {
       });
     }
 
+    if (query.includes("getUserById") || query.includes("getUser")) {
+      const uid = variables.id || variables.userId;
+      const u = MOCK_USERS.find((usr) => usr.id === uid) || MOCK_USERS[0];
+      return NextResponse.json({
+        data: {
+          getUserById: u,
+          getUser: u,
+        },
+      });
+    }
+
     if (query.includes("getProjectById")) {
       const pid = variables.id || variables.projectId;
       const proj = MOCK_PROJECTS.find((p) => p.id === pid) || MOCK_PROJECTS[0];
@@ -97,52 +109,7 @@ export async function POST(req: Request) {
       });
     }
 
-    if (query.includes("listAttendance") || query.includes("listTeamAttendance")) {
-      return NextResponse.json({
-        data: {
-          listAttendance: {
-            items: MOCK_ATTENDANCES_LIST,
-            page: 1,
-            size: 20,
-            total: MOCK_ATTENDANCES_LIST.length,
-          },
-          listTeamAttendance: {
-            items: MOCK_ATTENDANCES_LIST,
-            page: 1,
-            size: 20,
-            total: MOCK_ATTENDANCES_LIST.length,
-          },
-        },
-      });
-    }
-
-    if (query.includes("registerAttendance")) {
-      return NextResponse.json({
-        data: {
-          registerAttendance: {
-            id: `att-mock-${Date.now()}`,
-            userId: MOCK_USER_PM.id,
-            date: new Date().toISOString().split("T")[0],
-            checkIn: new Date().toLocaleTimeString("es-PE"),
-            status: "ASISTENCIA",
-          },
-        },
-      });
-    }
-
-    if (query.includes("checkOut")) {
-      return NextResponse.json({
-        data: {
-          checkOut: {
-            id: `att-mock-${Date.now()}`,
-            checkOut: new Date().toLocaleTimeString("es-PE"),
-            status: "ASISTENCIA",
-          },
-        },
-      });
-    }
-
-    // 4. Alerts
+    // 3. Alerts (placed BEFORE listAttendance to avoid substring match on listAttendanceAlerts)
     if (query.includes("getAlertDetail")) {
       const aid = variables.id;
       const found = MOCK_ALERTS_LIST.find((a) => a.id === aid) || MOCK_ALERTS_LIST[0];
@@ -205,6 +172,52 @@ export async function POST(req: Request) {
       });
     }
 
+    // 4. Attendances
+    if (query.includes("listAttendance") || query.includes("listTeamAttendance")) {
+      return NextResponse.json({
+        data: {
+          listAttendance: {
+            items: MOCK_ATTENDANCES_LIST,
+            page: 1,
+            size: 20,
+            total: MOCK_ATTENDANCES_LIST.length,
+          },
+          listTeamAttendance: {
+            items: MOCK_ATTENDANCES_LIST,
+            page: 1,
+            size: 20,
+            total: MOCK_ATTENDANCES_LIST.length,
+          },
+        },
+      });
+    }
+
+    if (query.includes("registerAttendance")) {
+      return NextResponse.json({
+        data: {
+          registerAttendance: {
+            id: `att-mock-${Date.now()}`,
+            userId: MOCK_USER_PM.id,
+            date: new Date().toISOString().split("T")[0],
+            checkIn: new Date().toLocaleTimeString("es-PE"),
+            status: "ASISTENCIA",
+          },
+        },
+      });
+    }
+
+    if (query.includes("checkOut")) {
+      return NextResponse.json({
+        data: {
+          checkOut: {
+            id: `att-mock-${Date.now()}`,
+            checkOut: new Date().toLocaleTimeString("es-PE"),
+            status: "ASISTENCIA",
+          },
+        },
+      });
+    }
+
     // 5. Justifications
     if (query.includes("listJustifications") || query.includes("listJustificationsPM")) {
       return NextResponse.json({
@@ -240,6 +253,106 @@ export async function POST(req: Request) {
         data: {
           getEffectiveSchedule: MOCK_SCHEDULES[0],
           listSchedules: MOCK_SCHEDULES,
+        },
+      });
+    }
+
+    // 6.1 Collections & Holidays
+    if (query.includes("getGlobalCollections")) {
+      return NextResponse.json({
+        data: {
+          getGlobalCollections: MOCK_COLLECTIONS,
+        },
+      });
+    }
+
+    if (query.includes("getCollectionsForProject")) {
+      return NextResponse.json({
+        data: {
+          getCollectionsForProject: [MOCK_COLLECTIONS[0]],
+        },
+      });
+    }
+
+    if (query.includes("getAdminSetting")) {
+      const key = variables.key;
+      return NextResponse.json({
+        data: {
+          getAdminSetting: key === "GLOBAL_ASSIGNED_COLLECTION_ID" ? "col-001" : null,
+        },
+      });
+    }
+
+    if (query.includes("linkProjectToCollection")) {
+      return NextResponse.json({
+        data: {
+          linkProjectToCollection: true,
+        },
+      });
+    }
+
+    if (query.includes("unlinkProjectFromCollection")) {
+      return NextResponse.json({
+        data: {
+          unlinkProjectFromCollection: true,
+        },
+      });
+    }
+
+    if (query.includes("createCollection")) {
+      const input = variables.input || { name: "Nueva Colección", scope: "PROJECT" };
+      const newCol = {
+        id: `col-${Date.now()}`,
+        name: input.name,
+        scope: input.scope,
+        ownerId: input.ownerId,
+        createdAt: new Date().toISOString(),
+        items: (variables.items || []).map((it: any, idx: number) => ({
+          id: `item-${Date.now()}-${idx}`,
+          collectionId: `col-${Date.now()}`,
+          date: it.date,
+          name: it.name || input.name,
+        })),
+      };
+      MOCK_COLLECTIONS.push(newCol);
+      return NextResponse.json({
+        data: {
+          createCollection: newCol,
+        },
+      });
+    }
+
+    if (query.includes("deleteCollection")) {
+      const cid = variables.id;
+      const idx = MOCK_COLLECTIONS.findIndex((c) => c.id === cid);
+      if (idx !== -1) MOCK_COLLECTIONS.splice(idx, 1);
+      return NextResponse.json({
+        data: {
+          deleteCollection: true,
+        },
+      });
+    }
+
+    if (query.includes("deleteCollectionItem")) {
+      return NextResponse.json({
+        data: {
+          deleteCollectionItem: true,
+        },
+      });
+    }
+
+    if (query.includes("listHolidays")) {
+      return NextResponse.json({
+        data: {
+          listHolidays: [],
+        },
+      });
+    }
+
+    if (query.includes("bulkCreateHolidays")) {
+      return NextResponse.json({
+        data: {
+          bulkCreateHolidays: true,
         },
       });
     }
