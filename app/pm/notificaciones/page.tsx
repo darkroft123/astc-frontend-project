@@ -315,7 +315,7 @@ export default function NotificationsPage() {
                       "text-[10px] font-bold px-1.5 py-0.2 rounded-full font-mono",
                       isActive
                         ? "bg-white/20 text-white"
-                        : "bg-primary/10 dark:bg-raised text-primary dark:text-[#7c9aff]"
+                        : "bg-primary/10 dark:bg-violet/10 text-primary dark:text-[#7c9aff]"
                     )}
                   >
                     {count}
