@@ -9,6 +9,7 @@ import {
   MOCK_JUSTIFICATIONS_LIST,
   MOCK_VACATIONS_LIST,
   MOCK_SCHEDULES,
+  MOCK_NOTIFICATIONS,
 } from "@/lib/mock-data";
 
 export async function POST(req: Request) {
@@ -156,6 +157,76 @@ export async function POST(req: Request) {
         data: {
           getEffectiveSchedule: MOCK_SCHEDULES[0],
           listSchedules: MOCK_SCHEDULES,
+        },
+      });
+    }
+
+    // 7. Notifications
+    if (query.includes("getUnreadNotificationsCount") || query.includes("unread")) {
+      const count = MOCK_NOTIFICATIONS.filter((n) => !n.read).length;
+      return NextResponse.json({
+        data: {
+          getUnreadNotificationsCount: count,
+        },
+      });
+    }
+
+    if (
+      query.includes("getallnotifications") ||
+      query.includes("getNotificationsByCategory") ||
+      query.includes("getNotifications")
+    ) {
+      const page = variables.page || 1;
+      const size = variables.size || 10;
+      const start = (page - 1) * size;
+      const paged = MOCK_NOTIFICATIONS.slice(start, start + size);
+      return NextResponse.json({
+        data: {
+          getallnotifications: {
+            page,
+            size,
+            total: MOCK_NOTIFICATIONS.length,
+            items: paged,
+          },
+          getNotificationsByCategory: {
+            page,
+            size,
+            total: MOCK_NOTIFICATIONS.length,
+            items: paged,
+          },
+        },
+      });
+    }
+
+    if (query.includes("markAllAsRead") || query.includes("markAllRead")) {
+      MOCK_NOTIFICATIONS.forEach((n) => {
+        n.read = true;
+      });
+      return NextResponse.json({
+        data: {
+          markAllAsRead: true,
+        },
+      });
+    }
+
+    if (query.includes("markAsRead")) {
+      const nid = variables.notificationId || variables.id;
+      const item = MOCK_NOTIFICATIONS.find((n) => n.id === nid);
+      if (item) item.read = true;
+      return NextResponse.json({
+        data: {
+          markAsRead: true,
+        },
+      });
+    }
+
+    if (query.includes("deleteNotification")) {
+      const nid = variables.notificationId || variables.id;
+      const idx = MOCK_NOTIFICATIONS.findIndex((n) => n.id === nid);
+      if (idx !== -1) MOCK_NOTIFICATIONS.splice(idx, 1);
+      return NextResponse.json({
+        data: {
+          deleteNotification: true,
         },
       });
     }

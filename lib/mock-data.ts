@@ -169,3 +169,63 @@ export const MOCK_SCHEDULES = [
     graceMinutes: 15,
   },
 ];
+
+export const MOCK_NOTIFICATIONS = [
+  {
+    id: "notif-01",
+    notificationCode: "AST00012",
+    title: "Justificación enviada",
+    body: "Hola mamanigutierrezcarlos123, se ha recibido su justificación para la ausencia del día 2026-09-02. ID: 8432261f-e26a. Estado: Enviado. Será revisada a la brevedad.",
+    icon: null,
+    color: null,
+    actionLink: "/justificaciones",
+    read: false,
+    createdAt: "2026-09-02T10:30:00.000Z",
+  },
+  {
+    id: "notif-02",
+    notificationCode: "AST00012",
+    title: "Justificación enviada",
+    body: "Hola mamanigutierrezcarlos123, se ha recibido su justificación para la ausencia del día 2026-09-02. ID: 8432261f-e26a. Estado: Borrador. Será revisada a la brevedad.",
+    icon: null,
+    color: null,
+    actionLink: "/justificaciones",
+    read: false,
+    createdAt: "2026-09-02T09:15:00.000Z",
+  },
+  {
+    id: "notif-03",
+    notificationCode: "AST00009",
+    title: "Salida temprana",
+    body: "Hola mamanigutierrezcarlos123, se ha registrado su salida temprana el día 2026-09-02. Estado: Salida temprana. Proyecto: 2454b982-751d. Recuerde cumplir su horario.",
+    icon: null,
+    color: null,
+    actionLink: "/asistencias",
+    read: false,
+    createdAt: "2026-09-02T08:00:00.000Z",
+  },
+  {
+    id: "notif-04",
+    notificationCode: "AST00012",
+    title: "Justificación enviada",
+    body: "Hola mamanigutierrezcarlos123, se ha recibido su justificación para la ausencia del día 2026-09-02. ID: 8432261f-e26a. Estado: Enviado. Será revisada a la brevedad.",
+    icon: null,
+    color: null,
+    actionLink: "/justificaciones",
+    read: false,
+    createdAt: "2026-09-02T07:45:00.000Z",
+  },
+  ...Array.from({ length: 24 }).map((_, i) => ({
+    id: `notif-${i + 5}`,
+    notificationCode: i % 2 === 0 ? "AST00012" : "AST00009",
+    title: i % 2 === 0 ? "Justificación enviada" : "Salida temprana",
+    body: i % 2 === 0
+      ? `Hola mamanigutierrezcarlos123, se ha recibido su justificación para la ausencia del día 2026-09-0${(i % 5) + 1}. ID: ${Math.random().toString(16).substring(2, 10)}. Estado: Enviado. Será revisada a la brevedad.`
+      : `Hola mamanigutierrezcarlos123, se ha registrado su salida temprana el día 2026-09-0${(i % 5) + 1}. Estado: Salida temprana. Recuerde cumplir su horario.`,
+    icon: null,
+    color: null,
+    actionLink: i % 2 === 0 ? "/justificaciones" : "/asistencias",
+    read: false,
+    createdAt: `2026-09-02T0${Math.max(1, 7 - (i % 6))}:00:00.000Z`,
+  })),
+];
