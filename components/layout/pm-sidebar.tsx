@@ -117,7 +117,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
     <div className="flex flex-col h-full">
       {/* 1. Perfil del usuario */}
       <div className="flex items-center gap-3 px-1 mb-3">
-        <div className="h-11 w-11 rounded-[14px] bg-brand-gradient flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm">
+        <div className="h-11 w-11 rounded-[14px] bg-gradient-to-br from-[#38bdf8] via-[#818cf8] to-[#c084fc] flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm">
           {getInitials(displayName)}
         </div>
 
