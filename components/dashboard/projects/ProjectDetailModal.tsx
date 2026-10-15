@@ -262,14 +262,18 @@ export default function ProjectDetailModal({
 
   return (
     <Dialog open={!!project} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-6 sm:p-7 rounded-[28px] border-border/80 bg-card shadow-2xl relative">
+      <DialogContent
+        showCloseButton={false}
+        style={{ transform: "translate(-50%, -50%)" }}
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-3xl w-full max-h-[88vh] flex flex-col p-6 sm:p-7 rounded-[28px] border-border/80 bg-card shadow-2xl overflow-hidden z-50"
+      >
         <DialogTitle className="sr-only">Detalles del Proyecto</DialogTitle>
 
         {/* Top subtle ambient glow */}
         <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-purple-500/10 via-purple-500/5 to-transparent pointer-events-none rounded-t-[28px]" />
 
         {/* Header Row */}
-        <div className="relative flex items-start justify-between gap-4">
+        <div className="relative flex items-start justify-between gap-4 shrink-0">
           <div className="flex items-center gap-4">
             {/* Glowing squircle icon */}
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#6366f1] via-[#8b5cf6] to-[#d946ef] p-0.5 flex items-center justify-center shadow-lg shadow-purple-500/25 shrink-0 text-white">
@@ -318,7 +322,7 @@ export default function ProjectDetailModal({
         </div>
 
         {/* Segmented Tabs Bar */}
-        <div className="bg-muted/40 dark:bg-white/[0.04] p-1.5 rounded-2xl border border-border/60 flex items-center gap-1.5 mt-6">
+        <div className="bg-muted/40 dark:bg-white/[0.04] p-1.5 rounded-2xl border border-border/60 flex items-center gap-1.5 mt-6 shrink-0">
           {/* Tab 1: General */}
           <button
             type="button"
@@ -395,7 +399,7 @@ export default function ProjectDetailModal({
         </div>
 
         {/* Tab Content Container */}
-        <div className="mt-6 space-y-4">
+        <div className="mt-6 space-y-4 overflow-y-auto flex-1 pr-1">
 
           {/* ===================== TAB 1: GENERAL ===================== */}
           {activeTab === "general" && (
