@@ -15,11 +15,21 @@ import {
   Check, 
   Calendar,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { getGraphQLUrl } from "@/lib/api-host";
 import { getAllProjects, getAllUsers, cancelAlert } from "@/app/services/project.assistance.service";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Calendar as CalendarPicker } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
 
 const LIST_ATTENDANCE_ALERTS = `
   query listAttendanceAlerts(
@@ -86,6 +96,36 @@ export function AlertsListView() {
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [page, setPage] = useState(1);
   const pageSize = 10;
+
+  const [customRangeOpen, setCustomRangeOpen] = useState(false);
+  const [rangeFrom, setRangeFrom] = useState<Date | undefined>(new Date(2026, 8, 1));
+  const [rangeTo, setRangeTo] = useState<Date | undefined>(new Date(2026, 8, 3));
+  const [dateBadgeText, setDateBadgeText] = useState("01/09/2026 → 03/09/2026");
+
+  const applyCustomRange = () => {
+    if (!rangeFrom || !rangeTo) return;
+    const fD = String(rangeFrom.getDate()).padStart(2, "0");
+    const fM = String(rangeFrom.getMonth() + 1).padStart(2, "0");
+    const fY = rangeFrom.getFullYear();
+    const tD = String(rangeTo.getDate()).padStart(2, "0");
+    const tM = String(rangeTo.getMonth() + 1).padStart(2, "0");
+    const tY = rangeTo.getFullYear();
+    setDateBadgeText(`${fD}/${fM}/${fY} → ${tD}/${tM}/${tY}`);
+    setCustomRangeOpen(false);
+  };
+
+  const handlePeriodTabClick = (tab: PeriodTab) => {
+    setActivePeriod(tab);
+    if (tab === "Hoy") {
+      setDateBadgeText("02/09/2026 → 02/09/2026");
+    } else if (tab === "Esta semana") {
+      setDateBadgeText("01/09/2026 → 07/09/2026");
+    } else if (tab === "Este mes") {
+      setDateBadgeText("01/09/2026 → 30/09/2026");
+    } else {
+      setDateBadgeText("01/09/2026 → 03/09/2026");
+    }
+  };
 
   useEffect(() => {
     if (!token) return;
@@ -245,7 +285,7 @@ export function AlertsListView() {
               return (
                 <button
                   key={tab}
-                  onClick={() => setActivePeriod(tab)}
+                  onClick={() => handlePeriodTabClick(tab)}
                   className={`px-3 py-1.5 text-xs rounded-lg transition-all font-medium whitespace-nowrap cursor-pointer ${
                     isActive
                       ? "bg-white dark:bg-[#202533] text-foreground font-semibold shadow-sm"
@@ -261,14 +301,64 @@ export function AlertsListView() {
 
         {/* Custom Range & Date Badge */}
         <div className="flex items-center gap-2">
-          <button className="h-9 px-3 rounded-xl border border-border/80 bg-card hover:bg-muted/50 text-foreground text-xs font-medium flex items-center gap-2 shadow-sm transition-colors cursor-pointer">
+          <button
+            onClick={() => setCustomRangeOpen(true)}
+            className="h-9 px-3 rounded-xl border border-border/80 bg-card hover:bg-muted/50 text-foreground text-xs font-medium flex items-center gap-2 shadow-sm transition-colors cursor-pointer"
+          >
             <Calendar className="w-4 h-4 text-muted-foreground" />
             <span>Rango personalizado</span>
           </button>
           <div className="h-9 px-3.5 rounded-xl border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/70 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs font-mono font-medium flex items-center gap-2">
-            <span>01/09/2026 → 03/09/2026</span>
+            <span>{dateBadgeText}</span>
           </div>
         </div>
+
+        {/* Dialog: Selector de rango personalizado */}
+        <Dialog open={customRangeOpen} onOpenChange={setCustomRangeOpen}>
+          <DialogContent className="sm:max-w-md rounded-2xl border border-border bg-card">
+            <DialogHeader>
+              <DialogTitle className="text-base font-bold text-foreground">
+                Seleccionar rango personalizado
+              </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground">
+                Elige una fecha de inicio y fin para filtrar los incidentes de alertas.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 pt-2">
+              <div className="flex justify-center border border-border/60 rounded-xl p-2 bg-background/50">
+                <CalendarPicker
+                  mode="range"
+                  selected={{
+                    from: rangeFrom,
+                    to: rangeTo,
+                  }}
+                  onSelect={(range: any) => {
+                    setRangeFrom(range?.from);
+                    setRangeTo(range?.to);
+                  }}
+                  className="rounded-xl"
+                />
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCustomRangeOpen(false)}
+                  className="text-xs"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={applyCustomRange}
+                  disabled={!rangeFrom || !rangeTo}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs"
+                >
+                  Aplicar rango
+                </Button>
+              </DialogFooter>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* 3. MAIN CARD CONTAINER */}

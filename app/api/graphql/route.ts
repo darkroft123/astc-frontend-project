@@ -193,13 +193,16 @@ export async function POST(req: Request) {
     }
 
     if (query.includes("registerAttendance")) {
+      const timeStr = new Date().toLocaleTimeString("es-PE");
+      MOCK_TODAY_ATTENDANCE.checkIn = timeStr;
+      MOCK_TODAY_ATTENDANCE.checkOut = null;
       return NextResponse.json({
         data: {
           registerAttendance: {
             id: `att-mock-${Date.now()}`,
             userId: MOCK_USER_PM.id,
             date: new Date().toISOString().split("T")[0],
-            checkIn: new Date().toLocaleTimeString("es-PE"),
+            checkIn: timeStr,
             status: "ASISTENCIA",
           },
         },
@@ -207,11 +210,13 @@ export async function POST(req: Request) {
     }
 
     if (query.includes("checkOut")) {
+      const timeStr = new Date().toLocaleTimeString("es-PE");
+      MOCK_TODAY_ATTENDANCE.checkOut = timeStr;
       return NextResponse.json({
         data: {
           checkOut: {
             id: `att-mock-${Date.now()}`,
-            checkOut: new Date().toLocaleTimeString("es-PE"),
+            checkOut: timeStr,
             status: "ASISTENCIA",
           },
         },

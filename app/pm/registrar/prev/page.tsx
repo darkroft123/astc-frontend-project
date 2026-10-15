@@ -139,6 +139,7 @@ export default function AttendancePreviewPage() {
         photoUrl: base64 || undefined,
       });
       clearSaved();
+      window.dispatchEvent(new Event("astc-attendance-updated"));
       router.push("/pm/mis-asistencias");
     } catch (err: any) {
       alert(err?.message || "Error al registrar entrada.");
@@ -175,6 +176,7 @@ export default function AttendancePreviewPage() {
     try {
       await checkOut(token!, project?.id || null, base64 || null, lat, lng);
       clearSaved();
+      window.dispatchEvent(new Event("astc-attendance-updated"));
       router.push("/pm/mis-asistencias");
     } catch (err: any) {
       alert(err?.message || "Error al registrar salida.");

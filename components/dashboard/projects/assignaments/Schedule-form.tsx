@@ -1,24 +1,16 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Save, Clock, Repeat, CalendarDays, CalendarRange, Settings, UserCircle2, Info } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Link from "next/link";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  ChevronLeft,
+  Clock,
+  Info,
+  AlertCircle,
+  Save,
+  Check,
+  Calendar,
+} from "lucide-react";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
 import {
   getAllUsers,
@@ -30,43 +22,41 @@ import {
 import { getGraphQLUrl } from "@/lib/api-host";
 
 const ASSIGN_SCHEDULE = `
-    mutation assignSchedule($input: ScheduleInput!) {
-      assignSchedule(input: $input) {
-        id
-        userId
-        projectId
-        shiftType
-      }
+  mutation assignSchedule($input: ScheduleInput!) {
+    assignSchedule(input: $input) {
+      id
+      userId
+      projectId
+      shiftType
     }
+  }
 `;
 
 type ShiftType = "REGULAR" | "ROTATING_4X4" | "ROTATING_7X7" | "FLEXIBLE" | "TRANSITORY";
 
-const SHIFT_TYPES: { key: ShiftType; label: string; icon: typeof Clock; desc: string }[] = [
-  { key: "REGULAR", label: "Regular", icon: Clock, desc: "Lun-Vie laboral, Sab-Dom descanso" },
-  { key: "ROTATING_4X4", label: "Rotativo 4x4", icon: Repeat, desc: "4 d\u00edas trabajo / 4 descanso" },
-  { key: "ROTATING_7X7", label: "Rotativo 7x7", icon: Repeat, desc: "7 d\u00edas trabajo / 7 descanso" },
-  { key: "FLEXIBLE", label: "Flexible", icon: CalendarDays, desc: "Horario distinto por d\u00eda" },
-  { key: "TRANSITORY", label: "Transitorio", icon: CalendarRange, desc: "Rango de fechas espec\u00edfico" },
+interface ShiftOption {
+  key: ShiftType;
+  title: string;
+  description: string;
+}
+
+const SHIFT_OPTIONS: ShiftOption[] = [
+  { key: "REGULAR", title: "Regular", description: "Lun–vie, horario fijo" },
+  { key: "ROTATING_4X4", title: "Rotativo 4x4", description: "4 días trabajo, 4 descanso" },
+  { key: "ROTATING_7X7", title: "Rotativo 7x7", description: "7 días trabajo, 7 descanso" },
+  { key: "FLEXIBLE", title: "Flexible", description: "Horas por día, sin hora fija" },
+  { key: "TRANSITORY", title: "Transitorio", description: "Por un periodo definido" },
 ];
 
 const DAYS = [
   { key: "monday" as const, label: "Lunes" },
   { key: "tuesday" as const, label: "Martes" },
-  { key: "wednesday" as const, label: "Mi\u00e9rcoles" },
+  { key: "wednesday" as const, label: "Miércoles" },
   { key: "thursday" as const, label: "Jueves" },
   { key: "friday" as const, label: "Viernes" },
-  { key: "saturday" as const, label: "S\u00e1bado" },
+  { key: "saturday" as const, label: "Sábado" },
   { key: "sunday" as const, label: "Domingo" },
 ];
-
-const ICON_BY_SHIFT: Record<string, typeof Clock> = {
-  REGULAR: Clock,
-  ROTATING_4X4: Repeat,
-  ROTATING_7X7: Repeat,
-  FLEXIBLE: CalendarDays,
-  TRANSITORY: CalendarRange,
-};
 
 export default function ScheduleForm({
   mode = "create",
@@ -78,7 +68,7 @@ export default function ScheduleForm({
 
   const [users, setUsers] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
-  
+
   const [selectedUserId, setSelectedUserId] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState("");
 
@@ -86,6 +76,8 @@ export default function ScheduleForm({
 
   const [startHour, setStartHour] = useState("08:00");
   const [endHour, setEndHour] = useState("17:00");
+  const [quickTemplate, setQuickTemplate] = useState<"day" | "afternoon" | "night">("day");
+
   const [graceMinutes, setGraceMinutes] = useState(10);
   const [absenceCutoffTime, setAbsenceCutoffTime] = useState("09:30");
 
@@ -110,12 +102,10 @@ export default function ScheduleForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const filteredProjects = useMemo(() => {
-    if (!selectedUserId) return projects;
-    return projects.filter((p: any) =>
-      p.members?.some((m: any) => m.userId === selectedUserId)
-    );
-  }, [projects, selectedUserId]);
+  // Projects available
+  const availableProjects = useMemo(() => {
+    return projects;
+  }, [projects]);
 
   useEffect(() => {
     if (hydrated && token) {
@@ -130,8 +120,13 @@ export default function ScheduleForm({
 
           const qUserId = searchParams.get("userId");
           if (qUserId && mode === "create") {
-            const u = userData?.find((x: any) => x.id === qUserId);
+            const u = (userData || []).find((x: any) => x.id === qUserId);
             if (u) setSelectedUserId(u.id);
+          }
+
+          const qProjectId = searchParams.get("projectId");
+          if (qProjectId && mode === "create") {
+            setSelectedProjectId(qProjectId);
           }
 
           const qTemplateId = searchParams.get("templateId");
@@ -143,48 +138,24 @@ export default function ScheduleForm({
                 if (tpl.projectId) setSelectedProjectId(tpl.projectId);
                 setShiftType((tpl.shiftType || "REGULAR") as ShiftType);
                 if (tpl.graceMinutes !== undefined) setGraceMinutes(tpl.graceMinutes);
-                if (tpl.absenceCutoffTime) setAbsenceCutoffTime(tpl.absenceCutoffTime.substring(0,5));
-                if (tpl.workStartTime) setStartHour(tpl.workStartTime.substring(0,5));
-                if (tpl.workEndTime) setEndHour(tpl.workEndTime.substring(0,5));
+                if (tpl.absenceCutoffTime) setAbsenceCutoffTime(tpl.absenceCutoffTime.substring(0, 5));
+                if (tpl.workStartTime) setStartHour(tpl.workStartTime.substring(0, 5));
+                if (tpl.workEndTime) setEndHour(tpl.workEndTime.substring(0, 5));
                 if (tpl.rotationWorkDays) setRotationWorkDays(tpl.rotationWorkDays);
                 if (tpl.rotationRestDays) setRotationRestDays(tpl.rotationRestDays);
-                if (tpl.rotationShiftStartTime) setRotationStartHour(tpl.rotationShiftStartTime.substring(0,5));
-                if (tpl.rotationShiftEndTime) setRotationEndHour(tpl.rotationShiftEndTime.substring(0,5));
+                if (tpl.rotationShiftStartTime) setRotationStartHour(tpl.rotationShiftStartTime.substring(0, 5));
+                if (tpl.rotationShiftEndTime) setRotationEndHour(tpl.rotationShiftEndTime.substring(0, 5));
                 if (tpl.validFrom) setValidFrom(tpl.validFrom);
                 if (tpl.validUntil) setValidUntil(tpl.validUntil);
-                if (tpl.shiftType === "FLEXIBLE") {
-                  const newFlex: any = {};
-                  for (const day of ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"]) {
-                    newFlex[day] = {
-                      start: tpl[`${day}Start`]?.substring(0,5) || "",
-                      end: tpl[`${day}End`]?.substring(0,5) || "",
-                    };
-                  }
-                  setFlexHours(newFlex);
-                }
               }
-            } catch { /* ignore */ }
+            } catch {
+              /* ignore */
+            }
           }
         })
         .catch((err) => console.error("Error loading options:", err));
     }
   }, [hydrated, token, searchParams, mode]);
-
-  useEffect(() => {
-    if (mode === "edit") return;
-    const calculateCutoff = (start: string) => {
-      if (!start) return "09:30";
-      const [h, m] = start.split(":").map(Number);
-      const date = new Date();
-      date.setHours(h, m + 90, 0, 0);
-      return `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
-    };
-    if (shiftType.startsWith("ROTATING")) {
-      setAbsenceCutoffTime(calculateCutoff(rotationStartHour));
-    } else {
-      setAbsenceCutoffTime(calculateCutoff(startHour));
-    }
-  }, [shiftType, startHour, rotationStartHour, mode]);
 
   useEffect(() => {
     if (mode === "edit" && initialData) {
@@ -193,12 +164,9 @@ export default function ScheduleForm({
       if (initialData.shiftType) {
         setShiftType(initialData.shiftType as ShiftType);
       }
-      if (initialData.workStartTime) setStartHour(initialData.workStartTime.substring(0,5));
-      if (initialData.workEndTime) setEndHour(initialData.workEndTime.substring(0,5));
+      if (initialData.startHour) setStartHour(initialData.startHour.substring(0, 5));
+      if (initialData.endHour) setEndHour(initialData.endHour.substring(0, 5));
       if (initialData.graceMinutes !== undefined) setGraceMinutes(initialData.graceMinutes);
-      
-      // We would ideally populate the rest of the fields here if initialData contains them,
-      // but typically the list view only sends basic data. 
     }
   }, [mode, initialData]);
 
@@ -212,29 +180,35 @@ export default function ScheduleForm({
     }
   }, [shiftType]);
 
-  useEffect(() => {
-    if (mode !== "create") return;
-    const proj = projects.find(p => p.id === selectedProjectId);
-    if (!proj) return;
-    if (proj.workStartTime) setStartHour(proj.workStartTime.substring(0, 5));
-    if (proj.workEndTime) setEndHour(proj.workEndTime.substring(0, 5));
-    if (proj.workStartTime) setRotationStartHour(proj.workStartTime.substring(0, 5));
-    if (proj.workEndTime) setRotationEndHour(proj.workEndTime.substring(0, 5));
-  }, [selectedProjectId, mode, projects]);
+  const handleApplyQuickTemplate = (type: "day" | "afternoon" | "night") => {
+    setQuickTemplate(type);
+    if (type === "day") {
+      setStartHour("08:00");
+      setEndHour("17:00");
+      setAbsenceCutoffTime("09:30");
+    } else if (type === "afternoon") {
+      setStartHour("14:00");
+      setEndHour("22:00");
+      setAbsenceCutoffTime("15:30");
+    } else if (type === "night") {
+      setStartHour("22:00");
+      setEndHour("06:00");
+      setAbsenceCutoffTime("23:30");
+    }
+  };
 
   const handleSubmit = async () => {
     if (!hydrated || !token) return;
     setError(null);
 
     if (!selectedUserId || !selectedProjectId) {
-      setError("Seleccione un usuario y un proyecto.");
+      setError("Selecciona el usuario y el proyecto.");
       return;
     }
 
     try {
       setIsSubmitting(true);
-      
-      const selectedProject = projects.find(p => p.id === selectedProjectId);
+      const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
       if (mode === "create") {
         const existingMembers = await getProjectMembers(token, selectedProjectId);
@@ -300,338 +274,487 @@ export default function ScheduleForm({
     }
   };
 
-  const SelectedIcon = ICON_BY_SHIFT[shiftType] || Clock;
   const selectedUser = users.find((u) => u.id === selectedUserId);
-  const selectedProject = projects.find((p) => p.id === selectedProjectId);
+  const isFormReady = Boolean(selectedUserId && selectedProjectId);
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-5xl mx-auto px-4 py-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
-        <div className="flex items-center gap-2 mb-6">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-sm">
-            <CalendarDays className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-foreground">
-              {mode === "create" ? "Asignar Horario Personalizado" : "Editar Horario Personalizado"}
-            </h1>
-            <p className="text-xs text-muted-foreground">Configura un horario específico para un usuario</p>
-          </div>
+        {/* Back navigation */}
+        <div>
+          <Link
+            href="/pm/asignacion-horarios"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 transition-colors mb-2"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Asignación de horarios
+          </Link>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            {mode === "create" ? "Asignar horario personalizado" : "Editar horario personalizado"}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Configura un horario específico para un usuario. Reemplaza el horario heredado del proyecto.
+          </p>
         </div>
 
         {error && (
-          <div className="mb-5 p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-sm text-destructive">
-            {error}
+          <div className="p-3.5 rounded-xl bg-destructive/10 border border-destructive/20 text-xs font-medium text-destructive flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* 2-Column Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
-          {/* LEFT COLUMN: User, Project & Shift Type Selection */}
+          {/* LEFT COLUMN: Steps 1 & 2 */}
           <div className="space-y-6">
-            
-            {/* USER & PROJECT SELECTION */}
-            <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-raised/50 border-b border-line">
-                <CardTitle className="text-sm">1. Asignación</CardTitle>
-                <CardDescription className="text-xs">Selecciona el usuario y el proyecto</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-4 space-y-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Usuario</Label>
-                  <Select value={selectedUserId} onValueChange={setSelectedUserId} disabled={mode === "edit"}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Seleccionar usuario..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {users.map((u) => (
-                        <SelectItem key={u.id} value={u.id}>
-                          {u.firstName} {u.lastName} (@{u.username})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Proyecto</Label>
-                  <Select value={selectedProjectId} onValueChange={setSelectedProjectId} disabled={mode === "edit"}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Seleccionar proyecto..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {filteredProjects.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
 
-            {/* SHIFT TYPE SELECTOR */}
-            <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-raised/50 border-b border-line">
-                <CardTitle className="text-sm">2. Tipo de Turno</CardTitle>
-                <CardDescription className="text-xs">Elige la modalidad de horario</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {SHIFT_TYPES.map((t) => {
-                    const Icon = t.icon;
-                    const isActive = shiftType === t.key;
-                    return (
-                      <button
-                        key={t.key}
-                        type="button"
-                        onClick={() => setShiftType(t.key)}
-                        className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 text-xs font-medium transition-all
-                          ${isActive
-                            ? "bg-primary/10 text-primary border-primary shadow-sm"
-                            : "border-border bg-background text-muted-foreground hover:border-border hover:bg-muted"}`}
-                      >
-                        <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-text-4"}`} />
-                        <span className="text-center leading-tight font-semibold">{t.label}</span>
-                      </button>
-                    );
-                  })}
+            {/* STEP 1: Asignación */}
+            <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  1
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <h2 className="text-sm font-semibold text-foreground leading-tight">
+                    Asignación
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Selecciona el usuario y el proyecto
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-1">
+                {/* Usuario */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-muted-foreground">
+                    Usuario
+                  </label>
+                  {mode === "edit" || selectedUser ? (
+                    <input
+                      type="text"
+                      disabled
+                      value={
+                        selectedUser
+                          ? `${selectedUser.firstName || ""} ${selectedUser.lastName || ""}`.trim() +
+                            (selectedUser.username ? ` (@${selectedUser.username})` : "")
+                          : "Usuario no seleccionado"
+                      }
+                      className="w-full h-10 px-3 rounded-lg border border-border bg-muted/40 text-sm text-foreground font-medium cursor-not-allowed opacity-90"
+                    />
+                  ) : (
+                    <select
+                      value={selectedUserId}
+                      onChange={(e) => setSelectedUserId(e.target.value)}
+                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    >
+                      <option value="">Seleccionar usuario...</option>
+                      {users.map((u) => (
+                        <option key={u.id} value={u.id}>
+                          {u.firstName} {u.lastName} (@{u.username})
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+
+                {/* Proyecto */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-muted-foreground">
+                    Proyecto
+                  </label>
+                  <select
+                    value={selectedProjectId}
+                    onChange={(e) => setSelectedProjectId(e.target.value)}
+                    disabled={mode === "edit"}
+                    className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  >
+                    <option value="">Seleccionar proyecto...</option>
+                    {availableProjects.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                  {!selectedProjectId && (
+                    <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5 pt-0.5">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      Elige un proyecto para continuar.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* STEP 2: Tipo de turno */}
+            <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-sm font-semibold text-foreground leading-tight">
+                    Tipo de turno
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Elige la modalidad de horario
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-1">
+                {SHIFT_OPTIONS.map((opt) => {
+                  const isSelected = shiftType === opt.key;
+                  return (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setShiftType(opt.key)}
+                      className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-center justify-between ${
+                        isSelected
+                          ? "border-purple-600 dark:border-purple-500 bg-purple-50/60 dark:bg-purple-950/25 ring-1 ring-purple-600 dark:ring-purple-500"
+                          : "border-border bg-card hover:bg-muted/40 text-foreground"
+                      }`}
+                    >
+                      <div>
+                        <p className={`text-sm font-semibold leading-tight ${isSelected ? "text-purple-950 dark:text-purple-200" : "text-foreground"}`}>
+                          {opt.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {opt.description}
+                        </p>
+                      </div>
+                      <div
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                          isSelected
+                            ? "border-purple-600 bg-purple-600 text-white"
+                            : "border-muted-foreground/40 bg-transparent"
+                        }`}
+                      >
+                        {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
           </div>
 
-          {/* RIGHT COLUMN: Specific Config, General Rules & Summary */}
+          {/* RIGHT COLUMN: Steps 3 & 4 */}
           <div className="space-y-6">
-            {/* SPECIFIC CONFIGURATION */}
-            {(shiftType === "REGULAR" || shiftType === "TRANSITORY") && (
-              <Card className="border-border shadow-sm">
-                <CardHeader className="pb-3 bg-raised/50 border-b border-line">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-sm flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-muted-foreground" />
-                        4. Horario {shiftType === "TRANSITORY" ? "Transitorio" : "Regular"}
-                      </CardTitle>
-                      <CardDescription className="text-xs mt-1">Define las horas de entrada y salida</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-4 space-y-4">
-                  <div className="flex gap-3 bg-primary/10 text-text-2 p-3 rounded-lg border border-line text-xs">
-                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-primary" />
-                    <p>
-                      {shiftType === "REGULAR"
-                        ? "Horario laboral de Lunes a Viernes. Sábados y Domingos son descanso automático (no se exige marcar ni genera falta). Ideal para personal administrativo u oficina."
-                        : "El empleado tendrá este horario de forma temporal. El sistema solo calculará las faltas basándose en este horario durante el rango de fechas seleccionado. Fuera de dicho rango, el sistema no considerará el horario y no generará penalizaciones."}
+
+            {/* STEP 3: Configuración de horario */}
+            <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-sm font-semibold text-foreground leading-tight">
+                    {shiftType === "REGULAR" ? "Horario regular" :
+                     shiftType === "TRANSITORY" ? "Horario transitorio" :
+                     shiftType === "FLEXIBLE" ? "Horario flexible" : "Turno rotativo"}
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Define las horas de entrada y salida
+                  </p>
+                </div>
+              </div>
+
+              {/* REGULAR / TRANSITORY */}
+              {(shiftType === "REGULAR" || shiftType === "TRANSITORY") && (
+                <div className="space-y-4 pt-1">
+                  {/* Info banner */}
+                  <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-900/50 text-blue-800 dark:text-blue-300 text-xs flex items-start gap-2.5">
+                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-600 dark:text-blue-400" />
+                    <p className="leading-relaxed">
+                      Lunes a viernes. Sábados y domingos son descanso automático (no exige marcar ni genera falta).
                     </p>
                   </div>
-                  {(shiftType === "REGULAR" || shiftType === "TRANSITORY") && (
-                    <div className="flex gap-2 bg-muted/50 p-2 rounded-lg border border-line">
-                      <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-background" onClick={() => { setStartHour("08:00"); setEndHour("17:00"); }}>Día</Button>
-                      <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-background" onClick={() => { setStartHour("14:00"); setEndHour("22:00"); }}>Tarde</Button>
-                      <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-background" onClick={() => { setStartHour("22:00"); setEndHour("06:00"); }}>
-                        Noche <span className="text-[9px] text-text-4 ml-1">22:00–06:00</span>
-                      </Button>
-                    </div>
-                  )}
-                  {(shiftType === "REGULAR" || shiftType === "TRANSITORY") && startHour === "22:00" && endHour === "06:00" && (
-                    <div className="flex gap-2 bg-amber/10 text-amber-ink p-2 rounded-lg border border-amber/20 text-[10px]">
-                      <Info className="w-3 h-3 shrink-0 mt-0.5" />
-                      <p>Turno nocturno: la jornada cruza la medianoche. El sistema evaluará la asistencia entre las 22:00 y las 06:00 del día siguiente.</p>
-                    </div>
-                  )}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Hora de Entrada</Label>
-                      <Input type="time" value={startHour} onChange={(e) => setStartHour(e.target.value)} />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Hora de Salida</Label>
-                      <Input type="time" value={endHour} onChange={(e) => setEndHour(e.target.value)} />
+
+                  {/* Plantilla rápida */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-muted-foreground">
+                      Plantilla rápida
+                    </label>
+                    <div className="grid grid-cols-3 gap-2 p-1 rounded-xl bg-muted/60 border border-border">
+                      <button
+                        type="button"
+                        onClick={() => handleApplyQuickTemplate("day")}
+                        className={`py-2 px-2 rounded-lg text-xs font-medium transition-all text-center ${
+                          quickTemplate === "day"
+                            ? "bg-card text-foreground shadow-sm font-semibold"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        <div>Día</div>
+                        <div className="text-[10px] text-muted-foreground font-normal">08:00 - 17:00</div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleApplyQuickTemplate("afternoon")}
+                        className={`py-2 px-2 rounded-lg text-xs font-medium transition-all text-center ${
+                          quickTemplate === "afternoon"
+                            ? "bg-card text-foreground shadow-sm font-semibold"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        <div>Tarde</div>
+                        <div className="text-[10px] text-muted-foreground font-normal">14:00 - 22:00</div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleApplyQuickTemplate("night")}
+                        className={`py-2 px-2 rounded-lg text-xs font-medium transition-all text-center ${
+                          quickTemplate === "night"
+                            ? "bg-card text-foreground shadow-sm font-semibold"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        <div>Noche</div>
+                        <div className="text-[10px] text-muted-foreground font-normal">22:00 - 06:00</div>
+                      </button>
                     </div>
                   </div>
+
+                  {/* Hours inputs */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-muted-foreground">
+                        Hora de entrada
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="time"
+                          value={startHour}
+                          onChange={(e) => {
+                            setStartHour(e.target.value);
+                            setQuickTemplate("day");
+                          }}
+                          className="w-full h-10 px-3 pr-8 rounded-lg border border-border bg-background text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        />
+                        <Clock className="w-4 h-4 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-muted-foreground">
+                        Hora de salida
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="time"
+                          value={endHour}
+                          onChange={(e) => {
+                            setEndHour(e.target.value);
+                            setQuickTemplate("day");
+                          }}
+                          className="w-full h-10 px-3 pr-8 rounded-lg border border-border bg-background text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        />
+                        <Clock className="w-4 h-4 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+                      </div>
+                    </div>
+                  </div>
+
                   {shiftType === "TRANSITORY" && (
-                    <div className="grid grid-cols-2 gap-4 pt-2 border-t border-line">
+                    <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border">
                       <div className="space-y-1.5">
-                        <Label className="text-xs text-muted-foreground">Válido desde</Label>
-                        <Input type="date" value={validFrom} onChange={(e) => setValidFrom(e.target.value)} />
+                        <label className="text-xs font-medium text-muted-foreground">
+                          Válido desde
+                        </label>
+                        <input
+                          type="date"
+                          value={validFrom}
+                          onChange={(e) => setValidFrom(e.target.value)}
+                          className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        />
                       </div>
                       <div className="space-y-1.5">
-                        <Label className="text-xs text-muted-foreground">Válido hasta</Label>
-                        <Input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} />
+                        <label className="text-xs font-medium text-muted-foreground">
+                          Válido hasta
+                        </label>
+                        <input
+                          type="date"
+                          value={validUntil}
+                          onChange={(e) => setValidUntil(e.target.value)}
+                          className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        />
                       </div>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            )}
+                </div>
+              )}
 
-            {shiftType === "FLEXIBLE" && (
-              <Card className="border-border shadow-sm">
-                <CardHeader className="pb-3 bg-raised/50 border-b border-line">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <CalendarDays className="w-4 h-4 text-muted-foreground" />
-                    3. Horario Flexible
-                  </CardTitle>
-                  <CardDescription className="text-xs mt-1">Configura horas distintas por día</CardDescription>
-                </CardHeader>
-                <CardContent className="pt-4 space-y-3">
-                  <div className="flex gap-3 bg-primary/10 text-text-2 p-3 rounded-lg border border-line text-xs mb-4">
-                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-primary" />
-                    <p>
-                      El sistema evaluará la asistencia de forma distinta según el día de la semana. Los días en los que dejes las horas vacías, el sistema entenderá que el empleado está en su día libre y <strong>no generará faltas automáticas</strong>.
+              {/* ROTATING 4X4 / 7X7 */}
+              {shiftType.startsWith("ROTATING") && (
+                <div className="space-y-4 pt-1">
+                  <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-900/50 text-blue-800 dark:text-blue-300 text-xs flex items-start gap-2.5">
+                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-600 dark:text-blue-400" />
+                    <p className="leading-relaxed">
+                      Ciclo continuo de <strong>{rotationWorkDays} días de trabajo</strong> seguidos de <strong>{rotationRestDays} días de descanso</strong>.
                     </p>
                   </div>
-                  {DAYS.map((day) => {
-                    const h = flexHours[day.key];
-                    return (
-                      <div key={day.key} className="grid grid-cols-[80px_1fr_1fr] gap-3 items-center">
-                        <span className="text-xs font-medium text-muted-foreground">{day.label}</span>
-                        <Input type="time" className="h-8 text-xs" value={h.start} onChange={(e) => setFlexHours({ ...flexHours, [day.key]: { ...h, start: e.target.value } })} />
-                        <Input type="time" className="h-8 text-xs" value={h.end} onChange={(e) => setFlexHours({ ...flexHours, [day.key]: { ...h, end: e.target.value } })} />
-                      </div>
-                    );
-                  })}
-                  <p className="text-[10px] text-text-4 mt-2 text-center bg-muted/50 py-1 rounded">Deja vacío si es día libre</p>
-                </CardContent>
-              </Card>
-            )}
 
-            {shiftType.startsWith("ROTATING") && (
-              <Card className="border-border shadow-sm">
-                <CardHeader className="pb-3 bg-raised/50 border-b border-line">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <Repeat className="w-4 h-4 text-muted-foreground" />
-                    3. Turno Rotativo
-                  </CardTitle>
-                  <CardDescription className="text-xs mt-1">Ciclos de trabajo y descanso</CardDescription>
-                </CardHeader>
-                <CardContent className="pt-4 space-y-4">
-                  <div className="flex gap-3 bg-primary/10 text-text-2 p-3 rounded-lg border border-line text-xs">
-                    <Info className="w-5 h-5 shrink-0 mt-0.5 text-primary" />
-                    <div className="space-y-2">
-                      <p>
-                        El sistema calculará un ciclo continuo a partir de la Fecha de inicio. Exigirá asistencia por <strong>{rotationWorkDays} días</strong> consecutivos y luego apagará todas las alertas de falta automática por <strong>{rotationRestDays} días</strong>.
-                      </p>
-                      <div className="bg-card/50 p-2 rounded border border-line">
-                        <span className="font-semibold block mb-1">¿Cómo lo calcula el sistema?</span>
-                        <ul className="list-disc pl-4 space-y-1">
-                          <li>Suma el total de días del ciclo ({rotationWorkDays} + {rotationRestDays} = {rotationWorkDays + rotationRestDays} días).</li>
-                          <li>Calcula los días transcurridos desde el inicio y obtiene el residuo de dividirlos entre la longitud del ciclo.</li>
-                          <li>Si el residuo es menor a {rotationWorkDays}, le toca <strong>TRABAJAR</strong>. Si es mayor o igual, le toca <strong>DESCANSAR</strong>.</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Días de trabajo</Label>
-                      <Input type="number" min={1} max={30} value={rotationWorkDays} onChange={(e) => setRotationWorkDays(parseInt(e.target.value) || 4)} />
+                      <label className="text-xs font-medium text-muted-foreground">
+                        Entrada (laboral)
+                      </label>
+                      <input
+                        type="time"
+                        value={rotationStartHour}
+                        onChange={(e) => setRotationStartHour(e.target.value)}
+                        className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                      />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Días de descanso</Label>
-                      <Input type="number" min={1} max={30} value={rotationRestDays} onChange={(e) => setRotationRestDays(parseInt(e.target.value) || 4)} />
+                      <label className="text-xs font-medium text-muted-foreground">
+                        Salida (laboral)
+                      </label>
+                      <input
+                        type="time"
+                        value={rotationEndHour}
+                        onChange={(e) => setRotationEndHour(e.target.value)}
+                        className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                      />
                     </div>
                   </div>
 
-                  <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg text-center">
-                    <p className="text-xs text-primary font-medium">Ciclo total de {rotationWorkDays + rotationRestDays} días: {rotationWorkDays}d trabajo &rarr; {rotationRestDays}d descanso</p>
-                  </div>
-
-                  <div className="flex gap-2 bg-muted/50 p-2 rounded-lg border border-line">
-                    <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-background" onClick={() => { setRotationStartHour("08:00"); setRotationEndHour("20:00"); }}>Día</Button>
-                    <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-background" onClick={() => { setRotationStartHour("14:00"); setRotationEndHour("22:00"); }}>Tarde</Button>
-                    <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1 bg-background" onClick={() => { setRotationStartHour("22:00"); setRotationEndHour("06:00"); }}>
-                      Noche <span className="text-[9px] text-text-4 ml-1">22:00–06:00</span>
-                    </Button>
-                  </div>
-                  {rotationStartHour === "22:00" && rotationEndHour === "06:00" && (
-                    <div className="flex gap-2 bg-amber/10 text-amber-ink p-2 rounded-lg border border-amber/20 text-[10px]">
-                      <Info className="w-3 h-3 shrink-0 mt-0.5" />
-                      <p>Turno nocturno: la jornada cruza la medianoche. El sistema evaluará la asistencia entre las 22:00 y las 06:00 del día siguiente.</p>
-                    </div>
-                  )}
-                  <div className="grid grid-cols-2 gap-4 pt-2">
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Entrada (laboral)</Label>
-                      <Input type="time" value={rotationStartHour} onChange={(e) => setRotationStartHour(e.target.value)} />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Salida (laboral)</Label>
-                      <Input type="time" value={rotationEndHour} onChange={(e) => setRotationEndHour(e.target.value)} />
-                    </div>
-                  </div>
-                  <div className="space-y-1.5 pt-2 border-t border-line">
-                    <Label className="text-xs text-muted-foreground">Fecha de inicio del ciclo</Label>
-                    <Input type="date" value={validFrom} onChange={(e) => setValidFrom(e.target.value)} />
-                    <p className="text-[10px] text-muted-foreground">El sistema empezará a contar el ciclo desde esta fecha. Si no se asigna, usará la fecha actual como inicio.</p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* CONFIGURACIÓN GENERAL */}
-            <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-raised/50 border-b border-line">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Settings className="w-4 h-4 text-muted-foreground" />
-                  4. Reglas Generales
-                </CardTitle>
-                <CardDescription className="text-xs mt-1">Tolerancia y hora límite para generar faltas automáticas</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Tolerancia (minutos)</Label>
-                    <Input type="number" min={0} max={120} value={graceMinutes} onChange={(e) => setGraceMinutes(parseInt(e.target.value) || 0)} />
-                    <p className="text-[10px] text-muted-foreground">Minutos después de la hora de entrada en los que el colaborador aún llega a tiempo.</p>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Corte de falta automática</Label>
-                    <Input type="time" value={absenceCutoffTime} onChange={(e) => setAbsenceCutoffTime(e.target.value)} />
-                    <p className="text-[10px] text-muted-foreground">Si el colaborador no marca antes de esta hora, el sistema genera una falta automática. Para turnos nocturnos, solo evalúa si la hora actual está dentro de la ventana del turno.</p>
+                  <div className="space-y-1.5 pt-1">
+                    <label className="text-xs font-medium text-muted-foreground">
+                      Fecha de inicio del ciclo
+                    </label>
+                    <input
+                      type="date"
+                      value={validFrom}
+                      onChange={(e) => setValidFrom(e.target.value)}
+                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              )}
 
-            {/* RESUMEN */}
-            {(selectedUserId && selectedProjectId) && (
-              <Card className="bg-primary/10 border-primary/20 shadow-sm">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <SelectedIcon className="w-4 h-4 text-primary" />
-                      <p className="text-sm font-medium text-foreground">
-                        {selectedUser?.firstName} {selectedUser?.lastName}
-                      </p>
-                    </div>
-                    <p className="text-[11px] text-text-4 mb-1">Proyecto: {selectedProject?.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {SHIFT_TYPES.find(s => s.key === shiftType)?.label} | Tolerancia: {graceMinutes}m
+              {/* FLEXIBLE */}
+              {shiftType === "FLEXIBLE" && (
+                <div className="space-y-3 pt-1">
+                  <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-900/50 text-blue-800 dark:text-blue-300 text-xs flex items-start gap-2.5">
+                    <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-600 dark:text-blue-400" />
+                    <p className="leading-relaxed">
+                      Configura horas distintas por día. Los días vacíos se consideran descanso automático.
                     </p>
                   </div>
-                  <Button onClick={handleSubmit} disabled={isSubmitting} className="shrink-0 shadow-sm bg-primary hover:bg-primary/90">
-                    <Save className="w-4 h-4 mr-2" />
-                    {isSubmitting ? "Guardando..." : "Guardar"}
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+
+                  <div className="space-y-2">
+                    {DAYS.map((day) => {
+                      const h = flexHours[day.key];
+                      return (
+                        <div key={day.key} className="grid grid-cols-[80px_1fr_1fr] gap-2 items-center">
+                          <span className="text-xs font-medium text-muted-foreground">{day.label}</span>
+                          <input
+                            type="time"
+                            value={h.start}
+                            onChange={(e) =>
+                              setFlexHours({ ...flexHours, [day.key]: { ...h, start: e.target.value } })
+                            }
+                            className="h-8 px-2 rounded-md border border-border bg-background text-xs"
+                          />
+                          <input
+                            type="time"
+                            value={h.end}
+                            onChange={(e) =>
+                              setFlexHours({ ...flexHours, [day.key]: { ...h, end: e.target.value } })
+                            }
+                            className="h-8 px-2 rounded-md border border-border bg-background text-xs"
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* STEP 4: Reglas generales */}
+            <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-sm font-semibold text-foreground leading-tight">
+                    Reglas generales
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Tolerancia y hora límite para faltas automáticas
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 pt-1">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-muted-foreground">
+                    Tolerancia (minutos)
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={120}
+                    value={graceMinutes}
+                    onChange={(e) => setGraceMinutes(parseInt(e.target.value) || 0)}
+                    className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-muted-foreground">
+                    Corte de falta automática
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="time"
+                      value={absenceCutoffTime}
+                      onChange={(e) => setAbsenceCutoffTime(e.target.value)}
+                      className="w-full h-10 px-3 pr-8 rounded-lg border border-border bg-background text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    />
+                    <Clock className="w-4 h-4 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* BOTTOM ACTION BAR */}
+        <div className="rounded-xl border border-border bg-card p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-muted-foreground">
+            {!isFormReady
+              ? "Completa usuario y proyecto para guardar."
+              : `Horario listo para asignar a ${selectedUser?.firstName || "colaborador"}.`}
+          </p>
+          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+            <Link
+              href="/pm/asignacion-horarios"
+              className="px-4 py-2 rounded-lg border border-border bg-background hover:bg-muted text-xs font-medium text-foreground transition-colors"
+            >
+              Cancelar
+            </Link>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={!isFormReady || isSubmitting}
+              className="px-5 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold shadow-sm inline-flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Save className="w-3.5 h-3.5" />
+              {isSubmitting ? "Guardando..." : "Guardar horario"}
+            </button>
           </div>
         </div>
 
-        {/* BOTTOM ACTIONS - If not selected project/user, show a generic save button to keep layout consistent */}
-        {(!selectedUserId || !selectedProjectId) && (
-          <div className="flex justify-end mt-6 pt-4 border-t border-border">
-            <Button disabled={true} className="bg-inset text-text-5">
-              <Save className="w-4 h-4 mr-2" />
-              Completa los datos
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
 }
-

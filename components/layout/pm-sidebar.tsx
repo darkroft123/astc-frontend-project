@@ -49,28 +49,32 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const [attendanceLabel, setAttendanceLabel] = useState("Registrar asistencia");
 
   useEffect(() => {
-    if (!hydrated || !token || !selectedProjectId || selectedProjectId === "all") {
+    if (!hydrated || !token) {
       setAttendanceLabel("Registrar asistencia");
       return;
     }
-    const ctrl = new AbortController();
-    const url = getGraphQLUrl();
-    fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({
-        query: `query($p:String){getTodayAttendance(projectId:$p){checkIn checkOut}}`,
-        variables: { p: selectedProjectId },
-      }),
-      signal: ctrl.signal,
-    })
-      .then((r) => r.json())
-      .then((j) => {
-        const a = j?.data?.getTodayAttendance;
-        setAttendanceLabel(a?.checkIn && !a?.checkOut ? "Marcar Salida" : "Registrar asistencia");
+    const updateLabel = () => {
+      const url = getGraphQLUrl();
+      const projId = !selectedProjectId || selectedProjectId === "all" ? null : selectedProjectId;
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          query: `query($p:String){getTodayAttendance(projectId:$p){checkIn checkOut}}`,
+          variables: { p: projId },
+        }),
       })
-      .catch(() => setAttendanceLabel("Registrar asistencia"));
-    return () => ctrl.abort();
+        .then((r) => r.json())
+        .then((j) => {
+          const a = j?.data?.getTodayAttendance;
+          setAttendanceLabel(a?.checkIn && !a?.checkOut ? "Marcar Salida" : "Registrar asistencia");
+        })
+        .catch(() => setAttendanceLabel("Registrar asistencia"));
+    };
+
+    updateLabel();
+    window.addEventListener("astc-attendance-updated", updateLabel);
+    return () => window.removeEventListener("astc-attendance-updated", updateLabel);
   }, [hydrated, token, selectedProjectId]);
 
   useEffect(() => {
