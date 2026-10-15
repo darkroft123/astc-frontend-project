@@ -20,9 +20,9 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
           <SidebarNav onNavigate={() => {}} />
         </MobileSidebar>
         <div className="flex-1 min-w-0 md:ml-[268px] relative overflow-x-hidden bg-background">
-          {/* Ambient light for all screens in dark mode (Figma official position) */}
-          <div className="fixed top-[-40px] right-[-40px] w-[600px] h-[600px] bg-gradient-to-br from-purple-600/30 via-indigo-600/20 to-transparent blur-[130px] rounded-full pointer-events-none hidden dark:block z-0" />
-          <div className="fixed top-[60px] right-[80px] w-[350px] h-[350px] bg-cyan-400/15 blur-[100px] rounded-full pointer-events-none hidden dark:block z-0" />
+          {/* Ambient light for all screens in dark mode (from users/create) */}
+          <div className="absolute top-[-250px] right-[-100px] w-[600px] h-[450px] bg-purple-600/10 dark:bg-purple-600/20 blur-[140px] rounded-full pointer-events-none hidden dark:block z-0" />
+          <div className="absolute top-[-80px] right-[100px] w-[350px] h-[250px] bg-indigo-500/10 dark:bg-indigo-500/15 blur-[100px] rounded-full pointer-events-none hidden dark:block z-0" />
 
           <div className="absolute top-4 right-4 z-50"><NotificationBell /></div>
           <div className="md:hidden p-4"><HamburgerButton /></div>
