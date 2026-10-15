@@ -10,6 +10,7 @@ import {
   MOCK_VACATIONS_LIST,
   MOCK_SCHEDULES,
   MOCK_NOTIFICATIONS,
+  MOCK_USERS,
 } from "@/lib/mock-data";
 
 export async function POST(req: Request) {
@@ -30,20 +31,59 @@ export async function POST(req: Request) {
       });
     }
 
-    // 2. Projects
-    if (query.includes("getMyProjects") || query.includes("listProjects")) {
+    // 2. Projects & Members
+    if (
+      query.includes("getAllProjects") ||
+      query.includes("getMyProjects") ||
+      query.includes("listProjects") ||
+      query.includes("getProjects")
+    ) {
       return NextResponse.json({
         data: {
+          getAllProjects: MOCK_PROJECTS,
           getMyProjects: MOCK_PROJECTS,
           listProjects: MOCK_PROJECTS,
+          getProjects: MOCK_PROJECTS,
+        },
+      });
+    }
+
+    if (query.includes("getProjectMembers") || query.includes("listProjectMembers")) {
+      const pid = variables.projectId || variables.id;
+      const proj = MOCK_PROJECTS.find((p) => p.id === pid) || MOCK_PROJECTS[0];
+      const members = proj?.members || [
+        { userId: "pm-001", role: "PROJECT_MANAGER" },
+        { userId: "user-002", role: "TEAM_MEMBER" },
+      ];
+      return NextResponse.json({
+        data: {
+          getProjectMembers: members,
+          listProjectMembers: members,
+        },
+      });
+    }
+
+    // 2.1 Users
+    if (
+      query.includes("getAllUsers") ||
+      query.includes("listUsers") ||
+      query.includes("getUsers")
+    ) {
+      return NextResponse.json({
+        data: {
+          getAllUsers: MOCK_USERS,
+          listUsers: { items: MOCK_USERS, total: MOCK_USERS.length },
+          getUsers: MOCK_USERS,
         },
       });
     }
 
     if (query.includes("getProjectById")) {
+      const pid = variables.id || variables.projectId;
+      const proj = MOCK_PROJECTS.find((p) => p.id === pid) || MOCK_PROJECTS[0];
       return NextResponse.json({
         data: {
-          getProjectById: MOCK_PROJECTS[0],
+          getProjectById: proj,
         },
       });
     }

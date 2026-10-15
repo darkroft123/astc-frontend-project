@@ -46,6 +46,60 @@ export const MOCK_PROJECTS = [
       { userId: "user-004", createdAt: "2026-03-01" },
     ],
   },
+  {
+    id: "proj-103",
+    name: "Proyecto Beta",
+    code: "BETA",
+    workStartTime: "08:30:00",
+    workEndTime: "17:30:00",
+    graceMinutes: 10,
+    timezone: "America/Lima",
+    vacationEligibilityDays: 30,
+    holidays: ["2026-10-08"],
+    members: [
+      { userId: "pm-001", createdAt: "2026-01-01" },
+      { userId: "user-002", createdAt: "2026-02-15" },
+    ],
+  },
+];
+
+export const MOCK_USERS = [
+  {
+    id: "pm-001",
+    firstName: "Carlos",
+    lastName: "Mamani",
+    username: "jefeproyecto-x",
+    email: "pm@astc.com",
+    role: "PROJECT_MANAGER",
+    roleCode: "PROJECT_MANAGER",
+  },
+  {
+    id: "user-002",
+    firstName: "Carlos",
+    lastName: "Mamani",
+    username: "carlos",
+    email: "mamanigutierrezcarlos123@gmail.com",
+    role: "TEAM_MEMBER",
+    roleCode: "TEAM_MEMBER",
+  },
+  {
+    id: "user-003",
+    firstName: "User",
+    lastName: "Carlos",
+    username: "user-carlos",
+    email: "user@astc.com",
+    role: "TEAM_MEMBER",
+    roleCode: "TEAM_MEMBER",
+  },
+  {
+    id: "user-004",
+    firstName: "Ana",
+    lastName: "Reyes",
+    username: "ana.reyes",
+    email: "ana@astc.com",
+    role: "TEAM_MEMBER",
+    roleCode: "TEAM_MEMBER",
+  },
 ];
 
 export const MOCK_TODAY_ATTENDANCE = {

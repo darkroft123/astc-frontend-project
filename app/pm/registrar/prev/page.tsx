@@ -10,6 +10,7 @@ import { registerAttendance, checkOut, getTodayAttendance } from "@/app/services
 import { formatLocalTime, getEffectiveTimezone } from "@/lib/timezone";
 import { GoogleMap } from "@/components/molecules/google-map";
 import { StatusBadge } from "@/components/atoms/status-badge";
+import { isOnline, flushAttendanceQueue, getCachedTodayAttendance, cacheTodayAttendance } from "@/lib/offline-queue";
 
 function fmtTime(v?: string | null, tz?: string | null) {
   return formatLocalTime(v, tz);

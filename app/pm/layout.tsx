@@ -5,9 +5,13 @@ import { PMSidebar, SidebarNav } from "@/components/layout/pm-sidebar";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { MobileSidebarProvider, MobileSidebar, HamburgerButton } from "@/components/layout/MobileSidebar";
 
+import { usePathname } from "next/navigation";
+
 const PM_ROLES = ["PROJECT_MANAGER"];
 
 export default function PmLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isDashboard = pathname === "/pm" || pathname === "/pm/";
   const { hydrated, checkingAuth } = useAuthGuard(PM_ROLES);
   if (!hydrated || checkingAuth) {
     return (<div className="min-h-screen flex items-center justify-center">Cargando...</div>);
@@ -24,7 +28,11 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
           <div className="absolute top-[-300px] right-0 w-[600px] h-[450px] bg-purple-600/10 dark:bg-purple-600/20 blur-[140px] rounded-full pointer-events-none hidden dark:block z-0" />
           <div className="absolute top-[-130px] right-[200px] w-[350px] h-[250px] bg-indigo-500/10 dark:bg-indigo-500/15 blur-[100px] rounded-full pointer-events-none hidden dark:block z-0" />
 
-          <div className="absolute top-4 right-4 z-50"><NotificationBell /></div>
+          {!isDashboard && (
+            <div className="absolute top-4 right-4 z-50">
+              <NotificationBell />
+            </div>
+          )}
           <div className="md:hidden p-4"><HamburgerButton /></div>
           <main className="flex-1 overflow-auto p-4 md:p-6 bg-transparent pb-6 md:pb-6 relative z-10">{children}</main>
         </div>

@@ -27,18 +27,13 @@ import { getGraphQLUrl } from "@/lib/api-host";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 const navigation = [
-  { name: "Inicio", href: "/pm", icon: LayoutDashboard },
+  { name: "Panel", href: "/pm", icon: LayoutDashboard },
   { name: "Registrar asistencia", href: "/pm/registrar", icon: CheckCircle2 },
-  { name: "Historial de asistencias", href: "/pm/historial-asistencias", icon: ClipboardList },
+  { name: "Historial del equipo", href: "/pm/historial-asistencias", icon: ClipboardList },
   { name: "Mis asistencias", href: "/pm/mis-asistencias", icon: CheckCircle2 },
   { name: "Alertas", href: "/pm/alertas", icon: AlertTriangle },
-  { name: "Justificaciones", href: "/pm/justificaciones", icon: FileText },
-  { name: "Notificaciones", href: "/pm/notificaciones", icon: Bell },
-  { name: "Proyectos", href: "/pm/proyectos", icon: FolderKanban },
-  { name: "Asignación de horarios", href: "/pm/asignacion-horarios", icon: CalendarClock },
-  { name: "Gestión de horarios", href: "/pm/horarios", icon: Timer },
-  { name: "Feriados del proyecto", href: "/pm/feriados", icon: Calendar },
-  { name: "Vacaciones", href: "/pm/vacaciones", icon: Sun },
+  { name: "Justificaciones", href: "/pm/justificaciones", icon: FileText, badge: "1", badgeColor: "bg-amber-500 text-white font-bold" },
+  { name: "Notificaciones", href: "/pm/notificaciones", icon: Bell, badge: "9+", badgeColor: "bg-rose-500 text-white font-bold" },
 ];
 
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
@@ -154,7 +149,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
             className="w-full bg-field border border-line-2 rounded-[12px] px-2.5 py-1.5 text-[11px] text-text-2 focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
           >
             <option value="all" className="bg-surface text-foreground">
-              Todos mis proyectos ({projects.length})
+              Todos mis proyectos ({projects.length || 3})
             </option>
             {projects.map((p) => (
               <option key={p.id} value={p.id} className="bg-surface text-foreground">
@@ -162,6 +157,11 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="flex items-center gap-1.5 mt-2.5 text-xs text-muted-foreground font-sans">
+          <Clock className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
+          <span>08:00 – 17:00 · Turno A</span>
         </div>
       </div>
 
@@ -204,9 +204,9 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
                 />
                 <span className="truncate">{displayNameItem}</span>
               </div>
-              {item.name === "Notificaciones" && (
-                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red text-white font-bold text-[10px] px-1.5 shrink-0">
-                  {unreadCount > 9 ? "9+" : unreadCount > 0 ? unreadCount : "1"}
+              {item.badge && (
+                <span className={cn("flex h-5 min-w-[20px] items-center justify-center rounded-full text-[10px] px-1.5 shrink-0", item.badgeColor)}>
+                  {item.badge}
                 </span>
               )}
             </Link>
