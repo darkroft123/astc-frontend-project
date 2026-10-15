@@ -115,10 +115,10 @@ export const MOCK_TODAY_ATTENDANCE = {
   id: "att-today-001",
   userId: "pm-001",
   projectId: "proj-101",
-  date: new Date().toISOString().split("T")[0],
-  checkIn: "08:04:15",
-  checkOut: null,
-  status: "ASISTENCIA",
+  date: "2026-09-02",
+  checkIn: "08:52:00",
+  checkOut: "09:07:00",
+  status: "EARLY",
 };
 
 export const MOCK_DASHBOARD_PM = {
