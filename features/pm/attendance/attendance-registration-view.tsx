@@ -262,8 +262,15 @@ export function AttendanceRegistrationView() {
                       </td>
                     </tr>
                   ) : (
-                    members.map((member) => (
-                      <tr key={member.id} className="hover:bg-accent transition-colors">
+                    members.map((member, idx) => (
+                      <tr
+                        key={member.id}
+                        className={`border-b border-border/40 dark:border-[#1a1e30] transition-colors ${
+                          idx % 2 === 0
+                            ? "bg-muted/30 dark:bg-[#121626]/50 hover:bg-muted/50 dark:hover:bg-[#181d33]/60"
+                            : "bg-transparent hover:bg-muted/20 dark:hover:bg-[#121626]/40"
+                        }`}
+                      >
                         <td className="py-4 px-4 font-medium text-foreground">{member.fullName}</td>
                         <td className="py-4 px-4">
                           {member.shiftType ? (

@@ -63,18 +63,32 @@ export function useCamera() {
       video.setAttribute("playsinline", "true");
       video.setAttribute("autoplay", "true");
 
-      try {
-        await video.play();
-      } catch (playErr) {
-        console.warn("[CAMERA] video.play() auto-play error, listening to metadata:", playErr);
+      if (video.readyState >= 2) {
+        try {
+          await video.play();
+        } catch (_) {}
+      } else {
         await new Promise<void>((resolve) => {
+          let resolved = false;
+          const finish = () => {
+            if (!resolved) {
+              resolved = true;
+              resolve();
+            }
+          };
+          video!.onloadeddata = async () => {
+            try {
+              await video?.play();
+            } catch (_) {}
+            finish();
+          };
           video!.onloadedmetadata = async () => {
             try {
-              await video!.play();
-            } catch (e) {}
-            resolve();
+              await video?.play();
+            } catch (_) {}
+            finish();
           };
-          setTimeout(resolve, 500);
+          setTimeout(finish, 600);
         });
       }
 
@@ -94,7 +108,7 @@ export function useCamera() {
 
     const video = videoRef.current;
     if (video) {
-      video.srcObject = null; // 🔥 CLAVE
+      video.srcObject = null;
     }
 
     setCameraOn(false);
@@ -140,7 +154,6 @@ export function useCamera() {
     startCamera();
   }, [startCamera]);
 
-  // 🔥 cleanup automático si sales del componente
   useEffect(() => {
     return () => {
       if (streamRef.current) {

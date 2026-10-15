@@ -73,7 +73,11 @@ export function DataTable<T = any>({
               data.map((row, i) => (
                 <tr
                   key={(row as any)?.id ?? i}
-                  className="hover:bg-primary/10 transition-all duration-150 group"
+                  className={`border-b border-border/40 dark:border-[#1a1e30] transition-colors group ${
+                    i % 2 === 0
+                      ? "bg-muted/30 dark:bg-[#121626]/50 hover:bg-muted/50 dark:hover:bg-[#181d33]/60"
+                      : "bg-transparent hover:bg-muted/20 dark:hover:bg-[#121626]/40"
+                  }`}
                 >
                   {columns.map((col) => (
                     <td
