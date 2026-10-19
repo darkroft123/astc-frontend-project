@@ -176,11 +176,11 @@ export function VacationApprovalView() {
       render: (r) =>
         r.status === "PENDING" ? (
           <div className="flex items-center gap-1.5">
-            <Button size="sm" onClick={() => handleOpenApproveDialog(r)} className="h-7 px-2.5 text-xs bg-green hover:bg-green/90 text-primary-foreground rounded-lg">
+            <Button size="sm" onClick={() => handleOpenApproveDialog(r)} className="h-8 px-3 text-xs bg-green hover:bg-green/90 text-white font-semibold rounded-lg shadow-xs">
               <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
               Aprobar
             </Button>
-            <Button size="sm" variant="outline" onClick={() => setRejectDialog({ open: true, id: r.id })} className="h-7 px-2.5 text-xs border-red/20 text-red-ink hover:bg-red/10 rounded-lg">
+            <Button size="sm" variant="outline" onClick={() => setRejectDialog({ open: true, id: r.id })} className="h-8 px-3 text-xs bg-red text-white hover:bg-red/90 border-0 font-semibold rounded-lg shadow-xs">
               <Ban className="w-3.5 h-3.5 mr-1" />
               Rechazar
             </Button>
@@ -201,7 +201,7 @@ export function VacationApprovalView() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       <div className="max-w-6xl mx-auto px-5 py-5">
 
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b pb-4 gap-3">

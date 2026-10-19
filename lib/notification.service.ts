@@ -1,5 +1,6 @@
-import { ASTCNotificationSDK } from "./notification-sdk";
+import { ASTCNotificationSDK, InAppNotification } from "./notification-sdk";
 
+export type { InAppNotification };
 export const notificationService = new ASTCNotificationSDK(4000, "");
 
 export function getNotificationIcon(code?: string): string {

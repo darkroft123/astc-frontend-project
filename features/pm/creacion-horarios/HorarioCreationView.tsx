@@ -295,7 +295,7 @@ export function HorarioCreationView() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       {/* Error Modal */}
       <Dialog open={!!error} onOpenChange={() => setError(null)}>
         <DialogContent>

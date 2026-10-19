@@ -161,15 +161,15 @@ export function DashboardView() {
         </div>
 
         {/* PERIOD / DATE SELECTOR BAR */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-muted/40 dark:bg-surface border border-border/80 overflow-x-auto">
+        <div className="w-full flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5">
+          <div className="flex-1 flex items-center gap-1 p-1 rounded-xl bg-muted/40 dark:bg-surface border border-border/80 overflow-x-auto">
             {PERIOD_TABS.map((tab) => {
               const isActive = activePeriod === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActivePeriod(tab.id)}
-                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
+                  className={`flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer text-center ${
                     isActive
                       ? "bg-white dark:bg-raised text-foreground dark:text-white shadow-xs border border-border font-semibold"
                       : "text-muted-foreground hover:text-foreground"
@@ -181,15 +181,15 @@ export function DashboardView() {
             })}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 shrink-0">
             <button
               type="button"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border bg-card dark:bg-sidebar/70 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-border bg-card dark:bg-surface text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer shadow-xs"
             >
               <Calendar className="w-3.5 h-3.5" />
               Rango personalizado
             </button>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-blue/20 bg-blue/10 text-xs font-mono text-blue dark:text-blue shadow-xs">
+            <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-blue/20 bg-blue/10 text-xs font-mono text-blue dark:text-blue shadow-xs">
               <span>01/09/2026 → 03/09/2026</span>
             </div>
           </div>

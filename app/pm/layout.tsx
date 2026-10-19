@@ -9,10 +9,11 @@ import { usePathname } from "next/navigation";
 
 const PM_ROLES = ["PROJECT_MANAGER"];
 
+import { MobileHeader } from "@/components/layout/MobileHeader";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+
 export default function PmLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isDashboard = pathname === "/pm" || pathname === "/pm/";
-  const hasInlineBell = isDashboard || pathname.startsWith("/pm/alertas");
   const { hydrated, checkingAuth } = useAuthGuard(PM_ROLES);
   if (!hydrated || checkingAuth) {
     return (<div className="min-h-screen flex items-center justify-center">Cargando...</div>);
@@ -24,18 +25,20 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
         <MobileSidebar>
           <SidebarNav onNavigate={() => {}} />
         </MobileSidebar>
-        <div className="flex-1 min-w-0 md:ml-[268px] relative overflow-x-hidden bg-background">
+        <div className="flex-1 min-w-0 md:ml-[268px] flex flex-col min-h-screen relative overflow-x-hidden bg-background">
+          {/* Mobile Top Header */}
+          <MobileHeader />
+
           {/* Ambient light for all screens in dark mode (50px higher, 100px left) */}
           <div className="absolute top-[-300px] right-0 w-[600px] h-[450px] bg-violet/10 dark:bg-violet/20 blur-[140px] rounded-full pointer-events-none hidden dark:block z-0" />
           <div className="absolute top-[-130px] right-[200px] w-[350px] h-[250px] bg-indigo-500/10 dark:bg-indigo-500/15 blur-[100px] rounded-full pointer-events-none hidden dark:block z-0" />
 
-          {!hasInlineBell && (
-            <div className="absolute top-4 right-4 z-50">
-              <NotificationBell />
-            </div>
-          )}
-          <div className="md:hidden p-4"><HamburgerButton /></div>
-          <main className="flex-1 overflow-auto p-4 md:p-6 bg-transparent pb-6 md:pb-6 relative z-10">{children}</main>
+          <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 bg-transparent pb-24 md:pb-6 relative z-10">
+            {children}
+          </main>
+
+          {/* Mobile Bottom Navigation */}
+          <MobileBottomNav basePath="/pm" />
         </div>
       </MobileSidebarProvider>
     </div>

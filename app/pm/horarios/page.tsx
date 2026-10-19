@@ -4,7 +4,7 @@ import { ScheduleListView } from "@/features/pm/horarios/ScheduleListView";
 
 export default function GestionHorariosPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
         <PageHeader
           categoryTag={{ badge: "JEFE DE PROYECTO", text: "Panel de Gestión" }}

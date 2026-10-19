@@ -5,16 +5,13 @@ import { useRouter } from "next/navigation";
 import {
   ShieldCheck,
   CalendarDays,
-  Clock,
   Plane,
   CheckCircle2,
   Loader2,
   AlertTriangle,
   RefreshCcw,
-  Navigation,
   FolderKanban,
   ArrowRight,
-  WifiOff,
 } from "lucide-react";
 
 import { useClock } from "@/hooks/useClock";
@@ -23,6 +20,7 @@ import { useCamera } from "@/hooks/useCamera";
 import { useFaceDetection } from "@/hooks/useFaceDetection";
 import { useAuthGuard } from "@/app/jwt/auth/useAuthGuard";
 import { useUserProject } from "@/features/attendance/hooks/useUserProject";
+import { NotificationBell } from "@/components/layout/notification-bell";
 import {
   getTodayAttendance,
   getEffectiveSchedule,
@@ -85,7 +83,7 @@ export default function BiometricRegistrationView({
     return todayLocal >= v.startDate && todayLocal <= v.endDate;
   });
 
-  // Offline / Airplane mode detection & queue auto-sync
+  // Offline / Airplane mode detection & queue auto-sync (ONLY activates when actually offline)
   useEffect(() => {
     const updateStatus = () => {
       const offline = !isOnline();
@@ -110,37 +108,29 @@ export default function BiometricRegistrationView({
       setPendingCount(getPendingCount());
     };
 
-    const handleQueueChange = () => {
-      setPendingCount(getPendingCount());
-    };
-
     if (typeof window !== "undefined") {
       updateStatus();
       window.addEventListener("online", handleOnline);
       window.addEventListener("offline", handleOffline);
-      window.addEventListener("attendance-queue-changed", handleQueueChange);
-
-      if (isOnline() && token && getPendingCount() > 0) {
-        setIsSyncing(true);
-        flushAttendanceQueue(token).finally(() => {
-          setIsSyncing(false);
-          setPendingCount(getPendingCount());
-        });
-      }
     }
 
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-      window.removeEventListener("attendance-queue-changed", handleQueueChange);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("online", handleOnline);
+        window.removeEventListener("offline", handleOffline);
+      }
     };
   }, [token]);
 
+  // Start camera on mount
   useEffect(() => {
     startCamera();
-    return () => stopCamera();
-  }, [startCamera, stopCamera]);
+    return () => {
+      stopCamera();
+    };
+  }, []);
 
+  // Fetch today attendance & schedule & vacations
   useEffect(() => {
     if (!token || !user?.id) return;
 
@@ -300,41 +290,39 @@ export default function BiometricRegistrationView({
   };
 
   return (
-    <div className="w-full min-h-screen bg-background text-text flex flex-col font-sans">
-      {/* ==================== 1. TOP HEADER ==================== */}
-      <header className="px-4 sm:px-8 pt-4 pb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-line">
+    <div className="w-full space-y-6 text-foreground font-sans bg-transparent">
+      {/* ==================== 1. TOP HEADER (TRANSPARENTE, SIN CONTENEDOR BLOQUEANTE) ==================== */}
+      <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         {/* Left: Icon, Title & Project/Shift info */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-surface border border-line flex items-center justify-center text-primary shrink-0 shadow-sm">
-            <ShieldCheck className="w-5 h-5 text-primary" />
+          <div className="w-10 h-10 rounded-2xl bg-card border border-border/80 flex items-center justify-center text-primary shrink-0 shadow-sm">
+            <ShieldCheck className="w-5 h-5 text-indigo-500 dark:text-[#818CF8]" />
           </div>
           <div>
-            <h1 className="font-sans text-xl sm:text-2xl font-bold text-text tracking-tight leading-tight">
+            <h1 className="font-sans text-xl sm:text-2xl font-bold text-foreground tracking-tight leading-tight">
               Registro biométrico
             </h1>
-            <p className="font-sans text-xs sm:text-sm font-light text-text-3 mt-0.5">
-              Proyecto {project?.name || "test06"} · turno{" "}
-              {schedule?.shiftType === "PERMANENT" || schedule?.shiftType === "REGULAR"
-                ? "regular"
-                : "regular"}{" "}
+            <p className="font-sans text-xs sm:text-sm font-light text-muted-foreground mt-0.5">
+              Proyecto {project?.name || "testo6"} · turno regular{" "}
               {schedule?.expectedStartTime?.slice(0, 5) || "08:00"} -{" "}
               {schedule?.expectedEndTime?.slice(0, 5) || "17:00"}
             </p>
           </div>
         </div>
 
-        {/* Right: Date pill & Digital clock pill */}
+        {/* Right: Date pill, Digital clock pill & NotificationBell */}
         <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap sm:flex-nowrap">
-          {projects.length > 1 && selectProject && (
-            <div className="flex items-center gap-1.5 bg-surface border border-line px-3 py-1.5 rounded-xl">
+          {/* Multi-project quick dropdown if > 1 */}
+          {projects.length > 1 && (
+            <div className="flex items-center gap-1.5 bg-card border border-border/80 px-3 py-1.5 rounded-xl">
               <FolderKanban className="w-3.5 h-3.5 text-primary" />
               <select
                 value={project?.id || ""}
                 onChange={(e) => selectProject(e.target.value)}
-                className="bg-transparent text-xs text-text focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs text-foreground focus:outline-none cursor-pointer"
               >
                 {projects.map((p) => (
-                  <option key={p.id} value={p.id} className="bg-surface text-text">
+                  <option key={p.id} value={p.id} className="bg-card text-foreground">
                     {p.name}
                   </option>
                 ))}
@@ -343,8 +331,8 @@ export default function BiometricRegistrationView({
           )}
 
           {/* Date pill */}
-          <div className="flex items-center gap-2 bg-surface border border-line text-text-2 px-3.5 py-2 rounded-xl text-xs font-sans">
-            <CalendarDays className="w-3.5 h-3.5 text-text-4" />
+          <div className="flex items-center gap-2 bg-card border border-border/80 text-muted-foreground px-3.5 py-2 rounded-xl text-xs font-sans shadow-sm">
+            <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" />
             <span className="capitalize">
               {day ? `${day}, ` : ""}
               {date || "2/9/2026"}
@@ -352,82 +340,62 @@ export default function BiometricRegistrationView({
           </div>
 
           {/* Digital Time pill */}
-          <div className="flex items-center gap-2 bg-surface border border-line text-text-2 px-3.5 py-2 rounded-xl font-mono text-sm font-semibold tracking-wide shadow-inner">
+          <div className="flex items-center gap-2 bg-[#0B1B2B] dark:bg-[#071927] border border-cyan-500/40 text-cyan-500 dark:text-[#00E5FF] px-4 py-2 rounded-xl font-mono text-sm font-semibold tracking-wide shadow-inner">
             <span>{time || "10:51:42 p. m."}</span>
           </div>
-        </div>
-      </header>
 
-      {/* ==================== 2. AIRPLANE / OFFLINE BANNER ==================== */}
+          {/* Notification Bell with red 9+ badge (desktop only, MobileHeader provides the bell on mobile) */}
+          <div className="hidden md:flex">
+            <NotificationBell />
+          </div>
+        </div>
+      </div>
+
+      {/* ==================== 2. AIRPLANE / OFFLINE BANNER (SOLO SE MUESTRA SI REALMENTE ESTÁ OFFLINE) ==================== */}
       {(isOffline || pendingCount > 0) && (
-        <div className="px-4 sm:px-8 pt-4">
-          <div className="bg-surface border border-amber/20 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-amber-ink shadow-sm">
+        <div className="w-full">
+          <div className="bg-[#14120B] dark:bg-[#14120B] bg-amber-500/10 border border-[#D97706]/40 dark:border-[#D97706]/40 border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-sm">
             <div className="flex items-start sm:items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-amber/10 border border-amber/20 flex items-center justify-center shrink-0">
-                {isOffline ? (
-                  <Plane className="w-4 h-4 text-amber-ink rotate-[-45deg]" />
-                ) : (
-                  <RefreshCcw className="w-4 h-4 text-amber-ink animate-spin" />
-                )}
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0">
+                <Plane className="w-5 h-5 text-[#F59E0B] rotate-[-45deg]" />
               </div>
               <div>
-                <h2 className="font-sans font-semibold text-text text-sm">
-                  {isOffline ? "Modo avión activado" : "Sincronizando marcajes pendientes"}
+                <h2 className="font-sans font-semibold text-foreground text-sm">
+                  Modo avión activado
                 </h2>
-                <p className="font-sans text-xs text-text-3 mt-0.5">
-                  {isOffline
-                    ? `El marcaje se guarda en el dispositivo y se sincroniza al recuperar conexión.${
-                        pendingCount > 0 ? ` (Pendientes: ${pendingCount})` : ""
-                      }`
-                    : `Se encontraron ${pendingCount} marcaje(s) offline. Sincronizando con el servidor...`}
+                <p className="font-sans text-xs text-muted-foreground mt-0.5">
+                  El marcaje se guarda en el dispositivo y se sincroniza al recuperar conexión.
+                  {pendingCount > 0 ? ` (Pendientes: ${pendingCount})` : ""}
                 </p>
               </div>
             </div>
-            {isOffline ? (
-              <button
-                onClick={() => {
-                  if (typeof window !== "undefined") {
-                    const offline = !window.navigator.onLine;
-                    setIsOffline(offline);
-                    setPendingCount(getPendingCount());
-                  }
-                }}
-                className="self-start sm:self-auto bg-surface hover:bg-raised border border-amber/30 text-amber-ink rounded-xl px-4 py-2 text-xs font-semibold transition-all shrink-0 cursor-pointer"
-              >
-                Reintentar
-              </button>
-            ) : (
-              <button
-                disabled={isSyncing}
-                onClick={() => {
-                  if (token) {
-                    setIsSyncing(true);
-                    flushAttendanceQueue(token).finally(() => {
-                      setIsSyncing(false);
-                      setPendingCount(getPendingCount());
-                    });
-                  }
-                }}
-                className="self-start sm:self-auto bg-surface hover:bg-raised border border-amber/30 text-amber-ink rounded-xl px-4 py-2 text-xs font-semibold transition-all shrink-0 cursor-pointer disabled:opacity-50"
-              >
-                {isSyncing ? "Sincronizando..." : "Sincronizar ahora"}
-              </button>
-            )}
+            <button
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  const offline = !window.navigator.onLine;
+                  setIsOffline(offline);
+                  setPendingCount(getPendingCount());
+                }
+              }}
+              className="self-start sm:self-auto border border-[#D97706]/60 bg-transparent hover:bg-[#D97706]/10 text-[#FBBF24] rounded-xl px-5 py-2 text-xs font-semibold transition-all shrink-0 cursor-pointer"
+            >
+              Reintentar
+            </button>
           </div>
         </div>
       )}
 
-      {/* ==================== 3. THREE-COLUMN BODY ==================== */}
-      <main className="flex-1 px-4 sm:px-8 py-5 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+      {/* ==================== 3. THREE-COLUMN BODY (SIN ANIDAR TAG MAIN) ==================== */}
+      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* ---------- COLUMNA IZQUIERDA (Requisitos, Zona horaria, GPS) ---------- */}
         <div className="lg:col-span-3 space-y-4 order-2 lg:order-1">
           {/* Card: REQUISITOS */}
-          <div className="bg-surface border border-line rounded-2xl p-4 space-y-4 shadow-sm">
+          <div className="bg-card border border-border/80 rounded-2xl p-4 space-y-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10.5px] uppercase tracking-[0.15em] text-primary font-medium">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-indigo-500 dark:text-[#818CF8] font-semibold">
                 REQUISITOS
               </span>
-              <span className="font-sans text-xs text-text-3">
+              <span className="font-sans text-xs text-muted-foreground">
                 {readyRequirementsCount} de 4 listos
               </span>
             </div>
@@ -437,24 +405,22 @@ export default function BiometricRegistrationView({
               {checklist.map((item) => (
                 <div key={item.id} className="flex items-center gap-2.5">
                   {item.done ? (
-                    <div className="w-4 h-4 rounded-full bg-green/20 border border-green/40 flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-green-ink" />
+                    <div className="w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                     </div>
                   ) : item.id === "face" ? (
-                    <div className="w-4 h-4 rounded-full bg-amber/20 border border-amber/40 flex items-center justify-center shrink-0">
-                      <Loader2 className="w-3.5 h-3.5 text-amber-ink animate-spin" />
-                    </div>
+                    <div className="w-4 h-4 rounded-full border-2 border-amber-400 flex items-center justify-center shrink-0" />
                   ) : (
-                    <div className="w-4 h-4 rounded-full bg-raised border border-line-2 flex items-center justify-center shrink-0">
-                      <div className="w-1.5 h-1.5 rounded-full bg-text-4" />
+                    <div className="w-4 h-4 rounded-full bg-muted border border-border flex items-center justify-center shrink-0">
+                      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
                     </div>
                   )}
 
                   <span
                     className={`font-sans text-xs ${
                       !item.done && item.id === "face"
-                        ? "text-amber-ink font-medium"
-                        : "text-text-2"
+                        ? "text-amber-400 dark:text-[#FBBF24] font-medium"
+                        : "text-foreground/80 dark:text-slate-300"
                     }`}
                   >
                     {item.label}
@@ -464,41 +430,41 @@ export default function BiometricRegistrationView({
             </div>
 
             {/* ZONA HORARIA */}
-            <div className="border-t border-line pt-3.5 space-y-1">
-              <span className="font-mono text-[10.5px] uppercase tracking-[0.15em] text-primary font-medium block">
+            <div className="border-t border-border/80 pt-3.5 space-y-1">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-indigo-500 dark:text-[#818CF8] font-semibold block">
                 ZONA HORARIA
               </span>
-              <p className="font-mono text-sm font-semibold text-text tracking-wide">
+              <p className="font-mono text-sm font-bold text-foreground tracking-wide">
                 {projectTimezone || "America/Lima"}
               </p>
-              <p className="font-sans text-[11px] text-text-4">
+              <p className="font-sans text-[11px] text-muted-foreground">
                 Todos los horarios se muestran en esta zona.
               </p>
             </div>
           </div>
 
           {/* Card: GPS */}
-          <div className="bg-surface border border-line rounded-2xl p-4 space-y-2.5 shadow-sm">
+          <div className="bg-card border border-border/80 rounded-2xl p-4 space-y-2.5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10.5px] uppercase tracking-[0.15em] text-primary font-medium">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-indigo-500 dark:text-[#818CF8] font-semibold">
                 GPS
               </span>
-              <span className="flex items-center gap-1.5 font-sans text-xs font-semibold text-green-ink">
-                <span className="w-2 h-2 rounded-full bg-green-ink inline-block animate-pulse" />
+              <span className="flex items-center gap-1.5 font-sans text-xs font-semibold text-emerald-500">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse" />
                 Activo
               </span>
             </div>
 
-            <p className="font-sans text-sm font-semibold text-text">
+            <p className="font-sans text-sm font-bold text-foreground">
               {nearestDistrict || "San Martín de Porres"}
             </p>
 
-            <p className="font-mono text-xs text-text-3">
+            <p className="font-mono text-xs text-muted-foreground">
               LAT {currentPosition ? currentPosition.lat.toFixed(4) : "-12.0184"} · LNG{" "}
               {currentPosition ? currentPosition.lng.toFixed(4) : "-77.0818"}
             </p>
 
-            <p className="font-sans text-[11px] text-text-4 leading-relaxed">
+            <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">
               Precisión ±12 m. La ubicación se adjunta al marcaje.
             </p>
           </div>
@@ -506,9 +472,9 @@ export default function BiometricRegistrationView({
 
         {/* ---------- COLUMNA CENTRAL (Cámara y Scanner Biométrico) ---------- */}
         <div className="lg:col-span-6 flex flex-col items-center order-1 lg:order-2">
-          <div className="bg-surface border border-line rounded-3xl p-5 w-full flex flex-col items-center space-y-4 shadow-sm">
+          <div className="bg-card border border-border/80 rounded-3xl p-5 w-full flex flex-col items-center space-y-4 shadow-sm">
             {/* Viewport de Cámara */}
-            <div className="bg-inset rounded-2xl w-full h-[360px] sm:h-[420px] relative overflow-hidden flex items-center justify-center border border-line">
+            <div className="bg-muted rounded-2xl w-full h-[360px] sm:h-[430px] relative overflow-hidden flex items-center justify-center border border-border/60">
               {photo ? (
                 <img
                   src={photo}
@@ -528,12 +494,12 @@ export default function BiometricRegistrationView({
                   />
 
                   {!cameraOn && (
-                    <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-text bg-inset">
-                      <AlertTriangle className="w-8 h-8 text-amber-ink mb-3 animate-bounce" />
+                    <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-foreground bg-muted">
+                      <AlertTriangle className="w-8 h-8 text-amber-500 mb-3 animate-bounce" />
                       <p className="font-sans font-bold text-sm">
                         Cámara no iniciada o bloqueada
                       </p>
-                      <p className="font-sans text-xs text-text-4 mt-2 max-w-xs leading-relaxed">
+                      <p className="font-sans text-xs text-muted-foreground mt-2 max-w-xs leading-relaxed">
                         Permita el acceso a la cámara en el navegador para continuar.
                       </p>
                       <button
@@ -550,10 +516,10 @@ export default function BiometricRegistrationView({
               {/* Guía Facial Ovalada */}
               {cameraOn && !photo && (
                 <div
-                  className={`w-[210px] sm:w-[230px] h-[290px] sm:h-[310px] rounded-[110px] border-2 border-dashed transition-all duration-300 pointer-events-none absolute ${
+                  className={`w-[230px] h-[310px] rounded-[115px] border-2 border-dashed transition-all duration-300 pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${
                     faceInside
-                      ? "border-green-ink/90 shadow-sm"
-                      : "border-line opacity-70"
+                      ? "border-emerald-400 border-solid shadow-[0_0_25px_rgba(52,211,153,0.35)]"
+                      : "border-white/25"
                   }`}
                 />
               )}
@@ -561,24 +527,24 @@ export default function BiometricRegistrationView({
               {/* Floating Status Pill over Bottom of Video */}
               {cameraOn && !photo && (
                 <div
-                  className={`absolute bottom-4 left-1/2 -translate-x-1/2 backdrop-blur-md rounded-full px-5 py-2 flex items-center gap-2.5 shadow-xl whitespace-nowrap text-xs transition-all ${
+                  className={`absolute bottom-5 left-1/2 -translate-x-1/2 backdrop-blur-md rounded-full px-5 py-2.5 flex items-center gap-2.5 shadow-xl whitespace-nowrap text-xs transition-all ${
                     faceInside
-                      ? "bg-surface/90 border border-green/40 text-green-ink"
-                      : "bg-surface/90 border border-amber/30 text-amber-ink"
+                      ? "bg-[#062419]/90 border border-emerald-500/50 text-emerald-300"
+                      : "bg-[#16130D]/90 border border-amber-500/50 text-amber-300"
                   }`}
                 >
                   {faceInside ? (
                     <>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-green-ink" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                       <span className="font-sans font-medium">
                         Rostro detectado correctamente
                       </span>
                     </>
                   ) : (
                     <>
-                      <Loader2 className="w-3.5 h-3.5 text-amber-ink animate-spin" />
+                      <span className="w-3.5 h-3.5 rounded-full border-2 border-amber-400 inline-block shrink-0" />
                       <span className="font-sans font-medium">
-                        Coloca tu rostro en el óvalo
+                        Buscando rostro... encuadre su cara en la guía
                       </span>
                     </>
                   )}
@@ -588,10 +554,10 @@ export default function BiometricRegistrationView({
 
             {/* Info under camera */}
             <div className="w-full text-left pt-1">
-              <h3 className="font-sans text-base sm:text-lg font-bold text-text">
+              <h3 className="font-sans text-base sm:text-lg font-bold text-foreground">
                 {faceInside ? "Rostro alineado" : "Alineando rostro"}
               </h3>
-              <p className="font-sans text-xs text-text-4 mt-0.5">
+              <p className="font-sans text-xs text-muted-foreground mt-0.5">
                 {faceInside
                   ? "Posición correcta. Ya puede confirmar el marcaje."
                   : "Mantenga el rostro dentro de la guía unos segundos."}
@@ -604,19 +570,17 @@ export default function BiometricRegistrationView({
                 <>
                   <button
                     onClick={() => handleActionClick("NO_PHOTO")}
-                    className="font-sans text-xs text-text-4 hover:text-text transition-colors py-2 px-3 underline-offset-4 hover:underline font-medium cursor-pointer"
+                    className="font-sans text-xs text-muted-foreground hover:text-foreground transition-colors py-2 px-3 underline-offset-4 hover:underline font-medium cursor-pointer"
                   >
                     Registrar sin foto
                   </button>
 
                   <button
                     onClick={() => handleActionClick("PHOTO")}
-                    disabled={!faceInside}
-                    className={`font-sans font-semibold text-sm px-7 py-3 rounded-2xl transition-all ${
-                      faceInside
-                        ? "bg-brand-gradient hover:opacity-95 text-primary-foreground shadow-sm active:scale-95 cursor-pointer"
-                        : "bg-raised border border-line text-text-4/80 cursor-not-allowed"
-                    }`}
+                    className="font-sans font-semibold text-sm px-8 py-3 rounded-2xl text-white transition-all shadow-lg shadow-indigo-500/25 active:scale-95 cursor-pointer"
+                    style={{
+                      background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 52%, #22C3E6 100%)",
+                    }}
                   >
                     {faceInside
                       ? isEntryDone
@@ -629,13 +593,16 @@ export default function BiometricRegistrationView({
                 <div className="flex items-center justify-between w-full">
                   <button
                     onClick={retakePhoto}
-                    className="flex items-center gap-2 bg-inset border border-line hover:bg-raised text-text text-xs font-semibold px-5 py-2.5 rounded-xl transition-all"
+                    className="flex items-center gap-2 bg-card border border-border/80 hover:bg-accent text-foreground text-xs font-semibold px-5 py-2.5 rounded-xl transition-all"
                   >
                     <RefreshCcw className="w-3.5 h-3.5" /> Repetir foto
                   </button>
                   <button
                     onClick={() => handleActionClick("PHOTO")}
-                    className="bg-brand-gradient hover:opacity-95 text-primary-foreground font-semibold text-sm px-7 py-3 rounded-2xl shadow-sm transition-all cursor-pointer"
+                    className="font-sans font-semibold text-sm px-8 py-3 rounded-2xl text-white transition-all shadow-lg shadow-indigo-500/25 cursor-pointer"
+                    style={{
+                      background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 52%, #22C3E6 100%)",
+                    }}
                   >
                     Confirmar marcaje
                   </button>
@@ -648,39 +615,39 @@ export default function BiometricRegistrationView({
         {/* ---------- COLUMNA DERECHA (Proyecto, Marcaje anterior, Vacaciones) ---------- */}
         <div className="lg:col-span-3 space-y-4 order-3">
           {/* Card: PROYECTO */}
-          <div className="bg-surface border border-line rounded-2xl p-4 space-y-3 shadow-sm">
+          <div className="bg-card border border-border/80 rounded-2xl p-4 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10.5px] uppercase tracking-[0.15em] text-primary font-medium">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-indigo-500 dark:text-[#818CF8] font-semibold">
                 PROYECTO
               </span>
-              <span className="font-mono text-[10px] px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+              <span className="font-mono text-[11px] px-3 py-0.5 rounded-full bg-[#2A2046] text-[#C4B5FD] border border-[#8B5CF6]/30 font-medium">
                 {schedule?.shiftType === "PERMANENT" || schedule?.shiftType === "REGULAR"
                   ? "Regular"
                   : schedule?.shiftType || "Regular"}
               </span>
             </div>
 
-            <h3 className="font-sans text-lg font-bold text-text">
-              {project?.name || "test06"}
+            <h3 className="font-sans text-2xl font-bold text-foreground mt-1">
+              {project?.name || "testo6"}
             </h3>
 
             {/* Inset Schedule Box */}
-            <div className="bg-inset border border-line rounded-xl p-3.5 space-y-2.5 text-xs">
+            <div className="bg-muted/70 border border-border/80 rounded-xl p-3.5 space-y-2.5 text-xs mt-3">
               <div className="flex items-center justify-between">
-                <span className="font-sans text-text-3">Entrada</span>
-                <span className="font-mono font-semibold text-text">
+                <span className="font-sans text-muted-foreground">Entrada</span>
+                <span className="font-mono font-semibold text-foreground">
                   {schedule?.expectedStartTime?.slice(0, 5) || "08:00"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="font-sans text-text-3">Salida</span>
-                <span className="font-mono font-semibold text-text">
+                <span className="font-sans text-muted-foreground">Salida</span>
+                <span className="font-mono font-semibold text-foreground">
                   {schedule?.expectedEndTime?.slice(0, 5) || "17:00"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="font-sans text-text-3">Tolerancia</span>
-                <span className="font-mono font-semibold text-text">
+                <span className="font-sans text-muted-foreground">Tolerancia</span>
+                <span className="font-mono font-semibold text-foreground">
                   {schedule?.graceMinutes != null
                     ? `${schedule.graceMinutes} min`
                     : "10 min"}
@@ -690,76 +657,76 @@ export default function BiometricRegistrationView({
           </div>
 
           {/* Card: MARCAJE ANTERIOR */}
-          <div className="bg-surface border border-line rounded-2xl p-4 space-y-2.5 shadow-sm">
-            <span className="font-mono text-[10.5px] uppercase tracking-[0.15em] text-primary font-medium block">
+          <div className="bg-card border border-border/80 rounded-2xl p-4 space-y-2.5 shadow-sm">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-indigo-500 dark:text-[#818CF8] font-semibold block">
               MARCAJE ANTERIOR
             </span>
 
             <div className="flex items-center justify-between">
-              <span className="font-sans text-sm font-semibold text-text">
+              <span className="font-sans text-sm font-bold text-foreground">
                 {previousRecord.label}
               </span>
-              <span className="font-mono text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-green/10 text-green-ink border border-green/20">
-                {previousRecord.status}
+              <span className="font-mono text-[11px] font-semibold px-3 py-0.5 rounded-full bg-[#0B2E24] text-[#34D399] border border-[#10B981]/30">
+                ● {previousRecord.status}
               </span>
             </div>
 
-            <p className="font-mono text-xs text-text-3">
+            <p className="font-mono text-xs text-muted-foreground mt-1">
               Entrada {previousRecord.checkIn} · Salida {previousRecord.checkOut}
             </p>
           </div>
 
           {/* Card: VACACIONES */}
-          <div className="bg-surface border border-line rounded-2xl p-4 space-y-2.5 shadow-sm">
+          <div className="bg-card border border-emerald-500/40 rounded-2xl p-4 space-y-2.5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10.5px] uppercase tracking-[0.15em] text-green-ink font-medium">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-emerald-500 dark:text-[#34D399] font-semibold">
                 VACACIONES
               </span>
-              <span className="font-mono text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-amber/10 text-amber-ink border border-amber/20">
+              <span className="font-mono text-[11px] font-semibold px-3 py-0.5 rounded-full bg-[#2B2011] text-[#FBBF24] border border-[#F59E0B]/30">
                 {primaryVacation?.status === "APPROVED" ? "Aprobadas" : "Pendiente"}
               </span>
             </div>
 
             <div className="flex items-center justify-between text-xs">
-              <span className="font-mono text-text font-medium">
+              <span className="font-mono text-foreground font-medium">
                 {primaryVacation
                   ? `${primaryVacation.startDate
                       .split("-")
                       .reverse()
-                      .join("/")} ➔ ${primaryVacation.endDate
+                      .join("/")} → ${primaryVacation.endDate
                       .split("-")
                       .reverse()
                       .join("/")}`
-                  : "08/09/2026 ➔ 09/10/2026"}
+                  : "08/09/2026 → 09/10/2026"}
               </span>
-              <span className="font-mono text-text-4">
+              <span className="font-mono text-muted-foreground">
                 {primaryVacation?.businessDays || 29} días
               </span>
             </div>
 
             <button
               onClick={() => router.push(vacationsRoute)}
-              className="flex items-center gap-1 font-sans text-xs text-cyan hover:text-cyan/80 transition-colors font-medium cursor-pointer pt-1"
+              className="flex items-center gap-1 font-sans text-xs text-emerald-500 dark:text-[#34D399] hover:underline transition-colors font-medium cursor-pointer pt-1"
             >
               Ver solicitud <ArrowRight className="w-3 h-3 ml-0.5" />
             </button>
           </div>
         </div>
-      </main>
+      </div>
 
-      {/* ==================== 4. WARNING MODAL ==================== */}
+      {/* ==================== 4. WARNING MODAL (Día no laborable) ==================== */}
       {showWarningModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-inset border border-line rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-foreground">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-card border border-border/80 rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-foreground">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-amber/10 border border-amber/20 flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-6 h-6 text-amber-ink" />
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-6 h-6 text-amber-500" />
               </div>
               <div>
                 <h3 className="font-sans font-bold text-lg text-foreground leading-tight">
                   Día no laborable
                 </h3>
-                <p className="font-sans text-xs text-amber-ink font-semibold mt-0.5">
+                <p className="font-sans text-xs text-amber-500 font-semibold mt-0.5">
                   {isHoliday
                     ? "Hoy es feriado."
                     : isOnVacation
@@ -768,19 +735,19 @@ export default function BiometricRegistrationView({
                 </p>
               </div>
             </div>
-            <p className="font-sans text-text-2 text-xs sm:text-sm mb-6 leading-relaxed">
+            <p className="font-sans text-muted-foreground text-xs sm:text-sm mb-6 leading-relaxed">
               ¿Realmente deseas registrar tu asistencia hoy? Esta acción quedará
               guardada en el historial del proyecto.
             </p>
             <div className="flex gap-3">
               <button
-                className="flex-1 h-11 rounded-xl font-sans font-semibold text-xs border border-line bg-inset hover:bg-raised text-text transition-all cursor-pointer"
+                className="flex-1 h-11 rounded-xl font-sans font-semibold text-xs border border-border/80 bg-card hover:bg-accent text-foreground transition-all cursor-pointer"
                 onClick={() => setShowWarningModal(false)}
               >
                 Cancelar
               </button>
               <button
-                className="flex-1 h-11 rounded-xl font-sans font-semibold text-xs bg-amber hover:bg-amber/90 text-warning-foreground shadow-lg transition-all cursor-pointer"
+                className="flex-1 h-11 rounded-xl font-sans font-semibold text-xs bg-amber-500 hover:bg-amber-600 text-white shadow-lg transition-all cursor-pointer"
                 onClick={() => {
                   setShowWarningModal(false);
                   if (pendingAction === "PHOTO") executeCapture();

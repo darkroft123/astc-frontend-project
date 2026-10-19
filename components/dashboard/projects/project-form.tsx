@@ -159,7 +159,7 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       <div className="max-w-5xl mx-auto px-4 py-6">
 
         {/* HEADER */}

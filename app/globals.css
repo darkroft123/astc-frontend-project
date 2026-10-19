@@ -231,7 +231,7 @@
   }
 
   .dark main {
-    background-color: var(--background);
+    background-color: transparent;
     background-image: 
       radial-gradient(circle 800px at top right, rgba(168, 85, 247, 0.25) 0%, rgba(99, 102, 241, 0.14) 35%, rgba(56, 189, 248, 0.04) 55%, transparent 75%);
     background-attachment: fixed;
@@ -239,3 +239,19 @@
   }
 }
 
+
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 14s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}

@@ -278,7 +278,7 @@ export default function ScheduleForm({
   const isFormReady = Boolean(selectedUserId && selectedProjectId);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
         {/* Back navigation */}

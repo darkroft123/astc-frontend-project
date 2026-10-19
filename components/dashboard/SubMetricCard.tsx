@@ -13,19 +13,19 @@ export function SubMetricCard({ label, value, icon, color = "zinc", className }:
   const colorStyles = {
     green: {
       card: "border-green/20 bg-green/10",
-      iconBox: "text-green-ink bg-green/10 border-green/20",
+      iconBox: "text-green bg-green/10 border-green/20",
       value: "text-foreground",
       label: "text-green-ink font-semibold",
     },
     red: {
       card: "border-red/20 bg-red/10",
-      iconBox: "text-red-ink bg-red/10 border-red/20",
+      iconBox: "text-red bg-red/10 border-red/20",
       value: "text-foreground",
       label: "text-red-ink font-semibold",
     },
     amber: {
       card: "border-amber/20 bg-amber/10",
-      iconBox: "text-amber-ink bg-amber/10 border-amber/20",
+      iconBox: "text-amber bg-amber/10 border-amber/20",
       value: "text-foreground",
       label: "text-amber-ink font-semibold",
     },
@@ -62,7 +62,7 @@ export function SubMetricCard({ label, value, icon, color = "zinc", className }:
         >
           {icon}
         </div>
-        <span className={cn("text-[11px] font-mono uppercase tracking-wider", current.label)}>
+        <span className={cn("text-xs font-semibold tracking-tight", current.label)}>
           {label}
         </span>
       </div>

@@ -95,7 +95,7 @@ export function useCamera() {
       setCameraOn(true);
       console.log("[CAMERA] Initialized successfully");
     } catch (err) {
-      console.error("[CAMERA] Init failed:", err);
+      console.warn("[CAMERA] Init failed:", err);
       setCameraOn(false);
     }
   }, []);
