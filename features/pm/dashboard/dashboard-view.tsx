@@ -245,9 +245,9 @@ export function DashboardView() {
           </div>
         </div>
 
-        {/* Desktop View: 1 single row with all tabs + date picker */}
-        <div className="hidden md:flex items-center justify-between gap-4 p-1.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335]">
-          <div className="flex items-center gap-1 flex-1 overflow-x-auto">
+        {/* Desktop View: Compact tabs pill + Rango personalizado button + dates badge matching official SVG */}
+        <div className="hidden md:flex items-center gap-3 flex-wrap">
+          <div className="inline-flex items-center gap-1 p-1 rounded-2xl bg-[#0C0E18] border border-[#1E2335]">
             {PERIOD_TABS_ALL.map((tab) => {
               const isActive = activePeriod === tab.id;
               return (
@@ -255,7 +255,7 @@ export function DashboardView() {
                   key={tab.id}
                   type="button"
                   onClick={() => setActivePeriod(tab.id)}
-                  className={`py-2 px-4 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
+                  className={`py-2 px-3.5 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                     isActive
                       ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
                       : "text-[#8F96AE] hover:text-white"
@@ -267,21 +267,21 @@ export function DashboardView() {
             })}
           </div>
 
-          <div className="flex items-center gap-2 shrink-0 pr-1">
-            <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#12141F] border border-[#1E2335] text-xs font-mono">
-              <Calendar className="w-3.5 h-3.5 text-[#A855F7]" />
-              <span className="text-[#EEF0F6]">
-                {customRange.from.split("-").reverse().join("/")} → {customRange.to.split("-").reverse().join("/")}
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setCustomModalOpen(true)}
-              className="w-9 h-9 rounded-xl bg-[#12141F] border border-[#1E2335] text-[#8F96AE] hover:text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs"
-              title="Seleccionar rango"
-            >
-              <Calendar className="w-4 h-4" />
-            </button>
+          <button
+            type="button"
+            onClick={() => setCustomModalOpen(true)}
+            className="h-10 px-4 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-xs font-medium text-[#8F96AE] hover:text-white flex items-center gap-2 transition-colors cursor-pointer shrink-0 shadow-xs"
+            title="Seleccionar rango personalizado"
+          >
+            <Calendar className="w-4 h-4 text-[#A855F7]" />
+            <span>Rango personalizado</span>
+          </button>
+
+          <div className="h-10 px-4 rounded-2xl bg-[#0C0E18] border border-[#1E2335] flex items-center gap-2 text-xs font-mono shrink-0 shadow-xs">
+            <span className="text-[#8F96AE]">Período:</span>
+            <span className="text-[#EEF0F6] font-semibold">
+              {customRange.from.split("-").reverse().join("/")} → {customRange.to.split("-").reverse().join("/")}
+            </span>
           </div>
         </div>
 

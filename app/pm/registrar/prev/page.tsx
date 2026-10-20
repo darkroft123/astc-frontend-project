@@ -202,6 +202,30 @@ export default function AttendancePreviewPage() {
   const exitTimeFormatted = todayAtt?.checkOut ? formatAttendanceTime(todayAtt.checkOut) : "09:07 a. m.";
   const timestampText = "2/9/2026, 10:55:21 p. m.";
 
+  const warningCard = (
+    !base64 ? (
+      <div className="rounded-2xl border border-amber/30 bg-amber/10 dark:bg-amber/10 p-4 flex items-start gap-3 shadow-sm">
+        <AlertTriangle className="w-5 h-5 text-amber shrink-0 mt-0.5" />
+        <div>
+          <h4 className="text-xs font-bold text-foreground">Asistencia sin foto</h4>
+          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+            No se capturó una foto biométrica. El sistema notificará una alerta de revisión al project manager.
+          </p>
+        </div>
+      </div>
+    ) : (
+      <div className="rounded-2xl border border-green/30 bg-green/10 dark:bg-green/10 p-4 flex items-start gap-3 shadow-sm">
+        <CheckCircle2 className="w-5 h-5 text-green shrink-0 mt-0.5" />
+        <div>
+          <h4 className="text-xs font-bold text-foreground">Foto biométrica capturada</h4>
+          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+            Captura biométrica facial procesada y verificada contra el perfil registrado.
+          </p>
+        </div>
+      </div>
+    )
+  );
+
   return (
     <div className="w-full max-w-6xl mx-auto space-y-6">
       {/* 1. HEADER */}
@@ -228,223 +252,214 @@ export default function AttendancePreviewPage() {
         </button>
       </div>
 
-      {/* 2. RESPONSIVE CARDS GRID */}
+      {/* 2. RESPONSIVE CARDS GRID: 2 COLUMNS ON DESKTOP, STACKED ON MOBILE */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start w-full">
-        {/* Card 1: Estado & Horario */}
-        <div className="order-1 lg:order-1 lg:col-span-7 rounded-2xl border border-green/30 bg-green/10 dark:bg-green/10 p-5 md:p-6 shadow-sm space-y-4">
-          {/* Header row */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-green font-semibold text-sm">
-              <CheckCircle2 className="w-4 h-4 stroke-[2.2]" />
-              <span>Salida registrada</span>
-            </div>
-            <span className="bg-amber/15 text-amber border border-amber/40 rounded-full px-3 py-0.5 text-xs font-semibold">
-              Salida temprana
-            </span>
-          </div>
-
-          {/* Schedule Boxes */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-surface/80 dark:bg-surface/80 border border-border/40 rounded-xl p-3.5">
-              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider block">
-                ENTRADA
-              </span>
-              <span className="text-xl md:text-2xl font-bold font-mono text-foreground mt-1 block">
-                {project?.workStartTime ? project.workStartTime.slice(0, 5) : "08:00"}
-              </span>
-            </div>
-            <div className="bg-surface/80 dark:bg-surface/80 border border-border/40 rounded-xl p-3.5">
-              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider block">
-                SALIDA
-              </span>
-              <span className="text-xl md:text-2xl font-bold font-mono text-foreground mt-1 block">
-                {project?.workEndTime ? project.workEndTime.slice(0, 5) : "17:00"}
-              </span>
-            </div>
-          </div>
-
-          {/* Registration Times */}
-          <div className="space-y-2 pt-1 text-xs">
+        {/* LEFT COLUMN (lg:col-span-7) */}
+        <div className="flex flex-col gap-5 lg:col-span-7 w-full">
+          {/* Card 1: Estado & Horario */}
+          <div className="rounded-2xl border border-green/30 bg-green/10 dark:bg-green/10 p-5 md:p-6 shadow-sm space-y-4">
+            {/* Header row */}
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Entrada registrada</span>
-              <span className="text-green font-mono font-semibold text-xs">
-                {entryTimeFormatted}
+              <div className="flex items-center gap-2 text-green font-semibold text-sm">
+                <CheckCircle2 className="w-4 h-4 stroke-[2.2]" />
+                <span>Salida registrada</span>
+              </div>
+              <span className="bg-amber/15 text-amber border border-amber/40 rounded-full px-3 py-0.5 text-xs font-semibold">
+                Salida temprana
               </span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Salida registrada</span>
-              <span className="text-green font-mono font-semibold text-xs">
-                {exitTimeFormatted}
-              </span>
+
+            {/* Schedule Boxes */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-surface/80 dark:bg-surface/80 border border-border/40 rounded-xl p-3.5">
+                <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider block">
+                  ENTRADA
+                </span>
+                <span className="text-xl md:text-2xl font-bold font-mono text-foreground mt-1 block">
+                  {project?.workStartTime ? project.workStartTime.slice(0, 5) : "08:00"}
+                </span>
+              </div>
+              <div className="bg-surface/80 dark:bg-surface/80 border border-border/40 rounded-xl p-3.5">
+                <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider block">
+                  SALIDA
+                </span>
+                <span className="text-xl md:text-2xl font-bold font-mono text-foreground mt-1 block">
+                  {project?.workEndTime ? project.workEndTime.slice(0, 5) : "17:00"}
+                </span>
+              </div>
             </div>
+
+            {/* Registration Times */}
+            <div className="space-y-2 pt-1 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Entrada registrada</span>
+                <span className="text-green font-mono font-semibold text-xs">
+                  {entryTimeFormatted}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Salida registrada</span>
+                <span className="text-green font-mono font-semibold text-xs">
+                  {exitTimeFormatted}
+                </span>
+              </div>
+            </div>
+
+            {/* Summary or Action Button */}
+            {isBothDone || todayAtt?.checkOut ? (
+              <div className="rounded-xl border border-green/30 bg-green/15 dark:bg-green/15 p-4 flex flex-col items-center justify-center text-center mt-2">
+                <CheckCircle2 className="w-5 h-5 text-green mx-auto mb-1.5" />
+                <p className="text-sm font-bold text-foreground">¡Jornada de hoy completada!</p>
+                <p className="text-xs text-green mt-1">
+                  Entrada {entryTimeFormatted} · Salida {exitTimeFormatted}
+                </p>
+              </div>
+            ) : isEntryDone ? (
+              <button
+                onClick={handleCheckOut}
+                disabled={loading}
+                className="w-full h-11 rounded-xl bg-gradient-to-r from-green to-teal-500 hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+              >
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirmar y Marcar Salida"}
+              </button>
+            ) : (
+              <button
+                onClick={handleRegisterEntry}
+                disabled={loading}
+                className="w-full h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+              >
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirmar y Registrar Entrada"}
+              </button>
+            )}
           </div>
 
-          {/* Summary or Action Button */}
-          {isBothDone || todayAtt?.checkOut ? (
-            <div className="rounded-xl border border-green/30 bg-green/15 dark:bg-green/15 p-4 flex flex-col items-center justify-center text-center mt-2">
-              <CheckCircle2 className="w-5 h-5 text-green mx-auto mb-1.5" />
-              <p className="text-sm font-bold text-foreground">¡Jornada de hoy completada!</p>
-              <p className="text-xs text-green mt-1">
-                Entrada {entryTimeFormatted} · Salida {exitTimeFormatted}
-              </p>
-            </div>
-          ) : isEntryDone ? (
-            <button
-              onClick={handleCheckOut}
-              disabled={loading}
-              className="w-full h-11 rounded-xl bg-gradient-to-r from-green to-teal-500 hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
-            >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirmar y Marcar Salida"}
-            </button>
-          ) : (
-            <button
-              onClick={handleRegisterEntry}
-              disabled={loading}
-              className="w-full h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
-            >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirmar y Registrar Entrada"}
-            </button>
-          )}
-        </div>
+          {/* Warning Banner on mobile only */}
+          <div className="lg:hidden w-full">
+            {warningCard}
+          </div>
 
-        {/* Card 2: Warning Banner "Asistencia sin foto" (mobile: 2nd, desktop: right col top) */}
-        <div className="order-2 lg:order-3 lg:col-span-5 w-full">
-          {!base64 ? (
-            <div className="rounded-2xl border border-amber/30 bg-amber/10 dark:bg-amber/10 p-4 flex items-start gap-3 shadow-sm">
-              <AlertTriangle className="w-5 h-5 text-amber shrink-0 mt-0.5" />
+          {/* Card 3: Validación biométrica e IA */}
+          <div className="rounded-2xl border border-border/70 dark:border-white/5 bg-card p-5 md:p-6 shadow-sm space-y-3.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-violet/20 text-violet flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">Validación biométrica e IA</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">Motor de reconocimiento facial y geocerca</p>
+                </div>
+              </div>
+              <span className="bg-violet/20 text-violet border border-violet/30 rounded-full px-2.5 py-0.5 text-[11px] font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet animate-pulse" />
+                IA activa
+              </span>
+            </div>
+
+            {/* Sub-item 1 */}
+            <div className="rounded-xl border border-amber/30 bg-amber/10 dark:bg-amber/10 p-3.5 flex items-start gap-3">
+              <CheckCircle2 className="w-4 h-4 text-amber shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-xs font-bold text-foreground">Asistencia sin foto</h4>
+                <h4 className="text-xs font-bold text-foreground">Detección facial y anti-spoofing</h4>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  No se capturó una foto biométrica. El sistema notificará una alerta de revisión al project manager.
+                  {base64
+                    ? "Rostro validado exitosamente sin anomalías biométricas."
+                    : "No se detectó captura de foto biométrica. Se registrará la marca con reporte de revisión."}
                 </p>
               </div>
             </div>
-          ) : (
-            <div className="rounded-2xl border border-green/30 bg-green/10 dark:bg-green/10 p-4 flex items-start gap-3 shadow-sm">
-              <CheckCircle2 className="w-5 h-5 text-green shrink-0 mt-0.5" />
+
+            {/* Sub-item 2 */}
+            <div className="rounded-xl border border-border/40 bg-card/60 dark:bg-card/40 p-3.5 flex items-start gap-3">
+              <MapPin className="w-4 h-4 text-blue shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-xs font-bold text-foreground">Foto biométrica capturada</h4>
+                <h4 className="text-xs font-bold text-foreground">Geolocalización y geocerca</h4>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Captura biométrica facial procesada y verificada contra el perfil registrado.
+                  Ubicación verificada mediante coordenadas satelitales asignadas a tu proyecto.
                 </p>
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Card 3: Validación biométrica e IA (mobile: 3rd, desktop: left col bottom) */}
-        <div className="order-3 lg:order-2 lg:col-span-7 rounded-2xl border border-border/70 dark:border-white/5 bg-card p-5 md:p-6 shadow-sm space-y-3.5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-violet/20 text-violet flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-foreground">Validación biométrica e IA</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">Motor de reconocimiento facial y geocerca</p>
-              </div>
-            </div>
-            <span className="bg-violet/20 text-violet border border-violet/30 rounded-full px-2.5 py-0.5 text-[11px] font-semibold flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-violet animate-pulse" />
-              IA activa
-            </span>
-          </div>
-
-          {/* Sub-item 1 */}
-          <div className="rounded-xl border border-amber/30 bg-amber/10 dark:bg-amber/10 p-3.5 flex items-start gap-3">
-            <CheckCircle2 className="w-4 h-4 text-amber shrink-0 mt-0.5" />
-            <div>
-              <h4 className="text-xs font-bold text-foreground">Detección facial y anti-spoofing</h4>
-              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                {base64
-                  ? "Rostro validado exitosamente sin anomalías biométricas."
-                  : "No se detectó captura de foto biométrica. Se registrará la marca con reporte de revisión."}
-              </p>
-            </div>
-          </div>
-
-          {/* Sub-item 2 */}
-          <div className="rounded-xl border border-border/40 bg-card/60 dark:bg-card/40 p-3.5 flex items-start gap-3">
-            <MapPin className="w-4 h-4 text-blue shrink-0 mt-0.5" />
-            <div>
-              <h4 className="text-xs font-bold text-foreground">Geolocalización y geocerca</h4>
-              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                Ubicación verificada mediante coordenadas satelitales asignadas a tu proyecto.
-              </p>
-            </div>
           </div>
         </div>
 
-        {/* Card 4: UBICACIÓN SATELITAL GPS (mobile: 4th, desktop: right col bottom) */}
-        <div className="order-4 lg:order-4 lg:col-span-5 w-full rounded-2xl border border-border/70 dark:border-white/5 bg-card p-5 shadow-sm space-y-3.5">
-          <span className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold block">
-            UBICACIÓN SATELITAL GPS
-          </span>
-
-          {/* Map Canvas */}
-          <div className="h-[210px] rounded-xl border border-border/50 bg-sidebar dark:bg-sidebar relative overflow-hidden flex items-center justify-center">
-            {/* Decorative Grid */}
-            <div
-              className="absolute inset-0 opacity-[0.25]"
-              style={{
-                backgroundImage: `
-                  linear-gradient(to right, var(--line-3) 1px, transparent 1px),
-                  linear-gradient(to bottom, var(--line-3) 1px, transparent 1px)
-                `,
-                backgroundSize: "28px 28px",
-              }}
-            />
-
-            {/* Zoom Controls */}
-            <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
-              <button
-                type="button"
-                className="w-6 h-6 rounded-md bg-surface border border-white/10 text-muted-foreground hover:text-foreground text-xs flex items-center justify-center font-bold"
-              >
-                +
-              </button>
-              <button
-                type="button"
-                className="w-6 h-6 rounded-md bg-surface border border-white/10 text-muted-foreground hover:text-foreground text-xs flex items-center justify-center font-bold"
-              >
-                −
-              </button>
-            </div>
-
-            {/* Center Marker & Text */}
-            <div className="relative flex flex-col items-center justify-center gap-1.5 z-10">
-              <div className="w-7 h-7 rounded-full bg-blue/20 border border-blue/40 flex items-center justify-center text-blue">
-                <MapPin className="w-4 h-4 fill-blue/30 text-blue" />
-              </div>
-              <span className="text-[11px] text-muted-foreground">Vista de mapa no disponible</span>
-            </div>
+        {/* RIGHT COLUMN (lg:col-span-5) */}
+        <div className="flex flex-col gap-5 lg:col-span-5 w-full">
+          {/* Warning Banner on desktop only */}
+          <div className="hidden lg:block w-full">
+            {warningCard}
           </div>
 
-          {/* Coordinates line */}
-          <div className="flex items-center justify-between text-xs pt-1">
-            <div className="flex items-center gap-1.5 text-foreground font-medium">
-              <MapPin className="w-3.5 h-3.5 text-blue" />
-              <span>Coordenadas GPS</span>
-            </div>
-            <span className="font-mono text-muted-foreground text-xs">
-              {timestampText}
+          {/* Card 4: UBICACIÓN SATELITAL GPS */}
+          <div className="w-full rounded-2xl border border-border/70 dark:border-white/5 bg-card p-5 shadow-sm space-y-3.5">
+            <span className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold block">
+              UBICACIÓN SATELITAL GPS
             </span>
-          </div>
 
-          <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
-            <div className="bg-surface/80 border border-border/40 rounded-xl px-3 py-2 flex items-center justify-between">
-              <span className="text-muted-foreground">LAT</span>
-              <span className="text-foreground font-semibold">{displayLat.toFixed(4)}</span>
+            {/* Map Canvas */}
+            <div className="h-[210px] rounded-xl border border-border/50 bg-sidebar dark:bg-sidebar relative overflow-hidden flex items-center justify-center">
+              {/* Decorative Grid */}
+              <div
+                className="absolute inset-0 opacity-[0.25]"
+                style={{
+                  backgroundImage: `
+                    linear-gradient(to right, var(--line-3) 1px, transparent 1px),
+                    linear-gradient(to bottom, var(--line-3) 1px, transparent 1px)
+                  `,
+                  backgroundSize: "28px 28px",
+                }}
+              />
+
+              {/* Zoom Controls */}
+              <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+                <button
+                  type="button"
+                  className="w-6 h-6 rounded-md bg-surface border border-white/10 text-muted-foreground hover:text-foreground text-xs flex items-center justify-center font-bold"
+                >
+                  +
+                </button>
+                <button
+                  type="button"
+                  className="w-6 h-6 rounded-md bg-surface border border-white/10 text-muted-foreground hover:text-foreground text-xs flex items-center justify-center font-bold"
+                >
+                  −
+                </button>
+              </div>
+
+              {/* Center Marker & Text */}
+              <div className="relative flex flex-col items-center justify-center gap-1.5 z-10">
+                <div className="w-7 h-7 rounded-full bg-blue/20 border border-blue/40 flex items-center justify-center text-blue">
+                  <MapPin className="w-4 h-4 fill-blue/30 text-blue" />
+                </div>
+                <span className="text-[11px] text-muted-foreground">Vista de mapa no disponible</span>
+              </div>
             </div>
-            <div className="bg-surface/80 border border-border/40 rounded-xl px-3 py-2 flex items-center justify-between">
-              <span className="text-muted-foreground">LNG</span>
-              <span className="text-foreground font-semibold">{displayLng.toFixed(4)}</span>
+
+            {/* Coordinates line */}
+            <div className="flex items-center justify-between text-xs pt-1">
+              <div className="flex items-center gap-1.5 text-foreground font-medium">
+                <MapPin className="w-3.5 h-3.5 text-blue" />
+                <span>Coordenadas GPS</span>
+              </div>
+              <span className="font-mono text-muted-foreground text-xs">
+                {timestampText}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
+              <div className="bg-surface/80 border border-border/40 rounded-xl px-3 py-2 flex items-center justify-between">
+                <span className="text-muted-foreground">LAT</span>
+                <span className="text-foreground font-semibold">{displayLat.toFixed(4)}</span>
+              </div>
+              <div className="bg-surface/80 border border-border/40 rounded-xl px-3 py-2 flex items-center justify-between">
+                <span className="text-muted-foreground">LNG</span>
+                <span className="text-foreground font-semibold">{displayLng.toFixed(4)}</span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Card 5 / Bottom Button on mobile */}
-        <div className="order-5 col-span-1 lg:hidden w-full pt-2">
+        <div className="col-span-1 lg:hidden w-full pt-2">
           <button
             onClick={() => router.push("/pm")}
             className="w-full h-12 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:opacity-95 text-white font-bold text-sm shadow-lg shadow-indigo-500/25 transition-all cursor-pointer flex items-center justify-center gap-2"

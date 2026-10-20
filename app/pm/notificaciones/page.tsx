@@ -300,7 +300,7 @@ export default function NotificationsPage() {
         {/* 1. HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white shrink-0 shadow-md">
+            <div className="w-12 h-12 rounded-2xl bg-avatar-gradient flex items-center justify-center text-white shrink-0 shadow-md">
               <Bell className="w-6 h-6" />
             </div>
             <div>
