@@ -25,7 +25,7 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
         <MobileSidebar>
           <SidebarNav onNavigate={() => {}} />
         </MobileSidebar>
-        <div className="flex-1 min-w-0 md:ml-[268px] flex flex-col min-h-screen relative overflow-x-hidden bg-background">
+        <div className="flex-1 min-w-0 md:ml-[268px] flex flex-col min-h-screen relative bg-background">
           {/* Mobile Top Header */}
           <MobileHeader />
 
@@ -33,7 +33,7 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
           <div className="absolute top-[-300px] right-0 w-[600px] h-[450px] bg-violet/10 dark:bg-violet/20 blur-[140px] rounded-full pointer-events-none hidden dark:block z-0" />
           <div className="absolute top-[-130px] right-[200px] w-[350px] h-[250px] bg-indigo-500/10 dark:bg-indigo-500/15 blur-[100px] rounded-full pointer-events-none hidden dark:block z-0" />
 
-          <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 bg-transparent pb-24 md:pb-6 relative z-10">
+          <main className="flex-1 p-4 md:p-6 bg-transparent pb-28 md:pb-8 relative z-10">
             {children}
           </main>
 

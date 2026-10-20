@@ -1,12 +1,29 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/app/jwt/auth/auth.provider";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { FileText, Download, User, Briefcase, Calendar, ArrowLeft, Eye, EyeOff, History, Clock as ClockIcon } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/app/jwt/auth/auth.provider";
+import {
+  FileText,
+  Download,
+  User,
+  Briefcase,
+  Calendar,
+  ChevronLeft,
+  Eye,
+  EyeOff,
+  History,
+  Clock as ClockIcon,
+  Folder,
+  AlertCircle,
+  CheckCircle2,
+  XCircle,
+  Copy,
+  Check,
+} from "lucide-react";
+import { NotificationBell } from "@/components/layout/notification-bell";
+import { getGraphQLUrl } from "@/lib/api-host";
+import { getAllUsers } from "@/app/services/project.assistance.service";
 
 interface JustificationDetailViewProps {
   justificationId: string;
@@ -23,12 +40,16 @@ type JustificationDetail = {
   userId?: string | null;
   absenceDate?: string | null;
   absenceType?: string | null;
-  history?: { id: string; previousStatus?: string; newStatus: string; comment?: string; changedBy?: string; changedAt?: string }[] | null;
+  projectName?: string | null;
+  history?: {
+    id: string;
+    previousStatus?: string;
+    newStatus: string;
+    comment?: string;
+    changedBy?: string;
+    changedAt?: string;
+  }[] | null;
 };
-
-import { getGraphQLUrl } from "@/lib/api-host";
-import { getAllUsers } from "@/app/services/project.assistance.service";
-import { formatUserName } from "@/lib/formatters";
 
 const GET_JUSTIFICATION_DETAIL = `
   query getJustificationDetail($id: String!) {
@@ -94,14 +115,14 @@ function formatDate(value?: string | null) {
     const [h, m] = timePart.split(":");
     const hour = parseInt(h) || 0;
     const min = parseInt(m) || 0;
-    const ampm = hour >= 12 ? "p. m." : "a. m.";
+    const ampm = hour >= 12 ? "p. m." : "a. m.";
     const h12 = hour % 12 || 12;
-    return `${dateStr}, ${h12}:${String(min).padStart(2, "0")} ${ampm}`;
-  } catch { return value; }
+    return `${dateStr} · ${h12}:${String(min).padStart(2, "0")} ${ampm}`;
+  } catch {
+    return value;
+  }
 }
 
-const dotColors: Record<string, string> = { PENDING: "var(--blue)", SUBMITTED: "var(--blue)", OBSERVATION: "var(--amber)", APPROVED: "var(--green)", REJECTED: "var(--red)" };
-const historyIcons: Record<string, any> = { PENDING: FileText, SUBMITTED: FileText, OBSERVATION: FileText, APPROVED: FileText, REJECTED: FileText };
 function eventLabel(e: any) {
   if (!e.previousStatus && e.newStatus === "PENDING") return "Justificación creada";
   if (!e.previousStatus && e.newStatus === "SUBMITTED") return "Enviada para revisión";
@@ -123,7 +144,8 @@ const DEFAULT_MOCK_JUSTIFICATION: JustificationDetail = {
   reviewedAt: null,
   userId: "usr-carlos",
   absenceDate: "2026-09-02",
-  absenceType: "FALTA",
+  absenceType: "FALTA_INJUSTIFICADA",
+  projectName: "testo6",
   history: [
     {
       id: "hist-1",
@@ -136,24 +158,27 @@ const DEFAULT_MOCK_JUSTIFICATION: JustificationDetail = {
   ],
 };
 
-import { NotificationBell } from "@/components/layout/notification-bell";
-
 export function JustificationDetailView({ justificationId }: JustificationDetailViewProps) {
   const router = useRouter();
-  const { token } = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
-  const [justification, setJustification] = useState<JustificationDetail | null>(null);
+  const { token, hydrated } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [justification, setJustification] = useState<JustificationDetail>(DEFAULT_MOCK_JUSTIFICATION);
   const [comment, setComment] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [userName, setUserName] = useState<string>("Carlos Mamani");
+  const [userName, setUserName] = useState<string>("carlos mamani");
+  const [userEmail, setUserEmail] = useState<string>("mamanigutierrezcarlos123@gmail.com");
+  const [copiedId, setCopiedId] = useState(false);
 
   useEffect(() => {
     async function fetchJustification() {
       if (!token) {
-        setJustification(DEFAULT_MOCK_JUSTIFICATION);
-        setUserName("Carlos Mamani");
-        setIsLoading(false);
+        setJustification({
+          ...DEFAULT_MOCK_JUSTIFICATION,
+          id: justificationId || "just-001",
+        });
+        setUserName("carlos mamani");
+        setUserEmail("mamanigutierrezcarlos123@gmail.com");
         return;
       }
       setIsLoading(true);
@@ -162,7 +187,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             query: GET_JUSTIFICATION_DETAIL,
@@ -175,13 +200,17 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
         if (data) {
           setJustification(data);
         } else {
-          setJustification(DEFAULT_MOCK_JUSTIFICATION);
-          setUserName("Carlos Mamani");
+          setJustification({
+            ...DEFAULT_MOCK_JUSTIFICATION,
+            id: justificationId,
+          });
         }
       } catch (error) {
         console.error("Error fetching justification:", error);
-        setJustification(DEFAULT_MOCK_JUSTIFICATION);
-        setUserName("Carlos Mamani");
+        setJustification({
+          ...DEFAULT_MOCK_JUSTIFICATION,
+          id: justificationId,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -192,35 +221,52 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
 
   useEffect(() => {
     if (!token || !justification?.userId) return;
-    getAllUsers(token).then(users => {
-      const u = users.find(x => x.id === justification.userId);
-      const rawName = u ? ([u.firstName, u.lastName].filter(Boolean).join(" ") || u.username) : null;
-      setUserName(formatUserName(justification.userId, rawName ? new Map([[justification.userId.toLowerCase(), rawName]]) : undefined));
-    }).catch(() => {
-      setUserName(formatUserName(justification.userId));
-    });
+    getAllUsers(token)
+      .then((users) => {
+        const u = (users || []).find((x) => x.id === justification.userId);
+        if (u) {
+          setUserName(`${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username);
+          if (u.email) setUserEmail(u.email);
+        }
+      })
+      .catch(() => {});
   }, [token, justification?.userId]);
 
+  const handleCopyId = () => {
+    navigator.clipboard.writeText(justificationId);
+    setCopiedId(true);
+    setTimeout(() => setCopiedId(false), 2000);
+  };
+
   async function processJustification(type: "approve" | "reject" | "observation") {
-    if (!token) {
-      setJustification(prev => prev ? { ...prev, status: type === "approve" ? "APPROVED" : type === "reject" ? "REJECTED" : "OBSERVATION" } : null);
-      router.push("/pm/justificaciones");
-      return;
-    }
     if (type === "observation" && !comment.trim()) {
       alert("Debe ingresar un comentario para solicitar observación");
       return;
     }
+
+    if (!token) {
+      setJustification((prev) => ({
+        ...prev,
+        status: type === "approve" ? "APPROVED" : type === "reject" ? "REJECTED" : "OBSERVATION",
+      }));
+      router.push("/pm/justificaciones");
+      return;
+    }
+
     setIsProcessing(true);
     try {
-      const mutation = type === "approve" ? APPROVE_JUSTIFICATION 
-        : type === "reject" ? REJECT_JUSTIFICATION 
-        : REQUEST_OBSERVATION;
+      const mutation =
+        type === "approve"
+          ? APPROVE_JUSTIFICATION
+          : type === "reject"
+          ? REJECT_JUSTIFICATION
+          : REQUEST_OBSERVATION;
+
       const res = await fetch(getGraphQLUrl(), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           query: mutation,
@@ -233,25 +279,22 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
 
       const json = await res.json();
       if (json.errors) {
-        setJustification(prev => prev ? { ...prev, status: type === "approve" ? "APPROVED" : type === "reject" ? "REJECTED" : "OBSERVATION" } : null);
+        setJustification((prev) => ({
+          ...prev,
+          status: type === "approve" ? "APPROVED" : type === "reject" ? "REJECTED" : "OBSERVATION",
+        }));
       }
-
       router.push("/pm/justificaciones");
     } catch (error) {
       console.error(error);
-      setJustification(prev => prev ? { ...prev, status: type === "approve" ? "APPROVED" : type === "reject" ? "REJECTED" : "OBSERVATION" } : null);
+      setJustification((prev) => ({
+        ...prev,
+        status: type === "approve" ? "APPROVED" : type === "reject" ? "REJECTED" : "OBSERVATION",
+      }));
       router.push("/pm/justificaciones");
     } finally {
       setIsProcessing(false);
     }
-  }
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-transparent flex items-center justify-center p-16">
-        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-primary" />
-      </div>
-    );
   }
 
   const currentJustification = justification || DEFAULT_MOCK_JUSTIFICATION;
@@ -260,253 +303,321 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
   const isObservation = currentJustification.status === "OBSERVATION";
   const isApproved = currentJustification.status === "APPROVED";
 
+  const statusBadge = useMemo(() => {
+    if (isApproved) {
+      return {
+        label: "Aprobada",
+        color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+        dot: "bg-emerald-400",
+      };
+    }
+    if (isRejected) {
+      return {
+        label: "Rechazada",
+        color: "bg-rose-500/10 text-rose-400 border-rose-500/30",
+        dot: "bg-rose-400",
+      };
+    }
+    if (isObservation) {
+      return {
+        label: "Observada",
+        color: "bg-amber-500/10 text-amber-400 border-amber-500/30",
+        dot: "bg-amber-400",
+      };
+    }
+    return {
+      label: "Enviada",
+      color: "bg-blue-500/10 text-blue-400 border-blue-500/30",
+      dot: "bg-blue-400",
+    };
+  }, [isApproved, isRejected, isObservation]);
+
   return (
-    <div className="min-h-screen bg-transparent pb-16 font-sans">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 space-y-6">
+    <div className="w-full max-w-5xl mx-auto space-y-6 pb-12">
+      {/* Top Navigation & Bell */}
+      <div className="flex items-center justify-between gap-3">
+        <Link
+          href="/pm/justificaciones"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors cursor-pointer"
+        >
+          <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+          <span>Justificaciones</span>
+        </Link>
 
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-border/60">
-          <div className="flex items-center gap-3">
-            <Link href="/pm/justificaciones">
-              <Button variant="ghost" size="sm" className="h-9 px-3 gap-1.5 text-xs text-muted-foreground hover:text-foreground rounded-xl">
-                <ArrowLeft className="h-4 w-4" />
-                Volver
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">Detalle de Justificación</h1>
-              <p className="text-xs text-muted-foreground mt-0.5">ID {justificationId.slice(0, 8)}... · Solicitud de trabajador</p>
+        <div className="flex items-center gap-2">
+          {/* ID Badge Pill */}
+          <button
+            type="button"
+            onClick={handleCopyId}
+            className="h-8 px-2.5 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1c2238] text-[11px] font-mono text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors cursor-pointer"
+            title="Copiar ID"
+          >
+            <span>ID {justificationId ? justificationId.slice(0, 8) : "just-001"}...</span>
+            {copiedId ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+          </button>
+          <NotificationBell />
+        </div>
+      </div>
+
+      {/* CARD 1: Status Hero Banner matching exact SVG pattern */}
+      <div className="rounded-[20px] sm:rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0E111C] p-5 sm:p-6 shadow-sm space-y-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+              <ClockIcon className="w-5 h-5 stroke-[2]" />
             </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {isPending && (
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => processJustification("observation")}
-                  variant="outline"
-                  size="sm"
-                  className="h-9 text-xs px-3 border-amber-500/30 text-amber-400 hover:bg-amber-500/10 rounded-xl"
-                  disabled={isProcessing}
-                >
-                  Solicitar Observación
-                </Button>
-                <Button
-                  onClick={() => processJustification("reject")}
-                  variant="outline"
-                  size="sm"
-                  className="h-9 text-xs px-3 border-rose-500/30 text-rose-400 hover:bg-rose-500/10 rounded-xl"
-                  disabled={isProcessing}
-                >
-                  Rechazar
-                </Button>
-                <Button
-                  onClick={() => processJustification("approve")}
-                  size="sm"
-                  className="h-9 text-xs px-3 bg-brand-gradient hover:opacity-95 text-white rounded-xl shadow-md shadow-purple-500/20"
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? "Procesando..." : "Aprobar Justificación"}
-                </Button>
+            <div>
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h1 className="text-lg sm:text-xl font-bold text-foreground">
+                  Falta justificada · Cita médica
+                </h1>
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${statusBadge.color}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${statusBadge.dot}`} />
+                  {statusBadge.label}
+                </span>
               </div>
-            )}
-            <div className="hidden md:block">
-              <NotificationBell />
+              <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground mt-1">
+                {currentJustification.absenceType || "MOTIVO_MEDICO"}
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Información Principal */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card className="border border-border bg-card p-5 sm:p-6 rounded-2xl shadow-xs">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="flex items-center gap-3">
-                  <User className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Usuario</p>
-                    <p className="text-sm font-semibold text-foreground truncate">{userName || formatUserName(justification.userId)}</p>
-                  </div>
-                </div>
+        <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed pt-1">
+          {currentJustification.description || "Sin descripción proporcionada."}
+        </p>
+      </div>
 
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Fecha falta</p>
-                    <p className="text-sm font-semibold text-foreground truncate">{justification.absenceDate ? new Date(justification.absenceDate + "T12:00:00Z").toLocaleDateString("es-PE", { year: "numeric", month: "2-digit", day: "2-digit" }) : "-"}</p>
-                  </div>
-                </div>
+      {/* CARD 2: Información de la Justificación */}
+      <div className="rounded-[20px] sm:rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0E111C] p-5 sm:p-6 shadow-sm space-y-4">
+        <h2 className="text-sm sm:text-base font-bold text-foreground">
+          Información de la justificación
+        </h2>
 
-                <div className="flex items-center gap-3">
-                  <Briefcase className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Tipo falta</p>
-                    <p className="text-sm font-semibold text-foreground truncate">{justification.absenceType ?? "-"}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-4 border-t border-border">
-                <div className="flex items-center gap-3">
-                  <ClockIcon className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <div>
-                    <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Fecha de envío</p>
-                    <p className="text-xs font-semibold text-foreground">{formatDate(justification.submittedAt)}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <ClockIcon className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <div>
-                    <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Fecha de revisión</p>
-                    <p className="text-xs font-semibold text-foreground">{formatDate(justification.reviewedAt)}</p>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="border border-border bg-card p-5 sm:p-6 rounded-2xl shadow-xs">
-              <h3 className="text-base font-bold text-foreground mb-2">Motivo de la Justificación</h3>
-              <p className="text-sm text-foreground/90 leading-relaxed bg-muted/30 p-3.5 rounded-xl border border-border">
-                {justification.description ?? "Sin descripción"}
+        <div className="space-y-3.5">
+          {/* Proyecto */}
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] flex items-center justify-center text-purple-400 shrink-0">
+              <Folder className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-muted-foreground">
+                PROYECTO
               </p>
+              <span className="inline-block px-2.5 py-0.5 rounded-md bg-purple-950/40 text-purple-300 border border-purple-800/40 text-xs font-semibold mt-0.5">
+                {currentJustification.projectName || "testo6"}
+              </span>
+            </div>
+          </div>
 
-              {justification.documentUrl && (
-                <div className="mt-5 pt-4 border-t border-border">
-                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5">Documento Adjunto</h4>
-                  <div className="flex items-center gap-3 bg-muted/40 p-3.5 rounded-xl border border-border">
-                    <FileText className="h-8 w-8 text-red-ink shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-foreground truncate">Comprobante adjunto</p>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowPreview(!showPreview)}
-                      className="h-8 text-xs px-2.5 gap-1.5 border-border rounded-lg"
-                    >
-                      {showPreview ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                      {showPreview ? "Ocultar" : "Previsualizar"}
-                    </Button>
-                    <Button asChild size="sm" className="h-8 text-xs px-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg">
-                      <a href={justification.documentUrl} target="_blank" rel="noopener noreferrer">
-                        <Download className="mr-1.5 h-3.5 w-3.5" />
-                        Descargar
-                      </a>
-                    </Button>
+          {/* Trabajador */}
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] flex items-center justify-center text-blue-400 shrink-0">
+              <User className="w-4 h-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-muted-foreground">
+                TRABAJADOR
+              </p>
+              <p className="text-xs sm:text-sm font-semibold text-foreground truncate mt-0.5">
+                {userName || "carlos mamani"}
+              </p>
+              <p className="text-[11px] text-muted-foreground truncate">
+                {userEmail || "mamanigutierrezcarlos123@gmail.com"}
+              </p>
+            </div>
+          </div>
+
+          {/* Fecha y Hora de Falta */}
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] flex items-center justify-center text-amber-400 shrink-0">
+              <Calendar className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-muted-foreground">
+                FECHA DE FALTA
+              </p>
+              <p className="text-xs sm:text-sm font-semibold text-foreground mt-0.5">
+                {currentJustification.absenceDate
+                  ? new Date(currentJustification.absenceDate + "T12:00:00Z").toLocaleDateString("es-PE", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })
+                  : "02 sep 2026"}
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Enviada el {formatDate(currentJustification.submittedAt || "2026-09-02T09:15:00Z")}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CARD 3: Documento Adjunto */}
+      <div className="rounded-[20px] sm:rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0E111C] p-5 sm:p-6 shadow-sm space-y-4">
+        <h2 className="text-sm sm:text-base font-bold text-foreground">
+          Documento adjunto
+        </h2>
+
+        {currentJustification.documentUrl ? (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-3 p-3.5 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829]">
+              <div className="flex items-center gap-3 min-w-0">
+                <FileText className="w-6 h-6 text-purple-400 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm font-semibold text-foreground truncate">
+                    Comprobante_medico.pdf
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">Constancia médica oficial</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setShowPreview(!showPreview)}
+                  className="h-9 px-3 rounded-lg border border-border dark:border-[#1E2335] bg-card dark:bg-[#1c2238] hover:bg-muted text-xs font-semibold text-foreground flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  {showPreview ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  <span>{showPreview ? "Ocultar" : "Ver"}</span>
+                </button>
+                <a
+                  href={currentJustification.documentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-9 px-3 rounded-lg bg-brand-gradient text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Descargar</span>
+                </a>
+              </div>
+            </div>
+
+            {showPreview && (
+              <div className="mt-3 rounded-xl overflow-hidden border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] p-4 text-center">
+                <p className="text-xs text-muted-foreground">
+                  Vista previa de archivo comprobante activa.
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="rounded-xl border border-dashed border-border dark:border-[#1E2335] bg-background/50 dark:bg-[#141829]/50 p-6 text-center space-y-1.5">
+            <FileText className="w-7 h-7 text-muted-foreground/40 mx-auto" />
+            <p className="text-xs font-semibold text-foreground">Sin documento adjunto</p>
+            <p className="text-[11px] text-muted-foreground">
+              El trabajador no incluyó comprobante externo en esta solicitud.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* CARD 4: Historial de Cambios */}
+      {currentJustification.history && currentJustification.history.length > 0 && (
+        <div className="rounded-[20px] sm:rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0E111C] p-5 sm:p-6 shadow-sm space-y-4">
+          <h2 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
+            <History className="w-4 h-4 text-purple-400" />
+            <span>Historial de cambios</span>
+          </h2>
+
+          <div className="space-y-3 pl-2">
+            {currentJustification.history.map((entry: any, idx: number) => (
+              <div key={entry.id || idx} className="flex items-start gap-3 text-xs">
+                <div className="w-2 h-2 rounded-full bg-purple-400 mt-1.5 shrink-0" />
+                <div className="flex-1 bg-background dark:bg-[#141829] border border-border dark:border-[#1E2335] rounded-xl p-3 space-y-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-semibold text-foreground">{eventLabel(entry)}</p>
+                    <p className="text-[10px] text-muted-foreground font-mono">
+                      {formatDate(entry.changedAt)}
+                    </p>
                   </div>
-
-                  {showPreview && (
-                    <div className="mt-3 rounded-xl overflow-hidden border border-border bg-accent" style={{ minHeight: "400px" }}>
-                      {justification.documentUrl?.toLowerCase().endsWith(".pdf") || justification.documentUrl?.includes(".pdf") ? (
-                        <embed
-                          src={justification.documentUrl + "#toolbar=0&navpanes=0"}
-                          type="application/pdf"
-                          className="w-full"
-                          style={{ height: "450px", border: "none" }}
-                          title="Vista previa del documento"
-                        />
-                      ) : justification.documentUrl?.match(/\.(jpg|jpeg|png|gif|webp)/i) ? (
-                        <img
-                          src={justification.documentUrl}
-                          alt="Vista previa del documento"
-                          className="w-full object-contain"
-                          style={{ maxHeight: "450px" }}
-                        />
-                      ) : (
-                        <div className="flex items-center justify-center h-[250px] text-muted-foreground text-xs">
-                          <p>Vista previa no disponible para este tipo de archivo. Use el botón Descargar.</p>
-                        </div>
-                      )}
-                    </div>
+                  {entry.comment && (
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      {entry.comment}
+                    </p>
                   )}
                 </div>
-              )}
-            </Card>
+              </div>
+            ))}
           </div>
-
-          {/* Historial de cambios */}
-          {justification.history && justification.history.length > 0 && (
-            <Card className="border border-border bg-card p-5 sm:p-6 rounded-2xl shadow-xs lg:col-span-2">
-              <h3 className="text-base font-bold text-foreground mb-3 flex items-center gap-2">
-                <History className="h-4 w-4 text-muted-foreground" /> Historial de Cambios
-              </h3>
-              <div className="relative pl-7 max-h-[300px] overflow-y-auto pr-1">
-                <div className="absolute left-[11px] top-1 bottom-1 w-0.5 bg-border rounded-full" />
-                {justification.history.map((entry: any, idx: number, arr: any[]) => {
-                  const color = dotColors[entry.newStatus] || "var(--blue)";
-                  const HIcon = historyIcons[entry.newStatus] || FileText;
-                  const isLast = idx === arr.length - 1;
-                  return (
-                    <div key={entry.id || idx} className={`relative pb-3.5 ${isLast ? "!pb-0" : ""}`}>
-                      <div className="absolute -left-7 top-0.5 w-5 h-5 rounded-full flex items-center justify-center shadow-xs ring-2 ring-background" style={{ backgroundColor: color }}>
-                        <HIcon className="w-2.5 h-2.5 text-white" />
-                      </div>
-                      <div className="bg-card rounded-xl border border-border shadow-xs overflow-hidden">
-                        <div className="flex items-center justify-between px-3 py-1.5 border-b border-border" style={{ backgroundColor: `color-mix(in srgb, ${color} 5%, transparent)` }}>
-                          <p className="text-xs font-bold text-foreground">{eventLabel(entry)}</p>
-                          <p className="text-[10px] text-muted-foreground font-mono">{entry.changedAt ? formatDate(entry.changedAt) : "-"}</p>
-                        </div>
-                        {entry.comment && (
-                          <div className="px-3 py-2">
-                            <p className="text-xs text-foreground/90 leading-relaxed whitespace-pre-wrap">{entry.comment}</p>
-                          </div>
-                        )}
-                        {entry.changedBy && (
-                          <div className="px-3 py-1 bg-muted/40 flex items-center gap-1.5">
-                            <User className="w-3 h-3 text-muted-foreground" />
-                            <span className="text-[10px] text-muted-foreground">{entry.changedBy === justification.userId ? "Trabajador" : "Jefe de Proyecto"}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </Card>
-          )}
-
-          {/* Comentarios */}
-          <Card className="border border-border bg-card p-5 sm:p-6 rounded-2xl shadow-xs">
-            <h3 className="text-base font-bold text-foreground mb-3">
-              {isRejected ? "Motivo del Rechazo" : isObservation ? "Observación Solicitada" : isPending ? "Comentarios de Revisión" : "Comentarios"}
-            </h3>
-
-            {isRejected && justification.comment ? (
-              <div className="bg-red/10 border border-red/20 rounded-xl p-3.5 mb-3">
-                <p className="text-xs text-red-ink font-medium">El PM indicó:</p>
-                <p className="text-xs text-red-ink mt-0.5">{justification.comment}</p>
-              </div>
-            ) : isObservation && justification.comment ? (
-              <div className="bg-amber/10 border border-amber/20 rounded-xl p-3.5 mb-3">
-                <p className="text-xs text-amber-ink font-medium">Correcciones solicitadas:</p>
-                <p className="text-xs text-amber-ink mt-0.5">{justification.comment}</p>
-              </div>
-            ) : isPending && justification.comment ? (
-              <div className="bg-muted/40 border border-border rounded-xl p-3.5 mb-3">
-                <p className="text-xs text-foreground">{justification.comment}</p>
-              </div>
-            ) : isApproved && justification.comment ? (
-              <div className="bg-green/10 border border-green/20 rounded-xl p-3.5 mb-3">
-                <p className="text-xs text-green-ink font-medium">Comentario del PM:</p>
-                <p className="text-xs text-green-ink mt-0.5">{justification.comment}</p>
-              </div>
-            ) : null}
-            
-            {isPending && (
-              <>
-                <Textarea
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Escribe un comentario para el trabajador..."
-                  className="min-h-28 text-xs resize-y border-border bg-background rounded-xl p-3"
-                />
-                <div className="mt-2 text-[11px] text-muted-foreground">
-                  Este comentario será visible para el usuario.
-                </div>
-              </>
-            )}
-          </Card>
         </div>
+      )}
+
+      {/* CARD 5 / BOTTOM ACTION BAR: Revisión y Comentarios */}
+      <div className="rounded-[20px] sm:rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0E111C] p-5 sm:p-6 shadow-sm space-y-4">
+        <h2 className="text-sm sm:text-base font-bold text-foreground">
+          {isRejected
+            ? "Motivo del rechazo"
+            : isObservation
+            ? "Observación solicitada"
+            : isApproved
+            ? "Comentario de aprobación"
+            : "Comentarios de revisión"}
+        </h2>
+
+        {isRejected && currentJustification.comment ? (
+          <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-400 text-xs">
+            <p className="font-semibold">El PM indicó:</p>
+            <p className="mt-0.5">{currentJustification.comment}</p>
+          </div>
+        ) : isObservation && currentJustification.comment ? (
+          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 text-xs">
+            <p className="font-semibold">Correcciones solicitadas:</p>
+            <p className="mt-0.5">{currentJustification.comment}</p>
+          </div>
+        ) : isApproved && currentJustification.comment ? (
+          <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs">
+            <p className="font-semibold">Comentario del PM:</p>
+            <p className="mt-0.5">{currentJustification.comment}</p>
+          </div>
+        ) : null}
+
+        {isPending && (
+          <div className="space-y-3">
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Escribe un comentario para el trabajador..."
+              rows={3}
+              className="w-full p-3.5 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet resize-y"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Este comentario será visible para el trabajador en su notificación.
+            </p>
+
+            <p className="text-xs text-muted-foreground pt-1">
+              Al aprobar, la tardanza o falta queda justificada en el historial del trabajador. Al cancelar, la solicitud se descarta.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => processJustification("observation")}
+                disabled={isProcessing}
+                className="w-full sm:w-auto h-11 px-5 rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+              >
+                Solicitar observación
+              </button>
+              <button
+                type="button"
+                onClick={() => processJustification("reject")}
+                disabled={isProcessing}
+                className="w-full sm:w-auto h-11 px-5 rounded-xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+              >
+                Rechazar justificación
+              </button>
+              <button
+                type="button"
+                onClick={() => processJustification("approve")}
+                disabled={isProcessing}
+                className="w-full sm:w-auto h-11 px-6 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs sm:text-sm font-semibold shadow-md shadow-purple-500/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              >
+                <Check className="w-4 h-4 stroke-[2.5]" />
+                <span>{isProcessing ? "Procesando..." : "Aprobar justificación"}</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

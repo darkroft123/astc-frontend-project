@@ -2,9 +2,5 @@
 import ScheduleForm from "@/components/dashboard/projects/assignaments/Schedule-form";
 
 export default function AssignSchedulePage() {
-  return (
-    <div className="min-h-screen bg-transparent p-4">
-      <ScheduleForm mode="create" />
-    </div>
-  );
+  return <ScheduleForm mode="create" />;
 }
