@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
@@ -10,14 +10,11 @@ import {
   FileText,
   TrendingUp,
   Calendar,
-  Bell,
   Activity,
   FolderKanban,
   Clock,
   BarChart3,
   AlertTriangle,
-  ChevronRight,
-  ShieldAlert,
 } from "lucide-react";
 import { MOCK_PROJECTS } from "@/lib/mock-data";
 import { NotificationBell } from "@/components/layout/notification-bell";
@@ -37,14 +34,28 @@ type Period =
   | "total"
   | "custom";
 
-const PERIOD_TABS: { id: Period; label: string }[] = [
-  { id: "today", label: "Hoy" },
-  { id: "thisweek", label: "Esta semana" },
-  { id: "month", label: "Este mes" },
-  { id: "3months", label: "3 meses" },
-  { id: "6months", label: "6 meses" },
-  { id: "9months", label: "9 meses" },
-  { id: "total", label: "Total" },
+const PERIOD_ROWS = [
+  [
+    { id: "today" as Period, label: "Hoy" },
+    { id: "thisweek" as Period, label: "Esta semana" },
+    { id: "month" as Period, label: "Este mes" },
+    { id: "3months" as Period, label: "3 meses" },
+  ],
+  [
+    { id: "6months" as Period, label: "6 meses" },
+    { id: "9months" as Period, label: "9 meses" },
+    { id: "total" as Period, label: "Total" },
+  ],
+];
+
+const PERIOD_TABS_ALL = [
+  { id: "today" as Period, label: "Hoy" },
+  { id: "thisweek" as Period, label: "Esta semana" },
+  { id: "month" as Period, label: "Este mes" },
+  { id: "3months" as Period, label: "3 meses" },
+  { id: "6months" as Period, label: "6 meses" },
+  { id: "9months" as Period, label: "9 meses" },
+  { id: "total" as Period, label: "Total" },
 ];
 
 export function DashboardView() {
@@ -122,33 +133,33 @@ export function DashboardView() {
   const totalAttendances = metrics.totalAttendances || 2;
   const totalAbsences = metrics.totalAbsences || 2;
   const pendingJustifications = metrics.pendingJustifications || 1;
-  const totalRecords = totalAttendances + totalAbsences + pendingJustifications;
-
-  const attendancePercent =
-    totalRecords > 0 ? Math.round((totalAttendances / totalRecords) * 100) : 40;
-  const absencePercent =
-    totalRecords > 0 ? Math.round((totalAbsences / totalRecords) * 100) : 40;
-  const pendingPercent =
-    totalRecords > 0 ? 100 - attendancePercent - absencePercent : 20;
 
   return (
-    <div className="relative min-h-screen bg-transparent pb-12">
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 z-10">
-        {/* HEADER SECTION */}
+    <div className="relative min-h-screen bg-transparent pb-16 font-sans">
+      {/* Top Ambient Glow */}
+      <div
+        className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-80 rounded-full opacity-30 blur-3xl z-0"
+        style={{
+          background: "radial-gradient(circle, #7C3AED 0%, transparent 70%)",
+        }}
+      />
+
+      <div className="relative max-w-md md:max-w-7xl mx-auto space-y-5 z-10 px-1 sm:px-0">
+        {/* 1. HEADER SECTION (Mobile: stacked + full-width button; Desktop: flex row) */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2 flex-wrap">
-              <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.05em] text-primary dark:text-violet-ink">
+          <div className="space-y-1">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.05em] text-[#8B7BD8]">
                 PANEL DE GESTIÓN
               </span>
-              <span className="text-xs text-muted-foreground font-sans">
+              <span className="text-xs text-[#8F96AE]">
                 · {activeProjects.length || 3} proyectos
               </span>
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
               Hola, {displayName}
             </h1>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-[#8F96AE] leading-relaxed max-w-xl">
               Visión general del rendimiento y la actividad del equipo. Hay 1 justificación esperando tu revisión.
             </p>
           </div>
@@ -157,28 +168,86 @@ export function DashboardView() {
             <button
               type="button"
               onClick={() => router.push("/pm/justificaciones")}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+              className="w-full md:w-auto h-11 px-5 rounded-2xl text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-[#A855F7]/25 hover:opacity-95 transition-all cursor-pointer"
+              style={{
+                background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 100%)",
+              }}
             >
               <FileText className="w-4 h-4" />
-              Revisar justificaciones
+              <span>Revisar justificaciones</span>
             </button>
-            <NotificationBell />
+            <div className="hidden md:block">
+              <NotificationBell />
+            </div>
           </div>
         </div>
 
-        {/* PERIOD / DATE SELECTOR BAR (MATCHING EXACT SVG) */}
-        <div className="w-full flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5">
-          <div className="flex-1 flex items-center gap-1 p-1 rounded-xl bg-muted/40 dark:bg-surface border border-border/80 overflow-x-auto">
-            {PERIOD_TABS.map((tab) => {
+        {/* 2. PERIOD TABS & DATE RANGE */}
+        {/* Mobile View: 2 rows matching responsive SVG */}
+        <div className="block md:hidden space-y-2 pt-1">
+          {PERIOD_ROWS.map((row, rIdx) => (
+            <div
+              key={rIdx}
+              className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#0C0E18] border border-[#1E2335]"
+            >
+              {row.map((tab) => {
+                const isActive = activePeriod === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActivePeriod(tab.id)}
+                    className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-medium transition-all text-center cursor-pointer ${
+                      isActive
+                        ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
+                        : "text-[#8F96AE] hover:text-white"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+
+          {/* Mobile Date Selector Pill */}
+          <div className="flex items-center gap-2 pt-0.5">
+            <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-xs font-mono">
+              <Calendar className="w-4 h-4 text-[#A855F7] shrink-0" />
+              <span className="text-[#8F96AE]">Rango:</span>
+              <span className="text-[#EEF0F6] font-semibold">
+                {customRange.from.split("-").reverse().join("/")}
+              </span>
+              <span className="text-[#8F96AE]">→</span>
+              <span className="text-[#EEF0F6] font-semibold">
+                {customRange.to.split("-").reverse().join("/")}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setCustomModalOpen(true)}
+              className="w-10 h-10 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-[#8F96AE] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
+              title="Seleccionar rango"
+            >
+              <Calendar className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Desktop View: 1 single row with all tabs + date picker */}
+        <div className="hidden md:flex items-center justify-between gap-4 p-1.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335]">
+          <div className="flex items-center gap-1 flex-1 overflow-x-auto">
+            {PERIOD_TABS_ALL.map((tab) => {
               const isActive = activePeriod === tab.id;
               return (
                 <button
                   key={tab.id}
+                  type="button"
                   onClick={() => setActivePeriod(tab.id)}
-                  className={`flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer text-center ${
+                  className={`py-2 px-4 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                     isActive
-                      ? "bg-white dark:bg-raised text-foreground dark:text-white shadow-xs border border-border font-semibold"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
+                      : "text-[#8F96AE] hover:text-white"
                   }`}
                 >
                   {tab.label}
@@ -187,86 +256,88 @@ export function DashboardView() {
             })}
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-blue/20 bg-blue/10 text-xs font-mono text-blue dark:text-blue shadow-xs">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>{customRange.from.split("-").reverse().join("/")} → {customRange.to.split("-").reverse().join("/")}</span>
+          <div className="flex items-center gap-2 shrink-0 pr-1">
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#12141F] border border-[#1E2335] text-xs font-mono">
+              <Calendar className="w-3.5 h-3.5 text-[#A855F7]" />
+              <span className="text-[#EEF0F6]">
+                {customRange.from.split("-").reverse().join("/")} → {customRange.to.split("-").reverse().join("/")}
+              </span>
             </div>
             <button
               type="button"
               onClick={() => setCustomModalOpen(true)}
-              className="w-10 h-10 rounded-xl border border-border bg-card dark:bg-surface hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer shadow-xs"
-              title="Seleccionar rango personalizado"
+              className="w-9 h-9 rounded-xl bg-[#12141F] border border-[#1E2335] text-[#8F96AE] hover:text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs"
+              title="Seleccionar rango"
             >
               <Calendar className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* 4 TOP METRIC CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 3. THE 4 STAT CARDS (2x2 on mobile, 4 in row on desktop) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Card 1: Asistencias */}
-          <div className="rounded-2xl border border-border/80 bg-card dark:bg-sidebar/70 p-5 shadow-xs flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-7 h-7 rounded-lg bg-green/10 flex items-center justify-center text-green">
+          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 flex flex-col justify-between h-[124px] shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="w-7 h-7 rounded-lg bg-[#0C251C] border border-[#194B37] flex items-center justify-center text-[#34D399]">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
-              <span className="text-xs font-medium text-green-ink dark:text-green">
+              <span className="text-xs font-semibold text-[#34D399]">
                 Asistencias
               </span>
             </div>
             <div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold tracking-tight text-foreground">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                   {totalAttendances}
                 </span>
-                <span className="text-xs text-muted-foreground">días presentes</span>
+                <span className="text-[11px] text-[#8F96AE]">días presentes</span>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">Último periodo</p>
+              <p className="text-[10.5px] text-[#8F96AE] mt-1">Último periodo</p>
             </div>
           </div>
 
           {/* Card 2: Faltas */}
-          <div className="rounded-2xl border border-border/80 bg-card dark:bg-sidebar/70 p-5 shadow-xs flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-7 h-7 rounded-lg bg-red/10 flex items-center justify-center text-red">
+          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 flex flex-col justify-between h-[124px] shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="w-7 h-7 rounded-lg bg-[#251417] border border-[#521C22] flex items-center justify-center text-[#F87171]">
                 <XCircle className="w-4 h-4" />
               </div>
-              <span className="text-xs font-medium text-red-ink dark:text-red">
+              <span className="text-xs font-semibold text-[#F87171]">
                 Faltas
               </span>
             </div>
             <div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold tracking-tight text-foreground">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                   {totalAbsences}
                 </span>
-                <span className="text-xs text-muted-foreground">días ausentes</span>
+                <span className="text-[11px] text-[#8F96AE]">días ausentes</span>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">Histórico del equipo</p>
+              <p className="text-[10.5px] text-[#8F96AE] mt-1">Histórico del equipo</p>
             </div>
           </div>
 
           {/* Card 3: Por revisar */}
-          <div className="rounded-2xl border border-border/80 bg-card dark:bg-sidebar/70 p-5 shadow-xs flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-7 h-7 rounded-lg bg-amber/10 flex items-center justify-center text-amber">
+          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 flex flex-col justify-between h-[124px] shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="w-7 h-7 rounded-lg bg-[#251E0E] border border-[#533E16] flex items-center justify-center text-[#FBBF24]">
                 <FileText className="w-4 h-4" />
               </div>
-              <span className="text-xs font-medium text-amber-ink dark:text-amber">
+              <span className="text-xs font-semibold text-[#FBBF24]">
                 Por revisar
               </span>
             </div>
             <div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold tracking-tight text-foreground">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                   {pendingJustifications}
                 </span>
-                <span className="text-xs text-muted-foreground">por justificar</span>
+                <span className="text-[11px] text-[#8F96AE]">por justificar</span>
               </div>
               <Link
                 href="/pm/justificaciones"
-                className="text-xs font-medium text-amber-ink dark:text-amber hover:underline mt-2 inline-flex items-center gap-1"
+                className="text-[10.5px] text-[#FBBF24] font-medium hover:underline mt-1 inline-flex items-center gap-0.5"
               >
                 Revisar solicitud →
               </Link>
@@ -274,135 +345,140 @@ export function DashboardView() {
           </div>
 
           {/* Card 4: Meta 90% */}
-          <div className="rounded-2xl border border-border/80 bg-card dark:bg-sidebar/70 p-5 shadow-xs flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-7 h-7 rounded-lg bg-violet/10 flex items-center justify-center text-violet">
+          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 flex flex-col justify-between h-[124px] shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="w-7 h-7 rounded-lg bg-[#1F1836] border border-[#432C7A] flex items-center justify-center text-[#A855F7]">
                 <TrendingUp className="w-4 h-4" />
               </div>
-              <span className="text-xs font-medium text-violet-ink dark:text-violet">
+              <span className="text-xs font-semibold text-[#C4B5FD]">
                 Meta 90%
               </span>
             </div>
             <div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold tracking-tight text-foreground">50%</span>
-                <span className="text-xs text-muted-foreground">cumplimiento</span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                  50%
+                </span>
+                <span className="text-[11px] text-[#8F96AE]">cumplimiento</span>
               </div>
-              <div className="w-full bg-slate-200 dark:bg-raised rounded-full h-1.5 mt-3 overflow-hidden">
-                <div className="bg-gradient-to-r from-cyan via-blue to-violet h-1.5 rounded-full w-[50%]" />
+              <div className="w-full bg-[#1F2438] rounded-full h-1.5 mt-2.5 overflow-hidden">
+                <div
+                  className="h-1.5 rounded-full w-[50%]"
+                  style={{
+                    background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 100%)",
+                  }}
+                />
               </div>
             </div>
           </div>
         </div>
 
-        {/* MIDDLE ROW (Resumen general & Actividad reciente) */}
+        {/* 4. MIDDLE ROW: Resumen general & Actividad reciente */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Card: Resumen general */}
-          <div className="rounded-2xl border border-border/80 bg-card dark:bg-sidebar/70 p-5 shadow-xs flex flex-col justify-between">
-            <div className="flex items-start justify-between mb-4">
+          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-5 shadow-xs space-y-4">
+            <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-base font-bold text-foreground tracking-tight">
+                <h3 className="text-sm font-bold text-white tracking-tight">
                   Resumen general
                 </h3>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-xs text-[#8F96AE] mt-0.5">
                   5 registros del equipo en el periodo
                 </p>
               </div>
-              <span className="font-mono text-[10.5px] font-semibold bg-violet/10 text-violet-ink dark:text-violet border border-violet/20 px-2.5 py-0.5 rounded-full">
+              <span className="text-[10.5px] font-semibold bg-[#1D1735] text-[#C4B5FD] border border-[#3A2A69] px-2.5 py-0.5 rounded-full">
                 Todos los proyectos
               </span>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-around gap-6 py-4 flex-1">
-              {/* Donut Chart */}
+            {/* Circular Segmented Donut matching SVG */}
+            <div className="flex flex-col sm:flex-row items-center justify-around gap-6 py-2">
               <div className="relative w-44 h-44 flex items-center justify-center shrink-0">
-                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                  {/* Background Track */}
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
                   <circle
-                    cx="50"
-                    cy="50"
-                    r="38"
-                    stroke="currentColor"
-                    strokeWidth="14"
+                    cx="60"
+                    cy="60"
+                    r="46"
+                    stroke="#1F2438"
+                    strokeWidth="12"
                     fill="transparent"
-                    className="text-slate-100 dark:text-raised"
                   />
-                  {/* Asistencias (Green 40%) */}
                   <circle
-                    cx="50"
-                    cy="50"
-                    r="38"
-                    stroke="var(--green)"
-                    strokeWidth="14"
-                    strokeDasharray="95.5 143.2"
+                    cx="60"
+                    cy="60"
+                    r="46"
+                    stroke="#34D399"
+                    strokeWidth="12"
+                    strokeDasharray="115.6 173.4"
                     strokeDashoffset="0"
+                    strokeLinecap="round"
                     fill="transparent"
                   />
-                  {/* Faltas (Red 40%) */}
                   <circle
-                    cx="50"
-                    cy="50"
-                    r="38"
-                    stroke="var(--red)"
-                    strokeWidth="14"
-                    strokeDasharray="95.5 143.2"
-                    strokeDashoffset="-95.5"
+                    cx="60"
+                    cy="60"
+                    r="46"
+                    stroke="#F87171"
+                    strokeWidth="12"
+                    strokeDasharray="115.6 173.4"
+                    strokeDashoffset="-115.6"
+                    strokeLinecap="round"
                     fill="transparent"
                   />
-                  {/* Pendientes (Amber 20%) */}
                   <circle
-                    cx="50"
-                    cy="50"
-                    r="38"
-                    stroke="var(--amber)"
-                    strokeWidth="14"
-                    strokeDasharray="47.7 191"
-                    strokeDashoffset="-191"
+                    cx="60"
+                    cy="60"
+                    r="46"
+                    stroke="#FBBF24"
+                    strokeWidth="12"
+                    strokeDasharray="57.8 231.2"
+                    strokeDashoffset="-231.2"
+                    strokeLinecap="round"
                     fill="transparent"
                   />
                 </svg>
                 <div className="absolute flex flex-col items-center justify-center text-center">
-                  <span className="text-2xl font-black text-foreground tracking-tight leading-none">
+                  <span className="text-3xl font-black text-white tracking-tight leading-none">
                     50%
                   </span>
-                  <span className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase mt-1">
+                  <span className="text-[10px] font-mono tracking-widest text-[#8F96AE] uppercase mt-1 font-semibold">
                     ASISTENCIA
                   </span>
                 </div>
               </div>
 
-              {/* Legend */}
-              <div className="w-full sm:w-auto flex-1 max-w-[240px] space-y-3">
+              {/* Legend matching SVG */}
+              <div className="w-full sm:w-auto flex-1 max-w-[280px] space-y-2.5">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-xs bg-green" />
-                    <span className="text-foreground font-medium">Asistencias</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#34D399]" />
+                    <span className="text-white font-medium">Asistencias</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="font-bold text-foreground">2</span>
-                    <span className="text-muted-foreground w-8 text-right">40%</span>
+                  <div className="flex items-center gap-4">
+                    <span className="font-bold text-white">2</span>
+                    <span className="text-[#8F96AE] w-8 text-right">40%</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-xs bg-red" />
-                    <span className="text-foreground font-medium">Faltas</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#F87171]" />
+                    <span className="text-white font-medium">Faltas</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="font-bold text-foreground">2</span>
-                    <span className="text-muted-foreground w-8 text-right">40%</span>
+                  <div className="flex items-center gap-4">
+                    <span className="font-bold text-white">2</span>
+                    <span className="text-[#8F96AE] w-8 text-right">40%</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-xs bg-amber" />
-                    <span className="text-foreground font-medium">Pendientes</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#FBBF24]" />
+                    <span className="text-white font-medium">Pendientes</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="font-bold text-foreground">1</span>
-                    <span className="text-muted-foreground w-8 text-right">20%</span>
+                  <div className="flex items-center gap-4">
+                    <span className="font-bold text-white">1</span>
+                    <span className="text-[#8F96AE] w-8 text-right">20%</span>
                   </div>
                 </div>
               </div>
@@ -410,46 +486,46 @@ export function DashboardView() {
           </div>
 
           {/* Card: Actividad reciente */}
-          <div className="rounded-2xl border border-border/80 bg-card dark:bg-sidebar/70 p-5 shadow-xs flex flex-col justify-between">
-            <div className="flex items-start justify-between mb-4">
+          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-5 shadow-xs space-y-3 flex flex-col justify-between">
+            <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-base font-bold text-foreground tracking-tight">
+                <h3 className="text-sm font-bold text-white tracking-tight">
                   Actividad reciente
                 </h3>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-xs text-[#8F96AE] mt-0.5">
                   Últimas acciones del equipo
                 </p>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-green/10 text-green-ink dark:text-green border border-green/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold bg-[#0C251C] text-[#34D399] border border-[#194B37]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#34D399] animate-pulse" />
                 En vivo
               </span>
             </div>
 
-            {/* Empty State Box */}
-            <div className="my-auto py-8 px-4 rounded-xl border border-dashed border-border/80 bg-muted/20 dark:bg-inset/40 flex flex-col items-center justify-center text-center">
-              <div className="w-10 h-10 rounded-xl bg-muted/60 dark:bg-raised border border-border flex items-center justify-center text-muted-foreground mb-3">
+            {/* Dashed Empty State Box */}
+            <div className="my-auto py-7 px-4 rounded-xl border border-dashed border-[#1E2335] bg-[#0E101C] flex flex-col items-center justify-center text-center">
+              <div className="w-10 h-10 rounded-xl bg-[#141829] border border-[#1E2335] flex items-center justify-center text-[#8F96AE] mb-2.5">
                 <Activity className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-sm text-foreground">
+              <h4 className="font-bold text-xs text-white">
                 Aún no hay actividad en tu equipo
               </h4>
-              <p className="text-xs text-muted-foreground max-w-xs mt-1 mb-4 leading-relaxed">
+              <p className="text-[11px] text-[#8F96AE] max-w-xs mt-1 mb-3.5 leading-relaxed">
                 Asigna colaboradores a tus proyectos para ver sus marcajes aquí en tiempo real.
               </p>
               <button
                 type="button"
                 onClick={() => router.push("/pm/proyectos")}
-                className="px-4 py-2 rounded-xl border border-border bg-card dark:bg-raised hover:bg-muted/60 text-foreground text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+                className="px-4 py-2 rounded-xl border border-[#272E49] bg-[#181C2E] hover:bg-[#20263E] text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
               >
                 Gestionar proyectos
               </button>
             </div>
 
-            <div className="pt-3 border-t border-border/40 text-center">
+            <div className="pt-2 text-center">
               <Link
                 href="/pm/historial-asistencias"
-                className="text-xs font-medium text-blue dark:text-blue hover:underline"
+                className="block w-full py-2.5 rounded-xl border border-[#1E2335] bg-[#101322] hover:bg-[#15192D] text-xs font-medium text-[#EEF0F6] transition-colors"
               >
                 Ver todas las asistencias →
               </Link>
@@ -457,43 +533,59 @@ export function DashboardView() {
           </div>
         </div>
 
-        {/* BOTTOM ROW (Resumen de asistencias & Acciones rápidas) */}
+        {/* 5. BOTTOM ROW: Resumen de asistencias & Acciones rápidas */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Card: Resumen de asistencias (Bar Chart) */}
-          <div className="rounded-2xl border border-border/80 bg-card dark:bg-sidebar/70 p-5 shadow-xs flex flex-col justify-between">
-            <div className="mb-4">
-              <h3 className="text-base font-bold text-foreground tracking-tight">
+          {/* Card: Resumen de asistencias (Bar Chart with exact linear gradients) */}
+          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-5 shadow-xs space-y-4 flex flex-col justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-white tracking-tight">
                 Resumen de asistencias
               </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-[#8F96AE] mt-0.5">
                 Distribución de asistencias, faltas y solicitudes
               </p>
             </div>
 
-            <div className="flex-1 flex flex-col justify-end pt-6 pb-2">
-              {/* Bar visualization */}
-              <div className="grid grid-cols-3 gap-6 items-end h-44 pb-3 border-b border-border/60">
-                {/* Bar 1: Asistencias */}
-                <div className="flex flex-col items-center gap-2">
-                  <span className="text-xs font-semibold text-foreground">2</span>
-                  <div className="w-full max-w-[68px] h-32 rounded-t-lg bg-gradient-to-t from-green to-green opacity-90 transition-all hover:opacity-100" />
+            <div className="pt-4 pb-2">
+              <div className="grid grid-cols-3 gap-6 items-end h-[160px] pb-2 border-b border-[#1E2335]">
+                {/* Bar 1: Asistencias (Height 124px, Exact Green Gradient) */}
+                <div className="flex flex-col items-center">
+                  <span className="text-xs font-bold text-white mb-2">2</span>
+                  <div
+                    className="w-16 h-[124px] rounded-t-xl transition-all hover:brightness-110"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, #34D399 0%, rgba(52, 211, 153, 0.33) 100%)",
+                    }}
+                  />
                 </div>
 
-                {/* Bar 2: Faltas */}
-                <div className="flex flex-col items-center gap-2">
-                  <span className="text-xs font-semibold text-foreground">2</span>
-                  <div className="w-full max-w-[68px] h-32 rounded-t-lg bg-gradient-to-t from-red to-red opacity-90 transition-all hover:opacity-100" />
+                {/* Bar 2: Faltas (Height 124px, Exact Red Gradient) */}
+                <div className="flex flex-col items-center">
+                  <span className="text-xs font-bold text-white mb-2">2</span>
+                  <div
+                    className="w-16 h-[124px] rounded-t-xl transition-all hover:brightness-110"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, #F87171 0%, rgba(248, 113, 113, 0.33) 100%)",
+                    }}
+                  />
                 </div>
 
-                {/* Bar 3: Pendientes */}
-                <div className="flex flex-col items-center gap-2">
-                  <span className="text-xs font-semibold text-foreground">1</span>
-                  <div className="w-full max-w-[68px] h-16 rounded-t-lg bg-gradient-to-t from-amber to-amber opacity-90 transition-all hover:opacity-100" />
+                {/* Bar 3: Pendientes (Height 62px, Exact Amber Gradient) */}
+                <div className="flex flex-col items-center">
+                  <span className="text-xs font-bold text-white mb-2">1</span>
+                  <div
+                    className="w-16 h-[62px] rounded-t-xl transition-all hover:brightness-110"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, #FBBF24 0%, rgba(251, 191, 36, 0.33) 100%)",
+                    }}
+                  />
                 </div>
               </div>
 
-              {/* Labels below bars */}
-              <div className="grid grid-cols-3 gap-6 pt-3 text-center text-xs text-muted-foreground font-medium">
+              <div className="grid grid-cols-3 gap-6 pt-3 text-center text-xs text-[#8F96AE] font-medium">
                 <span>Asistencias</span>
                 <span>Faltas</span>
                 <span>Pendientes</span>
@@ -501,106 +593,106 @@ export function DashboardView() {
             </div>
           </div>
 
-          {/* Card: Acciones rápidas (Matching exact SVG structure) */}
-          <div className="rounded-2xl border border-border/80 bg-card dark:bg-sidebar/70 p-5 shadow-xs flex flex-col justify-between">
-            <div className="mb-4">
-              <h3 className="text-base font-bold text-foreground tracking-tight">
+          {/* Card: Acciones rápidas */}
+          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-5 shadow-xs space-y-3 flex flex-col justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-white tracking-tight">
                 Acciones rápidas
               </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-[#8F96AE] mt-0.5">
                 Gestiona el equipo de forma inmediata
               </p>
             </div>
 
-            <div className="space-y-3 flex-1">
-              {/* Top: Justificaciones Featured Full-width Card */}
+            <div className="space-y-2.5">
+              {/* Featured Justificaciones Card */}
               <Link
                 href="/pm/justificaciones"
-                className="flex items-center justify-between p-3.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/15 transition-colors shadow-2xs group"
+                className="flex items-center justify-between p-3.5 rounded-xl border border-[#533E16] bg-[#251E0E] hover:bg-[#322712] transition-colors shadow-2xs group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center text-amber-400 shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-[#3C2F15] flex items-center justify-center text-[#FBBF24] shrink-0">
                     <FileText className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">
+                  <span className="text-xs font-semibold text-white group-hover:text-[#FBBF24] transition-colors">
                     Justificaciones
                   </span>
                 </div>
-                <span className="w-6 h-6 rounded-full bg-amber-500 text-black font-bold text-xs flex items-center justify-center shrink-0">
+                <span className="w-5 h-5 rounded-full bg-[#F59E0B] text-black font-bold text-[11px] flex items-center justify-center shrink-0">
                   {pendingJustifications}
                 </span>
               </Link>
 
-              {/* Grid: 2 columns matching SVG */}
+              {/* 6 Buttons in 2 columns */}
               <div className="grid grid-cols-2 gap-2.5">
                 <Link
                   href="/pm/registrar"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-green/10 flex items-center justify-center text-green shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-[#0C251C] flex items-center justify-center text-[#34D399] shrink-0">
                     <CheckCircle2 className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                  <span className="text-xs font-medium text-white group-hover:text-[#34D399] transition-colors">
                     Registrar
                   </span>
                 </Link>
 
                 <Link
                   href="/pm/historial-asistencias"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-violet/10 flex items-center justify-center text-violet shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-[#1F1836] flex items-center justify-center text-[#A855F7] shrink-0">
                     <BarChart3 className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                  <span className="text-xs font-medium text-white group-hover:text-[#A855F7] transition-colors">
                     Asistencias
                   </span>
                 </Link>
 
                 <Link
                   href="/pm/alertas"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-red/10 flex items-center justify-center text-red shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-[#251417] flex items-center justify-center text-[#F87171] shrink-0">
                     <AlertTriangle className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                  <span className="text-xs font-medium text-white group-hover:text-[#F87171] transition-colors">
                     Alertas
                   </span>
                 </Link>
 
                 <Link
                   href="/pm/proyectos"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-cyan/10 flex items-center justify-center text-cyan shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-[#0E202B] flex items-center justify-center text-[#22C3E6] shrink-0">
                     <FolderKanban className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                  <span className="text-xs font-medium text-white group-hover:text-[#22C3E6] transition-colors">
                     Proyectos
                   </span>
                 </Link>
 
                 <Link
                   href="/pm/mis-asistencias"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-blue/10 flex items-center justify-center text-blue shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-[#101B33] flex items-center justify-center text-[#5B8CFF] shrink-0">
                     <Calendar className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                  <span className="text-xs font-medium text-white group-hover:text-[#5B8CFF] transition-colors">
                     Historial
                   </span>
                 </Link>
 
                 <Link
                   href="/pm/horarios"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-[#0D2423] flex items-center justify-center text-[#2DD4BF] shrink-0">
                     <Clock className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                  <span className="text-xs font-medium text-white group-hover:text-[#2DD4BF] transition-colors">
                     Horarios
                   </span>
                 </Link>
