@@ -5,17 +5,32 @@ import { useAuth } from "@/app/jwt/auth/auth.provider";
 import { getAllProjects, listShiftTemplates, getProjectMembers, graphqlRequest } from "@/app/services/project.assistance.service";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { DataTable, Column } from "@/components/DataTable";
-import { Loader2, Plus, Clock, Repeat, CalendarDays, CalendarRange, CheckCircle, AlertTriangle, Search } from "lucide-react";
+import { 
+  Loader2, 
+  Plus, 
+  Clock, 
+  Repeat, 
+  CalendarDays, 
+  CalendarRange, 
+  CheckCircle, 
+  AlertTriangle, 
+  Search,
+  Pencil,
+  Users,
+  ChevronLeft,
+  ChevronRight
+} from "lucide-react";
+
 const SHIFT_LABELS: Record<string, { label: string; icon: any; color: string }> = {
-  REGULAR: { label: "Regular", icon: Clock, color: "text-green-ink bg-green/10 border-green/20" },
-  ROTATING_4X4: { label: "Rotativo 4x4", icon: Repeat, color: "text-primary bg-primary/10 border-primary/20" },
-  ROTATING_7X7: { label: "Rotativo 7x7", icon: Repeat, color: "text-primary bg-primary/10 border-primary/20" },
-  FLEXIBLE: { label: "Flexible", icon: CalendarDays, color: "text-primary bg-primary/10 border-primary/20" },
-  TRANSITORY: { label: "Transitorio", icon: CalendarRange, color: "text-amber-ink bg-amber/10 border-amber/20" },
+  REGULAR: { label: "Regular", icon: Clock, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
+  ROTATING_4X4: { label: "Rotativo 4×4", icon: Repeat, color: "text-purple-400 bg-purple-500/10 border-purple-500/20" },
+  ROTATING_7X7: { label: "Rotativo 7×7", icon: Repeat, color: "text-purple-400 bg-purple-500/10 border-purple-500/20" },
+  FLEXIBLE: { label: "Flexible", icon: CalendarDays, color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20" },
+  TRANSITORY: { label: "Transitorio", icon: CalendarRange, color: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
 };
 
 const DAYS_ORDER = [
@@ -39,14 +54,14 @@ function TemplatePreview({ template, projects, onAssign, onClose }: {
   const Icon = config.icon;
 
   return (
-    <DialogContent className="sm:max-w-lg rounded-2xl">
+    <DialogContent className="sm:max-w-lg rounded-2xl bg-card border-border">
       <DialogHeader>
-        <DialogTitle className="flex items-center gap-2">
-          <Icon className="w-5 h-5" />
+        <DialogTitle className="flex items-center gap-2 text-foreground">
+          <Icon className="w-5 h-5 text-primary" />
           {template.name}
         </DialogTitle>
         <DialogDescription>
-          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${config.color}`}>
+          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${config.color}`}>
             <Icon className="w-3 h-3" />
             {config.label}
           </span>
@@ -54,29 +69,29 @@ function TemplatePreview({ template, projects, onAssign, onClose }: {
       </DialogHeader>
 
       <div className="space-y-4">
-        <div className="bg-background rounded-xl p-4 text-sm space-y-2">
+        <div className="bg-background/80 border border-border/60 rounded-xl p-4 text-sm space-y-2">
           <div className="flex justify-between">
-            <span className="text-text-4">Proyecto</span>
-            <span className="font-medium">{project?.name || template.projectId}</span>
+            <span className="text-muted-foreground">Proyecto</span>
+            <span className="font-medium text-foreground">{project?.name || template.projectId}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-text-4">Tolerancia</span>
-            <span className="font-medium">{template.graceMinutes} min</span>
+            <span className="text-muted-foreground">Tolerancia</span>
+            <span className="font-medium text-foreground">{template.graceMinutes} min</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-text-4">Corte falta</span>
-            <span className="font-medium">{template.absenceCutoffTime?.substring(0, 5) || "-"}</span>
+            <span className="text-muted-foreground">Corte falta</span>
+            <span className="font-medium text-foreground">{template.absenceCutoffTime?.substring(0, 5) || "-"}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-text-4">Zona horaria</span>
-            <span className="font-medium">{template.timezone || "America/Lima"}</span>
+            <span className="text-muted-foreground">Zona horaria</span>
+            <span className="font-medium text-foreground">{template.timezone || "America/Lima"}</span>
           </div>
         </div>
 
         {template.shiftType === "REGULAR" || template.shiftType === "TRANSITORY" ? (
-          <div className="bg-primary/10 rounded-xl p-4 text-sm">
+          <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 text-sm">
             <p className="font-semibold text-foreground mb-2">Horario</p>
-            <p className="text-text-2">
+            <p className="text-muted-foreground">
               {template.workStartTime?.substring(0, 5)} - {template.workEndTime?.substring(0, 5)}
             </p>
             {template.shiftType === "TRANSITORY" && (template.validFrom || template.validUntil) && (
@@ -89,7 +104,7 @@ function TemplatePreview({ template, projects, onAssign, onClose }: {
         ) : null}
 
         {template.shiftType === "FLEXIBLE" ? (
-          <div className="bg-primary/10 rounded-xl p-4 text-sm">
+          <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 text-sm">
             <p className="font-semibold text-foreground mb-2">Horarios por día</p>
             <div className="space-y-1">
               {DAYS_ORDER.map((day) => {
@@ -97,8 +112,8 @@ function TemplatePreview({ template, projects, onAssign, onClose }: {
                 const end = template[`${day.key}End`];
                 return (
                   <div key={day.key} className="flex justify-between text-xs">
-                    <span className="text-text-2">{day.label}</span>
-                    <span className="font-medium">{start && end ? `${start.substring(0, 5)} - ${end.substring(0, 5)}` : "Libre"}</span>
+                    <span className="text-muted-foreground">{day.label}</span>
+                    <span className="font-medium text-foreground">{start && end ? `${start.substring(0, 5)} - ${end.substring(0, 5)}` : "Libre"}</span>
                   </div>
                 );
               })}
@@ -107,28 +122,28 @@ function TemplatePreview({ template, projects, onAssign, onClose }: {
         ) : null}
 
         {template.shiftType?.startsWith("ROTATING") ? (
-          <div className="bg-primary/10 rounded-xl p-4 text-sm space-y-2">
+          <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 text-sm space-y-2">
             <p className="font-semibold text-foreground mb-2">Turno Rotativo</p>
             <div className="flex justify-between text-xs">
-              <span className="text-text-2">Ciclo</span>
-              <span className="font-medium">{template.rotationWorkDays}d trabajo / {template.rotationRestDays}d descanso</span>
+              <span className="text-muted-foreground">Ciclo</span>
+              <span className="font-medium text-foreground">{template.rotationWorkDays}d trabajo / {template.rotationRestDays}d descanso</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span className="text-text-2">Horario</span>
-              <span className="font-medium">{template.rotationShiftStartTime?.substring(0, 5)} - {template.rotationShiftEndTime?.substring(0, 5)}</span>
+              <span className="text-muted-foreground">Horario</span>
+              <span className="font-medium text-foreground">{template.rotationShiftStartTime?.substring(0, 5)} - {template.rotationShiftEndTime?.substring(0, 5)}</span>
             </div>
             {template.validFrom && (
               <div className="flex justify-between text-xs">
-                <span className="text-text-2">Inicio ciclo</span>
-                <span className="font-medium">{template.validFrom}</span>
+                <span className="text-muted-foreground">Inicio ciclo</span>
+                <span className="font-medium text-foreground">{template.validFrom}</span>
               </div>
             )}
           </div>
         ) : null}
 
-        <div className="flex justify-end gap-3 pt-2 border-t">
+        <div className="flex justify-end gap-3 pt-2 border-t border-border">
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={() => onAssign(template.id)}>
+          <Button onClick={() => onAssign(template.id)} className="bg-brand-gradient text-white">
             <CheckCircle className="w-4 h-4 mr-2" />
             Establecer
           </Button>
@@ -164,7 +179,7 @@ export function ScheduleListView() {
     if (!token) return;
     setLoading(true);
     try {
-      const data = await listShiftTemplates(token, null);
+      const data = await listShiftTemplates(token);
       setTemplates(data || []);
     } catch (error) {
       console.error("Error fetching templates:", error);
@@ -178,6 +193,7 @@ export function ScheduleListView() {
   }, [fetchTemplates]);
 
   const executeAssignment = async (templateDataObj: any, targetMembers: any[]) => {
+    if (!token) return;
     try {
       const { id: _id, projectId: _pid, name: _name, createdAt: _ca, updatedAt: _ua, ...templateData } = templateDataObj;
       for (const m of targetMembers) {
@@ -195,7 +211,7 @@ export function ScheduleListView() {
         title: "Asignación exitosa",
         description: `El horario ha sido asignado a ${targetMembers.length} miembros del proyecto.`,
       });
-      router.refresh(); // Actualiza la caché para otras pantallas
+      router.refresh();
     } catch (e) {
       toast({
         title: "Error al asignar",
@@ -217,7 +233,7 @@ export function ScheduleListView() {
       header: "PROYECTO",
       render: (r) => {
         const p = projects.find(proj => proj.id === r.projectId);
-        return <span className="text-xs text-text-4 font-medium">{p?.name || r.projectId}</span>;
+        return <span className="text-xs text-muted-foreground font-medium">{p?.name || r.projectId}</span>;
       }
     },
     {
@@ -243,11 +259,11 @@ export function ScheduleListView() {
       key: "hours",
       header: "HORARIO",
       render: (r) => {
-        if (r.shiftType === "FLEXIBLE") return <span className="text-text-4 text-xs">Varios horarios</span>;
+        if (r.shiftType === "FLEXIBLE") return <span className="text-muted-foreground text-xs">Varios horarios</span>;
         if (r.shiftType?.startsWith("ROTATING")) {
-          return <span className="text-text-2 text-xs font-mono">{r.rotationShiftStartTime?.substring(0,5)} - {r.rotationShiftEndTime?.substring(0,5)}</span>;
+          return <span className="text-foreground text-xs font-mono">{r.rotationShiftStartTime?.substring(0,5)} - {r.rotationShiftEndTime?.substring(0,5)}</span>;
         }
-        return <span className="text-text-2 text-xs font-mono">{r.workStartTime?.substring(0,5)} - {r.workEndTime?.substring(0,5)}</span>;
+        return <span className="text-foreground text-xs font-mono">{r.workStartTime?.substring(0,5)} - {r.workEndTime?.substring(0,5)}</span>;
       }
     },
     {
@@ -259,15 +275,25 @@ export function ScheduleListView() {
       key: "actions",
       header: "",
       render: (r) => (
-        <Button 
-          size="sm" 
-          className="h-7 text-xs" 
-          onClick={() => setPreviewTemplate(r)}
-          disabled={assignedTemplateIds.has(r.id)}
-          variant={assignedTemplateIds.has(r.id) ? "outline" : "default"}
-        >
-          {assignedTemplateIds.has(r.id) ? "Asignado" : "Asignar"}
-        </Button>
+        <div className="flex items-center gap-2 justify-end">
+          <Button
+            size="icon"
+            variant="outline"
+            className="h-8 w-8 rounded-lg"
+            onClick={() => router.push(`/pm/creacion-horarios?id=${r.id}`)}
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </Button>
+          <Button 
+            size="sm" 
+            className="h-8 text-xs bg-[#2A1E4A] hover:bg-[#34255C] border border-purple-700/40 text-purple-200" 
+            onClick={() => setPreviewTemplate(r)}
+            disabled={assignedTemplateIds.has(r.id)}
+          >
+            <Users className="w-3.5 h-3.5 mr-1" />
+            {assignedTemplateIds.has(r.id) ? "Asignado" : "Asignar"}
+          </Button>
+        </div>
       ),
     }
   ];
@@ -291,81 +317,175 @@ export function ScheduleListView() {
   const pageTemplates = filteredTemplates.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
-    <div className="space-y-6">
-      <Card className="border-border shadow-sm">
-        <CardHeader className="pb-3 bg-raised/50 border-b border-line flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <CardTitle className="text-base">Horarios del Proyecto</CardTitle>
-            <CardDescription className="text-xs">
-              Selecciona un proyecto y asigna un horario a sus miembros
-            </CardDescription>
-          </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <div className="relative w-full sm:w-[300px]">
-              <Search className="w-4 h-4 absolute left-3 top-2.5 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por proyecto u horario..."
-                className="pl-9 bg-field"
-                value={searchTerm}
-                onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
-              />
-            </div>
-            <Button
-              onClick={() => router.push("/pm/creacion-horarios")}
-              className="bg-primary text-primary-foreground shrink-0"
-            >
-              <Plus className="w-4 h-4 mr-1.5" />
-              Crear Horario
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          {loading ? (
-            <div className="flex justify-center p-12">
-              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-            </div>
-          ) : filteredTemplates.length === 0 ? (
-            <div className="text-center p-12 text-muted-foreground">
-              <Clock className="w-12 h-12 mx-auto text-text-5 mb-3" />
-              <p className="text-sm font-medium text-muted-foreground">No hay horarios configurados</p>
-              <p className="text-xs mt-1">Crea horarios para tus proyectos.</p>
-            </div>
-          ) : (
-            <>
-              <DataTable columns={columns} data={pageTemplates} />
+    <div className="space-y-4">
+      {/* Botón Crear Horario grande con gradiente oficial de marca */}
+      <Button
+        onClick={() => router.push("/pm/creacion-horarios")}
+        className="w-full bg-brand-gradient hover:opacity-95 text-white font-medium py-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 text-base"
+      >
+        <Plus className="w-5 h-5" />
+        Crear horario
+      </Button>
 
-              {totalPages > 1 && (
-              <div className="flex items-center justify-between px-5 py-3 border-t border-border">
-                <span className="text-xs text-muted-foreground">
-                  Página {currentPage} de {totalPages} ({filteredTemplates.length} horarios)
-                </span>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 text-xs border-border"
-                    disabled={currentPage <= 1}
-                    onClick={() => setPage(currentPage - 1)}
-                  >
-                    Anterior
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 text-xs border-border"
-                    disabled={currentPage >= totalPages}
-                    onClick={() => setPage(currentPage + 1)}
-                  >
-                    Siguiente
-                  </Button>
-                </div>
-              </div>
-              )}
-            </>
-          )}
+      {/* Card Horarios del proyecto con buscador */}
+      <Card className="border-border bg-card/60 backdrop-blur-sm rounded-2xl shadow-sm">
+        <CardContent className="p-4 sm:p-5 space-y-3">
+          <div>
+            <h3 className="text-base font-semibold text-foreground">Horarios del proyecto</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Selecciona un horario y asígnalo a los miembros del proyecto.
+            </p>
+          </div>
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3.5 top-3 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por proyecto u horario..."
+              className="pl-9 bg-background/50 border-border rounded-xl h-10 text-sm"
+              value={searchTerm}
+              onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+            />
+          </div>
         </CardContent>
       </Card>
 
+      {/* Vista Móvil: Tarjetas idénticas al SVG gestion de horarios-dark.svg */}
+      <div className="space-y-3 md:hidden">
+        {loading ? (
+          <div className="flex justify-center p-12">
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : filteredTemplates.length === 0 ? (
+          <div className="text-center p-12 text-muted-foreground bg-card rounded-2xl border border-border">
+            <Clock className="w-12 h-12 mx-auto text-muted-foreground mb-3 opacity-40" />
+            <p className="text-sm font-medium text-foreground">No hay horarios configurados</p>
+            <p className="text-xs mt-1">Crea horarios para tus proyectos.</p>
+          </div>
+        ) : (
+          pageTemplates.map((t) => {
+            const project = projects.find(p => p.id === t.projectId);
+            const c = SHIFT_LABELS[t.shiftType] || SHIFT_LABELS["REGULAR"];
+            const Icon = c.icon;
+            const timeStr = t.shiftType === "FLEXIBLE" 
+              ? "Varios horarios"
+              : t.shiftType?.startsWith("ROTATING")
+                ? `${t.rotationShiftStartTime?.substring(0, 5) || "08:00"} - ${t.rotationShiftEndTime?.substring(0, 5) || "17:00"}`
+                : `${t.workStartTime?.substring(0, 5) || "08:00"} - ${t.workEndTime?.substring(0, 5) || "17:00"}`;
+
+            return (
+              <div key={t.id} className="bg-card border border-border rounded-2xl p-4 space-y-3">
+                {/* Header tarjeta */}
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center shrink-0">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-bold text-base text-foreground truncate">{t.name}</h4>
+                    <span className="inline-block bg-purple-950/60 text-purple-300 border border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full mt-1 font-medium">
+                      {project?.name || t.projectId || "proyecto testeo"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tipo de turno */}
+                <div className="bg-background/60 border border-border/60 rounded-xl px-3.5 py-2.5 flex items-center justify-between">
+                  <span className="text-[11px] font-mono tracking-wider uppercase text-muted-foreground">TIPO DE TURNO</span>
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
+                    <Icon className="w-3.5 h-3.5 text-primary" />
+                    <span>{c.label}</span>
+                  </div>
+                </div>
+
+                {/* Horario y Tolerancia */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-background/60 border border-border/60 rounded-xl p-3">
+                    <span className="text-[10px] font-mono tracking-wider uppercase text-muted-foreground block mb-1">HORARIO</span>
+                    <span className="text-xs font-mono font-medium text-foreground">{timeStr}</span>
+                  </div>
+                  <div className="bg-background/60 border border-border/60 rounded-xl p-3">
+                    <span className="text-[10px] font-mono tracking-wider uppercase text-muted-foreground block mb-1">TOLERANCIA</span>
+                    <span className="text-xs font-medium text-foreground">{t.graceMinutes ?? 10} min</span>
+                  </div>
+                </div>
+
+                {/* Botones de acción */}
+                <div className="flex items-center gap-2 pt-1">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-11 w-11 rounded-xl border-border bg-background/60 hover:bg-background text-muted-foreground hover:text-foreground shrink-0"
+                    onClick={() => router.push(`/pm/creacion-horarios?id=${t.id}`)}
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    className="flex-1 h-11 rounded-xl bg-[#2A1E4A] hover:bg-[#34255C] border border-purple-700/40 text-purple-200 font-medium text-sm flex items-center justify-center gap-2"
+                    onClick={() => setPreviewTemplate(t)}
+                    disabled={assignedTemplateIds.has(t.id)}
+                  >
+                    <Users className="w-4 h-4" />
+                    {assignedTemplateIds.has(t.id) ? "Asignado" : "Asignar a miembros"}
+                  </Button>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Vista Desktop: Tabla */}
+      <div className="hidden md:block">
+        <Card className="border-border bg-card rounded-2xl overflow-hidden shadow-sm">
+          <CardContent className="p-0">
+            {loading ? (
+              <div className="flex justify-center p-12">
+                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : filteredTemplates.length === 0 ? (
+              <div className="text-center p-12 text-muted-foreground">
+                <Clock className="w-12 h-12 mx-auto text-muted-foreground mb-3 opacity-40" />
+                <p className="text-sm font-medium text-foreground">No hay horarios configurados</p>
+                <p className="text-xs mt-1">Crea horarios para tus proyectos.</p>
+              </div>
+            ) : (
+              <DataTable columns={columns} data={pageTemplates} />
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Paginación estilo SVG */}
+      {filteredTemplates.length > 0 && (
+        <div className="flex items-center justify-between pt-2 px-1">
+          <span className="text-xs text-muted-foreground">
+            {filteredTemplates.length} horario{filteredTemplates.length === 1 ? "" : "s"}
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9 rounded-xl border-border bg-card hover:bg-background"
+              disabled={currentPage <= 1}
+              onClick={() => setPage(currentPage - 1)}
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <span className="text-xs text-muted-foreground font-medium px-1">
+              Página {currentPage} de {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9 rounded-xl border-border bg-card hover:bg-background"
+              disabled={currentPage >= totalPages}
+              onClick={() => setPage(currentPage + 1)}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Modales */}
       <Dialog open={!!previewTemplate} onOpenChange={(open) => { if (!open) setPreviewTemplate(null); }}>
         {previewTemplate && (
           <TemplatePreview
@@ -373,7 +493,7 @@ export function ScheduleListView() {
             projects={projects}
             onAssign={async (id) => {
               try {
-                const members = await getProjectMembers(token, previewTemplate.projectId);
+                const members = await getProjectMembers(token!, previewTemplate.projectId);
                 if (members && members.length > 0) {
                   const membersWithSchedule = members.filter((m: any) => m.hasCustomSchedule);
                   if (membersWithSchedule.length > 0) {
@@ -406,11 +526,11 @@ export function ScheduleListView() {
 
       <Dialog open={!!pendingAssignment} onOpenChange={(open) => { if (!open) setPendingAssignment(null); }}>
         {pendingAssignment && (
-          <DialogContent className="max-w-md rounded-[24px]">
+          <DialogContent className="max-w-md rounded-2xl bg-card border-border">
             <DialogHeader>
-              <DialogTitle className="text-xl">Sobrescribir Horarios</DialogTitle>
+              <DialogTitle className="text-xl text-foreground">Sobrescribir Horarios</DialogTitle>
               <DialogDescription>
-                <AlertTriangle className="w-12 h-12 text-amber mx-auto my-4" />
+                <AlertTriangle className="w-12 h-12 text-amber-400 mx-auto my-4" />
                 Se ha detectado que <strong>{pendingAssignment.membersWithSchedule.length}</strong> de los {pendingAssignment.members.length} miembros del proyecto ya tienen un horario personalizado asignado.
                 <br /><br />
                 ¿Qué deseas hacer?
@@ -450,7 +570,7 @@ export function ScheduleListView() {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full text-text-4 hover:text-text-2 hover:bg-accent"
+                className="w-full text-muted-foreground hover:text-foreground"
                 onClick={() => setPendingAssignment(null)}
               >
                 Cancelar

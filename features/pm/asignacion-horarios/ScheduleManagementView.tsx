@@ -5,7 +5,7 @@ import {
   Clock,
   User,
   Folder,
-  Ban,
+  XCircle,
   Search,
   RefreshCw,
   ChevronLeft,
@@ -20,6 +20,7 @@ import {
   listScheduleOverrides,
   deleteSchedule,
 } from "@/app/services/project.assistance.service";
+import PageHeader from "@/components/layout/page-header";
 
 type UserSchedule = {
   userId: string;
@@ -214,151 +215,286 @@ export function ScheduleManagementView() {
 
   return (
     <div className="min-h-screen bg-transparent">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5">
 
         {/* Top Header */}
-        <div className="space-y-1">
-          <p className="text-xs font-semibold text-violet-ink dark:text-violet tracking-wider uppercase flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-violet" />
-            PANEL DE GESTIÓN · Administración
-          </p>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            Asignación de horarios
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Los horarios se heredan del proyecto. Puede asignar horarios personalizados por usuario.
-          </p>
-        </div>
+        <PageHeader
+          categoryTag={{ badge: "PANEL DE GESTIÓN", text: "Administración" }}
+          title="Asignación de horarios"
+          description="Los horarios se heredan del proyecto. Puede asignar horarios personalizados por usuario."
+          showPeriodSelector={false}
+        />
 
-        {/* 4 Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 4 Metric Cards (Grid 2x2 on mobile, 4 cols on desktop) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {/* Card 1: Total */}
-          <div className="rounded-xl border border-border bg-card p-4 flex items-center gap-4 shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0">
-              <Clock className="w-5 h-5" />
+          <div className="rounded-2xl border border-border bg-card/60 p-4 flex flex-col justify-between shadow-sm">
+            <div className="w-9 h-9 rounded-xl border border-border/60 bg-background/50 flex items-center justify-center text-muted-foreground shrink-0 mb-3">
+              <Clock className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground leading-none">{total}</p>
-              <p className="text-xs text-muted-foreground mt-1">Total asignaciones</p>
+              <p className="text-xs text-muted-foreground font-medium">Total asignaciones</p>
+              <p className="text-2xl font-bold text-foreground mt-1">{total}</p>
             </div>
           </div>
 
           {/* Card 2: Personalizados */}
-          <div className="rounded-xl border border-border bg-card p-4 flex items-center gap-4 shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-violet/10 text-violet-ink dark:text-violet flex items-center justify-center shrink-0">
-              <User className="w-5 h-5" />
+          <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 flex flex-col justify-between shadow-sm">
+            <div className="w-9 h-9 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0 mb-3">
+              <User className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground leading-none">{withOverride}</p>
-              <p className="text-xs text-muted-foreground mt-1">Personalizados</p>
+              <p className="text-xs text-purple-300 font-medium">Personalizados</p>
+              <p className="text-2xl font-bold text-foreground mt-1">{withOverride}</p>
             </div>
           </div>
 
           {/* Card 3: Heredan del proyecto */}
-          <div className="rounded-xl border border-border bg-card p-4 flex items-center gap-4 shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-green/10 text-green-ink dark:text-green flex items-center justify-center shrink-0">
-              <Folder className="w-5 h-5" />
+          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 flex flex-col justify-between shadow-sm">
+            <div className="w-9 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 mb-3">
+              <Folder className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground leading-none">{withDefault}</p>
-              <p className="text-xs text-muted-foreground mt-1">Heredan del proyecto</p>
+              <p className="text-xs text-emerald-400 font-medium">Heredan del proyecto</p>
+              <p className="text-2xl font-bold text-foreground mt-1">{withDefault}</p>
             </div>
           </div>
 
           {/* Card 4: Sin proyecto */}
-          <div className="rounded-xl border border-border bg-card p-4 flex items-center gap-4 shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-red/10 text-red-ink dark:text-red flex items-center justify-center shrink-0">
-              <Ban className="w-5 h-5" />
+          <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 flex flex-col justify-between shadow-sm">
+            <div className="w-9 h-9 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0 mb-3">
+              <XCircle className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground leading-none">{withoutProject}</p>
-              <p className="text-xs text-muted-foreground mt-1">Sin proyecto</p>
+              <p className="text-xs text-rose-400 font-medium">Sin proyecto</p>
+              <p className="text-2xl font-bold text-foreground mt-1">{withoutProject}</p>
             </div>
           </div>
         </div>
 
-        {/* Main Content Card: Filters + Table + Pagination */}
-        <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-          {/* Filters Row */}
-          <div className="p-4 border-b border-border bg-card flex flex-col md:flex-row items-stretch md:items-end gap-3.5">
-            {/* Filter: Proyecto */}
-            <div className="flex flex-col gap-1.5 md:w-56 shrink-0">
-              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Proyecto
-              </label>
+        {/* Filters Card */}
+        <div className="rounded-2xl border border-border bg-card/60 p-4 space-y-3.5 shadow-sm">
+          {/* Proyecto */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-foreground">
+              Proyecto
+            </label>
+            <div className="relative">
+              <Folder className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
               <select
                 value={projectFilter}
                 onChange={(e) => {
                   setProjectFilter(e.target.value);
                   setPage(1);
                 }}
-                className="h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+                className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
               >
                 {projectOptions.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
+                  <option key={p.id} value={p.id} className="bg-card text-foreground">{p.name}</option>
                 ))}
               </select>
+              <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
             </div>
+          </div>
 
-            {/* Filter: Buscar */}
-            <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Buscar
-              </label>
-              <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-2.5 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Usuario o proyecto..."
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setPage(1);
-                  }}
-                  className="w-full h-9 pl-9 pr-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
-                />
-              </div>
-            </div>
-
-            {/* Filter: Tipo de horario */}
-            <div className="flex flex-col gap-1.5 md:w-44 shrink-0">
-              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Tipo de horario
-              </label>
-              <select
-                value={statusFilter}
+          {/* Buscar */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-foreground">
+              Buscar
+            </label>
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Usuario o proyecto..."
+                value={searchTerm}
                 onChange={(e) => {
-                  setStatusFilter(e.target.value);
+                  setSearchTerm(e.target.value);
                   setPage(1);
                 }}
-                className="h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
-              >
-                <option value="ALL">Todos</option>
-                <option value="WITH_OVERRIDE">Personalizados</option>
-                <option value="WITHOUT_OVERRIDE">Del proyecto</option>
-                <option value="NO_PROJECT">Sin proyecto</option>
-              </select>
+                className="w-full h-10 pl-9 pr-3 rounded-xl border border-border bg-background/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              />
             </div>
+          </div>
 
-            {/* Refresh Button */}
-            <div className="shrink-0 flex items-end">
+          {/* Tipo de horario + Refresh */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-foreground">
+              Tipo de horario
+            </label>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => {
+                    setStatusFilter(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+                >
+                  <option value="ALL" className="bg-card text-foreground">Todos</option>
+                  <option value="WITH_OVERRIDE" className="bg-card text-foreground">Personalizados</option>
+                  <option value="WITHOUT_OVERRIDE" className="bg-card text-foreground">Del proyecto</option>
+                  <option value="NO_PROJECT" className="bg-card text-foreground">Sin proyecto</option>
+                </select>
+                <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+              </div>
               <button
                 type="button"
                 onClick={loadData}
                 disabled={isLoading}
-                className="h-9 px-4 rounded-lg border border-border bg-background hover:bg-muted text-sm font-medium text-foreground inline-flex items-center gap-2 transition-colors disabled:opacity-50"
+                className="w-10 h-10 rounded-xl border border-border bg-background/50 hover:bg-background text-muted-foreground hover:text-foreground flex items-center justify-center shrink-0 transition-colors"
+                title="Actualizar"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
-                Actualizar
+                <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
               </button>
             </div>
           </div>
+        </div>
 
-          {/* Table */}
+        {/* Mobile View: Cards idénticas al SVG dark-asignacion de horarios.svg */}
+        <div className="space-y-3 md:hidden">
+          {isLoading ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">
+              Cargando horarios...
+            </div>
+          ) : paginated.length === 0 ? (
+            <div className="p-8 text-center text-sm text-muted-foreground bg-card rounded-2xl border border-border">
+              No se encontraron asignaciones de horario.
+            </div>
+          ) : (
+            paginated.map((r, idx) => {
+              const shiftBadge = r.shiftType === "ROTATING_4X4" ? "4×4"
+                : r.shiftType === "ROTATING_7X7" ? "7×7"
+                : r.shiftType === "FLEXIBLE" ? "Flexible"
+                : r.shiftType === "TRANSITORY" ? "Transitorio"
+                : null;
+
+              return (
+                <div key={`${r.userId}:${r.projectId || idx}`} className="bg-card border border-border rounded-2xl p-4 space-y-3">
+                  {/* Top user row */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-brand-gradient text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-sm">
+                      {getInitials(r.userName)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-base text-foreground leading-tight truncate">
+                        {r.userName}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">
+                        {r.userEmail}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Badges row */}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {r.projectId ? (
+                      <span className="inline-block bg-purple-950/60 text-purple-300 border border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                        {r.projectName}
+                      </span>
+                    ) : (
+                      <span className="inline-block bg-muted text-muted-foreground text-xs px-2.5 py-0.5 rounded-full font-medium">
+                        Sin proyecto
+                      </span>
+                    )}
+
+                    {r.hasOverride ? (
+                      <span className="inline-flex items-center gap-1 bg-purple-950/50 text-purple-300 border border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                        <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                        Personalizado
+                      </span>
+                    ) : r.projectId ? (
+                      <span className="inline-flex items-center gap-1 bg-emerald-950/50 text-emerald-400 border border-emerald-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        Del proyecto
+                      </span>
+                    ) : null}
+
+                    {shiftBadge && (
+                      <span className="inline-block bg-cyan-950/50 text-cyan-400 border border-cyan-800/40 text-xs px-2 py-0.5 rounded-md font-medium">
+                        {shiftBadge}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Times Grid */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-background/60 border border-border/60 rounded-xl p-3">
+                      <span className="text-[10px] font-mono tracking-wider uppercase text-muted-foreground block mb-1">
+                        ENTRADA
+                      </span>
+                      <span className="text-xs font-mono font-medium text-foreground">
+                        {r.effectiveStartHour}
+                      </span>
+                    </div>
+                    <div className="bg-background/60 border border-border/60 rounded-xl p-3">
+                      <span className="text-[10px] font-mono tracking-wider uppercase text-muted-foreground block mb-1">
+                        SALIDA
+                      </span>
+                      <span className="text-xs font-mono font-medium text-foreground">
+                        {r.effectiveEndHour}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Action Button */}
+                  <div>
+                    {r.hasOverride ? (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            router.push(
+                              `/pm/asignacion-horarios/edit?projectId=${r.projectId}&userId=${r.userId}`
+                            )
+                          }
+                          className="flex-1 h-10 rounded-xl border border-border bg-background/50 hover:bg-background text-xs font-medium text-foreground inline-flex items-center justify-center gap-1.5 transition-colors"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                          Editar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleReset(r.userId, r.projectId)}
+                          disabled={resettingId === `${r.userId}:${r.projectId}`}
+                          className="h-10 px-3 rounded-xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-xs font-medium text-rose-400 inline-flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          Restablecer
+                        </button>
+                      </div>
+                    ) : r.projectId ? (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          router.push(
+                            `/pm/asignacion-horarios/asign?projectId=${r.projectId}&userId=${r.userId}`
+                          )
+                        }
+                        className="w-full h-10 rounded-xl border border-border bg-background/50 hover:bg-background text-xs font-medium text-foreground inline-flex items-center justify-center gap-2 transition-colors shadow-sm"
+                      >
+                        <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                        Asignar horario
+                      </button>
+                    ) : (
+                      <div className="text-center py-2 text-xs text-muted-foreground">
+                        Sin proyecto
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Desktop View: Tabla */}
+        <div className="hidden md:block rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="border-b border-border bg-muted/40 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                <tr className="border-b border-border bg-background/50 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
                   <th className="py-3 px-4">Usuario</th>
                   <th className="py-3 px-4">Proyecto</th>
                   <th className="py-3 px-4">Entrada</th>
@@ -382,106 +518,73 @@ export function ScheduleManagementView() {
                   </tr>
                 ) : (
                   paginated.map((r, idx) => {
-                    const isEven = idx % 2 === 1;
-                    const shiftBadge = r.shiftType === "ROTATING_4X4" ? "4x4"
-                      : r.shiftType === "ROTATING_7X7" ? "7x7"
+                    const shiftBadge = r.shiftType === "ROTATING_4X4" ? "4×4"
+                      : r.shiftType === "ROTATING_7X7" ? "7×7"
                       : r.shiftType === "FLEXIBLE" ? "Flexible"
                       : r.shiftType === "TRANSITORY" ? "Transitorio"
                       : null;
 
                     return (
-                      <tr
-                        key={`${r.userId}:${r.projectId || idx}`}
-                        className={`transition-colors ${
-                          isEven ? "bg-muted/25 dark:bg-white/[0.02]" : "bg-transparent"
-                        } hover:bg-muted/50`}
-                      >
-                        {/* Usuario */}
+                      <tr key={`${r.userId}:${r.projectId || idx}`} className="hover:bg-muted/30 transition-colors">
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-violet/15 text-violet-ink dark:bg-violet/15 dark:text-violet-ink flex items-center justify-center font-bold text-xs shrink-0 border border-violet/20 dark:border-violet/25">
+                            <div className="w-8 h-8 rounded-lg bg-brand-gradient text-white flex items-center justify-center font-bold text-xs shrink-0">
                               {getInitials(r.userName)}
                             </div>
                             <div className="min-w-0">
-                              <p className="font-semibold text-foreground text-sm truncate">
-                                {r.userName}
-                              </p>
-                              <p className="text-xs text-muted-foreground truncate">
-                                {r.userEmail}
-                              </p>
+                              <p className="font-semibold text-foreground text-sm truncate">{r.userName}</p>
+                              <p className="text-xs text-muted-foreground truncate">{r.userEmail}</p>
                             </div>
                           </div>
                         </td>
-
-                        {/* Proyecto */}
                         <td className="py-3 px-4">
                           {r.projectId ? (
-                            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-violet/10 dark:bg-violet/15 text-violet-ink dark:text-violet-ink border border-violet/20 dark:border-violet/25">
+                            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-950/60 text-purple-300 border border-purple-800/40">
                               {r.projectName}
                             </span>
                           ) : (
-                            <span className="text-xs text-muted-foreground">
-                              Sin proyecto
-                            </span>
+                            <span className="text-xs text-muted-foreground">Sin proyecto</span>
                           )}
                         </td>
-
-                        {/* Entrada */}
-                        <td className="py-3 px-4 font-mono font-medium text-foreground text-sm">
-                          {r.effectiveStartHour}
-                        </td>
-
-                        {/* Salida */}
-                        <td className="py-3 px-4 font-mono font-medium text-foreground text-sm">
-                          {r.effectiveEndHour}
-                        </td>
-
-                        {/* Tipo */}
+                        <td className="py-3 px-4 font-mono font-medium text-foreground text-sm">{r.effectiveStartHour}</td>
+                        <td className="py-3 px-4 font-mono font-medium text-foreground text-sm">{r.effectiveEndHour}</td>
                         <td className="py-3 px-4">
                           {!r.projectId ? (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs text-muted-foreground bg-muted">
-                              Sin proyecto
-                            </span>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs text-muted-foreground bg-muted">Sin proyecto</span>
                           ) : r.hasOverride ? (
                             <div className="inline-flex items-center gap-1.5 flex-wrap">
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-violet/10 dark:bg-violet/15 text-violet-ink dark:text-violet-ink border border-violet/20 dark:border-violet/25">
-                                <span className="w-1.5 h-1.5 rounded-full bg-violet" />
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-950/50 text-purple-300 border border-purple-800/40">
+                                <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
                                 Personalizado
                               </span>
                               {shiftBadge && (
-                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-cyan/10 dark:bg-cyan/15 text-cyan dark:text-cyan border border-cyan/20 dark:border-cyan/25">
+                                <span className="inline-block bg-cyan-950/50 text-cyan-400 border border-cyan-800/40 text-xs px-2 py-0.5 rounded-md font-medium">
                                   {shiftBadge}
                                 </span>
                               )}
                             </div>
                           ) : (
                             <div className="inline-flex items-center gap-1.5 flex-wrap">
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green/10 dark:bg-green/15 text-green-ink dark:text-green-ink border border-green/20 dark:border-green/25">
-                                <span className="w-1.5 h-1.5 rounded-full bg-green" />
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-950/50 text-emerald-400 border border-emerald-800/40">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                                 Del proyecto
                               </span>
                               {shiftBadge && (
-                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-cyan/10 dark:bg-cyan/15 text-cyan dark:text-cyan border border-cyan/20 dark:border-cyan/25">
+                                <span className="inline-block bg-cyan-950/50 text-cyan-400 border border-cyan-800/40 text-xs px-2 py-0.5 rounded-md font-medium">
                                   {shiftBadge}
                                 </span>
                               )}
                             </div>
                           )}
                         </td>
-
-                        {/* Acciones */}
                         <td className="py-3 px-4 text-right">
                           <div className="inline-flex items-center justify-end gap-1.5">
                             {r.hasOverride ? (
                               <>
                                 <button
                                   type="button"
-                                  onClick={() =>
-                                    router.push(
-                                      `/pm/asignacion-horarios/edit?projectId=${r.projectId}&userId=${r.userId}`
-                                    )
-                                  }
-                                  className="h-7 px-2.5 rounded-md border border-border bg-background hover:bg-muted text-xs font-medium text-foreground inline-flex items-center gap-1 transition-colors"
+                                  onClick={() => router.push(`/pm/asignacion-horarios/edit?projectId=${r.projectId}&userId=${r.userId}`)}
+                                  className="h-8 px-2.5 rounded-lg border border-border bg-background hover:bg-muted text-xs font-medium text-foreground inline-flex items-center gap-1 transition-colors"
                                 >
                                   <Pencil className="w-3 h-3 text-muted-foreground" />
                                   Editar
@@ -490,7 +593,7 @@ export function ScheduleManagementView() {
                                   type="button"
                                   onClick={() => handleReset(r.userId, r.projectId)}
                                   disabled={resettingId === `${r.userId}:${r.projectId}`}
-                                  className="h-7 px-2 rounded-md border border-border bg-background hover:bg-amber/10 text-xs font-medium text-amber-ink dark:text-amber inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+                                  className="h-8 px-2.5 rounded-lg border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-xs font-medium text-rose-400 inline-flex items-center gap-1 transition-colors disabled:opacity-50"
                                 >
                                   <RotateCcw className="w-3 h-3" />
                                   Restablecer
@@ -499,12 +602,8 @@ export function ScheduleManagementView() {
                             ) : r.projectId ? (
                               <button
                                 type="button"
-                                onClick={() =>
-                                  router.push(
-                                    `/pm/asignacion-horarios/asign?projectId=${r.projectId}&userId=${r.userId}`
-                                  )
-                                }
-                                className="h-8 px-3 rounded-lg border border-border bg-background hover:bg-muted/70 text-xs font-medium text-foreground inline-flex items-center gap-1.5 shadow-sm transition-colors"
+                                onClick={() => router.push(`/pm/asignacion-horarios/asign?projectId=${r.projectId}&userId=${r.userId}`)}
+                                className="h-8 px-3 rounded-lg border border-border bg-background hover:bg-muted text-xs font-medium text-foreground inline-flex items-center gap-1.5 shadow-sm transition-colors"
                               >
                                 <Clock className="w-3.5 h-3.5 text-muted-foreground" />
                                 Asignar horario
@@ -521,35 +620,37 @@ export function ScheduleManagementView() {
               </tbody>
             </table>
           </div>
+        </div>
 
-          {/* Pagination Footer */}
-          <div className="p-4 border-t border-border bg-card flex items-center justify-between text-xs text-muted-foreground">
-            <div>
-              Página {page} de {totalPages}
-            </div>
-            <div className="flex items-center gap-1.5">
+        {/* Paginación estilo SVG */}
+        {filtered.length > 0 && (
+          <div className="flex items-center justify-between pt-1 px-1">
+            <span className="text-xs text-muted-foreground">
+              {filtered.length} asignacion{filtered.length === 1 ? "" : "es"}
+            </span>
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="w-8 h-8 rounded-lg border border-border bg-background hover:bg-muted flex items-center justify-center text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-9 h-9 rounded-xl border border-border bg-card hover:bg-background flex items-center justify-center text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
+              <span className="text-xs text-muted-foreground font-medium px-1">
+                Página {page} de {totalPages}
+              </span>
               <button
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="w-8 h-8 rounded-lg border border-border bg-background hover:bg-muted flex items-center justify-center text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-9 h-9 rounded-xl border border-border bg-card hover:bg-background flex items-center justify-center text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
-            <div>
-              {filtered.length} {filtered.length === 1 ? "asignación" : "asignaciones"}
-            </div>
           </div>
-        </div>
+        )}
 
       </div>
     </div>

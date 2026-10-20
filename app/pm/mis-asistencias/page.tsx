@@ -13,10 +13,12 @@ import {
   MapPin,
   ChevronLeft,
   ChevronRight,
+  EyeOff,
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
 import { listAttendance } from "@/app/services/assistance.service";
+import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
 
 type Period =
   | "today"
@@ -54,7 +56,7 @@ const DEFAULT_SVG_ATTENDANCES: AttendanceItem[] = [
     id: "att-001",
     date: "2026-09-02",
     checkIn: "11:03 p. m.",
-    checkOut: "—",
+    checkOut: "Sin salida",
     status: "FUERA_DE_HORARIO",
     statusLabel: "Fuera de horario",
     photoUrl: null,
@@ -71,6 +73,11 @@ export default function PMAsistenciasPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: "01/09/2026",
+    to: "03/09/2026",
+  });
 
   const fetchRecords = useCallback(async () => {
     if (!token) return;
@@ -88,7 +95,7 @@ export default function PMAsistenciasPage() {
             id: i.id,
             date: i.date,
             checkIn: i.checkIn || "11:03 p. m.",
-            checkOut: i.checkOut || "—",
+            checkOut: i.checkOut || "Sin salida",
             status: i.status,
             statusLabel:
               i.status === "PRESENTE"
@@ -133,19 +140,19 @@ export default function PMAsistenciasPage() {
   const porcentaje = total > 0 ? Math.round((presentes / total) * 100) : 0;
 
   return (
-    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-12">
+    <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-12 max-w-6xl mx-auto px-4 sm:px-6 py-4">
       {/* 1. TOP HEADER (EXACT SVG DESIGN) */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-            <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.05em] text-violet-400">
+          <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+            <span className="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-purple-400">
               PANEL DE GESTIÓN
             </span>
             <span className="text-xs text-muted-foreground font-sans">
               · Personal
             </span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Mis asistencias
           </h1>
           <p className="text-xs text-muted-foreground mt-1">
@@ -153,180 +160,228 @@ export default function PMAsistenciasPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => router.push("/pm/asistencias/registrar")}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
-          >
-            <Clock className="w-4 h-4" />
-            Registrar asistencia
-          </button>
+        <div className="hidden md:flex items-center gap-3">
           <NotificationBell />
         </div>
       </div>
 
-      {/* 2. PERIOD SELECTOR ROW */}
-      <div className="w-full flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5">
-        <div className="flex-1 flex items-center gap-1 p-1 rounded-xl bg-muted/40 dark:bg-surface border border-border/80 overflow-x-auto">
-          {PERIOD_TABS.map((tab) => {
-            const isActive = activePeriod === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActivePeriod(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer text-center ${
-                  isActive
-                    ? "bg-white dark:bg-raised text-foreground dark:text-white shadow-xs border border-border font-semibold"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
+      {/* 2. REGISTRAR ASISTENCIA BUTTON (Full width with brand gradient as in SVG) */}
+      <button
+        type="button"
+        onClick={() => router.push("/pm/asistencias/registrar")}
+        className="w-full h-12 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 cursor-pointer transition-all"
+      >
+        <Clock className="w-4 h-4" />
+        Registrar asistencia
+      </button>
+
+      {/* 3. PERIOD SELECTOR TABS */}
+      <div className="flex items-center gap-1.5 p-1 rounded-xl bg-card/60 border border-border/80 overflow-x-auto scrollbar-none">
+        {PERIOD_TABS.map((tab) => {
+          const isActive = activePeriod === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActivePeriod(tab.id)}
+              className={`flex-1 min-w-[75px] py-2 px-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap text-center ${
+                isActive
+                  ? "bg-slate-800 text-white font-semibold shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 4. DATE RANGE SELECTOR BAR */}
+      <div className="flex items-center gap-2">
+        <div className="flex-1 flex items-center gap-2 px-3.5 h-11 rounded-xl border border-border bg-card/60 text-xs font-mono text-muted-foreground">
+          <Calendar className="w-4 h-4 text-muted-foreground shrink-0" />
+          <span>{dateRange.from} → {dateRange.to}</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setDateRangeModalOpen(true)}
+          className="w-11 h-11 rounded-xl border border-border bg-card/60 hover:bg-card text-muted-foreground hover:text-foreground flex items-center justify-center shrink-0 transition-colors"
+          title="Seleccionar rango"
+        >
+          <Calendar className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* 5. 4 KPI CARDS (2x2 on mobile, 4 cols on desktop) */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Card 1: Total registros */}
+        <div className="rounded-2xl border border-border bg-card/60 p-4 flex flex-col justify-between shadow-sm">
+          <div className="w-9 h-9 rounded-xl border border-border/60 bg-background/50 flex items-center justify-center text-muted-foreground shrink-0 mb-3">
+            <Clock className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground font-medium">Total registros</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{total}</p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0">
-          <button
-            type="button"
-            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-border bg-card dark:bg-surface text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer shadow-xs"
-          >
-            <Calendar className="w-3.5 h-3.5" />
-            Rango personalizado
-          </button>
-          <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-blue/20 bg-blue/10 text-xs font-mono text-blue dark:text-blue shadow-xs">
-            <span>01/09/2026 → 03/09/2026</span>
+        {/* Card 2: Presentes */}
+        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 flex flex-col justify-between shadow-sm">
+          <div className="w-9 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 mb-3">
+            <CheckCircle2 className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="text-xs text-emerald-400 font-medium">Presentes</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{presentes}</p>
+          </div>
+        </div>
+
+        {/* Card 3: Faltas */}
+        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 flex flex-col justify-between shadow-sm">
+          <div className="w-9 h-9 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0 mb-3">
+            <XCircle className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="text-xs text-rose-400 font-medium">Faltas</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{faltas}</p>
+          </div>
+        </div>
+
+        {/* Card 4: % Asistencia */}
+        <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 flex flex-col justify-between shadow-sm">
+          <div className="w-9 h-9 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0 mb-3">
+            <TrendingUp className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="text-xs text-purple-400 font-medium">% Asistencia</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{porcentaje}%</p>
           </div>
         </div>
       </div>
 
-      {/* 3. MAIN CARD CONTAINER (MATCHING SVG WRAPPER) */}
-      <div className="rounded-2xl border border-border/80 bg-card dark:bg-sidebar/70 p-6 space-y-6 shadow-sm">
-        {/* A. 4 KPI CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Card 1: Total registros */}
-          <div className="rounded-xl border border-border/80 bg-card dark:bg-surface p-5 flex flex-col justify-between shadow-xs">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-7 h-7 rounded-lg bg-muted/70 flex items-center justify-center text-muted-foreground">
-                <Clock className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-medium text-muted-foreground">
-                Total registros
-              </span>
-            </div>
-            <div>
-              <span className="text-3xl font-bold tracking-tight text-foreground">
-                {total}
-              </span>
-            </div>
-          </div>
-
-          {/* Card 2: Presentes */}
-          <div className="rounded-xl border border-green/30 dark:border-green/25 bg-card dark:bg-[#111c18] p-5 flex flex-col justify-between shadow-xs">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-7 h-7 rounded-lg bg-green/15 flex items-center justify-center text-green">
-                <CheckCircle2 className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-medium text-green-ink dark:text-green">
-                Presentes
-              </span>
-            </div>
-            <div>
-              <span className="text-3xl font-bold tracking-tight text-foreground">
-                {presentes}
-              </span>
-            </div>
-          </div>
-
-          {/* Card 3: Faltas */}
-          <div className="rounded-xl border border-red/30 dark:border-red/25 bg-card dark:bg-[#1a1318] p-5 flex flex-col justify-between shadow-xs">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-7 h-7 rounded-lg bg-red/15 flex items-center justify-center text-red">
-                <XCircle className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-medium text-red-ink dark:text-red">
-                Faltas
-              </span>
-            </div>
-            <div>
-              <span className="text-3xl font-bold tracking-tight text-foreground">
-                {faltas}
-              </span>
-            </div>
-          </div>
-
-          {/* Card 4: % Asistencia */}
-          <div className="rounded-xl border border-violet/30 dark:border-violet/25 bg-card dark:bg-[#171424] p-5 flex flex-col justify-between shadow-xs">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-7 h-7 rounded-lg bg-violet/15 flex items-center justify-center text-violet-400">
-                <TrendingUp className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-medium text-violet-400">
-                % Asistencia
-              </span>
-            </div>
-            <div>
-              <span className="text-3xl font-bold tracking-tight text-foreground">
-                {porcentaje}%
-              </span>
-            </div>
+      {/* 6. FILTERS CONTAINER */}
+      <div className="rounded-2xl border border-border bg-card/60 p-4 space-y-3.5 shadow-sm">
+        {/* Buscar fecha */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-foreground">
+            Buscar fecha
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="dd/mm/aaaa"
+              value={searchDate}
+              onChange={(e) => setSearchDate(e.target.value)}
+              className="w-full h-10 px-3.5 pr-10 rounded-xl border border-border bg-background/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <Calendar className="w-4 h-4 text-muted-foreground absolute right-3.5 top-3 pointer-events-none" />
           </div>
         </div>
 
-        {/* B. FILTERS BAR */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3.5 pt-2">
-          {/* Buscar Fecha */}
-          <div className="flex flex-col gap-1.5 flex-1">
-            <label className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">
-              BUSCAR FECHA
-            </label>
-            <div className="relative">
-              <Calendar className="w-4 h-4 text-muted-foreground absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="mm/dd/yyyy"
-                value={searchDate}
-                onChange={(e) => setSearchDate(e.target.value)}
-                className="w-full h-10 px-3.5 pr-10 rounded-xl border border-border/80 bg-field dark:bg-surface text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
-              />
+        {/* Filtrar estado + Refresh */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-foreground">
+            Filtrar estado
+          </label>
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+              >
+                <option value="all" className="bg-card text-foreground">Todos los estados</option>
+                <option value="PRESENTE" className="bg-card text-foreground">Presente</option>
+                <option value="FALTA" className="bg-card text-foreground">Falta</option>
+                <option value="TARDE" className="bg-card text-foreground">Tarde</option>
+                <option value="FUERA_DE_HORARIO" className="bg-card text-foreground">Fuera de horario</option>
+              </select>
+              <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
             </div>
-          </div>
-
-          {/* Filtrar Estado */}
-          <div className="flex flex-col gap-1.5 w-full md:w-64">
-            <label className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">
-              FILTRAR ESTADO
-            </label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-10 px-3.5 rounded-xl border border-border/80 bg-field dark:bg-surface text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+            <button
+              type="button"
+              onClick={fetchRecords}
+              disabled={isLoading}
+              className="w-10 h-10 rounded-xl border border-border bg-background/50 hover:bg-background text-muted-foreground hover:text-foreground flex items-center justify-center shrink-0 transition-colors"
+              title="Actualizar"
             >
-              <option value="all">Todos los estados</option>
-              <option value="PRESENTE">Presente</option>
-              <option value="FALTA">Falta</option>
-              <option value="TARDE">Tarde</option>
-              <option value="FUERA_DE_HORARIO">Fuera de horario</option>
-            </select>
+              <RotateCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+            </button>
           </div>
-
-          {/* Botón Actualizar */}
-          <button
-            type="button"
-            onClick={fetchRecords}
-            className="h-10 px-4 rounded-xl border border-border/80 bg-card hover:bg-raised text-xs font-semibold text-foreground flex items-center justify-center gap-2 shadow-xs cursor-pointer transition-colors"
-          >
-            <RotateCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
-            Actualizar
-          </button>
         </div>
+      </div>
 
-        {/* C. DATA TABLE (EXACT SVG COLUMNS AND STYLING) */}
-        <div className="overflow-x-auto rounded-xl border border-border/70">
+      {/* 7. MOBILE CARDS VIEW (md:hidden) Matching SVG dark-mis asistencias.svg */}
+      <div className="space-y-3 md:hidden">
+        {filteredRecords.length === 0 ? (
+          <div className="text-center p-8 text-muted-foreground bg-card rounded-2xl border border-border">
+            No se encontraron registros de asistencias.
+          </div>
+        ) : (
+          filteredRecords.map((r, idx) => (
+            <div key={r.id || idx} className="bg-card border border-border rounded-2xl p-4 space-y-3">
+              {/* Top Row: Date & Status Badge */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                  <span>{r.date}</span>
+                </div>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-400 border border-amber-800/40">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  {r.statusLabel}
+                </span>
+              </div>
+
+              {/* Times Grid */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-background/60 border border-border/60 rounded-xl p-3">
+                  <span className="text-[10px] font-mono tracking-wider uppercase text-muted-foreground block mb-1">
+                    ENTRADA
+                  </span>
+                  <span className="text-xs font-mono font-medium text-foreground">{r.checkIn}</span>
+                </div>
+                <div className="bg-background/60 border border-border/60 rounded-xl p-3">
+                  <span className="text-[10px] font-mono tracking-wider uppercase text-muted-foreground block mb-1">
+                    SALIDA
+                  </span>
+                  <span className="text-xs font-mono font-medium text-muted-foreground">{r.checkOut}</span>
+                </div>
+              </div>
+
+              {/* Bottom Row: Photo Status & Location */}
+              <div className="flex items-center gap-2 pt-0.5">
+                <div className="h-10 px-3 rounded-xl bg-background/50 border border-border/60 flex items-center gap-1.5 text-xs text-muted-foreground shrink-0">
+                  {r.photoUrl ? (
+                    <>
+                      <Camera className="w-3.5 h-3.5 text-purple-400" />
+                      <span className="text-foreground">Con foto</span>
+                    </>
+                  ) : (
+                    <>
+                      <EyeOff className="w-3.5 h-3.5" />
+                      <span>Sin foto</span>
+                    </>
+                  )}
+                </div>
+
+                <div className="flex-1 h-10 px-3 rounded-xl bg-background/50 border border-border/60 flex items-center justify-between text-xs font-medium text-blue-400">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                    <span className="text-foreground">{r.locationName}</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* 8. DESKTOP TABLE VIEW (hidden md:block) */}
+      <div className="hidden md:block rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-border/70 bg-muted/30 dark:bg-surface/50 text-[10.5px] font-mono font-semibold text-muted-foreground tracking-wider uppercase">
+              <tr className="border-b border-border bg-background/50 text-[10.5px] font-mono font-semibold text-muted-foreground tracking-wider uppercase">
                 <th className="py-3.5 px-4">FECHA</th>
                 <th className="py-3.5 px-4">ENTRADA</th>
                 <th className="py-3.5 px-4">SALIDA</th>
@@ -335,96 +390,76 @@ export default function PMAsistenciasPage() {
                 <th className="py-3.5 px-4 text-right">UBICACIÓN</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/50">
-              {filteredRecords.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-muted-foreground">
-                    No se encontraron registros de asistencia.
+            <tbody className="divide-y divide-border">
+              {filteredRecords.map((row) => (
+                <tr key={row.id} className="hover:bg-muted/30 transition-colors">
+                  <td className="py-4 px-4 font-mono text-xs text-foreground">{row.date}</td>
+                  <td className="py-4 px-4 font-mono text-xs text-foreground font-medium">{row.checkIn}</td>
+                  <td className="py-4 px-4 font-mono text-xs text-muted-foreground">{row.checkOut}</td>
+                  <td className="py-4 px-4">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-400 border border-amber-800/40">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                      {row.statusLabel}
+                    </span>
+                  </td>
+                  <td className="py-4 px-4">
+                    {row.photoUrl ? (
+                      <div className="w-8 h-8 rounded-lg overflow-hidden border border-border">
+                        <img src={row.photoUrl} alt="Foto asistencia" className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-8 h-8 rounded-lg bg-background border border-border flex items-center justify-center text-muted-foreground">
+                        <Camera className="w-4 h-4" />
+                      </div>
+                    )}
+                  </td>
+                  <td className="py-4 px-4 text-right">
+                    <span className="inline-flex items-center gap-1.5 text-xs text-blue-400 font-medium">
+                      <MapPin className="w-3.5 h-3.5" />
+                      {row.locationName}
+                    </span>
                   </td>
                 </tr>
-              ) : (
-                filteredRecords.map((row) => (
-                  <tr
-                    key={row.id}
-                    className="hover:bg-muted/20 transition-colors"
-                  >
-                    {/* FECHA */}
-                    <td className="py-4 px-4 font-mono text-xs text-foreground">
-                      {row.date}
-                    </td>
-
-                    {/* ENTRADA */}
-                    <td className="py-4 px-4 font-mono text-xs text-foreground">
-                      {row.checkIn}
-                    </td>
-
-                    {/* SALIDA */}
-                    <td className="py-4 px-4 font-mono text-xs text-muted-foreground">
-                      {row.checkOut}
-                    </td>
-
-                    {/* ESTADO */}
-                    <td className="py-4 px-4">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber/15 text-amber-ink dark:text-amber border border-amber/30">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber" />
-                        {row.statusLabel}
-                      </span>
-                    </td>
-
-                    {/* FOTO */}
-                    <td className="py-4 px-4">
-                      {row.photoUrl ? (
-                        <div className="w-8 h-8 rounded-lg overflow-hidden border border-border">
-                          <img
-                            src={row.photoUrl}
-                            alt="Foto asistencia"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-8 h-8 rounded-lg bg-muted/60 border border-border/80 flex items-center justify-center text-muted-foreground">
-                          <Camera className="w-4 h-4" />
-                        </div>
-                      )}
-                    </td>
-
-                    {/* UBICACIÓN */}
-                    <td className="py-4 px-4 text-right">
-                      <span className="inline-flex items-center gap-1.5 text-xs text-blue-400 font-medium">
-                        <MapPin className="w-3.5 h-3.5" />
-                        {row.locationName}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>
+      </div>
 
-        {/* D. PAGINATION FOOTER */}
-        <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
-          <span>Página {page} de 1</span>
-
-          <div className="flex items-center gap-2">
-            <button
-              disabled={page <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="w-8 h-8 rounded-lg border border-border/80 bg-card dark:bg-surface flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 transition-colors cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              disabled
-              className="w-8 h-8 rounded-lg border border-border/80 bg-card dark:bg-surface flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 transition-colors cursor-pointer"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          <span className="font-mono">{total} registro total</span>
+      {/* 9. PAGINATION FOOTER */}
+      <div className="flex items-center justify-between pt-1 px-1">
+        <span className="text-xs text-muted-foreground font-medium">
+          {total} registro{total === 1 ? "" : "s"} total{total === 1 ? "" : "es"}
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <span className="text-xs text-muted-foreground font-medium px-1">
+            Página {page} de 1
+          </span>
+          <button
+            type="button"
+            disabled
+            className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
+
+      {/* Date Range Modal */}
+      <DateRangeModal
+        open={dateRangeModalOpen}
+        onOpenChange={setDateRangeModalOpen}
+        initialRange={dateRange}
+        onApply={(newRange) => setDateRange(newRange)}
+      />
     </div>
   );
 }

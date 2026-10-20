@@ -7,8 +7,8 @@ export default function GestionHorariosPage() {
     <div className="min-h-screen bg-transparent">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
         <PageHeader
-          categoryTag={{ badge: "JEFE DE PROYECTO", text: "Panel de Gestión" }}
-          title="Gestión de Horarios"
+          categoryTag={{ badge: "PANEL DE GESTIÓN", text: "Administración" }}
+          title="Gestión de horarios"
           description="Visualiza y administra los diferentes horarios creados en tus proyectos."
           showPeriodSelector={false}
         />

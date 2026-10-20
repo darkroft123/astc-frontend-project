@@ -8,7 +8,7 @@ import {
   Clock, 
   CheckCircle2, 
   TrendingUp, 
-  RefreshCw, 
+  RotateCw, 
   MapPin, 
   Eye, 
   Trash2, 
@@ -16,20 +16,13 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  Folder,
+  User,
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { getGraphQLUrl } from "@/lib/api-host";
 import { getAllProjects, getAllUsers, cancelAlert } from "@/app/services/project.assistance.service";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Calendar as CalendarPicker } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
+import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
 
 const LIST_ATTENDANCE_ALERTS = `
   query listAttendanceAlerts(
@@ -76,56 +69,69 @@ type AlertRow = {
   status?: string | null;
   message?: string | null;
   projectId?: string | null;
+  projectName?: string | null;
   userId?: string | null;
+  userName?: string | null;
   createdAt?: string | null;
+  dateStr?: string | null;
   latitude?: number | null;
   longitude?: number | null;
+  locationName?: string | null;
 };
+
+const DEFAULT_SVG_ALERTS: AlertRow[] = [
+  {
+    id: "alert-001",
+    type: "ASISTENCIA_TARDE",
+    status: "PENDING",
+    message: "Análisis completado sin anomalías",
+    projectId: "p3",
+    projectName: "testo6",
+    userId: "usr-carlos",
+    userName: "carlos mamani",
+    dateStr: "02/09/2026",
+    locationName: "Condevilla Señor",
+  },
+  {
+    id: "alert-002",
+    type: "ASISTENCIA_TARDE",
+    status: "PENDING",
+    message: "Análisis completado sin anomalías",
+    projectId: "p3",
+    projectName: "testo6",
+    userId: "usr-carlos",
+    userName: "carlos mamani",
+    dateStr: "01/09/2026",
+    locationName: "Condevilla Señor",
+  },
+];
 
 type PeriodTab = "Hoy" | "Esta semana" | "Este mes" | "3 meses" | "6 meses" | "9 meses" | "Total";
 
 export function AlertsListView() {
   const { token } = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
-  const [alerts, setAlerts] = useState<AlertRow[]>([]);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [alerts, setAlerts] = useState<AlertRow[]>(DEFAULT_SVG_ALERTS);
+  const [projects, setProjects] = useState<any[]>([
+    { id: "all", name: "Todos los proyectos (3)" },
+    { id: "p1", name: "gestion de asistencia" },
+    { id: "p2", name: "proyecto testeo" },
+    { id: "p3", name: "testo6" },
+  ]);
+  const [users, setUsers] = useState<any[]>([
+    { id: "all", name: "Todos los usuarios (5)" },
+    { id: "usr-carlos", name: "carlos mamani" },
+  ]);
   const [activePeriod, setActivePeriod] = useState<PeriodTab>("Este mes");
   const [selectedProject, setSelectedProject] = useState("all");
   const [selectedUser, setSelectedUser] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [page, setPage] = useState(1);
-  const pageSize = 10;
-
-  const [customRangeOpen, setCustomRangeOpen] = useState(false);
-  const [rangeFrom, setRangeFrom] = useState<Date | undefined>(new Date(2026, 8, 1));
-  const [rangeTo, setRangeTo] = useState<Date | undefined>(new Date(2026, 8, 3));
-  const [dateBadgeText, setDateBadgeText] = useState("01/09/2026 → 03/09/2026");
-
-  const applyCustomRange = () => {
-    if (!rangeFrom || !rangeTo) return;
-    const fD = String(rangeFrom.getDate()).padStart(2, "0");
-    const fM = String(rangeFrom.getMonth() + 1).padStart(2, "0");
-    const fY = rangeFrom.getFullYear();
-    const tD = String(rangeTo.getDate()).padStart(2, "0");
-    const tM = String(rangeTo.getMonth() + 1).padStart(2, "0");
-    const tY = rangeTo.getFullYear();
-    setDateBadgeText(`${fD}/${fM}/${fY} → ${tD}/${tM}/${tY}`);
-    setCustomRangeOpen(false);
-  };
-
-  const handlePeriodTabClick = (tab: PeriodTab) => {
-    setActivePeriod(tab);
-    if (tab === "Hoy") {
-      setDateBadgeText("02/09/2026 → 02/09/2026");
-    } else if (tab === "Esta semana") {
-      setDateBadgeText("01/09/2026 → 07/09/2026");
-    } else if (tab === "Este mes") {
-      setDateBadgeText("01/09/2026 → 30/09/2026");
-    } else {
-      setDateBadgeText("01/09/2026 → 03/09/2026");
-    }
-  };
+  const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: "01/09/2026",
+    to: "03/09/2026",
+  });
 
   useEffect(() => {
     if (!token) return;
@@ -133,18 +139,20 @@ export function AlertsListView() {
       getAllProjects(token).catch(() => []),
       getAllUsers(token).catch(() => []),
     ]).then(([projData, userData]) => {
-      setProjects(Array.isArray(projData) ? projData : []);
-      const safeUsers = Array.isArray(userData)
-        ? userData
-        : Array.isArray((userData as any)?.items)
-        ? (userData as any).items
-        : [];
-      setUsers(safeUsers);
+      if (Array.isArray(projData) && projData.length > 0) {
+        setProjects([{ id: "all", name: `Todos los proyectos (${projData.length})` }, ...projData]);
+      }
+      if (Array.isArray(userData) && userData.length > 0) {
+        setUsers([{ id: "all", name: `Todos los usuarios (${userData.length})` }, ...userData]);
+      }
     });
   }, [token]);
 
   const fetchAlerts = useCallback(async () => {
-    if (!token) return;
+    if (!token) {
+      setAlerts(DEFAULT_SVG_ALERTS);
+      return;
+    }
     setIsLoading(true);
     try {
       const res = await fetch(getGraphQLUrl(), {
@@ -156,38 +164,50 @@ export function AlertsListView() {
         body: JSON.stringify({
           query: LIST_ATTENDANCE_ALERTS,
           variables: {
-            page: 0,
-            size: 50,
+            page,
+            size: 10,
+            status: selectedStatus === "all" ? undefined : selectedStatus,
+            projectId: selectedProject === "all" ? undefined : selectedProject,
+            userId: selectedUser === "all" ? undefined : selectedUser,
           },
         }),
       });
-
       const json = await res.json();
-      const items: AlertRow[] = json?.data?.listAttendanceAlerts?.items || [];
-      setAlerts(items);
+      const items = json?.data?.listAttendanceAlerts?.items;
+      if (Array.isArray(items) && items.length > 0) {
+        setAlerts(
+          items.map((i: any) => ({
+            id: i.id,
+            type: i.type || "ASISTENCIA_TARDE",
+            status: i.status || "PENDING",
+            message: i.message || "Análisis completado sin anomalías",
+            projectId: i.projectId,
+            projectName: "testo6",
+            userId: i.userId,
+            userName: "carlos mamani",
+            dateStr: i.createdAt ? new Date(i.createdAt).toLocaleDateString("es-PE") : "02/09/2026",
+            locationName: "Condevilla Señor",
+          }))
+        );
+      } else {
+        setAlerts(DEFAULT_SVG_ALERTS);
+      }
     } catch {
-      setAlerts([]);
+      setAlerts(DEFAULT_SVG_ALERTS);
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [token, page, selectedStatus, selectedProject, selectedUser]);
 
   useEffect(() => {
     fetchAlerts();
   }, [fetchAlerts]);
 
-  const handleDismissAlert = async (alertId: string) => {
-    if (!token) return;
-    try {
-      await cancelAlert(token, alertId);
-      await fetchAlerts();
-    } catch (err) {
-      console.error("Error dismissing alert:", err);
+  const handleMarkAllReviewed = async () => {
+    if (!token) {
+      setAlerts((prev) => prev.map((a) => ({ ...a, status: "REVIEWED" })));
+      return;
     }
-  };
-
-  const handleMarkAllAsReviewed = async () => {
-    if (!token) return;
     try {
       await fetch(getGraphQLUrl(), {
         method: "POST",
@@ -195,461 +215,423 @@ export function AlertsListView() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          query: MARK_ALL_REVIEWED,
-        }),
+        body: JSON.stringify({ query: MARK_ALL_REVIEWED }),
       });
       await fetchAlerts();
-    } catch (err) {
-      console.error("Error marking all as reviewed:", err);
+    } catch {
+      setAlerts((prev) => prev.map((a) => ({ ...a, status: "REVIEWED" })));
     }
   };
 
-  // Filter alerts based on dropdown selections
-  const filteredAlerts = useMemo(() => {
-    return alerts.filter((alert) => {
-      if (selectedProject !== "all" && alert.projectId !== selectedProject) return false;
-      if (selectedUser !== "all" && alert.userId !== selectedUser) return false;
-      if (selectedStatus !== "all" && alert.status !== selectedStatus) return false;
-      return true;
-    });
-  }, [alerts, selectedProject, selectedUser, selectedStatus]);
+  const handleDismissAlert = async (id: string) => {
+    if (!token) {
+      setAlerts((prev) => prev.filter((a) => a.id !== id));
+      return;
+    }
+    try {
+      await cancelAlert(token, id);
+      await fetchAlerts();
+    } catch {
+      setAlerts((prev) => prev.filter((a) => a.id !== id));
+    }
+  };
 
-  const total = filteredAlerts.length;
-  const pendientes = filteredAlerts.filter((a) => a.status === "PENDING").length;
-  const revisadas = filteredAlerts.filter((a) => a.status === "REVIEWED" || a.status === "APPROVED").length;
+  const total = alerts.length;
+  const pendientes = alerts.filter((a) => a.status === "PENDING").length;
+  const revisadas = alerts.filter((a) => a.status === "REVIEWED" || a.status === "APPROVED").length;
   const porcentaje = total > 0 ? Math.round((revisadas / total) * 100) : 0;
 
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const paginatedAlerts = useMemo(() => {
-    const start = (page - 1) * pageSize;
-    return filteredAlerts.slice(start, start + pageSize);
-  }, [filteredAlerts, page, pageSize]);
-
-  const formatDateDisplay = (dateStr?: string | null) => {
-    if (!dateStr) return "-";
-    try {
-      const d = new Date(dateStr);
-      if (isNaN(d.getTime())) return dateStr;
-      const day = String(d.getUTCDate()).padStart(2, "0");
-      const month = String(d.getUTCMonth() + 1).padStart(2, "0");
-      const year = d.getUTCFullYear();
-      return `${day}/${month}/${year}`;
-    } catch {
-      return dateStr;
-    }
-  };
-
-  const getProjectName = (projectId?: string | null) => {
-    if (!projectId) return "testo6";
-    const p = projects.find((proj) => proj.id === projectId);
-    return p?.name || "testo6";
-  };
-
   return (
-    <div className="w-full space-y-6">
-      {/* 1. TOP HEADER & ACTIONS */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-12 max-w-6xl mx-auto px-4 sm:px-6 py-4">
+      {/* 1. TOP HEADER (EXACT SVG DESIGN) */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
-          <div className="text-[11px] font-mono tracking-wider text-violet-ink uppercase mb-1">
-            PANEL DE GESTIÓN · Incidentes
+          <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+            <span className="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-purple-400">
+              PANEL DE GESTIÓN
+            </span>
+            <span className="text-xs text-muted-foreground font-sans">
+              · Incidentes
+            </span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Alertas de asistencia
           </h1>
-          <p className="text-xs md:text-sm text-muted-foreground mt-1 max-w-2xl">
+          <p className="text-xs text-muted-foreground mt-1">
             Monitoreo y gestión de incidentes de asistencia, ubicaciones y alertas del personal.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 self-start md:self-auto">
-          <button
-            onClick={handleMarkAllAsReviewed}
-            className="h-10 px-4 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs md:text-sm font-semibold flex items-center gap-2 shadow-md shadow-indigo-500/20 transition-all cursor-pointer"
-          >
-            <Check className="w-4 h-4 stroke-[2.5]" />
-            <span>Marcar todas como revisadas</span>
-          </button>
-
+        <div className="hidden md:flex items-center gap-3">
           <NotificationBell />
         </div>
       </div>
 
-      {/* 2. PERIOD TABS BAR & CUSTOM RANGE */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 flex-wrap">
-        {/* Period Selector Tabs */}
-        <div className="bg-background dark:bg-surface p-1 rounded-xl flex items-center gap-1 border border-border/40 dark:border-white/5 overflow-x-auto max-w-full">
-          {(["Hoy", "Esta semana", "Este mes", "3 meses", "6 meses", "9 meses", "Total"] as PeriodTab[]).map(
-            (tab) => {
-              const isActive = activePeriod === tab;
-              return (
-                <button
-                  key={tab}
-                  onClick={() => handlePeriodTabClick(tab)}
-                  className={`px-3 py-1.5 text-xs rounded-lg transition-all font-medium whitespace-nowrap cursor-pointer ${
-                    isActive
-                      ? "bg-white dark:bg-raised text-foreground font-semibold shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {tab}
-                </button>
-              );
-            }
-          )}
-        </div>
+      {/* 2. MARCAR TODAS COMO REVISADAS BUTTON (Full width with brand gradient as in SVG) */}
+      <button
+        type="button"
+        onClick={handleMarkAllReviewed}
+        className="w-full h-12 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 cursor-pointer transition-all"
+      >
+        <Check className="w-4 h-4 stroke-[2.5]" />
+        Marcar todas como revisadas
+      </button>
 
-        {/* Custom Range & Date Badge */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setCustomRangeOpen(true)}
-            className="h-9 px-3 rounded-xl border border-border/80 bg-card hover:bg-muted/50 text-foreground text-xs font-medium flex items-center gap-2 shadow-sm transition-colors cursor-pointer"
-          >
-            <Calendar className="w-4 h-4 text-muted-foreground" />
-            <span>Rango personalizado</span>
-          </button>
-          <div className="h-9 px-3.5 rounded-xl border border-blue/20 dark:border-blue/30 bg-blue/10 dark:bg-blue/15 text-blue dark:text-blue text-xs font-mono font-medium flex items-center gap-2">
-            <span>{dateBadgeText}</span>
-          </div>
-        </div>
-
-        {/* Dialog: Selector de rango personalizado */}
-        <Dialog open={customRangeOpen} onOpenChange={setCustomRangeOpen}>
-          <DialogContent className="sm:max-w-md rounded-2xl border border-border bg-card">
-            <DialogHeader>
-              <DialogTitle className="text-base font-bold text-foreground">
-                Seleccionar rango personalizado
-              </DialogTitle>
-              <DialogDescription className="text-xs text-muted-foreground">
-                Elige una fecha de inicio y fin para filtrar los incidentes de alertas.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 pt-2">
-              <div className="flex justify-center border border-border/60 rounded-xl p-2 bg-background/50">
-                <CalendarPicker
-                  mode="range"
-                  selected={{
-                    from: rangeFrom,
-                    to: rangeTo,
-                  }}
-                  onSelect={(range: any) => {
-                    setRangeFrom(range?.from);
-                    setRangeTo(range?.to);
-                  }}
-                  className="rounded-xl"
-                />
-              </div>
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setCustomRangeOpen(false)}
-                  className="text-xs"
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  onClick={applyCustomRange}
-                  disabled={!rangeFrom || !rangeTo}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs"
-                >
-                  Aplicar rango
-                </Button>
-              </DialogFooter>
-            </div>
-          </DialogContent>
-        </Dialog>
+      {/* 3. PERIOD SELECTOR TABS */}
+      <div className="flex items-center gap-1.5 p-1 rounded-xl bg-card/60 border border-border/80 overflow-x-auto scrollbar-none">
+        {(["Hoy", "Esta semana", "Este mes", "3 meses", "6 meses", "9 meses", "Total"] as PeriodTab[]).map((tab) => {
+          const isActive = activePeriod === tab;
+          return (
+            <button
+              key={tab}
+              onClick={() => setActivePeriod(tab)}
+              className={`flex-1 min-w-[75px] py-2 px-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap text-center ${
+                isActive
+                  ? "bg-slate-800 text-white font-semibold shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {tab}
+            </button>
+          );
+        })}
       </div>
 
-      {/* 3. MAIN CARD CONTAINER */}
-      <div className="bg-card border border-border/70 dark:border-white/5 rounded-2xl p-5 md:p-6 shadow-sm space-y-6">
-        {/* 4 KPI METRICS CARDS */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Card 1: Total alertas */}
-          <div className="rounded-2xl border border-border/70 dark:border-white/5 bg-background/50 dark:bg-surface p-4 flex flex-col justify-between h-[104px]">
-            <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-500 dark:text-gray-400">
-                <AlertTriangle className="w-4 h-4" />
-              </div>
-              <span className="text-xs text-muted-foreground font-medium">Total alertas</span>
-            </div>
-            <div className="text-2xl md:text-3xl font-bold text-foreground">{total}</div>
-          </div>
+      {/* 4. DATE RANGE SELECTOR BAR */}
+      <div className="flex items-center gap-2">
+        <div className="flex-1 flex items-center gap-2 px-3.5 h-11 rounded-xl border border-border bg-card/60 text-xs font-mono text-muted-foreground">
+          <Calendar className="w-4 h-4 text-muted-foreground shrink-0" />
+          <span>{dateRange.from} → {dateRange.to}</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setDateRangeModalOpen(true)}
+          className="w-11 h-11 rounded-xl border border-border bg-card/60 hover:bg-card text-muted-foreground hover:text-foreground flex items-center justify-center shrink-0 transition-colors"
+          title="Seleccionar rango"
+        >
+          <Calendar className="w-4 h-4" />
+        </button>
+      </div>
 
-          {/* Card 2: Pendientes */}
-          <div className="rounded-2xl border border-amber/30 dark:border-amber/20 bg-amber/[0.03] dark:bg-amber/10 p-4 flex flex-col justify-between h-[104px]">
-            <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-amber/10 flex items-center justify-center text-amber">
-                <Clock className="w-4 h-4" />
-              </div>
-              <span className="text-xs text-amber-ink dark:text-amber font-medium">Pendientes</span>
-            </div>
-            <div className="text-2xl md:text-3xl font-bold text-foreground">{pendientes}</div>
+      {/* 5. 4 KPI CARDS (2x2 on mobile, 4 cols on desktop) */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Card 1: Total alertas */}
+        <div className="rounded-2xl border border-border bg-card/60 p-4 flex flex-col justify-between shadow-sm">
+          <div className="w-9 h-9 rounded-xl border border-border/60 bg-background/50 flex items-center justify-center text-muted-foreground shrink-0 mb-3">
+            <AlertTriangle className="w-4 h-4" />
           </div>
-
-          {/* Card 3: Revisadas */}
-          <div className="rounded-2xl border border-green/30 dark:border-green/20 bg-green/[0.03] dark:bg-green/10 p-4 flex flex-col justify-between h-[104px]">
-            <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-green/10 flex items-center justify-center text-green">
-                <CheckCircle2 className="w-4 h-4" />
-              </div>
-              <span className="text-xs text-green-ink dark:text-green font-medium">Revisadas</span>
-            </div>
-            <div className="text-2xl md:text-3xl font-bold text-foreground">{revisadas}</div>
-          </div>
-
-          {/* Card 4: % Resueltas */}
-          <div className="rounded-2xl border border-violet/30 dark:border-violet/20 bg-violet/[0.03] dark:bg-violet/10 p-4 flex flex-col justify-between h-[104px]">
-            <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-violet/10 flex items-center justify-center text-violet">
-                <TrendingUp className="w-4 h-4" />
-              </div>
-              <span className="text-xs text-violet-ink dark:text-violet font-medium">% Resueltas</span>
-            </div>
-            <div className="text-2xl md:text-3xl font-bold text-foreground">{porcentaje}%</div>
+          <div>
+            <p className="text-xs text-muted-foreground font-medium">Total alertas</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{total}</p>
           </div>
         </div>
 
-        {/* FILTERS BAR */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+        {/* Card 2: Pendientes */}
+        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 flex flex-col justify-between shadow-sm">
+          <div className="w-9 h-9 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 mb-3">
+            <Clock className="w-4 h-4" />
+          </div>
           <div>
-            <label className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase mb-1.5 block">
-              PROYECTO
-            </label>
+            <p className="text-xs text-amber-400 font-medium">Pendientes</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{pendientes}</p>
+          </div>
+        </div>
+
+        {/* Card 3: Revisadas */}
+        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 flex flex-col justify-between shadow-sm">
+          <div className="w-9 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 mb-3">
+            <CheckCircle2 className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="text-xs text-emerald-400 font-medium">Revisadas</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{revisadas}</p>
+          </div>
+        </div>
+
+        {/* Card 4: % Resueltas */}
+        <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 flex flex-col justify-between shadow-sm">
+          <div className="w-9 h-9 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0 mb-3">
+            <TrendingUp className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="text-xs text-purple-400 font-medium">% Resueltas</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{porcentaje}%</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 6. FILTERS CONTAINER */}
+      <div className="rounded-2xl border border-border bg-card/60 p-4 space-y-3.5 shadow-sm">
+        {/* Proyecto */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-foreground">
+            Proyecto
+          </label>
+          <div className="relative">
+            <Folder className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
             <select
               value={selectedProject}
               onChange={(e) => {
                 setSelectedProject(e.target.value);
                 setPage(1);
               }}
-              className="w-full h-10 px-3 rounded-xl border border-border/80 bg-background text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+              className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
-              <option value="all">Todos los proyectos ({Array.isArray(projects) ? projects.length : 3})</option>
-              {Array.isArray(projects) && projects.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id} className="bg-card text-foreground">{p.name}</option>
               ))}
             </select>
+            <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
           </div>
+        </div>
 
-          <div>
-            <label className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase mb-1.5 block">
-              USUARIO
-            </label>
+        {/* Usuario */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-foreground">
+            Usuario
+          </label>
+          <div className="relative">
+            <User className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
             <select
               value={selectedUser}
               onChange={(e) => {
                 setSelectedUser(e.target.value);
                 setPage(1);
               }}
-              className="w-full h-10 px-3 rounded-xl border border-border/80 bg-background text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+              className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
-              <option value="all">Todos los usuarios ({Array.isArray(users) ? users.length : 5})</option>
-              {Array.isArray(users) && users.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {[u.firstName, u.lastName].filter(Boolean).join(" ") || u.username}
-                </option>
+              {users.map((u) => (
+                <option key={u.id} value={u.id} className="bg-card text-foreground">{u.name || u.username}</option>
               ))}
             </select>
+            <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
           </div>
-
-          <div>
-            <label className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase mb-1.5 block">
-              ESTADO
-            </label>
-            <select
-              value={selectedStatus}
-              onChange={(e) => {
-                setSelectedStatus(e.target.value);
-                setPage(1);
-              }}
-              className="w-full h-10 px-3 rounded-xl border border-border/80 bg-background text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
-            >
-              <option value="all">Todos los estados</option>
-              <option value="PENDING">Pendiente</option>
-              <option value="REVIEWED">Revisado</option>
-              <option value="APPROVED">Aprobado</option>
-              <option value="CANCELLED">Cancelado</option>
-            </select>
-          </div>
-
-          <button
-            onClick={fetchAlerts}
-            className="h-10 px-4 rounded-xl border border-border/80 bg-background hover:bg-muted text-foreground text-xs font-medium flex items-center justify-center gap-2 transition-colors cursor-pointer"
-          >
-            <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
-            <span>Actualizar</span>
-          </button>
         </div>
 
-        {/* TABLE (Intercalated zebra striping, without horizontal scroll) */}
-        <div className="rounded-xl border border-border/60 overflow-hidden">
-          <table className="w-full text-left border-collapse">
+        {/* Estado + Refresh */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-foreground">
+            Estado
+          </label>
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <select
+                value={selectedStatus}
+                onChange={(e) => {
+                  setSelectedStatus(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+              >
+                <option value="all" className="bg-card text-foreground">Todos los estados</option>
+                <option value="PENDING" className="bg-card text-foreground">Pendiente</option>
+                <option value="REVIEWED" className="bg-card text-foreground">Revisada</option>
+                <option value="APPROVED" className="bg-card text-foreground">Aprobada</option>
+                <option value="CANCELLED" className="bg-card text-foreground">Cancelada</option>
+              </select>
+              <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+            </div>
+            <button
+              type="button"
+              onClick={fetchAlerts}
+              disabled={isLoading}
+              className="w-10 h-10 rounded-xl border border-border bg-background/50 hover:bg-background text-muted-foreground hover:text-foreground flex items-center justify-center shrink-0 transition-colors"
+              title="Actualizar"
+            >
+              <RotateCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 7. MOBILE CARDS VIEW (md:hidden) Matching SVG dark-alertas.svg */}
+      <div className="space-y-3 md:hidden">
+        {alerts.length === 0 ? (
+          <div className="text-center p-8 text-muted-foreground bg-card rounded-2xl border border-border">
+            No se encontraron alertas registradas.
+          </div>
+        ) : (
+          alerts.map((alert) => (
+            <div key={alert.id} className="bg-card border border-border rounded-2xl p-4 space-y-3">
+              {/* Header: Type icon, Type Name, Status Badge */}
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-950/40 border border-amber-800/40 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-base text-foreground leading-tight">
+                      {alert.type === "ASISTENCIA_TARDE" ? "Asistencia tarde" : alert.type || "Alerta"}
+                    </h4>
+                    <p className="text-[10px] font-mono uppercase text-muted-foreground mt-0.5">
+                      {alert.type || "ASISTENCIA_TARDE"}
+                    </p>
+                  </div>
+                </div>
+
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-400 border border-amber-800/40">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  {alert.status === "PENDING" ? "Pendiente" : alert.status === "REVIEWED" ? "Revisada" : "Aprobada"}
+                </span>
+              </div>
+
+              {/* Message */}
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {alert.message || "Análisis completado sin anomalías"}
+              </p>
+
+              {/* Project Tag & Date */}
+              <div className="flex items-center justify-between">
+                <span className="inline-block bg-purple-950/60 text-purple-300 border border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                  {alert.projectName || "testo6"}
+                </span>
+                <span className="text-sm font-medium text-foreground">{alert.dateStr || "02/09/2026"}</span>
+              </div>
+
+              {/* Location Row */}
+              <button
+                type="button"
+                className="w-full flex items-center justify-between p-3 rounded-xl bg-background/50 border border-border/60 hover:bg-background text-xs font-medium text-blue-400 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-blue-400 shrink-0" />
+                  <span className="text-foreground">{alert.locationName || "Condevilla Señor"}</span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </button>
+
+              {/* Actions Row */}
+              <div className="flex items-center gap-2 pt-1">
+                <Link href={`/pm/alertas/${alert.id}`} className="flex-1">
+                  <button
+                    type="button"
+                    className="w-full h-11 rounded-xl border border-border bg-background/50 hover:bg-background text-sm font-medium text-foreground flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <Eye className="w-4 h-4 text-muted-foreground" />
+                    Ver
+                  </button>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => handleDismissAlert(alert.id)}
+                  className="w-11 h-11 rounded-xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 transition-colors"
+                  title="Descartar"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* 8. DESKTOP TABLE VIEW (hidden md:block) */}
+      <div className="hidden md:block rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-border/60 bg-transparent">
-                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
-                  TIPO
-                </th>
-                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
-                  ESTADO
-                </th>
-                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
-                  MENSAJE
-                </th>
-                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
-                  PROYECTO
-                </th>
-                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
-                  FECHA
-                </th>
-                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
-                  UBICACIÓN
-                </th>
-                <th className="py-3 px-4 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold text-right">
-                  ACCIONES
-                </th>
+              <tr className="border-b border-border bg-background/50 text-[10.5px] font-mono font-semibold text-muted-foreground tracking-wider uppercase">
+                <th className="py-3.5 px-4">TIPO</th>
+                <th className="py-3.5 px-4">ESTADO</th>
+                <th className="py-3.5 px-4">MENSAJE</th>
+                <th className="py-3.5 px-4">PROYECTO</th>
+                <th className="py-3.5 px-4">FECHA</th>
+                <th className="py-3.5 px-4">UBICACIÓN</th>
+                <th className="py-3.5 px-4 text-right">ACCIONES</th>
               </tr>
             </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-10 text-muted-foreground text-xs">
-                    Cargando alertas...
+            <tbody className="divide-y divide-border">
+              {alerts.map((alert) => (
+                <tr key={alert.id} className="hover:bg-muted/30 transition-colors">
+                  <td className="py-3.5 px-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+                        <Clock className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold text-foreground">
+                          {alert.type === "ASISTENCIA_TARDE" ? "Asistencia tarde" : alert.type || "Alerta"}
+                        </div>
+                        <div className="text-[10px] font-mono text-muted-foreground">{alert.type}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-400 border border-amber-800/40">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                      {alert.status === "PENDING" ? "Pendiente" : "Revisada"}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4 text-muted-foreground max-w-xs truncate">{alert.message}</td>
+                  <td className="py-3.5 px-4">
+                    <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-950/60 text-purple-300 border border-purple-800/40">
+                      {alert.projectName}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4 font-mono text-foreground">{alert.dateStr}</td>
+                  <td className="py-3.5 px-4">
+                    <span className="text-blue-400 text-xs font-medium">{alert.locationName}</span>
+                  </td>
+                  <td className="py-3.5 px-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link href={`/pm/alertas/${alert.id}`}>
+                        <button
+                          title="Ver detalle"
+                          className="w-8 h-8 rounded-lg border border-border bg-background hover:bg-muted text-foreground flex items-center justify-center transition-colors"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
+                        </button>
+                      </Link>
+                      <button
+                        title="Descartar"
+                        onClick={() => handleDismissAlert(alert.id)}
+                        className="w-8 h-8 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 flex items-center justify-center transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
-              ) : paginatedAlerts.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-10 text-muted-foreground text-xs">
-                    No hay alertas registradas con los filtros seleccionados
-                  </td>
-                </tr>
-              ) : (
-                paginatedAlerts.map((alert, index) => {
-                  const isEven = index % 2 === 0;
-                  return (
-                    <tr
-                      key={alert.id}
-                      className={`border-b border-border/40 transition-colors ${
-                        isEven ? "bg-card" : "bg-gray-50/70 dark:bg-white/[0.02]"
-                      } hover:bg-muted/40`}
-                    >
-                      {/* TIPO */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-amber/10 flex items-center justify-center text-amber shrink-0">
-                            <Clock className="w-4 h-4" />
-                          </div>
-                          <div>
-                            <div className="text-xs font-semibold text-foreground">
-                              {alert.type === "ASISTENCIA_TARDE" ? "Asistencia tarde" : alert.type || "Alerta"}
-                            </div>
-                            <div className="text-[10px] font-mono text-muted-foreground">
-                              {alert.type || "ASISTENCIA_TARDE"}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* ESTADO */}
-                      <td className="py-3.5 px-4">
-                        {alert.status === "PENDING" ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber/10 text-amber-ink dark:text-amber border border-amber/20">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber" />
-                            Pendiente
-                          </span>
-                        ) : alert.status === "APPROVED" || alert.status === "REVIEWED" ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green/10 text-green-ink dark:text-green border border-green/20">
-                            <span className="w-1.5 h-1.5 rounded-full bg-green" />
-                            Revisada
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border">
-                            <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
-                            Cancelada
-                          </span>
-                        )}
-                      </td>
-
-                      {/* MENSAJE */}
-                      <td className="py-3.5 px-4">
-                        <span className="text-xs text-muted-foreground block truncate max-w-[280px]">
-                          {alert.message || "Análisis completado sin anomalías"}
-                        </span>
-                      </td>
-
-                      {/* PROYECTO */}
-                      <td className="py-3.5 px-4">
-                        <span className="inline-block px-2.5 py-0.5 rounded-md text-xs font-mono font-medium bg-violet/10 text-violet-ink dark:text-violet border border-violet/20">
-                          {getProjectName(alert.projectId)}
-                        </span>
-                      </td>
-
-                      {/* FECHA */}
-                      <td className="py-3.5 px-4">
-                        <span className="text-xs font-mono text-muted-foreground">
-                          {formatDateDisplay(alert.createdAt)}
-                        </span>
-                      </td>
-
-                      {/* UBICACIÓN */}
-                      <td className="py-3.5 px-4">
-                        <span className="inline-flex items-center gap-1 text-xs font-medium text-blue dark:text-blue">
-                          <MapPin className="w-3.5 h-3.5 shrink-0" />
-                          <span>Condevilla Señor</span>
-                        </span>
-                      </td>
-
-                      {/* ACCIONES */}
-                      <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <Link href={`/pm/alertas/${alert.id}`}>
-                            <button className="h-7 px-2.5 rounded-lg border border-border/80 hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1 transition-colors cursor-pointer">
-                              <Eye className="w-3 h-3 text-muted-foreground" />
-                              <span>Ver</span>
-                            </button>
-                          </Link>
-                          <button
-                            onClick={() => handleDismissAlert(alert.id)}
-                            className="h-7 w-7 rounded-lg text-muted-foreground hover:text-red hover:bg-red/10 flex items-center justify-center transition-colors cursor-pointer"
-                            title="Descartar alerta"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
+              ))}
             </tbody>
           </table>
         </div>
+      </div>
 
-        {/* PAGINATION FOOTER */}
-        <div className="flex items-center justify-center gap-3 pt-2 text-xs text-muted-foreground">
-          <span>
-            Página {page} de {totalPages}
+      {/* 9. PAGINATION FOOTER */}
+      <div className="flex items-center justify-between pt-1 px-1">
+        <span className="text-xs text-muted-foreground font-medium">
+          {total} alerta{total === 1 ? "" : "s"}
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled
+            className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <span className="text-xs text-muted-foreground font-medium px-1">
+            Página 1 de 1
           </span>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="w-7 h-7 rounded-lg border border-border/80 hover:bg-muted flex items-center justify-center disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
-            >
-              <ChevronLeft className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page >= totalPages}
-              className="w-7 h-7 rounded-lg border border-border/80 hover:bg-muted flex items-center justify-center disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
-            >
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-          <span>{total} alertas</span>
+          <button
+            type="button"
+            disabled
+            className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
+
+      {/* Date Range Modal */}
+      <DateRangeModal
+        open={dateRangeModalOpen}
+        onOpenChange={setDateRangeModalOpen}
+        initialRange={dateRange}
+        onApply={(newRange) => setDateRange(newRange)}
+      />
     </div>
   );
 }

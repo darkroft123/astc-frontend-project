@@ -7,8 +7,8 @@ import {
   CheckCircle2,
   XCircle,
   TrendingUp,
-  Search,
   Folder,
+  User,
   RotateCw,
   Download,
   Calendar,
@@ -16,10 +16,12 @@ import {
   ChevronRight,
   MapPin,
   Camera,
+  Eye,
   X as XIcon,
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
-import { Dialog, DialogContent, DialogClose, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
 import {
   getAllProjects,
   getAllUsers,
@@ -52,29 +54,32 @@ const DEFAULT_SAMPLE_ATTENDANCE = [
     userId: "usr-carlos",
     userName: "carlos mamani",
     userEmail: "mamanigutierrezcarlos123@gmail.com",
-    projectName: "gestion de asistencia",
-    date: "2026-09-02",
-    checkIn: "08:52 a. m.",
-    checkOut: "09:07 a. m.",
-    status: "SALIDA_TEMPRANA",
+    projectName: "testo6",
+    date: "02/09/2026",
+    checkIn: "08:52",
+    checkOut: "09:07",
+    status: "PRESENTE",
+    statusLabel: "Asistencia",
     locationName: "Condevilla Señor",
     latitude: -12.0184,
     longitude: -77.0817,
+    photoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300",
   },
   {
     id: "att-002",
     userId: "usr-carlos",
     userName: "carlos mamani",
     userEmail: "mamanigutierrezcarlos123@gmail.com",
-    projectName: "proyecto testeo",
-    date: "2026-09-01",
-    checkIn: "11:28 a. m.",
-    checkOut: "01:59 p. m.",
-    status: "SALIDA_TEMPRANA",
+    projectName: "testo6",
+    date: "01/09/2026",
+    checkIn: "11:28",
+    checkOut: "13:59",
+    status: "PRESENTE",
+    statusLabel: "Asistencia",
     locationName: "Condevilla Señor",
     latitude: -12.0184,
     longitude: -77.0817,
-    photoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+    photoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300",
   },
 ];
 
@@ -86,6 +91,11 @@ export function AttendanceHistoryView() {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: "01/09/2026",
+    to: "03/09/2026",
+  });
 
   const [projects, setProjects] = useState<any[]>([
     { id: "all", name: "Todos los proyectos (3)" },
@@ -95,7 +105,7 @@ export function AttendanceHistoryView() {
   ]);
 
   const [users, setUsers] = useState<any[]>([
-    { id: "all", name: "Todos los colaboradores" },
+    { id: "all", name: "Todos los colaboradores (5)" },
     { id: "u1", name: "carlos mamani" },
   ]);
 
@@ -110,7 +120,7 @@ export function AttendanceHistoryView() {
           setProjects([{ id: "all", name: `Todos los proyectos (${pRes.length})` }, ...pRes]);
         }
         if (Array.isArray(uRes) && uRes.length > 0) {
-          setUsers([{ id: "all", name: "Todos los colaboradores" }, ...uRes]);
+          setUsers([{ id: "all", name: `Todos los colaboradores (${uRes.length})` }, ...uRes]);
         }
       })
       .catch((err) => console.error("Error loading filters data:", err));
@@ -181,19 +191,19 @@ export function AttendanceHistoryView() {
   const porcentaje = total > 0 ? Math.round((presentes / total) * 100) : 0;
 
   return (
-    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-12">
+    <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-12 max-w-6xl mx-auto px-4 sm:px-6 py-4">
       {/* 1. TOP HEADER (EXACT SVG DESIGN) */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-            <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.05em] text-violet-400">
+          <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+            <span className="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-purple-400">
               PANEL DE GESTIÓN
             </span>
             <span className="text-xs text-muted-foreground font-sans">
-              · Historial del equipo
+              · Equipo
             </span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Historial de asistencias
           </h1>
           <p className="text-xs text-muted-foreground mt-1">
@@ -201,201 +211,274 @@ export function AttendanceHistoryView() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-3">
           <NotificationBell />
         </div>
       </div>
 
-      {/* 2. PERIOD SELECTOR ROW */}
-      <div className="w-full flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5">
-        <div className="flex-1 flex items-center gap-1 p-1 rounded-xl bg-muted/40 dark:bg-surface border border-border/80 overflow-x-auto">
-          {PERIOD_TABS.map((tab) => {
-            const isActive = activePeriod === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActivePeriod(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer text-center ${
-                  isActive
-                    ? "bg-white dark:bg-raised text-foreground dark:text-white shadow-xs border border-border font-semibold"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
+      {/* 2. EXPORT CSV BUTTON (Full width with brand gradient as in SVG) */}
+      <button
+        type="button"
+        onClick={handleExport}
+        className="w-full h-12 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 cursor-pointer transition-all"
+      >
+        <Download className="w-4 h-4" />
+        Exportar CSV
+      </button>
+
+      {/* 3. PERIOD SELECTOR TABS */}
+      <div className="flex items-center gap-1.5 p-1 rounded-xl bg-card/60 border border-border/80 overflow-x-auto scrollbar-none">
+        {PERIOD_TABS.map((tab) => {
+          const isActive = activePeriod === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActivePeriod(tab.id)}
+              className={`flex-1 min-w-[75px] py-2 px-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap text-center ${
+                isActive
+                  ? "bg-slate-800 text-white font-semibold shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 4. DATE RANGE SELECTOR BAR */}
+      <div className="flex items-center gap-2">
+        <div className="flex-1 flex items-center gap-2 px-3.5 h-11 rounded-xl border border-border bg-card/60 text-xs font-mono text-muted-foreground">
+          <Calendar className="w-4 h-4 text-muted-foreground shrink-0" />
+          <span>{dateRange.from} → {dateRange.to}</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setDateRangeModalOpen(true)}
+          className="w-11 h-11 rounded-xl border border-border bg-card/60 hover:bg-card text-muted-foreground hover:text-foreground flex items-center justify-center shrink-0 transition-colors"
+          title="Seleccionar rango"
+        >
+          <Calendar className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* 5. 4 KPI CARDS (2x2 on mobile, 4 cols on desktop) */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Card 1: Total */}
+        <div className="rounded-2xl border border-border bg-card/60 p-4 flex flex-col justify-between shadow-sm">
+          <div className="w-9 h-9 rounded-xl border border-border/60 bg-background/50 flex items-center justify-center text-muted-foreground shrink-0 mb-3">
+            <Clock className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground font-medium">Total registros</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{total}</p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0">
-          <button
-            type="button"
-            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-border bg-card dark:bg-surface text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer shadow-xs"
-          >
-            <Calendar className="w-3.5 h-3.5" />
-            Rango personalizado
-          </button>
-          <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-blue/20 bg-blue/10 text-xs font-mono text-blue dark:text-blue shadow-xs">
-            <span>01/09/2026 → 03/09/2026</span>
+        {/* Card 2: Presentes */}
+        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 flex flex-col justify-between shadow-sm">
+          <div className="w-9 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 mb-3">
+            <CheckCircle2 className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="text-xs text-emerald-400 font-medium">Presentes</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{presentes}</p>
+          </div>
+        </div>
+
+        {/* Card 3: Faltas / tardanzas */}
+        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 flex flex-col justify-between shadow-sm">
+          <div className="w-9 h-9 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0 mb-3">
+            <XCircle className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="text-xs text-rose-400 font-medium">Faltas / tardanzas</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{faltas}</p>
+          </div>
+        </div>
+
+        {/* Card 4: % Asistencia */}
+        <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 flex flex-col justify-between shadow-sm">
+          <div className="w-9 h-9 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0 mb-3">
+            <TrendingUp className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="text-xs text-purple-400 font-medium">% Asistencia</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{porcentaje}%</p>
           </div>
         </div>
       </div>
 
-      {/* 3. MAIN CARD CONTAINER (MATCHING SVG WRAPPER) */}
-      <div className="rounded-2xl border border-border/80 bg-card dark:bg-sidebar/70 p-6 space-y-6 shadow-sm">
-        {/* A. 4 KPI CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Card 1: Total */}
-          <div className="rounded-xl border border-border/80 bg-card dark:bg-surface p-5 flex flex-col justify-between shadow-xs">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-7 h-7 rounded-lg bg-muted/70 flex items-center justify-center text-muted-foreground">
-                <Clock className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-medium text-muted-foreground">
-                Total registros
-              </span>
-            </div>
-            <div>
-              <span className="text-3xl font-bold tracking-tight text-foreground">
-                {total}
-              </span>
-            </div>
-          </div>
-
-          {/* Card 2: Presentes */}
-          <div className="rounded-xl border border-green/30 dark:border-green/25 bg-card dark:bg-[#111c18] p-5 flex flex-col justify-between shadow-xs">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-7 h-7 rounded-lg bg-green/15 flex items-center justify-center text-green">
-                <CheckCircle2 className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-medium text-green-ink dark:text-green">
-                Presentes
-              </span>
-            </div>
-            <div>
-              <span className="text-3xl font-bold tracking-tight text-foreground">
-                {presentes}
-              </span>
-            </div>
-          </div>
-
-          {/* Card 3: Faltas / Tardanzas */}
-          <div className="rounded-xl border border-red/30 dark:border-red/25 bg-card dark:bg-[#1a1318] p-5 flex flex-col justify-between shadow-xs">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-7 h-7 rounded-lg bg-red/15 flex items-center justify-center text-red">
-                <XCircle className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-medium text-red-ink dark:text-red">
-                Faltas / Tardanzas
-              </span>
-            </div>
-            <div>
-              <span className="text-3xl font-bold tracking-tight text-foreground">
-                {faltas}
-              </span>
-            </div>
-          </div>
-
-          {/* Card 4: % Asistencia */}
-          <div className="rounded-xl border border-violet/30 dark:border-violet/25 bg-card dark:bg-[#171424] p-5 flex flex-col justify-between shadow-xs">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-7 h-7 rounded-lg bg-violet/15 flex items-center justify-center text-violet-400">
-                <TrendingUp className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-medium text-violet-400">
-                % Asistencia
-              </span>
-            </div>
-            <div>
-              <span className="text-3xl font-bold tracking-tight text-foreground">
-                {porcentaje}%
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* B. FILTERS BAR */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3.5 pt-2">
-          {/* Proyecto */}
-          <div className="flex flex-col gap-1.5 flex-1">
-            <label className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">
-              PROYECTO
-            </label>
+      {/* 6. FILTERS CONTAINER */}
+      <div className="rounded-2xl border border-border bg-card/60 p-4 space-y-3.5 shadow-sm">
+        {/* Proyecto */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-foreground">
+            Proyecto
+          </label>
+          <div className="relative">
+            <Folder className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
             <select
               value={selectedProjectId}
               onChange={(e) => setSelectedProjectId(e.target.value)}
-              className="h-10 px-3.5 rounded-xl border border-border/80 bg-field dark:bg-surface text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+              className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {projects.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
+                <option key={p.id} value={p.id} className="bg-card text-foreground">{p.name}</option>
               ))}
             </select>
-          </div>
-
-          {/* Colaborador */}
-          <div className="flex flex-col gap-1.5 flex-1">
-            <label className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">
-              COLABORADOR
-            </label>
-            <select
-              value={selectedUserId}
-              onChange={(e) => setSelectedUserId(e.target.value)}
-              className="h-10 px-3.5 rounded-xl border border-border/80 bg-field dark:bg-surface text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
-            >
-              {users.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.name || u.username || `${u.firstName || ""} ${u.lastName || ""}`}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Estado */}
-          <div className="flex flex-col gap-1.5 flex-1">
-            <label className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">
-              ESTADO
-            </label>
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="h-10 px-3.5 rounded-xl border border-border/80 bg-field dark:bg-surface text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
-            >
-              <option value="all">Todos los estados</option>
-              <option value="PRESENTE">Presente</option>
-              <option value="FALTA">Falta</option>
-              <option value="TARDE">Tardanza</option>
-              <option value="SALIDA_TEMPRANA">Salida temprana</option>
-            </select>
-          </div>
-
-          {/* Botones Actualizar & Exportar */}
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={loadData}
-              className="h-10 px-4 rounded-xl border border-border/80 bg-card hover:bg-raised text-xs font-semibold text-foreground flex items-center justify-center gap-2 shadow-xs cursor-pointer transition-colors"
-            >
-              <RotateCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-              Actualizar
-            </button>
-            <button
-              type="button"
-              onClick={handleExport}
-              className="h-10 px-4 rounded-xl bg-green hover:bg-green/90 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-xs cursor-pointer transition-colors"
-            >
-              <Download className="w-3.5 h-3.5" />
-              Exportar
-            </button>
+            <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
           </div>
         </div>
 
-        {/* C. DATA TABLE */}
-        <div className="overflow-x-auto rounded-xl border border-border/70">
+        {/* Colaborador */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-foreground">
+            Colaborador
+          </label>
+          <div className="relative">
+            <User className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
+            <select
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
+              className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+            >
+              {users.map((u) => (
+                <option key={u.id} value={u.id} className="bg-card text-foreground">{u.name || u.username}</option>
+              ))}
+            </select>
+            <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Estado de marcado + Refresh */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-foreground">
+            Estado de marcado
+          </label>
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+              >
+                <option value="all" className="bg-card text-foreground">Todos los estados</option>
+                <option value="PRESENTE" className="bg-card text-foreground">Presente</option>
+                <option value="FALTA" className="bg-card text-foreground">Falta</option>
+                <option value="TARDE" className="bg-card text-foreground">Tardanza</option>
+                <option value="SALIDA_TEMPRANA" className="bg-card text-foreground">Salida temprana</option>
+              </select>
+              <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+            </div>
+            <button
+              type="button"
+              onClick={loadData}
+              disabled={loading}
+              className="w-10 h-10 rounded-xl border border-border bg-background/50 hover:bg-background text-muted-foreground hover:text-foreground flex items-center justify-center shrink-0 transition-colors"
+              title="Actualizar"
+            >
+              <RotateCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 7. MOBILE CARDS VIEW (md:hidden) Matching SVG dark-historial asistencia.svg */}
+      <div className="space-y-3 md:hidden">
+        {records.length === 0 ? (
+          <div className="text-center p-8 text-muted-foreground bg-card rounded-2xl border border-border">
+            No se encontraron registros de asistencias.
+          </div>
+        ) : (
+          records.map((r, idx) => {
+            const initials = (r.userName || "Carlos Mamani")
+              .split(" ")
+              .map((n: string) => n[0])
+              .join("")
+              .slice(0, 2)
+              .toUpperCase();
+
+            return (
+              <div key={r.id || idx} className="bg-card border border-border rounded-2xl p-4 space-y-3">
+                {/* Header: Avatar, Name, Status Badge */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-brand-gradient text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-sm">
+                      {initials}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-base text-foreground leading-tight">{r.userName}</h4>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-400 border border-emerald-800/40">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    {r.statusLabel || "Asistencia"}
+                  </span>
+                </div>
+
+                {/* Email */}
+                <p className="text-xs text-muted-foreground truncate">{r.userEmail}</p>
+
+                {/* Project Tag & Date */}
+                <div className="flex items-center justify-between">
+                  <span className="inline-block bg-purple-950/60 text-purple-300 border border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                    {r.projectName || "testo6"}
+                  </span>
+                  <span className="text-sm font-medium text-foreground">{r.date}</span>
+                </div>
+
+                {/* Times Grid */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-background/60 border border-border/60 rounded-xl p-3">
+                    <span className="text-[10px] font-mono tracking-wider uppercase text-muted-foreground block mb-1">
+                      ENTRADA
+                    </span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono font-bold text-emerald-400">{r.checkIn}</span>
+                      {r.photoUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPhotoUrl(r.photoUrl)}
+                          className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <Camera className="w-3.5 h-3.5" />
+                          <span>Ver foto</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="bg-background/60 border border-border/60 rounded-xl p-3">
+                    <span className="text-[10px] font-mono tracking-wider uppercase text-muted-foreground block mb-1">
+                      SALIDA
+                    </span>
+                    <span className="text-xs font-mono font-medium text-amber-400">{r.checkOut || "—"}</span>
+                  </div>
+                </div>
+
+                {/* Location Row */}
+                <button
+                  type="button"
+                  className="w-full flex items-center justify-between p-3 rounded-xl bg-background/50 border border-border/60 hover:bg-background text-xs font-medium text-blue-400 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-blue-400 shrink-0" />
+                    <span className="text-foreground">{r.locationName || "Condevilla Señor"}</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* 8. DESKTOP TABLE VIEW (hidden md:block) */}
+      <div className="hidden md:block rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-border/70 bg-muted/30 dark:bg-surface/50 text-[10.5px] font-mono font-semibold text-muted-foreground tracking-wider uppercase">
+              <tr className="border-b border-border bg-background/50 text-[10.5px] font-mono font-semibold text-muted-foreground tracking-wider uppercase">
                 <th className="py-3.5 px-4">COLABORADOR</th>
                 <th className="py-3.5 px-4">PROYECTO</th>
                 <th className="py-3.5 px-4">FECHA</th>
@@ -405,9 +488,8 @@ export function AttendanceHistoryView() {
                 <th className="py-3.5 px-4">UBICACIÓN</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/50">
+            <tbody className="divide-y divide-border">
               {records.map((row, idx) => {
-                const isEven = idx % 2 === 0;
                 const initials = (row.userName || "Carlos Mamani")
                   .split(" ")
                   .map((n: string) => n[0])
@@ -416,64 +498,50 @@ export function AttendanceHistoryView() {
                   .toUpperCase();
 
                 return (
-                  <tr
-                    key={row.id || idx}
-                    className={`hover:bg-muted/40 dark:hover:bg-raised/40 transition-colors ${
-                      isEven ? "bg-muted/10 dark:bg-surface/20" : "bg-transparent"
-                    }`}
-                  >
-                    {/* Colaborador */}
+                  <tr key={row.id || idx} className="hover:bg-muted/30 transition-colors">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-violet/20 border border-violet/30 flex items-center justify-center text-[11px] font-bold text-violet-300 shrink-0">
+                        <div className="w-8 h-8 rounded-lg bg-brand-gradient text-white flex items-center justify-center font-bold text-xs shrink-0">
                           {initials}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-semibold text-foreground truncate">
-                            {row.userName || "carlos mamani"}
-                          </p>
-                          <p className="text-[11px] text-muted-foreground truncate">
-                            {row.userEmail || "mamanigutierrezcarlos123@gmail.com"}
-                          </p>
+                          <p className="font-semibold text-foreground text-sm truncate">{row.userName}</p>
+                          <p className="text-xs text-muted-foreground truncate">{row.userEmail}</p>
                         </div>
                       </div>
                     </td>
-
-                    {/* Proyecto */}
                     <td className="py-3 px-4">
-                      <div className="flex items-center gap-1.5 text-foreground font-medium">
-                        <Folder className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                        <span className="truncate">{row.projectName || "gestion de asistencia"}</span>
-                      </div>
-                    </td>
-
-                    {/* Fecha */}
-                    <td className="py-3 px-4 font-mono text-muted-foreground">
-                      {row.date || "2026-09-02"}
-                    </td>
-
-                    {/* Entrada */}
-                    <td className="py-3 px-4 font-mono text-muted-foreground">
-                      {row.checkIn || "08:52 a. m."}
-                    </td>
-
-                    {/* Salida */}
-                    <td className="py-3 px-4 font-mono text-muted-foreground">
-                      {row.checkOut || "09:07 a. m."}
-                    </td>
-
-                    {/* Estado */}
-                    <td className="py-3 px-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber/15 text-amber border border-amber/30">
-                        {row.status === "SALIDA_TEMPRANA" ? "Salida temprana" : row.status || "Presente"}
+                      <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-950/60 text-purple-300 border border-purple-800/40">
+                        {row.projectName}
                       </span>
                     </td>
-
-                    {/* Ubicación */}
+                    <td className="py-3 px-4 font-mono text-foreground">{row.date}</td>
+                    <td className="py-3 px-4 font-mono text-emerald-400 font-medium">
+                      <div className="flex items-center gap-1.5">
+                        <span>{row.checkIn}</span>
+                        {row.photoUrl && (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedPhotoUrl(row.photoUrl)}
+                            className="p-1 text-muted-foreground hover:text-foreground"
+                            title="Ver foto"
+                          >
+                            <Camera className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 font-mono text-amber-400">{row.checkOut}</td>
                     <td className="py-3 px-4">
-                      <div className="flex items-center gap-1.5 text-blue text-xs font-medium">
-                        <MapPin className="w-3.5 h-3.5 text-blue shrink-0" />
-                        <span>{row.locationName || "Condevilla Señor"}</span>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/50 text-emerald-400 border border-emerald-800/40">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        {row.statusLabel || "Asistencia"}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-1.5 text-blue-400 text-xs font-medium">
+                        <MapPin className="w-3.5 h-3.5 shrink-0" />
+                        <span className="text-foreground">{row.locationName}</span>
                       </div>
                     </td>
                   </tr>
@@ -482,31 +550,57 @@ export function AttendanceHistoryView() {
             </tbody>
           </table>
         </div>
+      </div>
 
-        {/* D. PAGINATION FOOTER */}
-        <div className="flex items-center justify-between pt-2">
-          <div className="text-xs text-muted-foreground">
-            Página <span className="font-bold text-foreground">1</span> de 1
-          </div>
-          <div className="flex items-center gap-1.5">
-            <button
-              disabled
-              className="p-1.5 rounded-lg border border-border bg-card text-muted-foreground disabled:opacity-40"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              disabled
-              className="p-1.5 rounded-lg border border-border bg-card text-muted-foreground disabled:opacity-40"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="text-xs text-muted-foreground">
-            {records.length} registros totales
-          </div>
+      {/* 9. PAGINATION FOOTER */}
+      <div className="flex items-center justify-between pt-1 px-1">
+        <span className="text-xs text-muted-foreground font-medium">
+          {records.length} registros totales
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled
+            className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <span className="text-xs text-muted-foreground font-medium px-1">
+            Página 1 de 1
+          </span>
+          <button
+            type="button"
+            disabled
+            className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
+
+      {/* Modal Photo Preview */}
+      <Dialog open={!!selectedPhotoUrl} onOpenChange={(open) => { if (!open) setSelectedPhotoUrl(null); }}>
+        <DialogContent className="max-w-md bg-card border-border p-4 rounded-2xl">
+          <div className="space-y-3">
+            <h3 className="font-semibold text-base text-foreground">Foto de marcación</h3>
+            {selectedPhotoUrl && (
+              <img
+                src={selectedPhotoUrl}
+                alt="Foto"
+                className="w-full h-auto rounded-xl object-contain max-h-[400px] border border-border"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Date Range Modal */}
+      <DateRangeModal
+        open={dateRangeModalOpen}
+        onOpenChange={setDateRangeModalOpen}
+        initialRange={dateRange}
+        onApply={(newRange) => setDateRange(newRange)}
+      />
     </div>
   );
 }

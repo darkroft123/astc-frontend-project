@@ -405,7 +405,7 @@ export default function ScheduleForm({
                 </div>
               </div>
 
-              <div className="space-y-2 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                 {SHIFT_OPTIONS.map((opt) => {
                   const isSelected = shiftType === opt.key;
                   return (
@@ -413,29 +413,18 @@ export default function ScheduleForm({
                       key={opt.key}
                       type="button"
                       onClick={() => setShiftType(opt.key)}
-                      className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-center justify-between ${
+                      className={`text-left p-3.5 rounded-xl border transition-all flex flex-col justify-between ${
                         isSelected
-                          ? "border-violet dark:border-violet bg-violet/10 dark:bg-violet/15 ring-1 ring-violet dark:ring-violet"
-                          : "border-border bg-card hover:bg-muted/40 text-foreground"
-                      }`}
+                          ? "border-purple-500 bg-purple-500/10 ring-1 ring-purple-500/50"
+                          : "border-border bg-card/60 hover:bg-muted/40 text-foreground"
+                      } ${opt.key === "TRANSITORY" ? "sm:col-span-1" : ""}`}
                     >
-                      <div>
-                        <p className={`text-sm font-semibold leading-tight ${isSelected ? "text-violet-ink dark:text-violet-ink" : "text-foreground"}`}>
-                          {opt.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {opt.description}
-                        </p>
-                      </div>
-                      <div
-                        className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
-                          isSelected
-                            ? "border-violet bg-violet text-white"
-                            : "border-muted-foreground/40 bg-transparent"
-                        }`}
-                      >
-                        {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                      </div>
+                      <p className={`text-sm font-semibold leading-tight ${isSelected ? "text-purple-300" : "text-foreground"}`}>
+                        {opt.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {opt.description}
+                      </p>
                     </button>
                   );
                 })}
@@ -729,16 +718,17 @@ export default function ScheduleForm({
         </div>
 
         {/* BOTTOM ACTION BAR */}
-        <div className="rounded-xl border border-border bg-card p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">
+        <div className="space-y-3 pt-2 pb-6">
+          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+            <Info className="w-4 h-4 shrink-0 text-muted-foreground" />
             {!isFormReady
               ? "Completa usuario y proyecto para guardar."
               : `Horario listo para asignar a ${selectedUser?.firstName || "colaborador"}.`}
           </p>
-          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+          <div className="grid grid-cols-2 gap-3">
             <Link
               href="/pm/asignacion-horarios"
-              className="px-4 py-2 rounded-lg border border-border bg-background hover:bg-muted text-xs font-medium text-foreground transition-colors"
+              className="h-12 rounded-xl border border-border bg-card/60 hover:bg-background text-sm font-medium text-foreground flex items-center justify-center transition-colors"
             >
               Cancelar
             </Link>
@@ -746,9 +736,9 @@ export default function ScheduleForm({
               type="button"
               onClick={handleSubmit}
               disabled={!isFormReady || isSubmitting}
-              className="px-5 py-2 rounded-lg bg-violet hover:bg-violet/90 text-white text-xs font-semibold shadow-sm inline-flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-12 rounded-xl bg-purple-950/40 border border-purple-800/50 hover:bg-purple-900/40 text-purple-200 text-sm font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <Save className="w-3.5 h-3.5" />
+              <Save className="w-4 h-4" />
               {isSubmitting ? "Guardando..." : "Guardar horario"}
             </button>
           </div>

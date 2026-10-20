@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { MOCK_PROJECTS } from "@/lib/mock-data";
 import { NotificationBell } from "@/components/layout/notification-bell";
+import { DateRangeModal } from "@/components/ui/date-range-modal";
 import {
   getDashboardPM,
   getAllProjects,
@@ -51,6 +52,11 @@ export function DashboardView() {
   const { user, token, hydrated } = useAuth();
 
   const [activePeriod, setActivePeriod] = useState<Period>("month");
+  const [customModalOpen, setCustomModalOpen] = useState(false);
+  const [customRange, setCustomRange] = useState({
+    from: "2026-09-01",
+    to: "2026-09-03",
+  });
   const [activeProjects, setActiveProjects] = useState<any[]>(MOCK_PROJECTS);
   const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
   const [metrics, setMetrics] = useState({
@@ -151,7 +157,7 @@ export function DashboardView() {
             <button
               type="button"
               onClick={() => router.push("/pm/justificaciones")}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue hover:bg-blue/90 text-white text-xs font-semibold shadow-sm transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
             >
               <FileText className="w-4 h-4" />
               Revisar justificaciones
@@ -160,7 +166,7 @@ export function DashboardView() {
           </div>
         </div>
 
-        {/* PERIOD / DATE SELECTOR BAR */}
+        {/* PERIOD / DATE SELECTOR BAR (MATCHING EXACT SVG) */}
         <div className="w-full flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5">
           <div className="flex-1 flex items-center gap-1 p-1 rounded-xl bg-muted/40 dark:bg-surface border border-border/80 overflow-x-auto">
             {PERIOD_TABS.map((tab) => {
@@ -181,17 +187,19 @@ export function DashboardView() {
             })}
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-blue/20 bg-blue/10 text-xs font-mono text-blue dark:text-blue shadow-xs">
+              <Calendar className="w-3.5 h-3.5" />
+              <span>{customRange.from.split("-").reverse().join("/")} → {customRange.to.split("-").reverse().join("/")}</span>
+            </div>
             <button
               type="button"
-              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-border bg-card dark:bg-surface text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer shadow-xs"
+              onClick={() => setCustomModalOpen(true)}
+              className="w-10 h-10 rounded-xl border border-border bg-card dark:bg-surface hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer shadow-xs"
+              title="Seleccionar rango personalizado"
             >
-              <Calendar className="w-3.5 h-3.5" />
-              Rango personalizado
+              <Calendar className="w-4 h-4" />
             </button>
-            <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-blue/20 bg-blue/10 text-xs font-mono text-blue dark:text-blue shadow-xs">
-              <span>01/09/2026 → 03/09/2026</span>
-            </div>
           </div>
         </div>
 
@@ -239,14 +247,14 @@ export function DashboardView() {
             </div>
           </div>
 
-          {/* Card 3: Requiere revisión */}
+          {/* Card 3: Por revisar */}
           <div className="rounded-2xl border border-border/80 bg-card dark:bg-sidebar/70 p-5 shadow-xs flex flex-col justify-between">
             <div className="flex items-center justify-between mb-4">
               <div className="w-7 h-7 rounded-lg bg-amber/10 flex items-center justify-center text-amber">
                 <FileText className="w-4 h-4" />
               </div>
               <span className="text-xs font-medium text-amber-ink dark:text-amber">
-                Requiere revisión
+                Por revisar
               </span>
             </div>
             <div>
@@ -493,7 +501,7 @@ export function DashboardView() {
             </div>
           </div>
 
-          {/* Card: Acciones rápidas */}
+          {/* Card: Acciones rápidas (Matching exact SVG structure) */}
           <div className="rounded-2xl border border-border/80 bg-card dark:bg-sidebar/70 p-5 shadow-xs flex flex-col justify-between">
             <div className="mb-4">
               <h3 className="text-base font-bold text-foreground tracking-tight">
@@ -504,14 +512,32 @@ export function DashboardView() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
-              {/* Col 1 */}
-              <div className="space-y-3">
+            <div className="space-y-3 flex-1">
+              {/* Top: Justificaciones Featured Full-width Card */}
+              <Link
+                href="/pm/justificaciones"
+                className="flex items-center justify-between p-3.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/15 transition-colors shadow-2xs group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center text-amber-400 shrink-0">
+                    <FileText className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">
+                    Justificaciones
+                  </span>
+                </div>
+                <span className="w-6 h-6 rounded-full bg-amber-500 text-black font-bold text-xs flex items-center justify-center shrink-0">
+                  {pendingJustifications}
+                </span>
+              </Link>
+
+              {/* Grid: 2 columns matching SVG */}
+              <div className="grid grid-cols-2 gap-2.5">
                 <Link
                   href="/pm/registrar"
-                  className="flex items-center gap-3 p-3.5 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-green/10 flex items-center justify-center text-green shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-green/10 flex items-center justify-center text-green shrink-0">
                     <CheckCircle2 className="w-4 h-4" />
                   </div>
                   <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
@@ -521,9 +547,9 @@ export function DashboardView() {
 
                 <Link
                   href="/pm/historial-asistencias"
-                  className="flex items-center gap-3 p-3.5 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-violet/10 flex items-center justify-center text-violet shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-violet/10 flex items-center justify-center text-violet shrink-0">
                     <BarChart3 className="w-4 h-4" />
                   </div>
                   <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
@@ -532,54 +558,10 @@ export function DashboardView() {
                 </Link>
 
                 <Link
-                  href="/pm/proyectos"
-                  className="flex items-center gap-3 p-3.5 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-cyan/10 flex items-center justify-center text-cyan shrink-0">
-                    <FolderKanban className="w-4 h-4" />
-                  </div>
-                  <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
-                    Proyectos
-                  </span>
-                </Link>
-
-                <Link
-                  href="/pm/horarios"
-                  className="flex items-center gap-3 p-3.5 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
-                    <Clock className="w-4 h-4" />
-                  </div>
-                  <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
-                    Horarios
-                  </span>
-                </Link>
-              </div>
-
-              {/* Col 2 */}
-              <div className="space-y-3">
-                <Link
-                  href="/pm/justificaciones"
-                  className="flex items-center justify-between p-3.5 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-amber/10 flex items-center justify-center text-amber shrink-0">
-                      <FileText className="w-4 h-4" />
-                    </div>
-                    <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
-                      Justificaciones
-                    </span>
-                  </div>
-                  <span className="w-5 h-5 rounded-full bg-amber text-white font-bold text-[10px] flex items-center justify-center shrink-0">
-                    1
-                  </span>
-                </Link>
-
-                <Link
                   href="/pm/alertas"
-                  className="flex items-center gap-3 p-3.5 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-red/10 flex items-center justify-center text-red shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-red/10 flex items-center justify-center text-red shrink-0">
                     <AlertTriangle className="w-4 h-4" />
                   </div>
                   <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
@@ -588,14 +570,38 @@ export function DashboardView() {
                 </Link>
 
                 <Link
-                  href="/pm/historial-asistencias"
-                  className="flex items-center gap-3 p-3.5 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
+                  href="/pm/proyectos"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-blue/10 flex items-center justify-center text-blue shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-cyan/10 flex items-center justify-center text-cyan shrink-0">
+                    <FolderKanban className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                    Proyectos
+                  </span>
+                </Link>
+
+                <Link
+                  href="/pm/mis-asistencias"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-blue/10 flex items-center justify-center text-blue shrink-0">
                     <Calendar className="w-4 h-4" />
                   </div>
                   <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
                     Historial
+                  </span>
+                </Link>
+
+                <Link
+                  href="/pm/horarios"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border/80 bg-card dark:bg-surface/80 hover:bg-muted/40 transition-colors shadow-2xs group"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                    Horarios
                   </span>
                 </Link>
               </div>
@@ -603,6 +609,18 @@ export function DashboardView() {
           </div>
         </div>
       </div>
+
+      {/* Date Range Modal */}
+      <DateRangeModal
+        isOpen={customModalOpen}
+        onClose={() => setCustomModalOpen(false)}
+        fromDate={customRange.from}
+        toDate={customRange.to}
+        onApply={(from, to) => {
+          setCustomRange({ from, to });
+          setActivePeriod("custom");
+        }}
+      />
     </div>
   );
 }
