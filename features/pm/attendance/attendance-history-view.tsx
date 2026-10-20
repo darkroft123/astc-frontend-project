@@ -105,7 +105,7 @@ export function AttendanceHistoryView() {
   ]);
 
   const [users, setUsers] = useState<any[]>([
-    { id: "all", name: "Todos los colaboradores (5)" },
+    { id: "all", name: "Todos los trabajadores (5)" },
     { id: "u1", name: "carlos mamani" },
   ]);
 
@@ -120,7 +120,7 @@ export function AttendanceHistoryView() {
           setProjects([{ id: "all", name: `Todos los proyectos (${pRes.length})` }, ...pRes]);
         }
         if (Array.isArray(uRes) && uRes.length > 0) {
-          setUsers([{ id: "all", name: `Todos los colaboradores (${uRes.length})` }, ...uRes]);
+          setUsers([{ id: "all", name: `Todos los trabajadores (${uRes.length})` }, ...uRes]);
         }
       })
       .catch((err) => console.error("Error loading filters data:", err));
@@ -388,10 +388,10 @@ export function AttendanceHistoryView() {
           </div>
         </div>
 
-        {/* Colaborador */}
+        {/* Trabajador */}
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-foreground">
-            Colaborador
+            Trabajador
           </label>
           <div className="relative">
             <User className="w-4 h-4 absolute left-3 top-3 text-muted-foreground pointer-events-none" />
@@ -465,10 +465,10 @@ export function AttendanceHistoryView() {
           </div>
         </div>
 
-        {/* Colaborador */}
+        {/* Trabajador */}
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-foreground">
-            Colaborador
+            Trabajador
           </label>
           <div className="relative">
             <User className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
@@ -613,7 +613,7 @@ export function AttendanceHistoryView() {
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="border-b border-border bg-background/50 text-[10.5px] font-mono font-semibold text-muted-foreground tracking-wider uppercase">
-                <th className="py-3.5 px-4">COLABORADOR</th>
+                <th className="py-3.5 px-4">TRABAJADOR</th>
                 <th className="py-3.5 px-4">PROYECTO</th>
                 <th className="py-3.5 px-4">FECHA</th>
                 <th className="py-3.5 px-4">ENTRADA</th>

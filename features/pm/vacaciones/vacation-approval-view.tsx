@@ -197,7 +197,7 @@ export function VacationApprovalView() {
   const columns: Column<any>[] = [
     { 
       key: "userId", 
-      header: "COLABORADOR", 
+      header: "TRABAJADOR", 
       render: (r) => (
         <div>
           <p className="font-semibold text-foreground text-xs">{r.userName || userNames[r.userId] || `carlos mamani`}</p>

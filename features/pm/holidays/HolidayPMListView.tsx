@@ -327,7 +327,18 @@ export function HolidayPMListView() {
 
   // Load Projects
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      setProjects([
+        { id: "p1", name: "Gestión de Asistencia" },
+        { id: "p2", name: "Proyecto Testeo" },
+        { id: "p3", name: "Testo6" },
+      ]);
+      setSelectedProjectId("p1");
+      setMembers(DEFAULT_SVG_MEMBERS);
+      setGlobalCollections(DEFAULT_SVG_COLLECTIONS);
+      setLoading(false);
+      return;
+    }
     getAllProjects(token)
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
@@ -335,18 +346,24 @@ export function HolidayPMListView() {
           setSelectedProjectId(data[0].id);
         } else {
           setProjects([
-            { id: "testo6", name: "testo6" },
-            { id: "proyecto testeo", name: "proyecto testeo" },
-            { id: "gestion de asistencia", name: "gestion de asistencia" },
+            { id: "p1", name: "Gestión de Asistencia" },
+            { id: "p2", name: "Proyecto Testeo" },
+            { id: "p3", name: "Testo6" },
           ]);
+          setSelectedProjectId("p1");
+          setMembers(DEFAULT_SVG_MEMBERS);
+          setGlobalCollections(DEFAULT_SVG_COLLECTIONS);
         }
       })
       .catch(() => {
         setProjects([
-          { id: "testo6", name: "testo6" },
-          { id: "proyecto testeo", name: "proyecto testeo" },
-          { id: "gestion de asistencia", name: "gestion de asistencia" },
+          { id: "p1", name: "Gestión de Asistencia" },
+          { id: "p2", name: "Proyecto Testeo" },
+          { id: "p3", name: "Testo6" },
         ]);
+        setSelectedProjectId("p1");
+        setMembers(DEFAULT_SVG_MEMBERS);
+        setGlobalCollections(DEFAULT_SVG_COLLECTIONS);
       });
   }, [token]);
 
@@ -990,12 +1007,12 @@ export function HolidayPMListView() {
             if (e.target === e.currentTarget) setIsCreateModalOpen(false);
           }}
         >
-          <div className="w-full max-w-[440px] max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[28px] p-5 sm:p-6 shadow-2xl relative text-foreground space-y-4">
-            {/* Drag Handle */}
-            <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto" />
+          <div className="w-full max-w-lg md:max-w-4xl max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl relative text-foreground space-y-5">
+            {/* Drag Handle (Mobile only) */}
+            <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto md:hidden" />
 
             {/* Header */}
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-3 pb-2 border-b border-[#1E2335]">
               <div>
                 <h3 className="text-lg font-bold text-foreground">
                   Crear colección para el proyecto
@@ -1014,81 +1031,105 @@ export function HolidayPMListView() {
               </button>
             </div>
 
-            <form onSubmit={handleCreateCollectionSubmit} className="space-y-4">
-              {/* Nombre de la colección */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">
-                  Nombre de la colección<span className="text-rose-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ej. Feriados Perú 2026"
-                  value={newCollectionName}
-                  onChange={(e) => setNewCollectionName(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
-                />
-              </div>
+            <form onSubmit={handleCreateCollectionSubmit} className="space-y-5">
+              {/* Desktop 2-column layout */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+                {/* Left Column: Nombre & Calendar */}
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-foreground">
+                      Nombre de la colección<span className="text-rose-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Ej. Feriados Perú 2026"
+                      value={newCollectionName}
+                      onChange={(e) => setNewCollectionName(e.target.value)}
+                      className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+                    />
+                  </div>
 
-              {/* Month Calendar Picker */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">
-                  Selecciona las fechas
-                </label>
-                <MonthCalendarPicker
-                  selectedDates={newCollectionDates}
-                  onToggleDate={handleToggleDateCreate}
-                />
-                <p className="text-xs text-muted-foreground text-center pt-1">
-                  Has seleccionado <span className="font-bold text-foreground">{newCollectionDates.length}</span> días.
-                </p>
-              </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold text-foreground">
+                        Selecciona las fechas
+                      </label>
+                      <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-violet/10 text-violet border border-violet/20 font-semibold">
+                        {newCollectionDates.length} seleccionadas
+                      </span>
+                    </div>
+                    <MonthCalendarPicker
+                      selectedDates={newCollectionDates}
+                      onToggleDate={handleToggleDateCreate}
+                    />
+                  </div>
+                </div>
 
-              {/* Nombres específicos (opcional) */}
-              {newCollectionDates.length > 0 && (
-                <div className="space-y-2 rounded-2xl border border-[#1E2335] bg-[#111422] p-3.5">
+                {/* Right Column: Holiday Names / Empty prompt */}
+                <div className="space-y-2">
                   <label className="text-xs font-semibold text-foreground block">
                     Nombres específicos <span className="text-muted-foreground font-normal">(opcional)</span>
                   </label>
-                  <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
-                    {newCollectionDates.map((dateStr) => (
-                      <div key={dateStr} className="flex items-center gap-2">
-                        <span className="px-3 py-2 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-mono text-muted-foreground min-w-[105px] text-center shrink-0">
-                          {dateStr}
-                        </span>
-                        <input
-                          type="text"
-                          placeholder="Nombre..."
-                          value={newCollectionDateNames[dateStr] || ""}
-                          onChange={(e) =>
-                            setNewCollectionDateNames((prev) => ({
-                              ...prev,
-                              [dateStr]: e.target.value,
-                            }))
-                          }
-                          className="flex-1 h-9 px-3 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
-                        />
+
+                  {newCollectionDates.length > 0 ? (
+                    <div className="rounded-2xl border border-[#1E2335] bg-[#111422] p-4 space-y-3">
+                      <p className="text-[11px] text-muted-foreground">
+                        Asigna un nombre a cada feriado seleccionado para que tus trabajadores lo identifiquen fácilmente:
+                      </p>
+                      <div className="space-y-2 max-h-[300px] md:max-h-[350px] overflow-y-auto pr-1">
+                        {newCollectionDates.map((dateStr) => (
+                          <div key={dateStr} className="flex items-center gap-2">
+                            <span className="px-3 py-2 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-mono text-muted-foreground min-w-[105px] text-center shrink-0">
+                              {dateStr}
+                            </span>
+                            <input
+                              type="text"
+                              placeholder="Ej. Día del Trabajador..."
+                              value={newCollectionDateNames[dateStr] || ""}
+                              onChange={(e) =>
+                                setNewCollectionDateNames((prev) => ({
+                                  ...prev,
+                                  [dateStr]: e.target.value,
+                                }))
+                              }
+                              className="flex-1 h-9 px-3 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+                            />
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-dashed border-[#1E2335] bg-[#111422]/60 p-8 flex flex-col items-center justify-center text-center space-y-3 min-h-[260px]">
+                      <div className="w-12 h-12 rounded-2xl bg-[#141829] border border-[#1E2335] flex items-center justify-center text-violet">
+                        <CalendarIcon className="w-6 h-6 stroke-[1.8]" />
+                      </div>
+                      <p className="text-xs font-semibold text-foreground">
+                        Ninguna fecha seleccionada
+                      </p>
+                      <p className="text-[11px] text-muted-foreground max-w-[240px]">
+                        Haz clic en los días del calendario a la izquierda para marcarlos como feriados y asignarles un nombre.
+                      </p>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
 
               {/* Bottom Actions */}
-              <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-[#1E2335]">
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
+                  className="w-full sm:w-32 h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-violet/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  className="w-full sm:w-44 h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-violet/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                 >
                   <Check className="w-4 h-4 stroke-[2.5]" />
-                  <span>Guardar</span>
+                  <span>Guardar colección</span>
                 </button>
               </div>
             </form>
@@ -1104,18 +1145,18 @@ export function HolidayPMListView() {
             if (e.target === e.currentTarget) setSelectedMemberForException(null);
           }}
         >
-          <div className="w-full max-w-[440px] max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[28px] p-5 sm:p-6 shadow-2xl relative text-foreground space-y-4">
-            {/* Drag Handle */}
-            <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto" />
+          <div className="w-full max-w-lg md:max-w-3xl max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl relative text-foreground space-y-5">
+            {/* Drag Handle (Mobile only) */}
+            <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto md:hidden" />
 
             {/* Header */}
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-3 pb-2 border-b border-[#1E2335]">
               <div>
                 <h3 className="text-lg font-bold text-foreground">
                   Calendario personalizado (usuario)
                 </h3>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Selecciona las fechas que este usuario en particular trabajará o descansará fuera del calendario normal.
+                  Selecciona las fechas que este trabajador en particular trabajará o descansará fuera del calendario normal.
                 </p>
               </div>
 
@@ -1128,62 +1169,77 @@ export function HolidayPMListView() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveExceptionSubmit} className="space-y-4">
-              {/* Motivo de excepción */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">
-                  Motivo de excepción
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ej. Permiso especial, cumpleaños..."
-                  value={exceptionReason}
-                  onChange={(e) => setExceptionReason(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
-                />
-              </div>
+            <form onSubmit={handleSaveExceptionSubmit} className="space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+                {/* Left column: Reason and Type */}
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-foreground">
+                      Motivo de excepción
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ej. Permiso especial, cumpleaños..."
+                      value={exceptionReason}
+                      onChange={(e) => setExceptionReason(e.target.value)}
+                      className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+                    />
+                  </div>
 
-              {/* Tipo de excepción */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">
-                  Tipo de excepción
-                </label>
-                <select
-                  value={exceptionType}
-                  onChange={(e) => setExceptionType(e.target.value as any)}
-                  className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
-                >
-                  <option value="USER_INCLUDE">Día libre (no asiste)</option>
-                  <option value="USER_EXCLUDE">Día laborable (ignora feriado)</option>
-                </select>
-              </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-foreground">
+                      Tipo de excepción
+                    </label>
+                    <select
+                      value={exceptionType}
+                      onChange={(e) => setExceptionType(e.target.value as any)}
+                      className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+                    >
+                      <option value="USER_INCLUDE">Día libre (no asiste)</option>
+                      <option value="USER_EXCLUDE">Día laborable (ignora feriado)</option>
+                    </select>
+                  </div>
 
-              {/* Month Calendar Picker */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">
-                  Fechas de excepción
-                </label>
-                <MonthCalendarPicker
-                  selectedDates={exceptionDates}
-                  onToggleDate={handleToggleDateException}
-                />
-                <p className="text-xs text-muted-foreground text-center pt-1">
-                  Has seleccionado <span className="font-bold text-foreground">{exceptionDates.length}</span> días.
-                </p>
+                  <div className="rounded-2xl border border-blue-500/20 bg-blue-500/10 p-3.5 text-xs text-muted-foreground space-y-1.5">
+                    <p className="font-semibold text-blue-400">¿Cómo funciona?</p>
+                    <p>
+                      <strong>Día libre:</strong> El trabajador no tendrá falta en estas fechas aunque el calendario regular marque día hábil.
+                    </p>
+                    <p>
+                      <strong>Día laborable:</strong> El trabajador debe asistir aunque el proyecto tenga feriado asignado.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right column: Calendar */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">
+                      Fechas de excepción
+                    </label>
+                    <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-violet/10 text-violet border border-violet/20 font-semibold">
+                      {exceptionDates.length} seleccionadas
+                    </span>
+                  </div>
+                  <MonthCalendarPicker
+                    selectedDates={exceptionDates}
+                    onToggleDate={handleToggleDateException}
+                  />
+                </div>
               </div>
 
               {/* Bottom Actions */}
-              <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-[#1E2335]">
                 <button
                   type="button"
                   onClick={() => setSelectedMemberForException(null)}
-                  className="h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
+                  className="w-full sm:w-32 h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-violet/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  className="w-full sm:w-48 h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-violet/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                 >
                   <Check className="w-4 h-4 stroke-[2.5]" />
                   <span>Guardar excepción</span>
@@ -1202,12 +1258,12 @@ export function HolidayPMListView() {
             if (e.target === e.currentTarget) setIsImportModalOpen(false);
           }}
         >
-          <div className="w-full max-w-[440px] max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[28px] p-5 sm:p-6 shadow-2xl relative text-foreground space-y-4">
-            {/* Drag Handle */}
-            <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto" />
+          <div className="w-full max-w-lg md:max-w-2xl max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl relative text-foreground space-y-5">
+            {/* Drag Handle (Mobile only) */}
+            <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto md:hidden" />
 
             {/* Header */}
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-3 pb-2 border-b border-[#1E2335]">
               <div>
                 <h3 className="text-lg font-bold text-foreground">
                   Importar feriados
@@ -1306,17 +1362,17 @@ export function HolidayPMListView() {
               )}
 
               {/* Bottom Actions */}
-              <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-[#1E2335]">
                 <button
                   type="button"
                   onClick={() => setIsImportModalOpen(false)}
-                  className="h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
+                  className="w-full sm:w-32 h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-violet/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  className="w-full sm:w-44 h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-violet/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
                   <Upload className="w-4 h-4 stroke-[2.2]" />
                   <span>Importar texto</span>
@@ -1335,10 +1391,10 @@ export function HolidayPMListView() {
             if (e.target === e.currentTarget) setIsLinkModalOpen(false);
           }}
         >
-          <div className="w-full max-w-[440px] bg-[#0E111C] border border-[#1E2335] rounded-[28px] p-5 sm:p-6 shadow-2xl relative text-foreground space-y-4">
-            <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto" />
+          <div className="w-full max-w-lg md:max-w-xl max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl relative text-foreground space-y-5">
+            <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto md:hidden" />
 
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-3 pb-2 border-b border-[#1E2335]">
               <div>
                 <h3 className="text-lg font-bold text-foreground">
                   Enlazar colección global
@@ -1377,18 +1433,18 @@ export function HolidayPMListView() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-[#1E2335]">
                 <button
                   type="button"
                   onClick={() => setIsLinkModalOpen(false)}
-                  className="h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
+                  className="w-full sm:w-32 h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={!selectedGlobalCollection}
-                  className="h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-violet/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                  className="w-full sm:w-36 h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-violet/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
                 >
                   <Link2 className="w-4 h-4 stroke-[2.2]" />
                   <span>Enlazar</span>

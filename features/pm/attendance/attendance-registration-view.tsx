@@ -240,7 +240,7 @@ export function AttendanceRegistrationView() {
               <table className="w-full min-w-full text-sm">
                 <thead>
                   <tr className="border-b text-text-2 text-xs uppercase tracking-wider">
-                    <th className="py-3 px-4 text-left font-medium">Colaborador</th>
+                    <th className="py-3 px-4 text-left font-medium">Trabajador</th>
                     <th className="py-3 px-4 text-left font-medium">Tipo de Horario</th>
                     <th className="py-3 px-4 text-left font-medium">Estado</th>
                     <th className="py-3 px-4 text-left font-medium">Hora</th>

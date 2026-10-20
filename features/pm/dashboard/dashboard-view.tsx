@@ -522,7 +522,7 @@ export function DashboardView() {
                 Aún no hay actividad en tu equipo
               </h4>
               <p className="text-[11px] text-[#8F96AE] max-w-xs mt-1 mb-3.5 leading-relaxed">
-                Asigna colaboradores a tus proyectos para ver sus marcajes aquí en tiempo real.
+                Asigna trabajadores a tus proyectos para ver sus marcajes aquí en tiempo real.
               </p>
               <button
                 type="button"

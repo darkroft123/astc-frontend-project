@@ -209,7 +209,7 @@ export function AttendanceManagementView() {
         const parts = [userObj.firstName, userObj.lastName].filter(Boolean);
         uName = parts.length > 0 ? parts.join(" ") : userObj.username || userObj.email || "Usuario";
       } else if (item.userId) {
-        uName = `Colaborador (${item.userId.substring(0, 8)})`;
+        uName = `Trabajador (${item.userId.substring(0, 8)})`;
       }
 
       const fecha = formatLocalDateString(item.date);

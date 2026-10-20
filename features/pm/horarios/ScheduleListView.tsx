@@ -153,12 +153,81 @@ function TemplatePreview({ template, projects, onAssign, onClose }: {
   );
 }
 
+const DEFAULT_MOCK_PROJECTS = [
+  { id: "p1", name: "Gestión de Asistencia" },
+  { id: "p2", name: "Proyecto Testeo" },
+  { id: "p3", name: "Testo6" },
+];
+
+const DEFAULT_MOCK_TEMPLATES = [
+  {
+    id: "tpl-1",
+    name: "Horario Regular Administrativo",
+    shiftType: "REGULAR",
+    projectId: "p1",
+    workStartTime: "09:00:00",
+    workEndTime: "18:00:00",
+    graceMinutes: 10,
+    absenceCutoffTime: "10:30:00",
+    timezone: "America/Lima",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "tpl-2",
+    name: "Turno Rotativo 4x4 Operaciones",
+    shiftType: "ROTATING_4X4",
+    projectId: "p1",
+    rotationWorkDays: 4,
+    rotationRestDays: 4,
+    rotationShiftStartTime: "07:00:00",
+    rotationShiftEndTime: "19:00:00",
+    graceMinutes: 15,
+    absenceCutoffTime: "08:30:00",
+    timezone: "America/Lima",
+    validFrom: "2026-01-01",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "tpl-3",
+    name: "Turno Flexible Desarrollo / Tech",
+    shiftType: "FLEXIBLE",
+    projectId: "p2",
+    graceMinutes: 15,
+    timezone: "America/Lima",
+    mondayStart: "08:30:00",
+    mondayEnd: "17:30:00",
+    tuesdayStart: "08:30:00",
+    tuesdayEnd: "17:30:00",
+    wednesdayStart: "08:30:00",
+    wednesdayEnd: "17:30:00",
+    thursdayStart: "08:30:00",
+    thursdayEnd: "17:30:00",
+    fridayStart: "08:00:00",
+    fridayEnd: "14:00:00",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "tpl-4",
+    name: "Turno Transitorio Campaña Especial",
+    shiftType: "TRANSITORY",
+    projectId: "p3",
+    workStartTime: "08:00:00",
+    workEndTime: "16:00:00",
+    graceMinutes: 5,
+    absenceCutoffTime: "09:00:00",
+    timezone: "America/Lima",
+    validFrom: "2026-03-01",
+    validUntil: "2026-06-30",
+    createdAt: new Date().toISOString(),
+  },
+];
+
 export function ScheduleListView() {
   const router = useRouter();
   const { token, hydrated } = useAuth();
 
-  const [projects, setProjects] = useState<any[]>([]);
-  const [templates, setTemplates] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>(DEFAULT_MOCK_PROJECTS);
+  const [templates, setTemplates] = useState<any[]>(DEFAULT_MOCK_TEMPLATES);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -168,21 +237,37 @@ export function ScheduleListView() {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (hydrated && token) {
-      getAllProjects(token).then((data) => {
-        setProjects(data || []);
-      });
+    if (!hydrated) return;
+    if (token) {
+      getAllProjects(token)
+        .then((data) => {
+          setProjects(data && data.length > 0 ? data : DEFAULT_MOCK_PROJECTS);
+        })
+        .catch(() => {
+          setProjects(DEFAULT_MOCK_PROJECTS);
+        });
+    } else {
+      setProjects(DEFAULT_MOCK_PROJECTS);
     }
   }, [hydrated, token]);
 
   const fetchTemplates = useCallback(async () => {
-    if (!token) return;
+    if (!token) {
+      setTemplates(DEFAULT_MOCK_TEMPLATES);
+      setProjects(DEFAULT_MOCK_PROJECTS);
+      return;
+    }
     setLoading(true);
     try {
       const data = await listShiftTemplates(token);
-      setTemplates(data || []);
+      if (Array.isArray(data) && data.length > 0) {
+        setTemplates(data);
+      } else {
+        setTemplates(DEFAULT_MOCK_TEMPLATES);
+      }
     } catch (error) {
       console.error("Error fetching templates:", error);
+      setTemplates(DEFAULT_MOCK_TEMPLATES);
     } finally {
       setLoading(false);
     }

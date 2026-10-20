@@ -2,6 +2,7 @@
 
 import { Calendar as CalendarIcon } from "lucide-react";
 import PeriodSelector from "@/components/period-selector";
+import { NotificationBell } from "@/components/layout/notification-bell";
 
 type Period =
   | "today"
@@ -26,6 +27,7 @@ interface PageHeaderProps {
   description?: string;
   categoryTag?: { badge: string; text: string };
   showPeriodSelector?: boolean;
+  showNotificationBell?: boolean;
   period?: Period;
   dateRange?: DateRange;
   onPeriodChange?: (range: DateRange) => void;
@@ -45,6 +47,7 @@ export default function PageHeader({
   description,
   categoryTag,
   showPeriodSelector = true,
+  showNotificationBell = true,
   period,
   dateRange,
   onPeriodChange,
@@ -81,15 +84,22 @@ export default function PageHeader({
         )}
       </div>
 
-      {showPeriodSelector && period && dateRange && onPeriodChange && (
-        <div className="w-full sm:w-auto shrink-0 mt-1 sm:mt-0">
-          <PeriodSelector
-            period={period}
-            dateRange={dateRange}
-            onPeriodChange={onPeriodChange}
-          />
-        </div>
-      )}
+      <div className="flex items-center gap-3 shrink-0">
+        {showPeriodSelector && period && dateRange && onPeriodChange && (
+          <div className="w-full sm:w-auto shrink-0 mt-1 sm:mt-0">
+            <PeriodSelector
+              period={period}
+              dateRange={dateRange}
+              onPeriodChange={onPeriodChange}
+            />
+          </div>
+        )}
+        {showNotificationBell && (
+          <div className="hidden md:flex items-center">
+            <NotificationBell />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

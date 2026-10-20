@@ -38,6 +38,89 @@ type UserSchedule = {
   shiftType?: string;
 };
 
+const DEFAULT_MOCK_SCHEDULES: UserSchedule[] = [
+  {
+    userId: "usr-01",
+    userName: "Carlos Mamani",
+    userEmail: "cmamani@empresa.com",
+    projectId: "p1",
+    projectName: "Gestión de Asistencia",
+    projectStartHour: "09:00",
+    projectEndHour: "18:00",
+    projectGraceMinutes: 10,
+    effectiveStartHour: "09:00",
+    effectiveEndHour: "18:00",
+    hasOverride: false,
+    overrideId: null,
+    shiftType: "REGULAR",
+  },
+  {
+    userId: "usr-02",
+    userName: "Ana Silva Morales",
+    userEmail: "asilva@empresa.com",
+    projectId: "p1",
+    projectName: "Gestión de Asistencia",
+    projectStartHour: "09:00",
+    projectEndHour: "18:00",
+    projectGraceMinutes: 15,
+    effectiveStartHour: "08:30",
+    effectiveEndHour: "17:30",
+    hasOverride: true,
+    overrideId: "ov-01",
+    shiftType: "ROTATING_4X4",
+  },
+  {
+    userId: "usr-03",
+    userName: "Diego Torres Ramos",
+    userEmail: "dtorres@empresa.com",
+    projectId: "p2",
+    projectName: "Proyecto Testeo",
+    projectStartHour: "08:00",
+    projectEndHour: "17:00",
+    projectGraceMinutes: 10,
+    effectiveStartHour: "08:00",
+    effectiveEndHour: "17:00",
+    hasOverride: false,
+    overrideId: null,
+    shiftType: "REGULAR",
+  },
+  {
+    userId: "usr-04",
+    userName: "Lucía Fernández Cruz",
+    userEmail: "lfernandez@empresa.com",
+    projectId: "p3",
+    projectName: "Testo6",
+    projectStartHour: "10:00",
+    projectEndHour: "19:00",
+    projectGraceMinutes: 10,
+    effectiveStartHour: "10:00",
+    effectiveEndHour: "19:00",
+    hasOverride: false,
+    overrideId: null,
+    shiftType: "FLEXIBLE",
+  },
+  {
+    userId: "usr-05",
+    userName: "Miguel Ángel Rojas",
+    userEmail: "mrojas@empresa.com",
+    projectId: "",
+    projectName: "Sin proyecto",
+    projectStartHour: "--",
+    projectEndHour: "--",
+    projectGraceMinutes: 0,
+    effectiveStartHour: "--",
+    effectiveEndHour: "--",
+    hasOverride: false,
+    overrideId: null,
+  },
+];
+
+const DEFAULT_MOCK_PROJECTS = [
+  { id: "p1", name: "Gestión de Asistencia", workStartTime: "09:00", workEndTime: "18:00" },
+  { id: "p2", name: "Proyecto Testeo", workStartTime: "08:00", workEndTime: "17:00" },
+  { id: "p3", name: "Testo6", workStartTime: "10:00", workEndTime: "19:00" },
+];
+
 export function ScheduleManagementView() {
   const router = useRouter();
   const { token, hydrated } = useAuth();
@@ -48,12 +131,17 @@ export function ScheduleManagementView() {
   const [projectFilter, setProjectFilter] = useState("all");
   const [resettingId, setResettingId] = useState<string | null>(null);
 
-  const [projects, setProjects] = useState<{ id: string; name: string; workStartTime?: string; workEndTime?: string }[]>([]);
-  const [schedules, setSchedules] = useState<UserSchedule[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [projects, setProjects] = useState<{ id: string; name: string; workStartTime?: string; workEndTime?: string }[]>(DEFAULT_MOCK_PROJECTS);
+  const [schedules, setSchedules] = useState<UserSchedule[]>(DEFAULT_MOCK_SCHEDULES);
+  const [isLoading, setIsLoading] = useState(false);
 
   const loadData = useCallback(async () => {
-    if (!token) return;
+    if (!token) {
+      setProjects(DEFAULT_MOCK_PROJECTS);
+      setSchedules(DEFAULT_MOCK_SCHEDULES);
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
 
     try {
@@ -64,7 +152,7 @@ export function ScheduleManagementView() {
       ]);
 
       const activeProjects = (projData ?? []) as any[];
-      setProjects(activeProjects);
+      setProjects(activeProjects.length > 0 ? activeProjects : DEFAULT_MOCK_PROJECTS);
 
       const overrideMap = new Map<string, any>();
       (overrides ?? []).forEach((o) => {
@@ -134,18 +222,24 @@ export function ScheduleManagementView() {
         }
       });
 
-      setSchedules(derived);
+      if (derived.length > 0) {
+        setSchedules(derived);
+      } else {
+        setSchedules(DEFAULT_MOCK_SCHEDULES);
+      }
     } catch (err) {
       console.error("Error loading schedule management data", err);
+      setProjects(DEFAULT_MOCK_PROJECTS);
+      setSchedules(DEFAULT_MOCK_SCHEDULES);
     } finally {
       setIsLoading(false);
     }
   }, [token]);
 
   useEffect(() => {
-    if (!hydrated || !token) return;
+    if (!hydrated) return;
     loadData();
-  }, [hydrated, token, loadData]);
+  }, [hydrated, loadData]);
 
   const handleReset = async (userId: string, projectId: string) => {
     if (!token || !projectId) return;

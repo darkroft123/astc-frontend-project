@@ -152,30 +152,42 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
         {/* Selector de proyectos */}
         <div className="mt-2.5">
-          <Select
-            value={selectedProjectId || "all"}
-            onValueChange={(val) => {
-              selectProject(val);
-              if (typeof window !== "undefined") {
-                localStorage.setItem("selected_project_id", val);
-                window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: val }));
-              }
-            }}
-          >
-            <SelectTrigger className="w-full h-9 rounded-xl border border-border dark:border-[#1E2335] bg-white dark:bg-[#181B2A] text-xs text-foreground dark:text-white">
-              <SelectValue placeholder={`Todos mis proyectos (${projects.length || 3})`} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                Todos mis proyectos ({projects.length || 3})
-              </SelectItem>
-              {projects.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {(() => {
+            const projectList = projects && projects.length > 0 ? projects : [
+              { id: "p1", name: "gestion de asistencia" },
+              { id: "p2", name: "proyecto testeo" },
+              { id: "p3", name: "testo6" },
+            ];
+            const currentProject = projectList.find((p) => p.id === selectedProjectId);
+            const displayLabel = currentProject ? currentProject.name : `Todos los proyectos (${projectList.length})`;
+
+            return (
+              <Select
+                value={selectedProjectId || "all"}
+                onValueChange={(val) => {
+                  selectProject(val === "all" ? "" : val);
+                  if (typeof window !== "undefined") {
+                    localStorage.setItem("selected_project_id", val);
+                    window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: val }));
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full h-9 rounded-xl border border-border dark:border-[#1E2335] bg-white dark:bg-[#181B2A] text-xs text-foreground dark:text-white flex items-center justify-between">
+                  <span className="truncate font-medium">{displayLabel}</span>
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border">
+                  <SelectItem value="all">
+                    Todos los proyectos ({projectList.length})
+                  </SelectItem>
+                  {projectList.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            );
+          })()}
         </div>
 
         <div className="flex items-center gap-1.5 mt-2.5 text-xs text-muted-foreground font-sans">
