@@ -171,11 +171,11 @@ export function NotificationBell() {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="relative w-10 h-10 rounded-xl bg-gray-100/90 dark:bg-card border border-gray-200/90 dark:border-border/80 flex items-center justify-center hover:bg-gray-200/80 dark:hover:bg-raised transition-colors cursor-pointer text-gray-700 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground shadow-xs shrink-0"
+          className="relative w-11 h-11 rounded-2xl bg-[#141829] border border-[#1E2335] flex items-center justify-center hover:bg-[#1C2238] transition-colors cursor-pointer text-[#8F96AE] hover:text-white shadow-xs shrink-0"
           aria-label="Notificaciones"
         >
-          <Bell className="w-4 h-4 text-gray-600 dark:text-muted-foreground" strokeWidth={2} />
-          <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[18px] px-1 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-[#080A12]">
+          <Bell className="w-5 h-5 text-[#8F96AE]" strokeWidth={1.8} />
+          <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[20px] px-1.5 items-center justify-center rounded-full bg-[#EF4444] text-[10px] font-bold text-white shadow-sm ring-2 ring-[#0C0E18]">
             {unreadCount > 9 ? "9+" : unreadCount > 0 ? unreadCount : "9+"}
           </span>
         </button>

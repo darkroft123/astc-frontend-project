@@ -42,33 +42,43 @@ export function MobileHeader({ customSubtitle }: MobileHeaderProps) {
   }, [role, customSubtitle]);
 
   return (
-    <header className="md:hidden sticky top-0 z-30 w-full bg-white/95 dark:bg-[#080A12]/90 backdrop-blur-md border-b border-gray-200/80 dark:border-border/60 px-3.5 py-2.5 flex items-center justify-between gap-3 shadow-xs">
+    <header className="md:hidden sticky top-0 z-30 w-full bg-[#0C0E18] border-b border-[#1E2335] px-4 py-3 flex items-center justify-between gap-3 shadow-md">
       {/* Left: Hamburger & User Info */}
       <div className="flex items-center gap-3 min-w-0 flex-1">
         <button
           onClick={() => setOpen(true)}
-          className="p-1.5 -ml-1 rounded-xl text-gray-700 dark:text-text-3 hover:text-gray-900 dark:hover:text-foreground hover:bg-gray-100 dark:hover:bg-surface/60 transition-colors shrink-0"
+          className="p-1 -ml-1 text-white hover:text-purple-300 transition-colors shrink-0 cursor-pointer"
           aria-label="Abrir menú"
         >
-          <Menu className="w-5 h-5 text-gray-800 dark:text-foreground" />
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 6H20" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+            <path d="M4 12H20" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+            <path d="M4 18H20" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+          </svg>
         </button>
 
-        {/* User Avatar */}
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#6366f1] via-[#8b5cf6] to-[#06b6d4] flex items-center justify-center font-bold text-white text-xs shadow-sm shrink-0">
-          {initials}
+        {/* User Avatar Squircle matching exact image */}
+        <div
+          className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white text-sm shadow-md shrink-0"
+          style={{
+            background: "linear-gradient(135deg, #5B8CFF 0%, #A855F7 55%, #22C3E6 100%)",
+            boxShadow: "0 4px 14px rgba(168, 85, 247, 0.3)",
+          }}
+        >
+          {initials || "CM"}
         </div>
 
         {/* Name and Turno */}
         <div className="min-w-0 flex-1 overflow-hidden">
-          <p className="font-bold text-[13.5px] leading-tight text-gray-900 dark:text-foreground truncate">
-            {displayName}
+          <p className="font-bold text-[15px] leading-tight text-white tracking-tight truncate">
+            {displayName || "carlos mamani"}
           </p>
 
-          {/* Marquee Ticker Subtitle */}
-          <div className="relative overflow-hidden w-full max-w-[200px] sm:max-w-[260px] mt-0.5">
-            <div className="whitespace-nowrap animate-marquee inline-block text-[11px] text-gray-500 dark:text-text-4 font-normal">
+          {/* Marquee Ticker Subtitle matching image */}
+          <div className="relative overflow-hidden w-full max-w-[210px] sm:max-w-[260px] mt-0.5">
+            <div className="whitespace-nowrap animate-marquee inline-block text-xs text-[#8F96AE] font-normal">
               <span>{defaultSubtitle}</span>
-              <span className="mx-4 text-primary/40">•</span>
+              <span className="mx-4 text-purple-400/40">•</span>
               <span>{defaultSubtitle}</span>
             </div>
           </div>
