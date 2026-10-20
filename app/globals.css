@@ -257,14 +257,19 @@
 }
 
 /* Scrollbars visibles y fluidos en toda la aplicación */
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(140, 150, 180, 0.35) transparent;
+  scrollbar-color: rgba(140, 150, 180, 0.45) transparent;
 }
 
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 9px;
+  height: 9px;
 }
 
 ::-webkit-scrollbar-track {
@@ -272,11 +277,13 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(140, 150, 180, 0.3);
+  background: rgba(140, 150, 180, 0.4);
   border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(140, 150, 180, 0.55);
+  background: rgba(168, 85, 247, 0.8);
 }
 

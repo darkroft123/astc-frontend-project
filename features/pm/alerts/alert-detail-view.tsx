@@ -229,9 +229,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
             <span>ID {alert.id.slice(0, 8)}...</span>
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
-          <div className="hidden md:block">
-            <NotificationBell />
-          </div>
+          <NotificationBell />
         </div>
       </div>
 
