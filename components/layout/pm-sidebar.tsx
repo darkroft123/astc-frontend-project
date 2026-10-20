@@ -136,9 +136,9 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       {/* 2. Tarjeta del Rol */}
-      <div className="bg-raised border border-line rounded-[var(--radius-card)] p-3.5 mb-4">
+      <div className="bg-card border border-border dark:bg-[#12141F] dark:border-[#1E2335] rounded-2xl p-3.5 mb-4 shadow-xs">
         <div>
-          <span className="font-mono text-[10.5px] leading-[15.8px] uppercase tracking-[0.05em] text-amber font-medium">
+          <span className="font-mono text-[10.5px] leading-[15.8px] uppercase tracking-[0.05em] text-amber font-semibold">
             {roleLabel}
           </span>
         </div>
@@ -155,13 +155,13 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
                 window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: val }));
               }
             }}
-            className="w-full bg-field border border-line-2 rounded-[var(--radius-control)] px-2.5 py-1.5 text-[11px] text-text-2 focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
+            className="w-full bg-white dark:bg-[#181B2A] border border-border dark:border-[#1E2335] rounded-xl px-2.5 py-1.5 text-xs text-foreground dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer transition-colors shadow-2xs"
           >
-            <option value="all" className="bg-surface text-foreground">
+            <option value="all" className="bg-white dark:bg-[#181B2A] text-gray-900 dark:text-gray-100">
               Todos mis proyectos ({projects.length || 3})
             </option>
             {projects.map((p) => (
-              <option key={p.id} value={p.id} className="bg-surface text-foreground">
+              <option key={p.id} value={p.id} className="bg-white dark:bg-[#181B2A] text-gray-900 dark:text-gray-100">
                 {p.name}
               </option>
             ))}

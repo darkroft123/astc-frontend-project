@@ -42,18 +42,18 @@ export function MobileHeader({ customSubtitle }: MobileHeaderProps) {
   }, [role, customSubtitle]);
 
   return (
-    <header className="md:hidden sticky top-0 z-30 w-full bg-[#0C0E18] border-b border-[#1E2335] px-4 py-3 flex items-center justify-between gap-3 shadow-md">
+    <header className="md:hidden sticky top-0 z-30 w-full bg-white dark:bg-[#0C0E18] border-b border-border dark:border-[#1E2335] px-4 py-3 flex items-center justify-between gap-3 shadow-xs dark:shadow-md transition-colors">
       {/* Left: Hamburger & User Info */}
       <div className="flex items-center gap-3 min-w-0 flex-1">
         <button
           onClick={() => setOpen(true)}
-          className="p-1 -ml-1 text-white hover:text-purple-300 transition-colors shrink-0 cursor-pointer"
+          className="p-1 -ml-1 text-foreground dark:text-white hover:text-purple-600 dark:hover:text-purple-300 transition-colors shrink-0 cursor-pointer"
           aria-label="Abrir menú"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4 6H20" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
-            <path d="M4 12H20" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
-            <path d="M4 18H20" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+            <path d="M4 6H20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+            <path d="M4 12H20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+            <path d="M4 18H20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
           </svg>
         </button>
 
@@ -70,13 +70,13 @@ export function MobileHeader({ customSubtitle }: MobileHeaderProps) {
 
         {/* Name and Turno */}
         <div className="min-w-0 flex-1 overflow-hidden">
-          <p className="font-bold text-[15px] leading-tight text-white tracking-tight truncate">
+          <p className="font-bold text-[15px] leading-tight text-foreground dark:text-white tracking-tight truncate">
             {displayName || "carlos mamani"}
           </p>
 
           {/* Marquee Ticker Subtitle matching image */}
           <div className="relative overflow-hidden w-full max-w-[210px] sm:max-w-[260px] mt-0.5">
-            <div className="whitespace-nowrap animate-marquee inline-block text-xs text-[#8F96AE] font-normal">
+            <div className="whitespace-nowrap animate-marquee inline-block text-xs text-muted-foreground dark:text-[#8F96AE] font-normal">
               <span>{defaultSubtitle}</span>
               <span className="mx-4 text-purple-400/40">•</span>
               <span>{defaultSubtitle}</span>
