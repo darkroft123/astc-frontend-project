@@ -231,12 +231,12 @@ export default function PeriodSelector({
               <CalendarIcon className="w-5 h-5 text-[#C084FC]" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-foreground dark:text-white tracking-tight">
+              <DialogTitle className="text-base sm:text-lg font-bold text-foreground dark:text-white tracking-tight">
                 Rango personalizado
-              </h2>
-              <p className="text-xs text-muted-foreground dark:text-[#8F98B2] mt-0.5">
+              </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground dark:text-[#8F98B2] mt-0.5">
                 Selecciona fechas para filtrar
-              </p>
+              </DialogDescription>
             </div>
           </div>
           <button

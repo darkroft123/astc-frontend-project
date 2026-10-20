@@ -20,7 +20,7 @@ import {
   X as XIcon,
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
 import {
   getAllProjects,
@@ -582,7 +582,8 @@ export function AttendanceHistoryView() {
       <Dialog open={!!selectedPhotoUrl} onOpenChange={(open) => { if (!open) setSelectedPhotoUrl(null); }}>
         <DialogContent className="max-w-md bg-card border-border p-4 rounded-2xl">
           <div className="space-y-3">
-            <h3 className="font-semibold text-base text-foreground">Foto de marcación</h3>
+            <DialogTitle className="font-semibold text-base text-foreground">Foto de marcación</DialogTitle>
+            <DialogDescription className="sr-only">Vista previa de la foto de marcación</DialogDescription>
             {selectedPhotoUrl && (
               <img
                 src={selectedPhotoUrl}

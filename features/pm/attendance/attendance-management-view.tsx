@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/atoms/status-badge";
 import { SubMetricCard } from "@/components/dashboard/SubMetricCard";
 import { RefreshCw, ChevronLeft, ChevronRight, Clock, CheckCircle2, XCircle, TrendingUp, X as XIcon } from "lucide-react";
-import { Dialog, DialogContent, DialogClose, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogClose, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import PeriodSelector from "@/components/period-selector";
 import PageHeader from "@/components/layout/page-header";
 import { DataTable, Column } from "@/components/DataTable";
@@ -381,6 +381,7 @@ export function AttendanceManagementView() {
         <Dialog open={!!selectedPhotoUrl} onOpenChange={(open) => { if (!open) setSelectedPhotoUrl(null); }}>
           <DialogContent className="sm:max-w-4xl max-h-[90vh] p-2 sm:p-4" showCloseButton={false}>
             <DialogTitle className="sr-only">Foto de Asistencia</DialogTitle>
+            <DialogDescription className="sr-only">Foto de asistencia ampliada</DialogDescription>
             <DialogClose className="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors">
               <XIcon className="w-5 h-5 text-white" />
               <span className="sr-only">Cerrar</span>
