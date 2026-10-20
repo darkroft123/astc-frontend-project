@@ -256,7 +256,7 @@
   animation-play-state: paused;
 }
 
-/* Scrollbars visibles y fluidos en toda la aplicación */
+/* Scrollbars visibles y fluidos solo para scroll vertical de ventana */
 html {
   overflow-y: scroll;
   scrollbar-gutter: stable;
@@ -269,7 +269,12 @@ html {
 
 ::-webkit-scrollbar {
   width: 9px;
-  height: 9px;
+  height: 0px;
+}
+
+::-webkit-scrollbar:horizontal {
+  display: none !important;
+  height: 0px !important;
 }
 
 ::-webkit-scrollbar-track {
@@ -285,5 +290,18 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(168, 85, 247, 0.8);
+}
+
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.no-scrollbar,
+.scrollbar-none {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 

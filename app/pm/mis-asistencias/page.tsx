@@ -224,40 +224,67 @@ export default function PMAsistenciasPage() {
         </div>
       </div>
 
-      {/* 3. PERIOD SELECTOR TABS (Mobile only) */}
-      <div className="md:hidden flex items-center gap-1.5 p-1 rounded-xl bg-card/60 border border-border/80 overflow-x-auto scrollbar-none">
-        {PERIOD_TABS.map((tab) => {
-          const isActive = activePeriod === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActivePeriod(tab.id)}
-              className={`flex-1 min-w-[75px] py-2 px-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap text-center ${
-                isActive
-                  ? "bg-slate-800 text-white font-semibold shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
+      {/* 3. PERIOD SELECTOR TABS (Mobile only - 2 rows matching Figma SVG) */}
+      <div className="md:hidden space-y-2.5">
+        <div className="p-2 sm:p-2.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335]">
+          {/* Row 1: 4 tabs */}
+          <div className="grid grid-cols-4 gap-1 text-center">
+            {PERIOD_TABS.slice(0, 4).map((tab) => {
+              const isActive = activePeriod === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActivePeriod(tab.id)}
+                  className={`py-1.5 px-1 rounded-xl text-xs transition-all cursor-pointer truncate ${
+                    isActive
+                      ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
+                      : "text-[#8F96AE] hover:text-white font-medium"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
 
-      {/* 4. DATE RANGE SELECTOR BAR (Mobile only) */}
-      <div className="md:hidden flex items-center gap-2">
-        <div className="flex-1 flex items-center gap-2 px-3.5 h-11 rounded-xl border border-border bg-card/60 text-xs font-mono text-muted-foreground">
-          <Calendar className="w-4 h-4 text-muted-foreground shrink-0" />
-          <span>{dateRange.from} → {dateRange.to}</span>
+          {/* Row 2: 3 tabs */}
+          <div className="grid grid-cols-3 gap-1 text-center mt-1.5 max-w-[280px]">
+            {PERIOD_TABS.slice(4).map((tab) => {
+              const isActive = activePeriod === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActivePeriod(tab.id)}
+                  className={`py-1.5 px-1 rounded-xl text-xs transition-all cursor-pointer truncate ${
+                    isActive
+                      ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
+                      : "text-[#8F96AE] hover:text-white font-medium"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
-        <button
-          type="button"
-          onClick={() => setDateRangeModalOpen(true)}
-          className="w-11 h-11 rounded-xl border border-border bg-card/60 hover:bg-card text-muted-foreground hover:text-foreground flex items-center justify-center shrink-0 transition-colors"
-          title="Seleccionar rango"
-        >
-          <Calendar className="w-4 h-4" />
-        </button>
+
+        {/* 4. DATE RANGE SELECTOR BAR (Mobile only) */}
+        <div className="flex items-center gap-2">
+          <div className="flex-1 h-11 px-3.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335] flex items-center justify-center gap-2 text-xs font-mono text-[#8F96AE]">
+            <Calendar className="w-3.5 h-3.5 text-[#A855F7]" />
+            <span className="text-[#EEF0F6] font-semibold">{dateRange.from} → {dateRange.to}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setDateRangeModalOpen(true)}
+            className="w-11 h-11 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-[#8F96AE] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
+            title="Seleccionar rango"
+          >
+            <Calendar className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* 5. 4 KPI CARDS */}
