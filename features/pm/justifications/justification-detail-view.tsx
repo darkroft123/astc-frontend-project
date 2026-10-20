@@ -466,30 +466,35 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
 
             {currentJustification.documentUrl ? (
               <div className="space-y-3">
-                <div className="flex items-center justify-between gap-3 p-3.5 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829]">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <FileText className="w-6 h-6 text-purple-400 shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-xs sm:text-sm font-semibold text-foreground truncate">
+                <div className="rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] p-4 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/25 flex items-center justify-center text-purple-400 shrink-0">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-foreground truncate">
                         Comprobante_medico.pdf
                       </p>
-                      <p className="text-[10px] text-muted-foreground">Constancia médica oficial</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        Constancia médica oficial · Documento PDF
+                      </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+
+                  <div className="grid grid-cols-2 gap-2.5 pt-1">
                     <button
                       type="button"
                       onClick={() => setShowPreview(!showPreview)}
-                      className="h-9 px-3 rounded-lg border border-border dark:border-[#1E2335] bg-card dark:bg-[#1c2238] hover:bg-muted text-xs font-semibold text-foreground flex items-center gap-1.5 transition-colors cursor-pointer"
+                      className="h-10 px-3 rounded-xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#1c2238] hover:bg-muted dark:hover:bg-[#252c48] text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
-                      {showPreview ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      {showPreview ? <EyeOff className="w-3.5 h-3.5 text-muted-foreground" /> : <Eye className="w-3.5 h-3.5 text-muted-foreground" />}
                       <span>{showPreview ? "Ocultar" : "Ver"}</span>
                     </button>
                     <a
                       href={currentJustification.documentUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="h-9 px-3 rounded-lg bg-brand-gradient text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                      className="h-10 px-3 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
                     >
                       <Download className="w-3.5 h-3.5" />
                       <span>Descargar</span>
@@ -498,9 +503,9 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
                 </div>
 
                 {showPreview && (
-                  <div className="mt-3 rounded-xl overflow-hidden border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] p-4 text-center">
+                  <div className="rounded-xl overflow-hidden border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] p-4 text-center">
                     <p className="text-xs text-muted-foreground">
-                      Vista previa de archivo comprobante activa.
+                      Vista previa activa de <span className="font-semibold text-foreground">Comprobante_medico.pdf</span>
                     </p>
                   </div>
                 )}
