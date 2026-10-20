@@ -36,6 +36,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { NotificationBell } from "@/components/layout/notification-bell";
 
 // DEFAULT MOCK COLLECTIONS MATCHING SVG
 const DEFAULT_SVG_COLLECTIONS: CollectionOutput[] = [
@@ -567,7 +568,7 @@ export function HolidayPMListView() {
         }}
       />
 
-      <div className="relative w-full max-w-7xl mx-auto space-y-4 z-10 px-0 md:px-0">
+      <div className="relative w-full max-w-7xl mx-auto space-y-6 z-10 px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
         {/* 1. TOP HEADER & CREATE COLLECTION BUTTON */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
@@ -587,18 +588,23 @@ export function HolidayPMListView() {
             </p>
           </div>
 
-          {/* Gradient Main Action Button */}
-          <button
-            type="button"
-            onClick={() => setIsCreateModalOpen(true)}
-            className="w-full md:w-auto h-11 px-5 rounded-2xl text-white font-semibold text-xs shadow-lg shadow-[#A855F7]/25 hover:opacity-95 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
-            style={{
-              background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 100%)",
-            }}
-          >
-            <Plus className="w-4 h-4 stroke-[2.5]" />
-            <span>Crear colección</span>
-          </button>
+          {/* Desktop Right Header Actions */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="w-full md:w-auto h-11 px-5 rounded-2xl text-white font-semibold text-xs shadow-lg shadow-[#A855F7]/25 hover:opacity-95 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
+              style={{
+                background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 100%)",
+              }}
+            >
+              <Plus className="w-4 h-4 stroke-[2.5]" />
+              <span>Crear colección</span>
+            </button>
+            <div className="hidden md:block">
+              <NotificationBell />
+            </div>
+          </div>
         </div>
 
         {/* 2. TOP 3 KPI METRIC CARDS (EXACT SVG COLORS & BORDERS) */}

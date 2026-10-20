@@ -244,8 +244,8 @@ export function VacationApprovalView() {
   ];
 
   return (
-    <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-12 max-w-6xl mx-auto px-0 md:px-6 py-2 md:py-4">
-      {/* 1. TOP HEADER (EXACT SVG DESIGN) */}
+    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-12 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
+      {/* 1. TOP HEADER */}
       <PageHeader
         categoryTag={{ badge: "PANEL DE GESTIÓN", text: "Solicitudes del equipo" }}
         title="Vacaciones del equipo"
@@ -253,67 +253,119 @@ export function VacationApprovalView() {
         showPeriodSelector={false}
       />
 
-      {/* 2. SOLICITAR VACACIONES BUTTON (Full width with brand gradient as in SVG) */}
+      {/* 2. SOLICITAR VACACIONES BUTTON (Mobile only) */}
       <button
         type="button"
-        onClick={() => toast({ title: "Solicitud de vacaciones", description: "Formulario para solicitar vacaciones de colaborador abierto." })}
-        className="w-full h-12 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 cursor-pointer transition-all"
+        onClick={() => toast({ title: "Solicitud de vacaciones", description: "Formulario para solicitar vacaciones de trabajador abierto." })}
+        className="md:hidden w-full h-12 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 cursor-pointer transition-all"
       >
         <Plus className="w-4 h-4 stroke-[2.5]" />
         Solicitar vacaciones
       </button>
 
-      {/* 3. 4 KPI CARDS (2x2 on mobile, 4 cols on desktop) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* 3. 4 KPI CARDS */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
         {/* Card 1: Total solicitudes */}
-        <div className="rounded-2xl border border-border bg-card/60 p-4 flex flex-col justify-between shadow-sm">
-          <div className="w-9 h-9 rounded-xl border border-border/60 bg-background/50 flex items-center justify-center text-muted-foreground shrink-0 mb-3">
-            <AlertTriangle className="w-4 h-4" />
-          </div>
-          <div>
+        <div className="rounded-2xl border border-border bg-card/60 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl border border-border/60 bg-background/50 flex items-center justify-center text-muted-foreground shrink-0">
+              <AlertTriangle className="w-4 h-4" />
+            </div>
             <p className="text-xs text-muted-foreground font-medium">Total solicitudes</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{vacations.length}</p>
+          </div>
+          <div className="mt-2.5 sm:mt-3">
+            <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{vacations.length}</p>
           </div>
         </div>
 
         {/* Card 2: Pendientes */}
-        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 flex flex-col justify-between shadow-sm">
-          <div className="w-9 h-9 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 mb-3">
-            <Clock className="w-4 h-4" />
-          </div>
-          <div>
+        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+              <Clock className="w-4 h-4" />
+            </div>
             <p className="text-xs text-amber-400 font-medium">Pendientes</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{pendingCount}</p>
+          </div>
+          <div className="mt-2.5 sm:mt-3">
+            <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{pendingCount}</p>
           </div>
         </div>
 
         {/* Card 3: Aprobadas */}
-        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 flex flex-col justify-between shadow-sm">
-          <div className="w-9 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 mb-3">
-            <CheckCircle2 className="w-4 h-4" />
-          </div>
-          <div>
+        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
             <p className="text-xs text-emerald-400 font-medium">Aprobadas</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{approvedCount}</p>
+          </div>
+          <div className="mt-2.5 sm:mt-3">
+            <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{approvedCount}</p>
           </div>
         </div>
 
         {/* Card 4: % Aprobadas */}
-        <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 flex flex-col justify-between shadow-sm">
-          <div className="w-9 h-9 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0 mb-3">
-            <TrendingUp className="w-4 h-4" />
-          </div>
-          <div>
+        <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0">
+              <TrendingUp className="w-4 h-4" />
+            </div>
             <p className="text-xs text-purple-400 font-medium">% Aprobadas</p>
-            <p className="text-2xl font-bold text-foreground mt-1">
+          </div>
+          <div className="mt-2.5 sm:mt-3">
+            <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">
               {vacations.length > 0 ? Math.round((approvedCount / vacations.length) * 100) : 0}%
             </p>
           </div>
         </div>
       </div>
 
-      {/* 4. FILTERS CONTAINER */}
-      <div className="space-y-2 pt-2">
+      {/* 4. FILTERS CONTAINER - Desktop View (1 Row) */}
+      <div className="hidden md:flex md:items-center md:justify-between gap-4 rounded-2xl border border-border bg-card/60 p-4 shadow-sm">
+        <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+          <Sun className="w-4 h-4 text-amber-400" />
+          Solicitudes de vacaciones
+        </h3>
+
+        <div className="flex items-center gap-3">
+          <div className="relative w-56">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full h-10 px-3.5 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+            >
+              <option value="ALL" className="bg-card text-foreground">Todas las solicitudes</option>
+              <option value="PENDING" className="bg-card text-foreground">Pendientes</option>
+              <option value="APPROVED" className="bg-card text-foreground">Aprobadas</option>
+              <option value="REJECTED" className="bg-card text-foreground">Rechazadas</option>
+            </select>
+            <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+          </div>
+
+          <button
+            type="button"
+            onClick={fetchData}
+            disabled={loading}
+            className="h-10 px-4 rounded-xl border border-border bg-background/50 hover:bg-background text-foreground text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shrink-0"
+            title="Actualizar"
+          >
+            <RotateCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            <span>Actualizar</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => toast({ title: "Solicitud de vacaciones", description: "Formulario para solicitar vacaciones de trabajador abierto." })}
+            className="h-10 px-4 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold flex items-center gap-2 shadow-md shadow-purple-500/20 cursor-pointer transition-all shrink-0"
+          >
+            <Plus className="w-4 h-4 stroke-[2.5]" />
+            <span>Solicitar vacaciones</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 4. FILTERS CONTAINER (Mobile only) */}
+      <div className="md:hidden space-y-2 pt-2">
         <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
           <Sun className="w-4 h-4 text-amber-400" />
           Solicitudes de vacaciones

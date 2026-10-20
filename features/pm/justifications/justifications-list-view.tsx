@@ -225,9 +225,9 @@ export function JustificationsListView() {
   const porcentaje = total > 0 ? Math.round((aprobadas / total) * 100) : 0;
 
   return (
-    <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-12 max-w-6xl mx-auto px-0 md:px-6 py-2 md:py-4">
-      {/* 1. TOP HEADER (EXACT SVG DESIGN) */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-12 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
+      {/* 1. TOP HEADER */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-1.5 mb-1 flex-wrap">
             <span className="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-purple-400">
@@ -245,13 +245,53 @@ export function JustificationsListView() {
           </p>
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-3 shrink-0">
           <NotificationBell />
         </div>
       </div>
 
-      {/* 2. PERIOD SELECTOR TABS */}
-      <div className="flex items-center gap-1.5 p-1 rounded-xl bg-card/60 border border-border/80 overflow-x-auto scrollbar-none">
+      {/* 2. PERIOD SELECTOR - Desktop View (Compact inline tabs + button + badge) */}
+      <div className="hidden md:flex items-center gap-3 flex-wrap">
+        <div className="inline-flex items-center gap-1 p-1 rounded-2xl bg-[#0C0E18] border border-[#1E2335]">
+          {PERIOD_TABS.map((tab) => {
+            const isActive = activePeriod === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActivePeriod(tab.id)}
+                className={`py-2 px-3.5 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
+                  isActive
+                    ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
+                    : "text-[#8F96AE] hover:text-white"
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setDateRangeModalOpen(true)}
+          className="h-10 px-4 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-xs font-medium text-[#8F96AE] hover:text-white flex items-center gap-2 transition-colors cursor-pointer shrink-0 shadow-xs"
+          title="Seleccionar rango personalizado"
+        >
+          <Calendar className="w-4 h-4 text-[#A855F7]" />
+          <span>Rango personalizado</span>
+        </button>
+
+        <div className="h-10 px-4 rounded-2xl bg-[#0C0E18] border border-[#1E2335] flex items-center gap-2 text-xs font-mono shrink-0 shadow-xs">
+          <span className="text-[#8F96AE]">Período:</span>
+          <span className="text-[#EEF0F6] font-semibold">
+            {dateRange.from} → {dateRange.to}
+          </span>
+        </div>
+      </div>
+
+      {/* 2. PERIOD SELECTOR TABS (Mobile only) */}
+      <div className="md:hidden flex items-center gap-1.5 p-1 rounded-xl bg-card/60 border border-border/80 overflow-x-auto scrollbar-none">
         {PERIOD_TABS.map((tab) => {
           const isActive = activePeriod === tab.id;
           return (
@@ -270,8 +310,8 @@ export function JustificationsListView() {
         })}
       </div>
 
-      {/* 3. DATE RANGE SELECTOR BAR */}
-      <div className="flex items-center gap-2">
+      {/* 3. DATE RANGE SELECTOR BAR (Mobile only) */}
+      <div className="md:hidden flex items-center gap-2">
         <div className="flex-1 flex items-center gap-2 px-3.5 h-11 rounded-xl border border-border bg-card/60 text-xs font-mono text-muted-foreground">
           <Calendar className="w-4 h-4 text-muted-foreground shrink-0" />
           <span>{dateRange.from} → {dateRange.to}</span>
@@ -286,55 +326,140 @@ export function JustificationsListView() {
         </button>
       </div>
 
-      {/* 4. 4 KPI CARDS (2x2 on mobile, 4 cols on desktop) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* 4. 4 KPI CARDS */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
         {/* Card 1: Total solicitudes */}
-        <div className="rounded-2xl border border-border bg-card/60 p-4 flex flex-col justify-between shadow-sm">
-          <div className="w-9 h-9 rounded-xl border border-border/60 bg-background/50 flex items-center justify-center text-muted-foreground shrink-0 mb-3">
-            <AlertTriangle className="w-4 h-4" />
-          </div>
-          <div>
+        <div className="rounded-2xl border border-border bg-card/60 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl border border-border/60 bg-background/50 flex items-center justify-center text-muted-foreground shrink-0">
+              <AlertTriangle className="w-4 h-4" />
+            </div>
             <p className="text-xs text-muted-foreground font-medium">Total solicitudes</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{total}</p>
+          </div>
+          <div className="mt-2.5 sm:mt-3">
+            <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{total}</p>
           </div>
         </div>
 
         {/* Card 2: Pendientes */}
-        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 flex flex-col justify-between shadow-sm">
-          <div className="w-9 h-9 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 mb-3">
-            <Clock className="w-4 h-4" />
-          </div>
-          <div>
+        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+              <Clock className="w-4 h-4" />
+            </div>
             <p className="text-xs text-amber-400 font-medium">Pendientes</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{pendientes}</p>
+          </div>
+          <div className="mt-2.5 sm:mt-3">
+            <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{pendientes}</p>
           </div>
         </div>
 
         {/* Card 3: Aprobadas */}
-        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 flex flex-col justify-between shadow-sm">
-          <div className="w-9 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 mb-3">
-            <CheckCircle2 className="w-4 h-4" />
-          </div>
-          <div>
+        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
             <p className="text-xs text-emerald-400 font-medium">Aprobadas</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{aprobadas}</p>
+          </div>
+          <div className="mt-2.5 sm:mt-3">
+            <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{aprobadas}</p>
           </div>
         </div>
 
         {/* Card 4: % Aprobadas */}
-        <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 flex flex-col justify-between shadow-sm">
-          <div className="w-9 h-9 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0 mb-3">
-            <TrendingUp className="w-4 h-4" />
-          </div>
-          <div>
+        <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0">
+              <TrendingUp className="w-4 h-4" />
+            </div>
             <p className="text-xs text-purple-400 font-medium">% Aprobadas</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{porcentaje}%</p>
+          </div>
+          <div className="mt-2.5 sm:mt-3">
+            <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{porcentaje}%</p>
           </div>
         </div>
       </div>
 
-      {/* 5. FILTERS CONTAINER */}
-      <div className="rounded-2xl border border-border bg-card/60 p-4 space-y-3.5 shadow-sm">
+      {/* 5. FILTERS CONTAINER - Desktop View (1 Row) */}
+      <div className="hidden md:grid md:grid-cols-4 gap-4 items-end rounded-2xl border border-border bg-card/60 p-4 shadow-sm">
+        {/* Proyecto */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-foreground">
+            Proyecto
+          </label>
+          <div className="relative">
+            <Folder className="w-4 h-4 absolute left-3 top-3 text-muted-foreground pointer-events-none" />
+            <select
+              value={filters.project}
+              onChange={(e) => setFilters((p) => ({ ...p, project: e.target.value }))}
+              className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+            >
+              {projects.map((p) => (
+                <option key={p.id} value={p.id} className="bg-card text-foreground">{p.name}</option>
+              ))}
+            </select>
+            <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Usuario */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-foreground">
+            Usuario
+          </label>
+          <div className="relative">
+            <User className="w-4 h-4 absolute left-3 top-3 text-muted-foreground pointer-events-none" />
+            <select
+              value={filters.user}
+              onChange={(e) => setFilters((p) => ({ ...p, user: e.target.value }))}
+              className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+            >
+              {userOptions.map((u) => (
+                <option key={u.id} value={u.id} className="bg-card text-foreground">{u.name}</option>
+              ))}
+            </select>
+            <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Estado */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-foreground">
+            Estado
+          </label>
+          <div className="relative">
+            <select
+              value={filters.status}
+              onChange={(e) => setFilters((p) => ({ ...p, status: e.target.value }))}
+              className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+            >
+              <option value="TODOS" className="bg-card text-foreground">Todos los estados</option>
+              <option value="SUBMITTED" className="bg-card text-foreground">Enviada</option>
+              <option value="PENDING" className="bg-card text-foreground">Pendiente</option>
+              <option value="APPROVED" className="bg-card text-foreground">Aprobada</option>
+              <option value="REJECTED" className="bg-card text-foreground">Rechazada</option>
+            </select>
+            <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Action: Actualizar button */}
+        <div>
+          <button
+            type="button"
+            onClick={fetchData}
+            disabled={isLoading}
+            className="w-full h-10 px-4 rounded-xl border border-border bg-background/50 hover:bg-background text-foreground text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+          >
+            <RotateCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+            <span>Actualizar</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 5. FILTERS CONTAINER (Mobile only) */}
+      <div className="md:hidden rounded-2xl border border-border bg-card/60 p-4 space-y-3.5 shadow-sm">
         {/* Proyecto */}
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-foreground">

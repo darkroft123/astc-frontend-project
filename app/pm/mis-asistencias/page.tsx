@@ -140,9 +140,9 @@ export default function PMAsistenciasPage() {
   const porcentaje = total > 0 ? Math.round((presentes / total) * 100) : 0;
 
   return (
-    <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-12 max-w-6xl mx-auto px-0 md:px-6 py-2 md:py-4">
-      {/* 1. TOP HEADER (EXACT SVG DESIGN) */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-12 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
+      {/* 1. TOP HEADER */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-1.5 mb-1 flex-wrap">
             <span className="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-purple-400">
@@ -160,23 +160,72 @@ export default function PMAsistenciasPage() {
           </p>
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
+        {/* Desktop Header Actions */}
+        <div className="hidden md:flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() => router.push("/pm/asistencias/registrar")}
+            className="h-10 px-4 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold flex items-center gap-2 shadow-md shadow-purple-500/20 cursor-pointer transition-all shrink-0"
+          >
+            <Clock className="w-4 h-4" />
+            <span>Registrar asistencia</span>
+          </button>
           <NotificationBell />
         </div>
       </div>
 
-      {/* 2. REGISTRAR ASISTENCIA BUTTON (Full width with brand gradient as in SVG) */}
+      {/* 2. REGISTRAR ASISTENCIA BUTTON (Mobile only) */}
       <button
         type="button"
         onClick={() => router.push("/pm/asistencias/registrar")}
-        className="w-full h-12 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 cursor-pointer transition-all"
+        className="md:hidden w-full h-12 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 cursor-pointer transition-all"
       >
         <Clock className="w-4 h-4" />
         Registrar asistencia
       </button>
 
-      {/* 3. PERIOD SELECTOR TABS */}
-      <div className="flex items-center gap-1.5 p-1 rounded-xl bg-card/60 border border-border/80 overflow-x-auto scrollbar-none">
+      {/* 3. PERIOD SELECTOR - Desktop View (Compact inline tabs + button + badge) */}
+      <div className="hidden md:flex items-center gap-3 flex-wrap">
+        <div className="inline-flex items-center gap-1 p-1 rounded-2xl bg-[#0C0E18] border border-[#1E2335]">
+          {PERIOD_TABS.map((tab) => {
+            const isActive = activePeriod === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActivePeriod(tab.id)}
+                className={`py-2 px-3.5 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
+                  isActive
+                    ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
+                    : "text-[#8F96AE] hover:text-white"
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setDateRangeModalOpen(true)}
+          className="h-10 px-4 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-xs font-medium text-[#8F96AE] hover:text-white flex items-center gap-2 transition-colors cursor-pointer shrink-0 shadow-xs"
+          title="Seleccionar rango personalizado"
+        >
+          <Calendar className="w-4 h-4 text-[#A855F7]" />
+          <span>Rango personalizado</span>
+        </button>
+
+        <div className="h-10 px-4 rounded-2xl bg-[#0C0E18] border border-[#1E2335] flex items-center gap-2 text-xs font-mono shrink-0 shadow-xs">
+          <span className="text-[#8F96AE]">Período:</span>
+          <span className="text-[#EEF0F6] font-semibold">
+            {dateRange.from} → {dateRange.to}
+          </span>
+        </div>
+      </div>
+
+      {/* 3. PERIOD SELECTOR TABS (Mobile only) */}
+      <div className="md:hidden flex items-center gap-1.5 p-1 rounded-xl bg-card/60 border border-border/80 overflow-x-auto scrollbar-none">
         {PERIOD_TABS.map((tab) => {
           const isActive = activePeriod === tab.id;
           return (
@@ -195,8 +244,8 @@ export default function PMAsistenciasPage() {
         })}
       </div>
 
-      {/* 4. DATE RANGE SELECTOR BAR */}
-      <div className="flex items-center gap-2">
+      {/* 4. DATE RANGE SELECTOR BAR (Mobile only) */}
+      <div className="md:hidden flex items-center gap-2">
         <div className="flex-1 flex items-center gap-2 px-3.5 h-11 rounded-xl border border-border bg-card/60 text-xs font-mono text-muted-foreground">
           <Calendar className="w-4 h-4 text-muted-foreground shrink-0" />
           <span>{dateRange.from} → {dateRange.to}</span>
@@ -211,55 +260,117 @@ export default function PMAsistenciasPage() {
         </button>
       </div>
 
-      {/* 5. 4 KPI CARDS (2x2 on mobile, 4 cols on desktop) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* 5. 4 KPI CARDS */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
         {/* Card 1: Total registros */}
-        <div className="rounded-2xl border border-border bg-card/60 p-4 flex flex-col justify-between shadow-sm">
-          <div className="w-9 h-9 rounded-xl border border-border/60 bg-background/50 flex items-center justify-center text-muted-foreground shrink-0 mb-3">
-            <Clock className="w-4 h-4" />
-          </div>
-          <div>
+        <div className="rounded-2xl border border-border bg-card/60 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl border border-border/60 bg-background/50 flex items-center justify-center text-muted-foreground shrink-0">
+              <Clock className="w-4 h-4" />
+            </div>
             <p className="text-xs text-muted-foreground font-medium">Total registros</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{total}</p>
+          </div>
+          <div className="mt-2.5 sm:mt-3">
+            <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{total}</p>
           </div>
         </div>
 
         {/* Card 2: Presentes */}
-        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 flex flex-col justify-between shadow-sm">
-          <div className="w-9 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 mb-3">
-            <CheckCircle2 className="w-4 h-4" />
-          </div>
-          <div>
+        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
             <p className="text-xs text-emerald-400 font-medium">Presentes</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{presentes}</p>
+          </div>
+          <div className="mt-2.5 sm:mt-3">
+            <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{presentes}</p>
           </div>
         </div>
 
         {/* Card 3: Faltas */}
-        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 flex flex-col justify-between shadow-sm">
-          <div className="w-9 h-9 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0 mb-3">
-            <XCircle className="w-4 h-4" />
-          </div>
-          <div>
+        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0">
+              <XCircle className="w-4 h-4" />
+            </div>
             <p className="text-xs text-rose-400 font-medium">Faltas</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{faltas}</p>
+          </div>
+          <div className="mt-2.5 sm:mt-3">
+            <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{faltas}</p>
           </div>
         </div>
 
         {/* Card 4: % Asistencia */}
-        <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 flex flex-col justify-between shadow-sm">
-          <div className="w-9 h-9 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0 mb-3">
-            <TrendingUp className="w-4 h-4" />
-          </div>
-          <div>
+        <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0">
+              <TrendingUp className="w-4 h-4" />
+            </div>
             <p className="text-xs text-purple-400 font-medium">% Asistencia</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{porcentaje}%</p>
+          </div>
+          <div className="mt-2.5 sm:mt-3">
+            <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{porcentaje}%</p>
           </div>
         </div>
       </div>
 
-      {/* 6. FILTERS CONTAINER */}
-      <div className="rounded-2xl border border-border bg-card/60 p-4 space-y-3.5 shadow-sm">
+      {/* 6. FILTERS CONTAINER - Desktop View (1 Row) */}
+      <div className="hidden md:flex md:items-end md:justify-between gap-4 rounded-2xl border border-border bg-card/60 p-4 shadow-sm">
+        <div className="flex items-end gap-3 flex-1">
+          {/* Buscar fecha */}
+          <div className="space-y-1.5 w-64">
+            <label className="text-xs font-semibold text-foreground">
+              Buscar fecha
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="dd/mm/aaaa"
+                value={searchDate}
+                onChange={(e) => setSearchDate(e.target.value)}
+                className="w-full h-10 px-3.5 pr-10 rounded-xl border border-border bg-background/50 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              <Calendar className="w-4 h-4 text-muted-foreground absolute right-3.5 top-3 pointer-events-none" />
+            </div>
+          </div>
+
+          {/* Filtrar estado */}
+          <div className="space-y-1.5 w-56">
+            <label className="text-xs font-semibold text-foreground">
+              Filtrar estado
+            </label>
+            <div className="relative">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+              >
+                <option value="all" className="bg-card text-foreground">Todos los estados</option>
+                <option value="PRESENTE" className="bg-card text-foreground">Presente</option>
+                <option value="FALTA" className="bg-card text-foreground">Falta</option>
+                <option value="TARDE" className="bg-card text-foreground">Tarde</option>
+                <option value="FUERA_DE_HORARIO" className="bg-card text-foreground">Fuera de horario</option>
+              </select>
+              <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+            </div>
+          </div>
+        </div>
+
+        {/* Action: Actualizar button */}
+        <button
+          type="button"
+          onClick={fetchRecords}
+          disabled={isLoading}
+          className="h-10 px-4 rounded-xl border border-border bg-background/50 hover:bg-background text-foreground text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shrink-0"
+        >
+          <RotateCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+          <span>Actualizar</span>
+        </button>
+      </div>
+
+      {/* 6. FILTERS CONTAINER (Mobile only) */}
+      <div className="md:hidden rounded-2xl border border-border bg-card/60 p-4 space-y-3.5 shadow-sm">
         {/* Buscar fecha */}
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-foreground">

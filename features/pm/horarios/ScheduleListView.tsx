@@ -317,18 +317,48 @@ export function ScheduleListView() {
   const pageTemplates = filteredTemplates.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
-    <div className="space-y-4">
-      {/* Botón Crear Horario grande con gradiente oficial de marca */}
-      <Button
-        onClick={() => router.push("/pm/creacion-horarios")}
-        className="w-full bg-brand-gradient hover:opacity-95 text-white font-medium py-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 text-base"
-      >
-        <Plus className="w-5 h-5" />
-        Crear horario
-      </Button>
+    <div className="space-y-6">
+      {/* Botón Crear Horario grande (Mobile only) */}
+      <div className="md:hidden">
+        <Button
+          onClick={() => router.push("/pm/creacion-horarios")}
+          className="w-full bg-brand-gradient hover:opacity-95 text-white font-medium py-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 text-base"
+        >
+          <Plus className="w-5 h-5" />
+          Crear horario
+        </Button>
+      </div>
 
-      {/* Card Horarios del proyecto con buscador */}
-      <Card className="border-border bg-card/60 backdrop-blur-sm rounded-2xl shadow-sm">
+      {/* Desktop Top Action Row */}
+      <div className="hidden md:flex md:items-center md:justify-between gap-4 rounded-2xl border border-border bg-card/60 p-4 shadow-sm">
+        <div>
+          <h3 className="text-base font-semibold text-foreground">Horarios del proyecto</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Selecciona un horario y asígnalo a los miembros del proyecto.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="relative w-72">
+            <Search className="w-4 h-4 absolute left-3.5 top-3 text-muted-foreground pointer-events-none" />
+            <Input
+              placeholder="Buscar por proyecto u horario..."
+              className="pl-9 bg-background/50 border-border rounded-xl h-10 text-xs"
+              value={searchTerm}
+              onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+            />
+          </div>
+          <Button
+            onClick={() => router.push("/pm/creacion-horarios")}
+            className="h-10 px-4 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold flex items-center gap-2 shadow-md shadow-purple-500/20 shrink-0 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Crear horario</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Card Horarios del proyecto con buscador (Mobile only) */}
+      <Card className="md:hidden border-border bg-card/60 backdrop-blur-sm rounded-2xl shadow-sm">
         <CardContent className="p-4 sm:p-5 space-y-3">
           <div>
             <h3 className="text-base font-semibold text-foreground">Horarios del proyecto</h3>

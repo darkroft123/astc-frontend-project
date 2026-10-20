@@ -215,7 +215,7 @@ export function ScheduleManagementView() {
 
   return (
     <div className="min-h-screen bg-transparent">
-      <div className="max-w-6xl mx-auto px-0 md:px-6 py-2 md:py-6 space-y-5">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 space-y-6">
 
         {/* Top Header */}
         <PageHeader
@@ -225,55 +225,145 @@ export function ScheduleManagementView() {
           showPeriodSelector={false}
         />
 
-        {/* 4 Metric Cards (Grid 2x2 on mobile, 4 cols on desktop) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* 4 Metric Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
           {/* Card 1: Total */}
-          <div className="rounded-2xl border border-border bg-card/60 p-4 flex flex-col justify-between shadow-sm">
-            <div className="w-9 h-9 rounded-xl border border-border/60 bg-background/50 flex items-center justify-center text-muted-foreground shrink-0 mb-3">
-              <Clock className="w-4 h-4" />
-            </div>
-            <div>
+          <div className="rounded-2xl border border-border bg-card/60 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-xl border border-border/60 bg-background/50 flex items-center justify-center text-muted-foreground shrink-0">
+                <Clock className="w-4 h-4" />
+              </div>
               <p className="text-xs text-muted-foreground font-medium">Total asignaciones</p>
-              <p className="text-2xl font-bold text-foreground mt-1">{total}</p>
+            </div>
+            <div className="mt-2.5 sm:mt-3">
+              <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{total}</p>
             </div>
           </div>
 
           {/* Card 2: Personalizados */}
-          <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 flex flex-col justify-between shadow-sm">
-            <div className="w-9 h-9 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0 mb-3">
-              <User className="w-4 h-4" />
-            </div>
-            <div>
+          <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0">
+                <User className="w-4 h-4" />
+              </div>
               <p className="text-xs text-purple-300 font-medium">Personalizados</p>
-              <p className="text-2xl font-bold text-foreground mt-1">{withOverride}</p>
+            </div>
+            <div className="mt-2.5 sm:mt-3">
+              <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{withOverride}</p>
             </div>
           </div>
 
           {/* Card 3: Heredan del proyecto */}
-          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 flex flex-col justify-between shadow-sm">
-            <div className="w-9 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 mb-3">
-              <Folder className="w-4 h-4" />
-            </div>
-            <div>
+          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                <Folder className="w-4 h-4" />
+              </div>
               <p className="text-xs text-emerald-400 font-medium">Heredan del proyecto</p>
-              <p className="text-2xl font-bold text-foreground mt-1">{withDefault}</p>
+            </div>
+            <div className="mt-2.5 sm:mt-3">
+              <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{withDefault}</p>
             </div>
           </div>
 
           {/* Card 4: Sin proyecto */}
-          <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 flex flex-col justify-between shadow-sm">
-            <div className="w-9 h-9 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0 mb-3">
-              <XCircle className="w-4 h-4" />
-            </div>
-            <div>
+          <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0">
+                <XCircle className="w-4 h-4" />
+              </div>
               <p className="text-xs text-rose-400 font-medium">Sin proyecto</p>
-              <p className="text-2xl font-bold text-foreground mt-1">{withoutProject}</p>
+            </div>
+            <div className="mt-2.5 sm:mt-3">
+              <p className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{withoutProject}</p>
             </div>
           </div>
         </div>
 
-        {/* Filters Card */}
-        <div className="rounded-2xl border border-border bg-card/60 p-4 space-y-3.5 shadow-sm">
+        {/* Filters Container - Desktop View (1 Row) */}
+        <div className="hidden md:grid md:grid-cols-4 gap-4 items-end rounded-2xl border border-border bg-card/60 p-4 shadow-sm">
+          {/* Proyecto */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-foreground">
+              Proyecto
+            </label>
+            <div className="relative">
+              <Folder className="w-4 h-4 absolute left-3 top-3 text-muted-foreground pointer-events-none" />
+              <select
+                value={projectFilter}
+                onChange={(e) => {
+                  setProjectFilter(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+              >
+                {projectOptions.map((p) => (
+                  <option key={p.id} value={p.id} className="bg-card text-foreground">{p.name}</option>
+                ))}
+              </select>
+              <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+            </div>
+          </div>
+
+          {/* Buscar */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-foreground">
+              Buscar
+            </label>
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Usuario o proyecto..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full h-10 pl-9 pr-3 rounded-xl border border-border bg-background/50 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+          </div>
+
+          {/* Tipo de horario */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-foreground">
+              Tipo de horario
+            </label>
+            <div className="relative">
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+              >
+                <option value="ALL" className="bg-card text-foreground">Todos</option>
+                <option value="WITH_OVERRIDE" className="bg-card text-foreground">Personalizados</option>
+                <option value="WITHOUT_OVERRIDE" className="bg-card text-foreground">Del proyecto</option>
+                <option value="NO_PROJECT" className="bg-card text-foreground">Sin proyecto</option>
+              </select>
+              <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+            </div>
+          </div>
+
+          {/* Action: Actualizar button */}
+          <div>
+            <button
+              type="button"
+              onClick={loadData}
+              disabled={isLoading}
+              className="w-full h-10 px-4 rounded-xl border border-border bg-background/50 hover:bg-background text-foreground text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+              <span>Actualizar</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Filters Card (Mobile only) */}
+        <div className="md:hidden rounded-2xl border border-border bg-card/60 p-4 space-y-3.5 shadow-sm">
           {/* Proyecto */}
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-foreground">
