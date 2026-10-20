@@ -242,7 +242,7 @@ export function AlertsListView() {
   const porcentaje = total > 0 ? Math.round((revisadas / total) * 100) : 0;
 
   return (
-    <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-12 max-w-6xl mx-auto px-4 sm:px-6 py-4">
+    <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-12 max-w-6xl mx-auto px-0 md:px-6 py-2 md:py-4">
       {/* 1. TOP HEADER (EXACT SVG DESIGN) */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>

@@ -215,7 +215,7 @@ export function ScheduleManagementView() {
 
   return (
     <div className="min-h-screen bg-transparent">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5">
+      <div className="max-w-6xl mx-auto px-0 md:px-6 py-2 md:py-6 space-y-5">
 
         {/* Top Header */}
         <PageHeader

@@ -134,6 +134,17 @@ export function DashboardView() {
   const totalAbsences = metrics.totalAbsences || 2;
   const pendingJustifications = metrics.pendingJustifications || 1;
 
+  // Donut chart calculations: Radius = 46, Circumference = 2 * PI * 46 ≈ 289.026
+  const R = 46;
+  const C = 2 * Math.PI * R;
+  const GAP = 6; // Separation between slices, cut like admin
+  const totalRecords = totalAttendances + totalAbsences + pendingJustifications;
+  const totalAvailable = C - 3 * GAP;
+
+  const attArc = totalRecords > 0 ? (totalAttendances / totalRecords) * totalAvailable : 0.4 * totalAvailable;
+  const absArc = totalRecords > 0 ? (totalAbsences / totalRecords) * totalAvailable : 0.4 * totalAvailable;
+  const pendArc = totalRecords > 0 ? (pendingJustifications / totalRecords) * totalAvailable : 0.2 * totalAvailable;
+
   return (
     <div className="relative min-h-screen bg-transparent pb-16 font-sans">
       {/* Top Ambient Glow */}
@@ -144,7 +155,7 @@ export function DashboardView() {
         }}
       />
 
-      <div className="relative max-w-md md:max-w-7xl mx-auto space-y-5 z-10 px-1 sm:px-0">
+      <div className="relative w-full max-w-7xl mx-auto space-y-4 md:space-y-5 z-10 px-0 md:px-0">
         {/* 1. HEADER SECTION (Mobile: stacked + full-width button; Desktop: flex row) */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
@@ -398,42 +409,42 @@ export function DashboardView() {
                   <circle
                     cx="60"
                     cy="60"
-                    r="46"
+                    r={R}
                     stroke="#1F2438"
                     strokeWidth="12"
                     fill="transparent"
                   />
+                  {/* Segment 1: Asistencias (Green) */}
                   <circle
                     cx="60"
                     cy="60"
-                    r="46"
+                    r={R}
                     stroke="#34D399"
                     strokeWidth="12"
-                    strokeDasharray="115.6 173.4"
+                    strokeDasharray={`${attArc} ${C}`}
                     strokeDashoffset="0"
-                    strokeLinecap="round"
                     fill="transparent"
                   />
+                  {/* Segment 2: Faltas (Red) */}
                   <circle
                     cx="60"
                     cy="60"
-                    r="46"
+                    r={R}
                     stroke="#F87171"
                     strokeWidth="12"
-                    strokeDasharray="115.6 173.4"
-                    strokeDashoffset="-115.6"
-                    strokeLinecap="round"
+                    strokeDasharray={`${absArc} ${C}`}
+                    strokeDashoffset={-(attArc + GAP)}
                     fill="transparent"
                   />
+                  {/* Segment 3: Pendientes (Amber) */}
                   <circle
                     cx="60"
                     cy="60"
-                    r="46"
+                    r={R}
                     stroke="#FBBF24"
                     strokeWidth="12"
-                    strokeDasharray="57.8 231.2"
-                    strokeDashoffset="-231.2"
-                    strokeLinecap="round"
+                    strokeDasharray={`${pendArc} ${C}`}
+                    strokeDashoffset={-(attArc + GAP + absArc + GAP)}
                     fill="transparent"
                   />
                 </svg>

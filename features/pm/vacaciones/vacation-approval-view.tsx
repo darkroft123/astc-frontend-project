@@ -244,7 +244,7 @@ export function VacationApprovalView() {
   ];
 
   return (
-    <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-12 max-w-6xl mx-auto px-4 sm:px-6 py-4">
+    <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-12 max-w-6xl mx-auto px-0 md:px-6 py-2 md:py-4">
       {/* 1. TOP HEADER (EXACT SVG DESIGN) */}
       <PageHeader
         categoryTag={{ badge: "PANEL DE GESTIÓN", text: "Solicitudes del equipo" }}

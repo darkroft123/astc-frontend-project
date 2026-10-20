@@ -233,7 +233,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
 
   return (
     <div className="min-h-screen bg-muted/50 pb-8">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-5 pt-4">
+      <div className="max-w-5xl mx-auto px-0 md:px-6 space-y-5 pt-2 md:pt-4">
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-border/60">

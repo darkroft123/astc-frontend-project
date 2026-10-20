@@ -35,10 +35,12 @@ export function GeneralSummaryCard({
 
   const R = 38;
   const C = 2 * Math.PI * R;
+  const GAP = 5;
+  const totalAvailable = C - 3 * GAP;
 
-  const attLen = total > 0 ? (att / total) * C : 0;
-  const absLen = total > 0 ? (abs / total) * C : 0;
-  const pendLen = total > 0 ? (pend / total) * C : 0;
+  const attLen = total > 0 ? (att / total) * totalAvailable : 0;
+  const absLen = total > 0 ? (abs / total) * totalAvailable : 0;
+  const pendLen = total > 0 ? (pend / total) * totalAvailable : 0;
 
   return (
     <Card className="h-full rounded-3xl shadow-sm overflow-hidden border border-border bg-card">
@@ -86,7 +88,7 @@ export function GeneralSummaryCard({
                         stroke="var(--red)"
                         strokeWidth="12"
                         strokeDasharray={`${absLen} ${C}`}
-                        strokeDashoffset={-attLen}
+                        strokeDashoffset={-(attLen + GAP)}
                         strokeLinecap="butt"
                       />
                     )}
@@ -100,7 +102,7 @@ export function GeneralSummaryCard({
                         stroke="var(--amber)"
                         strokeWidth="12"
                         strokeDasharray={`${pendLen} ${C}`}
-                        strokeDashoffset={-(attLen + absLen)}
+                        strokeDashoffset={-(attLen + GAP + absLen + GAP)}
                         strokeLinecap="butt"
                       />
                     )}

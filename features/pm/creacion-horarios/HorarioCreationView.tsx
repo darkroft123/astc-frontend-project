@@ -123,7 +123,7 @@ export function HorarioCreationView() {
       />
 
       {/* Responsive Viewport Container (matching 390px SVG) */}
-      <div className="relative max-w-md mx-auto space-y-4 z-10 px-1 sm:px-0">
+      <div className="relative w-full max-w-2xl mx-auto space-y-4 z-10 px-0 md:px-0">
         {/* Top Back Link & Header */}
         <div className="flex items-center justify-between pt-1">
           <button

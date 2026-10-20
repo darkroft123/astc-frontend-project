@@ -567,7 +567,7 @@ export function HolidayPMListView() {
         }}
       />
 
-      <div className="relative max-w-md md:max-w-7xl mx-auto space-y-4 z-10 px-1 sm:px-0">
+      <div className="relative w-full max-w-7xl mx-auto space-y-4 z-10 px-0 md:px-0">
         {/* 1. TOP HEADER & CREATE COLLECTION BUTTON */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
