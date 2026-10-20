@@ -1,18 +1,34 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
-import { FolderKanban, Save, Users, UserCog, Clock, PlaneTakeoff, Loader2, ArrowLeft } from "lucide-react";
+import {
+  FolderKanban,
+  Save,
+  Users,
+  UserCog,
+  Clock,
+  PlaneTakeoff,
+  Loader2,
+  ArrowLeft,
+  Calendar,
+  Search,
+  Info,
+  Globe,
+  Check,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NotificationBell } from "@/components/layout/notification-bell";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { TimezoneSelector } from "@/components/ui/timezone-selector";
 import { DEFAULT_TIMEZONE } from "@/lib/timezones";
 
@@ -102,6 +118,10 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
   async function handleSubmit() {
     if (isSubmitting) return;
     if (!hydrated || !token) return;
+    if (!name.trim()) {
+      alert("Por favor ingresa el nombre del proyecto.");
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -159,321 +179,428 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
   });
 
   return (
-    <div className="min-h-screen bg-transparent">
-      <div className="max-w-5xl mx-auto px-4 py-6">
+    <div className="relative min-h-screen bg-transparent overflow-hidden pb-12">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-8 py-6 space-y-6 z-10">
 
-        {/* HEADER */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-sm">
-              <FolderKanban className="w-5 h-5 text-primary-foreground" />
+        {/* MOBILE TOP BAR (MATCHING SVG: <- Proyectos + Notification Bell) */}
+        <div className="flex md:hidden items-center justify-between pb-1">
+          <button
+            type="button"
+            onClick={() => router.push("/projects")}
+            className="flex items-center gap-2 text-sm font-semibold text-foreground hover:opacity-80 transition-opacity cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Proyectos</span>
+          </button>
+          <NotificationBell />
+        </div>
+
+        {/* SECTION HEADER */}
+        <div className="flex items-start md:items-center justify-between gap-4">
+          <div className="flex items-start md:items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#6366F1] to-[#A855F7] flex items-center justify-center text-white shadow-md shrink-0">
+              <FolderKanban className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-foreground">
-                {mode === "create" ? "Crear Proyecto" : "Editar Proyecto"}
+              <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
+                {mode === "create" ? "Crear proyecto" : "Editar proyecto"}
               </h1>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                 {mode === "create"
-                  ? "Configura los parámetros operativos, horarios y miembros del nuevo proyecto"
-                  : "Modifica los datos, asignaciones y reglas de asistencia del proyecto"}
+                  ? "Configura los parámetros operativos, horarios y miembros del nuevo proyecto."
+                  : "Modifica los datos, asignaciones y reglas de asistencia del proyecto."}
               </p>
             </div>
           </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push('/projects')}
-            className="text-xs"
+          <button
+            type="button"
+            onClick={() => router.push("/projects")}
+            className="hidden md:flex items-center gap-2 px-3.5 py-2 rounded-xl border border-border bg-card hover:bg-raised text-xs font-medium text-foreground transition-colors cursor-pointer"
           >
-            <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
-            Volver a Proyectos
-          </Button>
+            <ArrowLeft className="w-4 h-4" />
+            <span>Volver a Proyectos</span>
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* FORM CONTENT */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
-          {/* LEFT COLUMN: General Info & Period */}
+          {/* LEFT COLUMN: Card 1 & Card 2 */}
           <div className="space-y-6">
 
-            {/* CARD 1: GENERAL INFORMATION */}
-            <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-raised/50 border-b border-line">
-                <CardTitle className="text-sm">1. Datos del Proyecto</CardTitle>
-                <CardDescription className="text-xs">Nombre, descripción, estado y zona horaria</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-4 space-y-4">
+            {/* CARD 1: DATOS DEL PROYECTO */}
+            <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-5">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-lg bg-primary/15 text-primary text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-foreground">
+                    Datos del proyecto
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Nombre, descripción, estado y zona horaria
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-1">
+                {/* Nombre del proyecto */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="projectName" className="text-xs text-muted-foreground">Nombre del Proyecto *</Label>
+                  <Label htmlFor="projectName" className="text-xs font-medium text-foreground">
+                    Nombre del proyecto <span className="text-red-500 font-bold">*</span>
+                  </Label>
                   <Input
                     id="projectName"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="ej. Desarrollo Web Portal E-Commerce"
+                    placeholder="ej. Desarrollo web portal e-commerce"
                     required
-                    className="h-9 text-xs"
+                    className="h-11 px-3.5 rounded-xl border border-border bg-background text-foreground text-xs shadow-xs placeholder:text-muted-foreground"
                   />
                 </div>
 
+                {/* Descripción / alcance */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="projectDesc" className="text-xs text-muted-foreground">Descripción / Alcance</Label>
+                  <Label htmlFor="projectDesc" className="text-xs font-medium text-foreground">
+                    Descripción / alcance <span className="text-muted-foreground text-[11px] font-normal">(opcional)</span>
+                  </Label>
                   <textarea
                     id="projectDesc"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Detalles sobre el alcance o entregables..."
-                    rows={2}
-                    className="w-full border border-border rounded-lg p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                    rows={3}
+                    className="w-full border border-border rounded-xl p-3 text-xs bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-xs transition-colors"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Estado</Label>
-                    <select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                      className="h-9 w-full border border-border rounded-lg px-2.5 text-xs bg-background focus:outline-none focus:ring-1 focus:ring-primary"
-                    >
-                      <option value="ACTIVE">Activo</option>
-                      <option value="INACTIVE">Inactivo</option>
-                      <option value="COMPLETED">Completado</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Zona Horaria</Label>
-                    <TimezoneSelector
-                      value={timezone}
-                      onChange={setTimezone}
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* CARD 2: DATES & VACATION POLICIES */}
-            <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-raised/50 border-b border-line">
-                <CardTitle className="text-sm">2. Periodo y Políticas de Vacaciones</CardTitle>
-                <CardDescription className="text-xs">Fechas de vigencia y elegibilidad de descanso</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-4 space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Fecha de Inicio</Label>
-                    <Input
-                      type="date"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      className="h-9 text-xs bg-background"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Fecha de Fin (Estimada)</Label>
-                    <Input
-                      type="date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      className="h-9 text-xs bg-background"
-                    />
-                  </div>
+                {/* Estado */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-foreground">Estado</Label>
+                  <Select value={status} onValueChange={(val) => setStatus(val)}>
+                    <SelectTrigger className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-foreground text-xs shadow-xs">
+                      <SelectValue placeholder="Selecciona estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ACTIVE">Activo</SelectItem>
+                      <SelectItem value="INACTIVE">Inactivo</SelectItem>
+                      <SelectItem value="COMPLETED">Completado</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                <div className="pt-2 border-t border-line space-y-2">
-                  <Label className="text-xs text-muted-foreground">Días de Antigüedad para Vacaciones</Label>
+                {/* Zona horaria */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-foreground">Zona horaria</Label>
+                  <TimezoneSelector
+                    value={timezone}
+                    onChange={setTimezone}
+                  />
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    Base para el horario y los feriados · UTC-5
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* CARD 2: PERIODO Y POLÍTICAS DE VACACIONES */}
+            <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-5">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-lg bg-primary/15 text-primary text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-foreground">
+                    Periodo y políticas de vacaciones
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Fechas de vigencia y elegibilidad para descanso
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-foreground">Fecha de inicio</Label>
+                    <div className="relative">
+                      <Input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="h-11 px-3.5 rounded-xl border border-border bg-background text-foreground text-xs shadow-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-foreground">Fecha de fin</Label>
+                    <div className="relative">
+                      <Input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="h-11 px-3.5 rounded-xl border border-border bg-background text-foreground text-xs shadow-xs"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-1">
+                  <Label className="text-xs font-medium text-foreground">Días de antigüedad para vacaciones</Label>
                   <div className="flex items-center gap-2">
                     <Input
                       type="number"
                       min={0}
                       value={vacationEligibilityDays}
                       onChange={(e) => setVacationEligibilityDays(Number(e.target.value) || 0)}
-                      className="h-9 text-xs w-32"
+                      className="h-11 px-3.5 rounded-xl border border-border bg-background text-foreground text-xs w-24 shadow-xs"
                     />
-                    <div className="flex gap-1.5 flex-wrap">
+                    <div className="flex gap-2 flex-wrap">
                       <button
                         type="button"
                         onClick={() => setVacationEligibilityDays(90)}
-                        className={`text-[10px] px-2 py-1 rounded-md border transition-all ${
+                        className={`text-xs px-3 py-2 rounded-xl border transition-all cursor-pointer font-medium ${
                           vacationEligibilityDays === 90
-                            ? 'bg-primary/10 border-primary/20 text-primary font-semibold'
-                            : 'bg-background border-border text-muted-foreground hover:border-border hover:bg-muted'
+                            ? "bg-primary/10 border-primary/40 text-primary font-semibold shadow-xs"
+                            : "bg-background border-border text-muted-foreground hover:bg-muted"
                         }`}
                       >
-                        3 meses (90d)
+                        3 meses <span className="text-[10px] opacity-70">90d</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setVacationEligibilityDays(180)}
-                        className={`text-[10px] px-2 py-1 rounded-md border transition-all ${
+                        className={`text-xs px-3 py-2 rounded-xl border transition-all cursor-pointer font-medium ${
                           vacationEligibilityDays === 180
-                            ? 'bg-primary/10 border-primary/20 text-primary font-semibold'
-                            : 'bg-background border-border text-muted-foreground hover:border-border hover:bg-muted'
+                            ? "bg-primary/10 border-primary/40 text-primary font-semibold shadow-xs"
+                            : "bg-background border-border text-muted-foreground hover:bg-muted"
                         }`}
                       >
-                        6 meses (180d)
+                        6 meses <span className="text-[10px] opacity-70">180d</span>
                       </button>
                     </div>
                   </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    Días trabajados antes de que un miembro pueda solicitar vacaciones.
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
           </div>
 
-          {/* RIGHT COLUMN: Responsible, Members & Schedules */}
+          {/* RIGHT COLUMN: Card 3 & Card 4 */}
           <div className="space-y-6">
 
-            {/* CARD 3: RESPONSIBLE & TEAM MEMBERS */}
-            <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-raised/50 border-b border-line">
-                <CardTitle className="text-sm">3. Responsable y Equipo</CardTitle>
-                <CardDescription className="text-xs">Jefe de proyecto y colaboradores asignados</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-4 space-y-4">
+            {/* CARD 3: RESPONSABLE Y EQUIPO */}
+            <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-5">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-lg bg-primary/15 text-primary text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-foreground">
+                    Responsable y equipo
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Jefe de proyecto y colaboradores asignados
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-1">
+                {/* Project Manager selector */}
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Jefe de Proyecto Responsable</Label>
-                  <select
-                    value={responsibleId}
-                    onChange={(e) => setResponsibleId(e.target.value)}
-                    className="h-9 w-full border border-border rounded-lg px-2.5 text-xs bg-background focus:outline-none focus:ring-1 focus:ring-primary"
-                  >
-                    <option value="">-- Seleccionar Responsable --</option>
-                    {projectManagers.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.firstName} {u.lastName} (@{u.username})
-                      </option>
-                    ))}
-                  </select>
+                  <Label className="text-xs font-medium text-foreground">Project manager responsable</Label>
+                  <Select value={responsibleId} onValueChange={(val) => setResponsibleId(val)}>
+                    <SelectTrigger className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-foreground text-xs shadow-xs">
+                      <SelectValue placeholder="Selecciona un responsable" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projectManagers.map((u) => (
+                        <SelectItem key={u.id} value={u.id}>
+                          {u.firstName} {u.lastName} (@{u.username})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {selectedResponsible && (
-                    <p className="text-[11px] text-primary bg-primary/10 p-2 rounded-lg border border-primary/20">
+                    <p className="text-[11px] text-primary bg-primary/10 p-2.5 rounded-xl border border-primary/20">
                       Asignado: <strong>{selectedResponsible.firstName} {selectedResponsible.lastName}</strong> ({selectedResponsible.email || selectedResponsible.username})
                     </p>
                   )}
                 </div>
 
-                <div className="space-y-1.5 pt-2 border-t border-line">
+                {/* Team Members search and list */}
+                <div className="space-y-2 pt-1 border-t border-border">
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs text-muted-foreground">Miembros del Proyecto</Label>
-                    <span className="text-[10px] text-primary font-semibold">{selectedMemberIds.length} seleccionados</span>
+                    <Label className="text-xs font-medium text-foreground">Miembros del proyecto</Label>
+                    <span className="text-[11px] font-semibold text-primary">{selectedMemberIds.length} seleccionados</span>
                   </div>
-                  <Input
-                    type="text"
-                    placeholder="Buscar miembros..."
-                    value={memberSearch}
-                    onChange={(e) => setMemberSearch(e.target.value)}
-                    className="h-8 text-xs mb-2"
-                  />
-                  <div className="border border-border rounded-lg p-2 max-h-40 overflow-y-auto space-y-1">
+
+                  <div className="relative">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <Input
+                      type="text"
+                      placeholder="Buscar por nombre o usuario..."
+                      value={memberSearch}
+                      onChange={(e) => setMemberSearch(e.target.value)}
+                      className="h-10 pl-10 pr-3.5 text-xs rounded-xl border border-border bg-background shadow-xs"
+                    />
+                  </div>
+
+                  <div className="border border-border rounded-xl p-2 max-h-52 overflow-y-auto space-y-1 bg-background/50">
                     {filteredMembers.length === 0 ? (
-                      <p className="text-[11px] text-text-4 text-center py-2">No hay miembros disponibles</p>
+                      <p className="text-[11px] text-muted-foreground text-center py-4">No hay miembros disponibles</p>
                     ) : (
-                      filteredMembers.map((u) => (
-                        <label
-                          key={u.id}
-                          className="flex items-center justify-between p-1.5 hover:bg-accent rounded cursor-pointer text-xs"
-                        >
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              checked={selectedMemberIds.includes(u.id)}
-                              onChange={() => toggleMember(u.id)}
-                              className="rounded text-primary border-line-2 focus:ring-primary"
-                            />
-                            <span>{u.firstName} {u.lastName}</span>
-                          </div>
-                          <span className="text-[10px] text-muted-foreground">@{u.username}</span>
-                        </label>
-                      ))
+                      filteredMembers.map((u) => {
+                        const isChecked = selectedMemberIds.includes(u.id);
+                        const initials = `${(u.firstName?.[0] || "").toUpperCase()}${(u.lastName?.[0] || "").toUpperCase()}` || "U";
+                        return (
+                          <label
+                            key={u.id}
+                            className={`flex items-center justify-between p-2 rounded-xl cursor-pointer text-xs transition-colors ${
+                              isChecked ? "bg-primary/10 border border-primary/20" : "hover:bg-muted/60"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => toggleMember(u.id)}
+                                className="w-4 h-4 rounded text-primary border-border focus:ring-primary cursor-pointer"
+                              />
+                              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-2xs">
+                                {initials}
+                              </div>
+                              <span className="font-medium text-foreground truncate">{u.firstName} {u.lastName}</span>
+                            </div>
+                            <span className="text-[10px] text-muted-foreground font-mono shrink-0 ml-2">@{u.username}</span>
+                          </label>
+                        );
+                      })
                     )}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            {/* CARD 4: BASE SCHEDULE & TOLERANCES */}
-            <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3 bg-raised/50 border-b border-line">
-                <CardTitle className="text-sm">4. Horario Base y Tolerancia</CardTitle>
-                <CardDescription className="text-xs">Jornada estándar aplicable a los miembros por defecto</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Hora de Entrada</Label>
-                    <Input
-                      type="time"
-                      value={workStartTime}
-                      onChange={(e) => setWorkStartTime(e.target.value)}
-                      className="h-9 text-xs bg-background"
-                    />
-                    <p className="text-[10px] text-muted-foreground">Inicio regular de la jornada</p>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Hora de Salida</Label>
-                    <Input
-                      type="time"
-                      value={workEndTime}
-                      onChange={(e) => setWorkEndTime(e.target.value)}
-                      className="h-9 text-xs bg-background"
-                    />
-                    <p className="text-[10px] text-muted-foreground">Fin programado de la jornada</p>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Tolerancia (min)</Label>
-                    <Input
-                      type="number"
-                      min={0}
-                      max={120}
-                      value={projectGraceMinutes}
-                      onChange={(e) => setProjectGraceMinutes(Number(e.target.value) || 0)}
-                      className="h-9 text-xs bg-background"
-                    />
-                    <p className="text-[10px] text-muted-foreground">Minutos de gracia sin tardanza</p>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Corte de Falta</Label>
-                    <Input
-                      type="time"
-                      value={projectAbsenceCutoffTime}
-                      onChange={(e) => setProjectAbsenceCutoffTime(e.target.value)}
-                      className="h-9 text-xs bg-background"
-                    />
-                    <p className="text-[10px] text-muted-foreground">Límite: a partir de aquí se marca falta automática</p>
-                  </div>
+            {/* CARD 4: HORARIO BASE Y TOLERANCIA */}
+            <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-5">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-lg bg-primary/15 text-primary text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  4
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <h2 className="text-sm font-bold text-foreground">
+                    Horario base y tolerancia
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Jornada estándar que se aplica por defecto a los miembros
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span>Hora de entrada</span>
+                  </Label>
+                  <Input
+                    type="time"
+                    value={workStartTime}
+                    onChange={(e) => setWorkStartTime(e.target.value)}
+                    className="h-11 px-3.5 text-xs rounded-xl border border-border bg-background shadow-xs font-mono"
+                  />
+                  <p className="text-[10px] text-muted-foreground">Inicio regular de la jornada.</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span>Hora de salida</span>
+                  </Label>
+                  <Input
+                    type="time"
+                    value={workEndTime}
+                    onChange={(e) => setWorkEndTime(e.target.value)}
+                    className="h-11 px-3.5 text-xs rounded-xl border border-border bg-background shadow-xs font-mono"
+                  />
+                  <p className="text-[10px] text-muted-foreground">Fin programado de la jornada.</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-foreground">Tolerancia (min)</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={120}
+                    value={projectGraceMinutes}
+                    onChange={(e) => setProjectGraceMinutes(Number(e.target.value) || 0)}
+                    className="h-11 px-3.5 text-xs rounded-xl border border-border bg-background shadow-xs font-mono"
+                  />
+                  <p className="text-[10px] text-muted-foreground">Minutos de gracia antes de marcar tardanza.</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span>Corte de falta</span>
+                  </Label>
+                  <Input
+                    type="time"
+                    value={projectAbsenceCutoffTime}
+                    onChange={(e) => setProjectAbsenceCutoffTime(e.target.value)}
+                    className="h-11 px-3.5 text-xs rounded-xl border border-border bg-background shadow-xs font-mono"
+                  />
+                  <p className="text-[10px] text-muted-foreground">Desde esta hora se marca falta automática.</p>
+                </div>
+              </div>
+            </div>
 
           </div>
 
         </div>
 
-        {/* BOTTOM BUTTONS */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-border mt-6">
-          <Button
-            variant="outline"
-            onClick={() => router.push('/projects')}
-            disabled={isSubmitting}
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground"
-          >
-            {isSubmitting ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Save className="w-4 h-4 mr-2" />
-            )}
-            {isSubmitting ? "Guardando..." : "Guardar Proyecto"}
-          </Button>
+        {/* BOTTOM ACTION BAR */}
+        <div className="bg-card border border-border rounded-2xl p-4 flex flex-col items-stretch gap-3 shadow-xs mt-6">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Info className="w-4 h-4 text-primary shrink-0" />
+            <span>
+              {!name.trim()
+                ? "Escribe el nombre del proyecto para guardar."
+                : "Todos los campos principales están listos para guardar."}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3 w-full">
+            <button
+              type="button"
+              onClick={() => router.push("/projects")}
+              disabled={isSubmitting}
+              className="h-12 flex-1 rounded-2xl text-sm font-semibold border border-border bg-card dark:bg-[#161928] hover:bg-raised text-foreground transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center shadow-xs"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="h-12 flex-1 rounded-2xl text-sm font-semibold bg-brand-gradient hover:brightness-110 active:scale-[0.98] text-white flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 transition-all cursor-pointer disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              <span>{isSubmitting ? "Guardando..." : "Guardar proyecto"}</span>
+            </button>
+          </div>
         </div>
 
       </div>

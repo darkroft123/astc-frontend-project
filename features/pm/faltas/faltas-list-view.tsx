@@ -23,6 +23,13 @@ import { DataTable, Column } from "@/components/DataTable";
 import { SubMetricCard } from "@/components/dashboard/SubMetricCard";
 import { getGraphQLUrl } from "@/lib/api-host";
 import { getAllUsers } from "@/app/services/project.assistance.service";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { formatUserName } from "@/lib/formatters";
 
 const LIST_TEAM_ABSENCES = `
@@ -218,16 +225,17 @@ export function FaltasListView() {
           </div>
 
           <div className="flex items-center gap-2">
-            <select
-              className="text-sm border-border bg-card border rounded-lg px-3 py-1.5 text-text-2"
-              value={justifiedFilter}
-              onChange={(e) => setJustifiedFilter(e.target.value)}
-            >
-              <option value="all">Todas</option>
-              <option value="justified">Justificadas</option>
-              <option value="unjustified">Sin Justificar</option>
-            </select>
-            <Button variant="outline" size="sm" onClick={fetchData} disabled={isLoading} className="h-8">
+            <Select value={justifiedFilter} onValueChange={(val) => setJustifiedFilter(val)}>
+              <SelectTrigger className="w-[150px] h-9 rounded-xl border-border bg-card text-xs">
+                <SelectValue placeholder="Todas" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas</SelectItem>
+                <SelectItem value="justified">Justificadas</SelectItem>
+                <SelectItem value="unjustified">Sin Justificar</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="sm" onClick={fetchData} disabled={isLoading} className="h-9 w-9 rounded-xl p-0">
               <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
             </Button>
           </div>

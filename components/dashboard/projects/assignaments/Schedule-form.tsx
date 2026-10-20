@@ -20,6 +20,13 @@ import {
   listShiftTemplates,
 } from "@/app/services/project.assistance.service";
 import { getGraphQLUrl } from "@/lib/api-host";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 const ASSIGN_SCHEDULE = `
   mutation assignSchedule($input: ScheduleInput!) {
@@ -346,18 +353,18 @@ export default function ScheduleForm({
                       className="w-full h-10 px-3 rounded-lg border border-border bg-muted/40 text-sm text-foreground font-medium cursor-not-allowed opacity-90"
                     />
                   ) : (
-                    <select
-                      value={selectedUserId}
-                      onChange={(e) => setSelectedUserId(e.target.value)}
-                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
-                    >
-                      <option value="">Seleccionar usuario...</option>
-                      {users.map((u) => (
-                        <option key={u.id} value={u.id}>
-                          {u.firstName} {u.lastName} (@{u.username})
-                        </option>
-                      ))}
-                    </select>
+                    <Select value={selectedUserId} onValueChange={(val) => setSelectedUserId(val)}>
+                      <SelectTrigger className="w-full h-10 rounded-xl border border-border bg-background text-sm text-foreground">
+                        <SelectValue placeholder="Seleccionar usuario..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {users.map((u) => (
+                          <SelectItem key={u.id} value={u.id}>
+                            {u.firstName} {u.lastName} (@{u.username})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   )}
                 </div>
 
@@ -366,19 +373,22 @@ export default function ScheduleForm({
                   <label className="text-xs font-medium text-muted-foreground">
                     Proyecto
                   </label>
-                  <select
-                    value={selectedProjectId}
-                    onChange={(e) => setSelectedProjectId(e.target.value)}
-                    disabled={mode === "edit"}
-                    className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
-                  >
-                    <option value="">Seleccionar proyecto...</option>
-                    {availableProjects.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
+                  <Select
+                      value={selectedProjectId}
+                      onValueChange={(val) => setSelectedProjectId(val)}
+                      disabled={mode === "edit"}
+                    >
+                      <SelectTrigger className="w-full h-10 rounded-xl border border-border bg-background text-sm text-foreground">
+                        <SelectValue placeholder="Seleccionar proyecto..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableProjects.map((p) => (
+                          <SelectItem key={p.id} value={p.id}>
+                            {p.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   {!selectedProjectId && (
                     <p className="text-xs text-amber-ink dark:text-amber flex items-center gap-1.5 pt-0.5">
                       <AlertCircle className="w-3.5 h-3.5 shrink-0" />

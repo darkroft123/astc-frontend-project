@@ -13,6 +13,13 @@ import { getAllProjects, getAllUsers } from "@/app/services/project.assistance.s
 import { getGraphQLUrl } from "@/lib/api-host";
 import { LocationCell } from "@/components/atoms/LocationCell";
 import { formatAvatarUrl } from "@/lib/avatar-url";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 
 function getInitialMonthRange(): DateRange {
@@ -302,32 +309,34 @@ export function AttendanceManagementView() {
           </div>
 
           <div className="flex flex-wrap gap-3 items-end">
-            <div className="flex flex-col">
-              <label className="text-[9px] text-text-4 mb-1">PROYECTO</label>
-              <select
-                className="border border-line-2 rounded-md px-3 py-1.5 text-sm min-w-[160px]"
-                value={selectedProject}
-                onChange={(e) => setSelectedProject(e.target.value)}
-              >
-                <option value="all">Todos los proyectos</option>
-                {projects.map((p: any) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
+            <div className="flex flex-col min-w-[170px]">
+              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">PROYECTO</label>
+              <Select value={selectedProject} onValueChange={(val) => setSelectedProject(val)}>
+                <SelectTrigger className="w-full h-10 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121626] text-xs">
+                  <SelectValue placeholder="Todos los proyectos" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos los proyectos</SelectItem>
+                  {projects.map((p: any) => (
+                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="flex flex-col">
-              <label className="text-[9px] text-text-4 mb-1">USUARIO</label>
-              <select
-                className="border border-line-2 rounded-md px-3 py-1.5 text-sm min-w-[160px]"
-                value={selectedUser}
-                onChange={(e) => setSelectedUser(e.target.value)}
-              >
-                <option value="all">Todos los usuarios</option>
-                {users.map((u: any) => (
-                  <option key={u.id} value={u.id}>{u.firstName} {u.lastName}</option>
-                ))}
-              </select>
+            <div className="flex flex-col min-w-[170px]">
+              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">USUARIO</label>
+              <Select value={selectedUser} onValueChange={(val) => setSelectedUser(val)}>
+                <SelectTrigger className="w-full h-10 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121626] text-xs">
+                  <SelectValue placeholder="Todos los usuarios" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos los usuarios</SelectItem>
+                  {users.map((u: any) => (
+                    <SelectItem key={u.id} value={u.id}>{u.firstName} {u.lastName}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <Button

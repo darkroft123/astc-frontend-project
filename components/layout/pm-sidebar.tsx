@@ -25,6 +25,13 @@ import { notificationService } from "@/lib/notification.service";
 import { useUserProject } from "@/features/attendance/hooks/useUserProject";
 import { getGraphQLUrl } from "@/lib/api-host";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 const navigation = [
   { name: "Panel", href: "/pm", icon: LayoutDashboard },
@@ -145,27 +152,30 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
         {/* Selector de proyectos */}
         <div className="mt-2.5">
-          <select
+          <Select
             value={selectedProjectId || "all"}
-            onChange={(e) => {
-              const val = e.target.value;
+            onValueChange={(val) => {
               selectProject(val);
               if (typeof window !== "undefined") {
                 localStorage.setItem("selected_project_id", val);
                 window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: val }));
               }
             }}
-            className="w-full bg-white dark:bg-[#181B2A] border border-border dark:border-[#1E2335] rounded-xl px-2.5 py-1.5 text-xs text-foreground dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer transition-colors shadow-2xs"
           >
-            <option value="all" className="bg-white dark:bg-[#181B2A] text-gray-900 dark:text-gray-100">
-              Todos mis proyectos ({projects.length || 3})
-            </option>
-            {projects.map((p) => (
-              <option key={p.id} value={p.id} className="bg-white dark:bg-[#181B2A] text-gray-900 dark:text-gray-100">
-                {p.name}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="w-full h-9 rounded-xl border border-border dark:border-[#1E2335] bg-white dark:bg-[#181B2A] text-xs text-foreground dark:text-white">
+              <SelectValue placeholder={`Todos mis proyectos (${projects.length || 3})`} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                Todos mis proyectos ({projects.length || 3})
+              </SelectItem>
+              {projects.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="flex items-center gap-1.5 mt-2.5 text-xs text-muted-foreground font-sans">

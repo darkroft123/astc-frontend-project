@@ -14,6 +14,7 @@ import { notificationService, InAppNotification, getNotificationColor, getNotifi
 import { useAuth } from "@/app/jwt/auth/auth.provider";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const ICON_MAP = {
   AlertTriangle,
@@ -78,11 +79,32 @@ const DEFAULT_MOCK_NOTIFICATIONS: InAppNotification[] = [
 
 export function NotificationBell() {
   const { user, hydrated } = useAuth();
+  const router = useRouter();
   const effectiveUserId = user?.id || "user-002";
   const [unreadCount, setUnreadCount] = useState(3);
   const [notifications, setNotifications] = useState<InAppNotification[]>(DEFAULT_MOCK_NOTIFICATIONS);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const handleNotificationClick = async (n: InAppNotification) => {
+    await handleMarkAsRead(n);
+    setOpen(false);
+    if (n.actionLink) {
+      let target = n.actionLink;
+      if (target.includes("/asistencias")) {
+        target = "/pm/asistencias";
+      } else if (target.includes("/justificar") || target.includes("/justificaciones")) {
+        target = "/pm/justificaciones";
+      } else if (target.includes("/notificaciones")) {
+        target = "/pm/notificaciones";
+      } else if (target.startsWith("/team-member")) {
+        target = "/pm/notificaciones";
+      }
+      router.push(target);
+    } else {
+      router.push("/pm/notificaciones");
+    }
+  };
 
   const fetchUnreadCount = useCallback(async () => {
     try {
@@ -236,8 +258,7 @@ export function NotificationBell() {
                       "flex items-start gap-3 p-3 transition-all relative overflow-hidden group cursor-pointer",
                       n.read ? "bg-card hover:bg-raised" : "bg-primary/10 hover:bg-primary/15"
                     )}
-                    onClick={() => handleMarkAsRead(n)}
-                    onSelect={(e) => e.preventDefault()}
+                    onClick={() => handleNotificationClick(n)}
                     inset
                   >
                     {/* Semantic side border indicator */}
@@ -278,7 +299,7 @@ export function NotificationBell() {
             className="w-full text-sm text-primary hover:bg-primary/10 justify-center font-medium"
             onClick={() => {
               setOpen(false);
-              window.location.href = "/team-member/notificaciones";
+              router.push("/pm/notificaciones");
             }}
           >
             Ver todas las notificaciones
