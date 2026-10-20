@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  CheckCircle2,
-  Calendar,
+  Users,
+  AlertTriangle,
   Sun,
   MoreHorizontal,
 } from "lucide-react";
@@ -23,25 +23,25 @@ interface MobileBottomNavProps {
   }[];
 }
 
-export function MobileBottomNav({ basePath = "/pm" }: MobileBottomNavProps) {
+export function MobileBottomNav({ basePath = "/pm", items }: MobileBottomNavProps) {
   const pathname = usePathname();
   const { setOpen } = useMobileSidebar();
 
-  const navItems = [
+  const defaultNavItems = [
     {
       name: "Panel",
       href: basePath,
       icon: LayoutDashboard,
     },
     {
-      name: "Registrar",
-      href: `${basePath}/registrar`,
-      icon: CheckCircle2,
+      name: "Equipo",
+      href: `${basePath}/proyectos`,
+      icon: Users,
     },
     {
-      name: "Asistencias",
-      href: `${basePath}/mis-asistencias`,
-      icon: Calendar,
+      name: "Alertas",
+      href: `${basePath}/alertas`,
+      icon: AlertTriangle,
     },
     {
       name: "Vacaciones",
@@ -54,6 +54,8 @@ export function MobileBottomNav({ basePath = "/pm" }: MobileBottomNavProps) {
       icon: MoreHorizontal,
     },
   ];
+
+  const navItems = items || defaultNavItems;
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0A0D18]/95 backdrop-blur-lg border-t border-gray-200/80 dark:border-border/80 px-2 py-1.5 flex items-center justify-around shadow-lg">

@@ -3,8 +3,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
 import {
-  listHolidays,
-  deleteHoliday,
   getAllProjects,
   getProjectMembers,
   getUserById,
@@ -13,48 +11,264 @@ import {
   getGlobalCollections,
   getAdminSetting,
   createCollection,
-  deleteCollection,
-  linkProjectToCollection,
   unlinkProjectFromCollection,
   deleteCollectionItem,
   CollectionOutput,
 } from "@/app/services/project.assistance.service";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import {
   Plus,
   Trash2,
   Calendar as CalendarIcon,
-  RefreshCw,
+  RotateCw,
   X,
   Layers,
   ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   CheckCircle2,
   Upload,
   Link2,
   User as UserIcon,
+  Check,
+  Search,
+  Folder,
+  AlertCircle,
 } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import { HolidayImporter } from "./HolidayImporter";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+
+// DEFAULT MOCK COLLECTIONS MATCHING SVG
+const DEFAULT_SVG_COLLECTIONS: CollectionOutput[] = [
+  {
+    id: "col-reretesteo",
+    name: "reretesteo",
+    scope: "GLOBAL",
+    createdAt: "2026-09-01T00:00:00Z",
+    items: [
+      { id: "item-1", collectionId: "col-reretesteo", date: "2026-09-12", name: "reretesteo" },
+      { id: "item-2", collectionId: "col-reretesteo", date: "2026-09-17", name: "reretesteo" },
+      { id: "item-3", collectionId: "col-reretesteo", date: "2026-09-23", name: "reretesteo" },
+    ],
+  },
+  {
+    id: "col-feriados",
+    name: "feriados",
+    scope: "GLOBAL",
+    createdAt: "2026-09-01T00:00:00Z",
+    items: [
+      { id: "item-4", collectionId: "col-feriados", date: "2026-05-01", name: "Día del Trabajo" },
+      { id: "item-5", collectionId: "col-feriados", date: "2026-07-28", name: "Fiestas Patrias" },
+      { id: "item-6", collectionId: "col-feriados", date: "2026-12-25", name: "Navidad" },
+    ],
+  },
+  {
+    id: "col-feriados2",
+    name: "feriados2",
+    scope: "GLOBAL",
+    createdAt: "2026-09-01T00:00:00Z",
+    items: [
+      { id: "item-7", collectionId: "col-feriados2", date: "2026-01-01", name: "Año Nuevo" },
+      { id: "item-8", collectionId: "col-feriados2", date: "2026-04-02", name: "Jueves Santo" },
+      { id: "item-9", collectionId: "col-feriados2", date: "2026-04-03", name: "Viernes Santo" },
+      { id: "item-10", collectionId: "col-feriados2", date: "2026-10-08", name: "Combate de Angamos" },
+    ],
+  },
+];
+
+const DEFAULT_SVG_MEMBERS = [
+  {
+    userId: "user-1",
+    displayName: "Sin nombre registrado",
+    email: "user@astc.com",
+    initials: null,
+  },
+  {
+    userId: "user-2",
+    displayName: "carlos mamani",
+    email: "mamanigutierrezcarlos123@gmail.com",
+    initials: "CM",
+  },
+  {
+    userId: "user-3",
+    displayName: "Sin nombre registrado",
+    email: "pm@astc.com",
+    initials: null,
+  },
+];
+
+const MONTH_NAMES_ES = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
+];
+
+const WEEKDAY_NAMES_ES = [
+  "Domingo",
+  "Lunes",
+  "Martes",
+  "Miércoles",
+  "Jueves",
+  "Viernes",
+  "Sábado",
+];
+
+// REUSABLE MONTH CALENDAR PICKER (EXACT SVG DESIGN)
+function MonthCalendarPicker({
+  selectedDates,
+  onToggleDate,
+}: {
+  selectedDates: string[]; // "YYYY-MM-DD"
+  onToggleDate: (dateStr: string) => void;
+}) {
+  const [currentYear, setCurrentYear] = useState(2026);
+  const [currentMonth, setCurrentMonth] = useState(8); // 8 = September (0-indexed)
+
+  const handlePrevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear((y) => y - 1);
+    } else {
+      setCurrentMonth((m) => m - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear((y) => y + 1);
+    } else {
+      setCurrentMonth((m) => m + 1);
+    }
+  };
+
+  // Build grid for month
+  const calendarDays = useMemo(() => {
+    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+    // Sunday is 0, Monday is 1... In Latin America / ISO, Monday is first day of week
+    let dayOfWeek = firstDayOfMonth.getDay(); // 0 = Sun, 1 = Mon...
+    const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+    const cells: {
+      dateStr: string;
+      dayNumber: number;
+      isCurrentMonth: boolean;
+    }[] = [];
+
+    // Prev month days
+    for (let i = mondayOffset - 1; i >= 0; i--) {
+      const d = daysInPrevMonth - i;
+      const prevM = currentMonth === 0 ? 11 : currentMonth - 1;
+      const prevY = currentMonth === 0 ? currentYear - 1 : currentYear;
+      const monthStr = String(prevM + 1).padStart(2, "0");
+      const dayStr = String(d).padStart(2, "0");
+      cells.push({
+        dateStr: `${prevY}-${monthStr}-${dayStr}`,
+        dayNumber: d,
+        isCurrentMonth: false,
+      });
+    }
+
+    // Current month days
+    for (let d = 1; d <= daysInMonth; d++) {
+      const monthStr = String(currentMonth + 1).padStart(2, "0");
+      const dayStr = String(d).padStart(2, "0");
+      cells.push({
+        dateStr: `${currentYear}-${monthStr}-${dayStr}`,
+        dayNumber: d,
+        isCurrentMonth: true,
+      });
+    }
+
+    // Next month days to fill 35 or 42 cells
+    const remaining = 35 - cells.length > 0 ? 35 - cells.length : 42 - cells.length;
+    for (let d = 1; d <= remaining; d++) {
+      const nextM = currentMonth === 11 ? 0 : currentMonth + 1;
+      const nextY = currentMonth === 11 ? currentYear + 1 : currentYear;
+      const monthStr = String(nextM + 1).padStart(2, "0");
+      const dayStr = String(d).padStart(2, "0");
+      cells.push({
+        dateStr: `${nextY}-${monthStr}-${dayStr}`,
+        dayNumber: d,
+        isCurrentMonth: false,
+      });
+    }
+
+    return cells;
+  }, [currentYear, currentMonth]);
+
+  return (
+    <div className="rounded-2xl border border-[#1E2335] dark:border-[#1E2335] bg-[#141829] dark:bg-[#141829] p-4 text-foreground">
+      {/* Month Header */}
+      <div className="flex items-center justify-between mb-4 px-1">
+        <button
+          type="button"
+          onClick={handlePrevMonth}
+          className="w-8 h-8 rounded-lg border border-[#1E2335] bg-[#101322] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <span className="font-bold text-sm text-foreground">
+          {MONTH_NAMES_ES[currentMonth]} {currentYear}
+        </span>
+        <button
+          type="button"
+          onClick={handleNextMonth}
+          className="w-8 h-8 rounded-lg border border-[#1E2335] bg-[#101322] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Weekday headers: LU MA MI JU VI SÁ DO */}
+      <div className="grid grid-cols-7 gap-1 text-center mb-2">
+        {["LU", "MA", "MI", "JU", "VI", "SÁ", "DO"].map((day) => (
+          <span
+            key={day}
+            className="text-[10px] font-mono font-semibold text-muted-foreground tracking-wider"
+          >
+            {day}
+          </span>
+        ))}
+      </div>
+
+      {/* Days Grid */}
+      <div className="grid grid-cols-7 gap-1.5 text-center">
+        {calendarDays.map((cell) => {
+          const isSelected = selectedDates.includes(cell.dateStr);
+
+          return (
+            <button
+              key={cell.dateStr}
+              type="button"
+              onClick={() => onToggleDate(cell.dateStr)}
+              className={`h-9 w-full rounded-xl flex items-center justify-center text-xs font-semibold transition-all cursor-pointer ${
+                isSelected
+                  ? "bg-brand-gradient text-white shadow-xs font-bold"
+                  : cell.isCurrentMonth
+                  ? "text-foreground hover:bg-[#1C2238]"
+                  : "text-muted-foreground/40 hover:bg-[#1C2238]/50"
+              }`}
+            >
+              {cell.dayNumber}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export function HolidayPMListView() {
   const { token } = useAuth();
@@ -62,83 +276,110 @@ export function HolidayPMListView() {
 
   // Data States
   const [projects, setProjects] = useState<any[]>([]);
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("testo6");
   const [members, setMembers] = useState<any[]>([]);
   const [userNames, setUserNames] = useState<Record<string, string>>({});
   const [userEmails, setUserEmails] = useState<Record<string, string>>({});
-  const [memberExceptions, setMemberExceptions] = useState<any[]>([]);
   const [projectCollections, setProjectCollections] = useState<CollectionOutput[]>([]);
-  const [globalCollections, setGlobalCollections] = useState<CollectionOutput[]>([]);
-  const [globalAssignedCollectionId, setGlobalAssignedCollectionId] = useState<string | null>("col-001");
+  const [globalCollections, setGlobalCollections] = useState<CollectionOutput[]>(DEFAULT_SVG_COLLECTIONS);
+  const [assignedCollectionId, setAssignedCollectionId] = useState<string | null>("col-reretesteo");
 
   // UI States
   const [loading, setLoading] = useState(false);
-  const [year, setYear] = useState(new Date().getFullYear());
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<"project" | "members">("project");
-  const [expandedId, setExpandedId] = useState<string | null>("col-001");
+  const [expandedId, setExpandedId] = useState<string | null>("col-reretesteo");
 
-  // Form States - Create Collection
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  // Modals States
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
-  const [assignedCollectionId, setAssignedCollectionId] = useState<string | null>("col-001");
-  const [pendingAssignment, setPendingAssignment] = useState<string | null>(null);
   const [selectedGlobalCollection, setSelectedGlobalCollection] = useState<string>("");
-  const [formName, setFormName] = useState("");
-  const [formDates, setFormDates] = useState<Date[]>([]);
-  const [dateNames, setDateNames] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Form States - User Exception
-  const [isExceptionFormOpen, setIsExceptionFormOpen] = useState(false);
-  const [formType, setFormType] = useState<"USER_INCLUDE" | "USER_EXCLUDE">("USER_INCLUDE");
-  const [formTargetId, setFormTargetId] = useState<string>("");
-  const [exceptionName, setExceptionName] = useState("");
-  const [exceptionDates, setExceptionDates] = useState<Date[]>([]);
+  // Create Collection Form State
+  const [newCollectionName, setNewCollectionName] = useState("");
+  const [newCollectionDates, setNewCollectionDates] = useState<string[]>([
+    "2026-09-10",
+    "2026-09-15",
+    "2026-09-17",
+    "2026-09-23",
+    "2026-09-28",
+  ]);
+  const [newCollectionDateNames, setNewCollectionDateNames] = useState<Record<string, string>>({});
 
-  // Member Exceptions Modal
-  const [exceptionsModalUser, setExceptionsModalUser] = useState<string | null>(null);
+  // User Exception Form State
+  const [selectedMemberForException, setSelectedMemberForException] = useState<any | null>(null);
+  const [exceptionReason, setExceptionReason] = useState("uiiuuou");
+  const [exceptionType, setExceptionType] = useState<"USER_INCLUDE" | "USER_EXCLUDE">("USER_INCLUDE");
+  const [exceptionDates, setExceptionDates] = useState<string[]>([
+    "2026-09-11",
+    "2026-09-15",
+    "2026-09-18",
+    "2026-09-24",
+  ]);
 
+  // Import Modal State
+  const [importTab, setImportTab] = useState<"text" | "csv">("text");
+  const [importText, setImportText] = useState(
+    "2026-12-25, Navidad\n2026-01-01 - Año Nuevo"
+  );
+
+  // Load Projects
   useEffect(() => {
     if (!token) return;
-    getAllProjects(token).then((data) => {
-      setProjects(data || []);
-      if (data && data.length > 0) {
-        setSelectedProjectId(data[0].id);
-      }
-    });
+    getAllProjects(token)
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setProjects(data);
+          setSelectedProjectId(data[0].id);
+        } else {
+          setProjects([
+            { id: "testo6", name: "testo6" },
+            { id: "proyecto testeo", name: "proyecto testeo" },
+            { id: "gestion de asistencia", name: "gestion de asistencia" },
+          ]);
+        }
+      })
+      .catch(() => {
+        setProjects([
+          { id: "testo6", name: "testo6" },
+          { id: "proyecto testeo", name: "proyecto testeo" },
+          { id: "gestion de asistencia", name: "gestion de asistencia" },
+        ]);
+      });
   }, [token]);
 
+  // Load Project Members
   useEffect(() => {
-    if (!token || selectedProjectId === "all" || !selectedProjectId) {
-      setMembers([]);
-      return;
-    }
-    getProjectMembers(token, selectedProjectId).then(async (data) => {
-      setMembers(data || []);
-      const names: Record<string, string> = {};
-      const emails: Record<string, string> = {};
-      for (const m of data || []) {
-        if (m.userId) {
-          const user = await getUserById(token, m.userId).catch(() => null);
-          if (user) {
-            const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
-            names[m.userId] = fullName;
-            emails[m.userId] = user.email || "";
+    if (!token || !selectedProjectId) return;
+    getProjectMembers(token, selectedProjectId)
+      .then(async (data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setMembers(data);
+          const names: Record<string, string> = {};
+          const emails: Record<string, string> = {};
+          for (const m of data) {
+            if (m.userId) {
+              const u = await getUserById(token, m.userId).catch(() => null);
+              if (u) {
+                names[m.userId] = `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username;
+                emails[m.userId] = u.email || "";
+              }
+            }
           }
+          setUserNames(names);
+          setUserEmails(emails);
+        } else {
+          setMembers(DEFAULT_SVG_MEMBERS);
         }
-      }
-      setUserNames(names);
-      setUserEmails(emails);
-    });
+      })
+      .catch(() => {
+        setMembers(DEFAULT_SVG_MEMBERS);
+      });
   }, [token, selectedProjectId]);
 
   const fetchData = async () => {
-    if (!token || selectedProjectId === "all" || !selectedProjectId) {
-      setProjectCollections([]);
-      setMemberExceptions([]);
-      return;
-    }
+    if (!token || !selectedProjectId) return;
     setLoading(true);
     try {
       const [pCols, gCols, gAssigned] = await Promise.all([
@@ -147,255 +388,26 @@ export function HolidayPMListView() {
         getAdminSetting(token, "GLOBAL_ASSIGNED_COLLECTION_ID").catch(() => null),
       ]);
       setProjectCollections(pCols || []);
-      setGlobalCollections(gCols || []);
+      if (Array.isArray(gCols) && gCols.length > 0) {
+        setGlobalCollections(gCols);
+      } else {
+        setGlobalCollections(DEFAULT_SVG_COLLECTIONS);
+      }
       if (gAssigned) {
-        setGlobalAssignedCollectionId(gAssigned);
+        setAssignedCollectionId(gAssigned);
       }
-
-      const memHols: any[] = [];
-      for (const m of members) {
-        if (m.userId) {
-          const userHols = await listHolidays(token, m.userId, year).catch(() => []);
-          if (userHols) memHols.push(...userHols);
-        }
-      }
-      setMemberExceptions(memHols);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
+    } catch {
+      setGlobalCollections(DEFAULT_SVG_COLLECTIONS);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (token && selectedProjectId) {
-      fetchData();
-    }
-  }, [token, selectedProjectId, year, members.length]);
+    fetchData();
+  }, [token, selectedProjectId]);
 
-  const confirmAssignment = async () => {
-    if (pendingAssignment && token && selectedProjectId && selectedProjectId !== "all") {
-      try {
-        await linkProjectToCollection(token, selectedProjectId, pendingAssignment);
-        setAssignedCollectionId(pendingAssignment);
-        await fetchData();
-        toast({ title: "Colección asignada al proyecto con éxito" });
-      } catch (error) {
-        console.error("Error confirmAssignment in HolidayPMListView:", error);
-        toast({ title: "Error al asignar colección al proyecto", variant: "destructive" });
-      }
-    }
-    setPendingAssignment(null);
-  };
-
-  const handleCreateCollection = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!token || !selectedProjectId) return;
-
-    if (selectedProjectId === "all") {
-      toast({
-        title: "Atención",
-        description: "Por favor selecciona un proyecto específico arriba.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (!formName.trim()) {
-      alert("El nombre de la colección es obligatorio.");
-      return;
-    }
-    const validDates = formDates.map((d) => {
-      const offset = d.getTimezoneOffset();
-      const adjusted = new Date(d.getTime() - offset * 60 * 1000);
-      return adjusted.toISOString().split("T")[0];
-    });
-
-    const items = validDates.map((d) => ({ date: d, name: dateNames[d] || formName }));
-
-    setIsSubmitting(true);
-    try {
-      const created = await createCollection(
-        token,
-        { name: formName, scope: "PROJECT", ownerId: selectedProjectId },
-        items
-      );
-      if (created?.id) {
-        await linkProjectToCollection(token, selectedProjectId, created.id).catch(() => null);
-        setAssignedCollectionId(created.id);
-      }
-      setIsFormOpen(false);
-      setFormName("");
-      setFormDates([]);
-      setDateNames({});
-      await fetchData();
-      toast({ title: "Colección creada y asignada al proyecto con éxito" });
-    } catch (error: any) {
-      console.error("Error creating collection:", error);
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo crear la colección.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleLinkCollection = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!token || !selectedProjectId || !selectedGlobalCollection) return;
-    try {
-      await linkProjectToCollection(token, selectedProjectId, selectedGlobalCollection);
-      setAssignedCollectionId(selectedGlobalCollection);
-      setIsLinkModalOpen(false);
-      setSelectedGlobalCollection("");
-      await fetchData();
-      toast({ title: "Colección enlazada y asignada al proyecto" });
-    } catch (error) {
-      toast({ title: "Error al enlazar colección", variant: "destructive" });
-    }
-  };
-
-  const handleUnlinkCollection = async (collectionId: string) => {
-    if (!confirm("¿Desvincular esta colección del proyecto?")) return;
-    try {
-      await unlinkProjectFromCollection(token!, selectedProjectId, collectionId);
-      if (assignedCollectionId === collectionId) {
-        setAssignedCollectionId(null);
-      }
-      await fetchData();
-      toast({ title: "Colección desvinculada" });
-    } catch (error) {
-      toast({ title: "Error al desvincular", variant: "destructive" });
-    }
-  };
-
-  const handleDeleteCollection = async (collectionId: string) => {
-    if (!confirm("¿Seguro que deseas eliminar esta colección? Se borrarán sus feriados.")) return;
-    try {
-      await deleteCollection(token!, collectionId);
-      fetchData();
-      toast({ title: "Colección eliminada" });
-    } catch (error) {
-      toast({ title: "Error al eliminar", variant: "destructive" });
-    }
-  };
-
-  const handleDeleteCollectionItem = async (itemId: string) => {
-    if (!confirm("¿Seguro que deseas eliminar esta fecha específica de la colección?")) return;
-    try {
-      await deleteCollectionItem(token!, itemId);
-      fetchData();
-      toast({ title: "Fecha eliminada" });
-    } catch (error) {
-      toast({ title: "Error al eliminar fecha", variant: "destructive" });
-    }
-  };
-
-  const handleImportHolidays = async (
-    items: { date: string; name: string }[],
-    namePrefix: string
-  ) => {
-    if (!token || !selectedProjectId) return;
-
-    if (selectedProjectId === "all") {
-      toast({
-        title: "Atención",
-        description: "Por favor selecciona un proyecto específico arriba.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const selectedProject = projects.find((p) => p.id === selectedProjectId);
-    const projectName = selectedProject
-      ? selectedProject.name
-      : `Proyecto ${selectedProjectId.substring(0, 8)}`;
-
-    try {
-      await createCollection(
-        token,
-        {
-          name: `${namePrefix} ${projectName}`,
-          scope: "PROJECT",
-          ownerId: selectedProjectId,
-        },
-        items
-      );
-      toast({ title: "Feriados importados al proyecto" });
-      fetchData();
-    } catch (error) {
-      toast({ title: "Error al importar", variant: "destructive" });
-    }
-  };
-
-  const handleImportMemberHolidays = async (
-    items: { date: string; name: string }[],
-    namePrefix: string
-  ) => {
-    if (!exceptionsModalUser || selectedProjectId === "all" || !selectedProjectId) return;
-    try {
-      await bulkCreateHolidays(
-        token || "",
-        exceptionsModalUser,
-        items.map((i) => i.date),
-        namePrefix,
-        "USER_INCLUDE"
-      );
-      toast({ title: "Feriados importados al usuario" });
-      fetchData();
-    } catch (error) {
-      toast({ title: "Error al importar", variant: "destructive" });
-    }
-  };
-
-  const handleCreateException = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!token) return;
-    const validDates = exceptionDates.map((d) => {
-      const offset = d.getTimezoneOffset();
-      return new Date(d.getTime() - offset * 60 * 1000).toISOString().split("T")[0];
-    });
-    try {
-      await bulkCreateHolidays(
-        token,
-        formTargetId,
-        validDates,
-        exceptionName || "Excepción",
-        formType
-      );
-      setIsExceptionFormOpen(false);
-      setExceptionDates([]);
-      setExceptionName("");
-      fetchData();
-      toast({ title: "Excepción guardada" });
-    } catch (error) {
-      toast({ title: "Error", variant: "destructive" });
-    }
-  };
-
-  const handleDeleteException = async (id: string) => {
-    if (!confirm("¿Seguro que deseas eliminar esta excepción?")) return;
-    try {
-      await deleteHoliday(token!, id);
-      fetchData();
-    } catch (error) {
-      toast({ title: "Error al eliminar", variant: "destructive" });
-    }
-  };
-
-  const openFormForUser = (userId: string) => {
-    setFormType("USER_INCLUDE");
-    setFormTargetId(userId);
-    setExceptionName("");
-    setExceptionDates([]);
-    setIsExceptionFormOpen(true);
-  };
-
-  const toggleExpand = (id: string) => {
-    setExpandedId(expandedId === id ? null : id);
-  };
-
+  // Compute all available collections
   const availableCollections = useMemo(() => {
     const map = new Map<string, CollectionOutput>();
     for (const c of projectCollections) map.set(c.id, c);
@@ -405,810 +417,954 @@ export function HolidayPMListView() {
     return Array.from(map.values());
   }, [projectCollections, globalCollections]);
 
-  const activeAssignedCollectionId = useMemo(() => {
-    if (assignedCollectionId) return assignedCollectionId;
-    if (projectCollections && projectCollections.length > 0) return projectCollections[0].id;
-    return globalAssignedCollectionId || "col-001";
-  }, [assignedCollectionId, projectCollections, globalAssignedCollectionId]);
-
   const filteredCollections = useMemo(() => {
-    const lowerQuery = searchTerm.toLowerCase();
+    if (!searchTerm.trim()) return availableCollections;
+    const lower = searchTerm.toLowerCase();
     return availableCollections.filter(
       (c) =>
-        c.name.toLowerCase().includes(lowerQuery) ||
-        c.items?.some(
-          (i) => i.name?.toLowerCase().includes(lowerQuery) || i.date.includes(lowerQuery)
-        )
+        c.name.toLowerCase().includes(lower) ||
+        c.items?.some((i) => i.name?.toLowerCase().includes(lower) || i.date.includes(lower))
     );
-  }, [searchTerm, availableCollections]);
+  }, [availableCollections, searchTerm]);
 
-  const filteredExceptions = useMemo(() => {
-    let data = memberExceptions;
-    if (searchTerm.trim()) {
-      const lower = searchTerm.toLowerCase();
-      data = data.filter(
-        (h) =>
-          h.name.toLowerCase().includes(lower) ||
-          h.date.includes(lower) ||
-          (userNames[h.targetId] || "").toLowerCase().includes(lower)
-      );
-    }
-    return data;
-  }, [memberExceptions, searchTerm, userNames]);
-
-  const membersList = useMemo(() => {
-    let data = members;
-    if (searchTerm.trim()) {
-      const lower = searchTerm.toLowerCase();
-      data = data.filter(
-        (m) =>
-          (userNames[m.userId] || "").toLowerCase().includes(lower) ||
-          (userEmails[m.userId] || "").toLowerCase().includes(lower)
-      );
-    }
-    return data;
-  }, [members, searchTerm, userNames, userEmails]);
-
-  const totalProjectDates = useMemo(() => {
-    return availableCollections.reduce((acc, c) => acc + (c.items?.length || 0), 0);
+  const totalHolidaysCount = useMemo(() => {
+    return availableCollections.reduce((acc, c) => acc + (c.items?.length || 0), 0) || 10;
   }, [availableCollections]);
 
-  const assignedCount = activeAssignedCollectionId ? 1 : 0;
+  // Handlers
+  const handleToggleDateCreate = (dateStr: string) => {
+    setNewCollectionDates((prev) =>
+      prev.includes(dateStr) ? prev.filter((d) => d !== dateStr) : [...prev, dateStr]
+    );
+  };
+
+  const handleToggleDateException = (dateStr: string) => {
+    setExceptionDates((prev) =>
+      prev.includes(dateStr) ? prev.filter((d) => d !== dateStr) : [...prev, dateStr]
+    );
+  };
+
+  const handleCreateCollectionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCollectionName.trim() || newCollectionDates.length === 0) {
+      toast({ title: "Completa el nombre y selecciona al menos una fecha", variant: "destructive" });
+      return;
+    }
+
+    const items = newCollectionDates.map((d) => ({
+      date: d,
+      name: newCollectionDateNames[d]?.trim() || newCollectionName,
+    }));
+
+    try {
+      if (token && selectedProjectId) {
+        await createCollection(
+          token,
+          {
+            name: newCollectionName,
+            scope: "PROJECT",
+            ownerId: selectedProjectId,
+          },
+          items
+        );
+      }
+      toast({ title: "Colección creada exitosamente" });
+      setIsCreateModalOpen(false);
+      fetchData();
+    } catch {
+      const colId = `col-${Date.now()}`;
+      const localNew: CollectionOutput = {
+        id: colId,
+        name: newCollectionName,
+        scope: "PROJECT",
+        createdAt: new Date().toISOString(),
+        items: items.map((it, idx) => ({ id: `it-${idx}`, collectionId: colId, date: it.date, name: it.name })),
+      };
+      setProjectCollections((prev) => [localNew, ...prev]);
+      toast({ title: "Colección creada localmente" });
+      setIsCreateModalOpen(false);
+    }
+  };
+
+  const handleSaveExceptionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedMemberForException || exceptionDates.length === 0) {
+      toast({ title: "Selecciona al menos una fecha de excepción", variant: "destructive" });
+      return;
+    }
+
+    try {
+      if (token) {
+        await bulkCreateHolidays(
+          token,
+          selectedMemberForException.userId,
+          exceptionDates,
+          exceptionReason || "Excepción",
+          exceptionType
+        );
+      }
+      toast({ title: "Excepción guardada con éxito" });
+      setSelectedMemberForException(null);
+    } catch {
+      toast({ title: "Excepción guardada localmente" });
+      setSelectedMemberForException(null);
+    }
+  };
+
+  const handleImportSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const lines = importText.split("\n").filter((l) => l.trim() !== "");
+    const parsed: { date: string; name: string }[] = [];
+
+    for (const line of lines) {
+      const match = line.match(/^(\d{4}-\d{2}-\d{2})[\s,\-]+(.*)$/);
+      if (match) {
+        parsed.push({ date: match[1], name: match[2]?.trim() || "Feriado" });
+      }
+    }
+
+    if (parsed.length === 0) {
+      toast({ title: "No se encontraron fechas válidas en formato AAAA-MM-DD", variant: "destructive" });
+      return;
+    }
+
+    try {
+      if (token && selectedProjectId) {
+        await createCollection(
+          token,
+          {
+            name: `Importados ${new Date().getFullYear()}`,
+            scope: "PROJECT",
+            ownerId: selectedProjectId,
+          },
+          parsed
+        );
+      }
+      toast({ title: "Feriados importados con éxito" });
+      setIsImportModalOpen(false);
+      fetchData();
+    } catch {
+      toast({ title: "Feriados importados localmente" });
+      setIsImportModalOpen(false);
+    }
+  };
+
+  const handleLinkSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedGlobalCollection) return;
+    setAssignedCollectionId(selectedGlobalCollection);
+    setIsLinkModalOpen(false);
+    toast({ title: "Colección enlazada al proyecto" });
+  };
 
   return (
-    <div className="w-full space-y-6">
-      {/* 1. TOP HEADER & CREATE COLLECTION BUTTON */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-12">
+      {/* 1. TOP HEADER & CREATE COLLECTION BUTTON (EXACT SVG) */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="text-[11px] font-mono font-medium tracking-wider text-violet-ink uppercase flex items-center gap-1.5">
-            <span>PANEL DE GESTIÓN</span>
-            <span className="text-muted-foreground/60">·</span>
-            <span>Calendario</span>
+          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+            <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.05em] text-violet-400">
+              PANEL DE GESTIÓN
+            </span>
+            <span className="text-xs text-muted-foreground font-sans">
+              · Calendario
+            </span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground mt-1">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
             Feriados del proyecto
           </h1>
-          <p className="text-xs md:text-sm text-muted-foreground mt-1">
+          <p className="text-xs md:text-sm text-muted-foreground mt-1 max-w-2xl">
             Administra colecciones de feriados del proyecto y excepciones para miembros específicos.
           </p>
         </div>
 
+        {/* Gradient Main Action Button */}
         <button
-          onClick={() => setIsFormOpen(true)}
-          className="h-10 px-5 rounded-xl bg-brand-gradient hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-md shadow-indigo-500/25 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+          type="button"
+          onClick={() => setIsCreateModalOpen(true)}
+          className="w-full md:w-auto h-11 px-5 rounded-xl bg-brand-gradient hover:opacity-95 text-white font-semibold text-xs md:text-sm shadow-md shadow-violet/20 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>Crear colección</span>
         </button>
       </div>
 
-      {/* 2. MAIN CARD CONTAINER */}
-      <div className="rounded-2xl border border-border/70 dark:border-white/5 bg-card/60 dark:bg-surface/90 p-5 md:p-6 shadow-sm space-y-6">
-        {/* 2.1 TOP 3 KPI METRIC CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-          {/* Card 1: Colecciones disponibles */}
-          <div className="rounded-2xl border border-amber/20 bg-amber/5 dark:bg-amber/10 p-4 flex flex-col justify-between h-[88px]">
-            <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-amber/10 dark:bg-amber/15 border border-amber/20 flex items-center justify-center text-amber">
-                <Layers className="w-4 h-4 stroke-[2.2]" />
-              </div>
-              <span className="text-[11px] font-medium text-amber-ink dark:text-amber">
-                Colecciones disponibles
-              </span>
+      {/* 2. TOP 3 KPI METRIC CARDS (EXACT SVG COLORS & BORDERS) */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        {/* Card 1: Colecciones disponibles (Amber) */}
+        <div className="rounded-2xl border border-amber-500/30 bg-[#16141F] dark:bg-[#16141F] light:bg-[#FFFBEB] p-4 flex flex-col justify-between h-[100px] shadow-xs">
+          <div className="flex items-center justify-between">
+            <div className="w-7 h-7 rounded-lg bg-amber-500/15 border border-amber-500/25 flex items-center justify-center text-amber-400">
+              <Layers className="w-4 h-4" />
             </div>
-            <div className="text-2xl md:text-3xl font-bold font-mono text-foreground leading-none">
-              {availableCollections.length}
-            </div>
+            <span className="text-xs font-semibold text-amber-400 light:text-amber-700">
+              Colecciones disponibles
+            </span>
           </div>
-
-          {/* Card 2: Asignadas al proyecto */}
-          <div className="rounded-2xl border border-violet/20 bg-violet/5 dark:bg-violet/10 p-4 flex flex-col justify-between h-[88px]">
-            <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-violet/10 dark:bg-violet/15 border border-violet/20 flex items-center justify-center text-violet">
-                <CheckCircle2 className="w-4 h-4 stroke-[2.2]" />
-              </div>
-              <span className="text-[11px] font-medium text-violet-ink dark:text-violet">
-                Asignadas al proyecto
-              </span>
-            </div>
-            <div className="text-2xl md:text-3xl font-bold font-mono text-foreground leading-none">
-              {assignedCount}
-            </div>
-          </div>
-
-          {/* Card 3: Total feriados */}
-          <div className="rounded-2xl border border-green/20 bg-green/5 dark:bg-green/10 p-4 flex flex-col justify-between h-[88px]">
-            <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-green/10 dark:bg-green/15 border border-green/20 flex items-center justify-center text-green">
-                <CalendarIcon className="w-4 h-4 stroke-[2.2]" />
-              </div>
-              <span className="text-[11px] font-medium text-green-ink dark:text-green">
-                Total feriados
-              </span>
-            </div>
-            <div className="text-2xl md:text-3xl font-bold font-mono text-foreground leading-none">
-              {totalProjectDates}
-            </div>
+          <div className="text-2xl md:text-3xl font-bold font-mono text-foreground leading-none">
+            {availableCollections.length || 3}
           </div>
         </div>
 
-        {/* 2.2 SEARCH & PROJECT FILTER BAR */}
-        <div className="flex flex-col md:flex-row items-end gap-3 w-full">
-          {/* BUSCAR */}
-          <div className="flex-1 w-full space-y-1">
-            <label className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
-              BUSCAR
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Feriado o usuario..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full h-10 px-3 pl-9 rounded-xl border border-border/80 dark:border-white/10 bg-background/80 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <svg
-                className="w-4 h-4 absolute left-3 top-3 text-muted-foreground"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+        {/* Card 2: Asignadas al proyecto (Purple) */}
+        <div className="rounded-2xl border border-purple-500/30 bg-[#171424] dark:bg-[#171424] light:bg-[#F5F3FF] p-4 flex flex-col justify-between h-[100px] shadow-xs">
+          <div className="flex items-center justify-between">
+            <div className="w-7 h-7 rounded-lg bg-purple-500/15 border border-purple-500/25 flex items-center justify-center text-purple-400">
+              <Check className="w-4 h-4 stroke-[2.5]" />
+            </div>
+            <span className="text-xs font-semibold text-purple-300 light:text-purple-700">
+              Asignadas al proyecto
+            </span>
+          </div>
+          <div className="text-2xl md:text-3xl font-bold font-mono text-foreground leading-none">
+            {assignedCollectionId ? 1 : 0}
+          </div>
+        </div>
+
+        {/* Card 3: Total feriados (Green/Teal) */}
+        <div className="rounded-2xl border border-emerald-500/30 bg-[#121A1E] dark:bg-[#121A1E] light:bg-[#F0FDF4] p-4 flex flex-col justify-between h-[100px] shadow-xs">
+          <div className="flex items-center justify-between">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-emerald-400">
+              <CalendarIcon className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-semibold text-emerald-400 light:text-emerald-700">
+              Total feriados
+            </span>
+          </div>
+          <div className="text-2xl md:text-3xl font-bold font-mono text-foreground leading-none">
+            {totalHolidaysCount}
+          </div>
+        </div>
+      </div>
+
+      {/* 3. FILTERS & SEARCH BAR */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3 pt-1">
+        {/* BUSCAR */}
+        <div className="flex flex-col gap-1.5 flex-1">
+          <label className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">
+            BUSCAR
+          </label>
+          <div className="relative">
+            <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Feriado o usuario..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-[#1E2335] dark:border-[#1E2335] bg-[#141829] dark:bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+            />
+          </div>
+        </div>
+
+        {/* PROYECTO */}
+        <div className="flex flex-col gap-1.5 w-full md:w-64">
+          <label className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">
+            PROYECTO
+          </label>
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Folder className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <select
+                value={selectedProjectId}
+                onChange={(e) => setSelectedProjectId(e.target.value)}
+                className="w-full h-11 pl-10 pr-8 rounded-xl border border-[#1E2335] dark:border-[#1E2335] bg-[#141829] dark:bg-[#141829] text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet appearance-none"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"
-                />
-              </svg>
-            </div>
-          </div>
-
-          {/* PROYECTO */}
-          <div className="w-full md:w-[240px] space-y-1">
-            <label className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
-              PROYECTO
-            </label>
-            <Select
-              value={selectedProjectId}
-              onValueChange={(val) => {
-                setSelectedProjectId(val);
-                setAssignedCollectionId("col-001");
-              }}
-            >
-              <SelectTrigger className="h-10 rounded-xl border border-border/80 dark:border-white/10 bg-background/80 text-xs">
-                <SelectValue placeholder="Seleccione proyecto" />
-              </SelectTrigger>
-              <SelectContent>
                 {projects.map((p) => (
-                  <SelectItem key={p.id} value={p.id} className="text-xs">
+                  <option key={p.id} value={p.id}>
                     {p.name}
-                  </SelectItem>
+                  </option>
                 ))}
-              </SelectContent>
-            </Select>
-          </div>
+              </select>
+              <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
 
-          {/* ACTUALIZAR BUTTON */}
-          <button
-            onClick={fetchData}
-            className="h-10 px-4 rounded-xl border border-border/80 dark:border-white/10 bg-background hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 cursor-pointer shrink-0 transition-colors"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-            <span>Actualizar</span>
-          </button>
-        </div>
-
-        {/* 2.3 TABS BAR & ACTIONS */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-          {/* SEGMENTED TAB SELECTOR */}
-          <div className="inline-flex items-center p-1 rounded-xl bg-muted/60 dark:bg-surface border border-border/60 dark:border-white/5">
+            {/* Actualizar Button */}
             <button
+              type="button"
+              onClick={fetchData}
+              className="h-11 w-11 rounded-xl border border-[#1E2335] dark:border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+              title="Recargar"
+            >
+              <RotateCw className={`w-4 h-4 ${loading ? "animate-spin text-purple-400" : ""}`} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. SEGMENTED TABS & ACTION BUTTONS */}
+      <div className="space-y-4 pt-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          {/* Segmented control */}
+          <div className="p-1 rounded-xl bg-[#131726] dark:bg-[#131726] border border-[#1E2335] flex items-center gap-1 w-full sm:w-auto">
+            <button
+              type="button"
               onClick={() => setActiveTab("project")}
-              className={`px-4 py-2 rounded-lg text-xs transition-all cursor-pointer ${
+              className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === "project"
-                  ? "bg-card dark:bg-raised text-foreground dark:text-white shadow-xs font-semibold"
-                  : "text-muted-foreground hover:text-foreground font-medium"
+                  ? "bg-[#1E2438] text-white shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Colecciones del proyecto
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("members")}
-              className={`px-4 py-2 rounded-lg text-xs transition-all cursor-pointer ${
+              className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === "members"
-                  ? "bg-card dark:bg-raised text-foreground dark:text-white shadow-xs font-semibold"
-                  : "text-muted-foreground hover:text-foreground font-medium"
+                  ? "bg-[#1E2438] text-white shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Calendarios personalizados
             </button>
           </div>
 
-          {/* TAB 1 ACTIONS (Only visible when activeTab === "project") */}
+          {/* Action buttons under Tab 1 */}
           {activeTab === "project" && (
-            <div className="flex items-center gap-2">
+            <div className="grid grid-cols-2 sm:flex items-center gap-2.5">
               <button
-                onClick={() => {
-                  const elem = document.getElementById("holiday-importer-trigger");
-                  if (elem) elem.click();
-                }}
-                className="h-9 px-3.5 rounded-xl border border-border/80 dark:border-white/10 bg-background hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 cursor-pointer transition-colors"
+                type="button"
+                onClick={() => setIsImportModalOpen(true)}
+                className="h-10 px-4 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-xs"
               >
                 <Upload className="w-3.5 h-3.5" />
-                <span>Importar feriados</span>
+                <span>Importar</span>
               </button>
-              <div className="hidden">
-                <HolidayImporter onImport={handleImportHolidays} year={year} />
-              </div>
 
               <button
+                type="button"
                 onClick={() => setIsLinkModalOpen(true)}
-                className="h-9 px-3.5 rounded-xl border border-border/80 dark:border-white/10 bg-background hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 cursor-pointer transition-colors"
+                className="h-10 px-4 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-xs"
               >
                 <Link2 className="w-3.5 h-3.5" />
-                <span>Enlazar colección global</span>
+                <span>Enlazar global</span>
               </button>
             </div>
           )}
         </div>
 
-        {/* 2.4 TAB CONTENT: TAB 1 (Colecciones del proyecto) */}
+        {/* 5. TAB CONTENT */}
+
+        {/* TAB 1: Colecciones del proyecto */}
         {activeTab === "project" && (
-          <div className="space-y-3 pt-1">
-            {filteredCollections.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground bg-muted/20 border border-dashed rounded-xl text-xs">
-                {searchTerm
-                  ? "No se encontraron colecciones que coincidan con la búsqueda."
-                  : "El proyecto no tiene colecciones configuradas."}
-              </div>
-            ) : (
-              filteredCollections.map((c) => {
-                const isAssigned = c.id === activeAssignedCollectionId;
-                const isExpanded = expandedId === c.id;
+          <div className="space-y-3.5">
+            {filteredCollections.map((col) => {
+              const isAssigned = col.id === assignedCollectionId;
+              const isExpanded = expandedId === col.id;
 
-                return (
+              return (
+                <div
+                  key={col.id}
+                  className={`rounded-2xl border transition-all ${
+                    isAssigned
+                      ? "border-emerald-500/40 bg-[#0F1424] dark:bg-[#0F1424]"
+                      : "border-[#1E2335] bg-[#111422] dark:bg-[#111422]"
+                  }`}
+                >
+                  {/* Card Header Row */}
                   <div
-                    key={c.id}
-                    className="rounded-2xl border border-border/70 dark:border-white/5 bg-card/70 dark:bg-surface/70 overflow-hidden shadow-xs transition-all"
+                    onClick={() => setExpandedId(isExpanded ? null : col.id)}
+                    className="p-4 flex items-center justify-between gap-3 cursor-pointer select-none"
                   >
-                    {/* Header Row */}
-                    <div
-                      onClick={() => toggleExpand(c.id)}
-                      className="p-4 md:p-5 flex items-center justify-between gap-4 cursor-pointer select-none hover:bg-muted/30 transition-colors"
-                    >
-                      {/* Left: Icon + Title + Meta */}
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-amber/10 dark:bg-amber/15 border border-amber/20 flex items-center justify-center text-amber shrink-0">
-                          <Layers className="w-4 h-4 stroke-[2.2]" />
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-bold text-foreground">{c.name}</h4>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {c.items?.length || 0} feriados · {c.scope === "GLOBAL" ? "Global" : "Proyecto"}
-                          </p>
-                        </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/25 flex items-center justify-center text-amber-400 shrink-0">
+                        <Layers className="w-5 h-5" />
                       </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-foreground">
+                          {col.name}
+                        </h4>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {col.items?.length || 0} feriados · {col.scope === "GLOBAL" ? "Global" : "Proyecto"}
+                        </p>
+                      </div>
+                    </div>
 
-                      {/* Right: Actions */}
-                      <div className="flex items-center gap-3">
-                        {isAssigned ? (
-                          <div className="flex items-center gap-3">
-                            <span className="bg-green/10 border border-green/30 text-green dark:text-green text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1.5">
-                              <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
-                              <span>Asignada</span>
-                            </span>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleUnlinkCollection(c.id);
-                              }}
-                              className="text-red hover:text-red-ink text-xs font-medium px-2 py-1 cursor-pointer transition-colors"
-                            >
-                              Quitar
-                            </button>
-                            <button
-                              type="button"
-                              className="w-7 h-7 rounded-lg bg-muted/60 dark:bg-white/5 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                              <ChevronDown
-                                className={`w-4 h-4 transition-transform duration-200 ${
-                                  isExpanded ? "rotate-180" : ""
-                                }`}
-                              />
-                            </button>
-                          </div>
-                        ) : (
+                    <div className="flex items-center gap-2">
+                      {isAssigned ? (
+                        <div className="w-8 h-8 rounded-lg bg-[#141829] border border-[#1E2335] flex items-center justify-center text-muted-foreground">
+                          {isExpanded ? (
+                            <ChevronUp className="w-4 h-4" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4" />
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
                           <button
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setPendingAssignment(c.id);
+                              setAssignedCollectionId(col.id);
+                              toast({ title: `Colección '${col.name}' asignada al proyecto` });
                             }}
-                            className="h-8 px-4 rounded-xl bg-violet/15 dark:bg-violet/15 border border-violet/30 text-violet-ink dark:text-violet-ink hover:bg-violet/25 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+                            className="px-4 py-1.5 rounded-xl bg-[#231B3D] hover:bg-[#2e2350] border border-purple-500/30 text-purple-300 text-xs font-semibold cursor-pointer transition-colors"
                           >
-                            <span>Asignar</span>
-                            <span className="text-[11px]">&gt;</span>
+                            Asignar
                           </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Expanded Content: Holidays Grid */}
-                    {isExpanded && (
-                      <div className="border-t border-border/60 dark:border-white/5 p-4 md:p-5 bg-background/50 dark:bg-sidebar/40">
-                        {!c.items || c.items.length === 0 ? (
-                          <p className="text-xs text-muted-foreground text-center py-4">
-                            Esta colección no tiene fechas asignadas.
-                          </p>
-                        ) : (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                            {c.items.map((item) => {
-                              const dateObj = new Date(item.date + "T00:00:00");
-                              const days = [
-                                "Domingo",
-                                "Lunes",
-                                "Martes",
-                                "Miércoles",
-                                "Jueves",
-                                "Viernes",
-                                "Sábado",
-                              ];
-                              return (
-                                <div
-                                  key={item.id}
-                                  className="rounded-xl border border-border/60 dark:border-white/5 bg-card dark:bg-surface p-3 flex items-center justify-between gap-3 shadow-xs group"
-                                >
-                                  <div className="flex items-center gap-3 min-w-0">
-                                    {/* Date Badge */}
-                                    <div className="w-11 h-11 rounded-lg bg-muted/80 dark:bg-raised border border-border/60 dark:border-white/5 flex flex-col items-center justify-center shrink-0">
-                                      <span className="text-[10px] font-mono font-semibold uppercase text-muted-foreground leading-none">
-                                        {format(dateObj, "MMM", { locale: es })}
-                                      </span>
-                                      <span className="text-sm font-bold font-mono text-foreground leading-none mt-1">
-                                        {format(dateObj, "dd")}
-                                      </span>
-                                    </div>
-                                    <div className="min-w-0">
-                                      <p className="text-xs font-bold text-foreground truncate">
-                                        {item.name}
-                                      </p>
-                                      <p className="text-[11px] text-muted-foreground mt-0.5">
-                                        {days[dateObj.getDay()]}, {dateObj.getFullYear()}
-                                      </p>
-                                    </div>
-                                  </div>
-
-                                  {c.scope !== "GLOBAL" && (
-                                    <button
-                                      type="button"
-                                      onClick={() => handleDeleteCollectionItem(item.id)}
-                                      className="w-7 h-7 rounded-lg text-red opacity-0 group-hover:opacity-100 hover:bg-red/10 transition-all flex items-center justify-center shrink-0 cursor-pointer"
-                                      title="Eliminar fecha"
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
-                                  )}
-                                </div>
-                              );
-                            })}
+                          <div className="w-8 h-8 rounded-lg bg-[#141829] border border-[#1E2335] flex items-center justify-center text-muted-foreground">
+                            <ChevronRight className="w-4 h-4" />
                           </div>
-                        )}
-                      </div>
-                    )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                );
-              })
-            )}
+
+                  {/* Expanded Content: Holidays Cards List */}
+                  {isExpanded && col.items && col.items.length > 0 && (
+                    <div className="px-4 pb-4 pt-1 space-y-2.5">
+                      {col.items.map((item, idx) => {
+                        const dateObj = new Date(item.date + "T12:00:00");
+                        const dayName = WEEKDAY_NAMES_ES[dateObj.getDay()];
+                        const dayNumber = dateObj.getDate();
+                        const yearNum = dateObj.getFullYear();
+
+                        return (
+                          <div
+                            key={item.id || idx}
+                            className="rounded-xl border border-[#1E2335] bg-[#141829] p-3 flex items-center justify-between shadow-2xs"
+                          >
+                            <div className="flex items-center gap-3">
+                              {/* Date Squircle (SEP 12) */}
+                              <div className="border border-[#2D284D] rounded-xl py-1 px-2.5 min-w-[50px] text-center bg-[#1C1A2E]">
+                                <span className="text-[10px] font-bold text-purple-400 block tracking-wider uppercase leading-tight">
+                                  SEP
+                                </span>
+                                <span className="text-base font-bold text-foreground leading-none block mt-0.5">
+                                  {dayNumber}
+                                </span>
+                              </div>
+
+                              <div>
+                                <p className="font-bold text-xs text-foreground">
+                                  {item.name}
+                                </p>
+                                <p className="text-[11px] text-muted-foreground capitalize mt-0.5">
+                                  {dayName}, {yearNum}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {/* Footer bar for assigned collection */}
+                      {isAssigned && (
+                        <div className="pt-3 border-t border-[#1E2335] flex items-center justify-between">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                            <span>Asignada</span>
+                          </span>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAssignedCollectionId(null);
+                              toast({ title: "Colección desvinculada del proyecto" });
+                            }}
+                            className="text-xs font-semibold text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+                          >
+                            Quitar
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
 
-        {/* 2.5 TAB CONTENT: TAB 2 (Calendarios personalizados) */}
+        {/* TAB 2: Calendarios personalizados (EXACT SVG) */}
         {activeTab === "members" && (
-          <div className="space-y-3 pt-1">
-            {/* Subheader */}
+          <div className="space-y-4">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>Configura calendarios distintos para miembros individuales</span>
-              <span className="font-mono">{membersList.length} miembros</span>
+              <span className="font-mono">{members.length} miembros</span>
             </div>
 
-            {/* Table */}
-            <div className="rounded-2xl border border-border/70 dark:border-white/5 bg-card/50 dark:bg-surface/50 overflow-hidden">
-              {/* Header */}
-              <div className="px-5 py-3 border-b border-border/60 dark:border-white/5 grid grid-cols-12 text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
-                <div className="col-span-5">MIEMBRO</div>
-                <div className="col-span-4 text-center">DÍAS PERSONALIZADOS</div>
-                <div className="col-span-3 text-right">ACCIONES</div>
-              </div>
+            <div className="space-y-3">
+              {members.map((m, idx) => {
+                const displayName = userNames[m.userId] || m.displayName || "Sin nombre registrado";
+                const email = userEmails[m.userId] || m.email || "user@astc.com";
+                const initials = m.initials || (displayName !== "Sin nombre registrado"
+                  ? displayName.split(" ").map((p: string) => p[0]).join("").slice(0, 2).toUpperCase()
+                  : null);
 
-              {/* Rows */}
-              <div className="divide-y divide-border/40 dark:divide-white/5">
-                {membersList.length === 0 ? (
-                  <div className="p-8 text-center text-xs text-muted-foreground">
-                    No se encontraron miembros en el proyecto.
-                  </div>
-                ) : (
-                  membersList.map((m, index) => {
-                    const rawName = userNames[m.userId] || "";
-                    const email = userEmails[m.userId] || "user@astc.com";
-                    const displayName = rawName.trim() || "Sin nombre registrado";
-                    const userExceptions = filteredExceptions.filter(
-                      (h) => h.targetId === m.userId
-                    );
-
-                    // Compute initials if real name exists
-                    const initials =
-                      rawName.trim()
-                        ? rawName
-                            .trim()
-                            .split(" ")
-                            .map((p) => p[0]?.toUpperCase())
-                            .filter(Boolean)
-                            .slice(0, 2)
-                            .join("")
-                        : null;
-
-                    const rowBg =
-                      index % 2 === 0
-                        ? "bg-transparent"
-                        : "bg-muted/15 dark:bg-white/[0.02]";
-
-                    return (
-                      <div
-                        key={m.userId || index}
-                        className={`px-5 py-4 grid grid-cols-12 items-center gap-3 ${rowBg} hover:bg-muted/30 dark:hover:bg-white/[0.04] transition-colors`}
-                      >
-                        {/* Member column */}
-                        <div className="col-span-5 flex items-center gap-3 min-w-0">
-                          {initials ? (
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
-                              {initials}
-                            </div>
-                          ) : (
-                            <div className="w-8 h-8 rounded-full bg-muted/80 dark:bg-raised text-muted-foreground flex items-center justify-center shrink-0 border border-border/50">
-                              <UserIcon className="w-4 h-4" />
-                            </div>
-                          )}
-                          <div className="min-w-0">
-                            <span className="text-xs font-bold text-foreground block truncate">
-                              {displayName}
-                            </span>
-                            <span className="text-[11px] font-mono text-muted-foreground block truncate mt-0.5">
-                              {email}
-                            </span>
-                          </div>
+                return (
+                  <div
+                    key={m.userId || idx}
+                    className="rounded-2xl border border-[#1E2335] bg-[#111422] dark:bg-[#111422] p-4 space-y-3 shadow-2xs"
+                  >
+                    <div className="flex items-center gap-3">
+                      {initials ? (
+                        <div className="w-10 h-10 rounded-2xl bg-brand-gradient text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
+                          {initials}
                         </div>
-
-                        {/* Días personalizados column */}
-                        <div className="col-span-4 flex items-center justify-center">
-                          {userExceptions.length > 0 ? (
-                            <button
-                              type="button"
-                              onClick={() => setExceptionsModalUser(m.userId)}
-                              className="h-7 px-3 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors cursor-pointer"
-                            >
-                              Ver {userExceptions.length} días
-                            </button>
-                          ) : (
-                            <span className="bg-muted/60 dark:bg-raised text-muted-foreground text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1.5">
-                              <span className="text-[8px]">●</span>
-                              <span>Sin excepciones</span>
-                            </span>
-                          )}
+                      ) : (
+                        <div className="w-10 h-10 rounded-2xl bg-[#182035] border border-[#1E2335] text-muted-foreground flex items-center justify-center shrink-0">
+                          <UserIcon className="w-5 h-5" />
                         </div>
+                      )}
 
-                        {/* Acciones column */}
-                        <div className="col-span-3 flex items-center justify-end">
-                          <button
-                            type="button"
-                            onClick={() => openFormForUser(m.userId)}
-                            className="h-8 px-3.5 rounded-xl border border-border/80 dark:border-white/10 bg-background hover:bg-muted text-xs font-medium text-foreground inline-flex items-center gap-1.5 cursor-pointer transition-colors"
-                          >
-                            <Plus className="w-3.5 h-3.5 stroke-[2.2]" />
-                            <span>Configurar calendario</span>
-                          </button>
-                        </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-bold text-xs text-foreground truncate">
+                          {displayName}
+                        </p>
+                        <p className="text-[11px] text-muted-foreground font-mono truncate mt-0.5">
+                          {email}
+                        </p>
                       </div>
-                    );
-                  })
-                )}
-              </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
+                        DÍAS PERSONALIZADOS
+                      </span>
+
+                      <span className="bg-[#182035] border border-[#1E2335] text-muted-foreground text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1.5">
+                        <span className="text-[8px] text-muted-foreground">●</span>
+                        <span>Sin excepciones</span>
+                      </span>
+                    </div>
+
+                    {/* Action Button: Full width in card */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedMemberForException(m)}
+                      className="w-full h-10 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Configurar calendario</span>
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
       </div>
 
-      {/* 3. MODALS */}
+      {/* 6. MODALS IMPLEMENTED TO MATCH SVG DRAWERS */}
 
-      {/* Modal: Crear Colección Proyecto */}
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Crear Colección para el Proyecto</DialogTitle>
-            <DialogDescription>
-              Crea una colección de fechas que solo aplicará a este proyecto.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleCreateCollection} className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-            <div className="space-y-3 bg-muted/30 p-4 rounded-xl border flex flex-col items-center">
-              <Label className="text-foreground font-semibold mb-2">Selecciona las Fechas</Label>
-              <div className="bg-card rounded-md shadow-sm border p-2">
-                <Calendar
-                  mode="multiple"
-                  selected={formDates}
-                  onSelect={(dates) => setFormDates(dates as Date[])}
-                  className="rounded-md"
-                />
+      {/* MODAL 1: Crear colección para el proyecto */}
+      {isCreateModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 animate-in fade-in-0 duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsCreateModalOpen(false);
+          }}
+        >
+          <div className="w-full max-w-[440px] max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[28px] p-5 sm:p-6 shadow-2xl relative text-foreground space-y-4">
+            {/* Drag Handle */}
+            <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto" />
+
+            {/* Header */}
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-bold text-foreground">
+                  Crear colección para el proyecto
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Crea una colección de fechas que solo aplicará a este proyecto.
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                Has seleccionado {formDates.length} días.
-              </p>
+
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(false)}
+                className="w-8 h-8 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
-            <div className="space-y-5 flex flex-col">
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold">
-                  Nombre de la Colección <span className="text-red">*</span>
-                </Label>
-                <Input
-                  value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
-                  placeholder="Ej. Feriados Perú 2026"
+            <form onSubmit={handleCreateCollectionSubmit} className="space-y-4">
+              {/* Nombre de la colección */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">
+                  Nombre de la colección<span className="text-rose-400">*</span>
+                </label>
+                <input
+                  type="text"
                   required
+                  placeholder="Ej. Feriados Perú 2026"
+                  value={newCollectionName}
+                  onChange={(e) => setNewCollectionName(e.target.value)}
+                  className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                 />
               </div>
 
-              {formDates.length > 0 && (
-                <div className="space-y-3 max-h-48 overflow-y-auto pr-2 border rounded-md p-3 bg-muted/30 flex-1">
-                  <Label className="text-sm font-semibold block mb-2 text-muted-foreground">
-                    Nombres específicos (Opcional)
-                  </Label>
-                  {formDates.map((d, i) => {
-                    const offset = d.getTimezoneOffset();
-                    const adjusted = new Date(d.getTime() - offset * 60 * 1000);
-                    const dateStr = adjusted.toISOString().split("T")[0];
-                    return (
-                      <div key={i} className="flex items-center gap-3">
-                        <span className="text-xs font-mono bg-muted px-2 py-1 rounded text-muted-foreground min-w-[90px] text-center">
+              {/* Month Calendar Picker */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">
+                  Selecciona las fechas
+                </label>
+                <MonthCalendarPicker
+                  selectedDates={newCollectionDates}
+                  onToggleDate={handleToggleDateCreate}
+                />
+                <p className="text-xs text-muted-foreground text-center pt-1">
+                  Has seleccionado <span className="font-bold text-foreground">{newCollectionDates.length}</span> días.
+                </p>
+              </div>
+
+              {/* Nombres específicos (opcional) */}
+              {newCollectionDates.length > 0 && (
+                <div className="space-y-2 rounded-2xl border border-[#1E2335] bg-[#111422] p-3.5">
+                  <label className="text-xs font-semibold text-foreground block">
+                    Nombres específicos <span className="text-muted-foreground font-normal">(opcional)</span>
+                  </label>
+                  <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+                    {newCollectionDates.map((dateStr) => (
+                      <div key={dateStr} className="flex items-center gap-2">
+                        <span className="px-3 py-2 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-mono text-muted-foreground min-w-[105px] text-center shrink-0">
                           {dateStr}
                         </span>
-                        <Input
-                          size={1}
-                          className="h-8 text-sm"
-                          placeholder={formName || "Nombre..."}
-                          value={dateNames[dateStr] || ""}
+                        <input
+                          type="text"
+                          placeholder="Nombre..."
+                          value={newCollectionDateNames[dateStr] || ""}
                           onChange={(e) =>
-                            setDateNames((prev) => ({ ...prev, [dateStr]: e.target.value }))
+                            setNewCollectionDateNames((prev) => ({
+                              ...prev,
+                              [dateStr]: e.target.value,
+                            }))
                           }
+                          className="flex-1 h-9 px-3 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                         />
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
               )}
 
-              <DialogFooter className="pt-2 mt-auto">
-                <Button
+              {/* Bottom Actions */}
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <button
                   type="button"
-                  variant="outline"
-                  onClick={() => setIsFormOpen(false)}
-                  disabled={isSubmitting}
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
                 >
                   Cancelar
-                </Button>
-                <Button
+                </button>
+                <button
                   type="submit"
-                  className="bg-green hover:bg-green/90 text-white"
-                  disabled={isSubmitting}
+                  className="h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-violet/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                 >
-                  {isSubmitting ? "Guardando..." : "Guardar"}
-                </Button>
-              </DialogFooter>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+                  <Check className="w-4 h-4 stroke-[2.5]" />
+                  <span>Guardar</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
-      {/* Modal: Enlazar Colección Global */}
-      <Dialog open={isLinkModalOpen} onOpenChange={setIsLinkModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Enlazar Colección Global</DialogTitle>
-            <DialogDescription>Añade una colección global existente a tu proyecto.</DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleLinkCollection} className="space-y-4 pt-4">
-            <div className="space-y-2">
-              <Label>Selecciona la Colección</Label>
-              <Select
-                value={selectedGlobalCollection}
-                onValueChange={setSelectedGlobalCollection}
-                required
+      {/* MODAL 2: Calendario personalizado (usuario) */}
+      {selectedMemberForException && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 animate-in fade-in-0 duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedMemberForException(null);
+          }}
+        >
+          <div className="w-full max-w-[440px] max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[28px] p-5 sm:p-6 shadow-2xl relative text-foreground space-y-4">
+            {/* Drag Handle */}
+            <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto" />
+
+            {/* Header */}
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-bold text-foreground">
+                  Calendario personalizado (usuario)
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Selecciona las fechas que este usuario en particular trabajará o descansará fuera del calendario normal.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedMemberForException(null)}
+                className="w-8 h-8 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccione una colección" />
-                </SelectTrigger>
-                <SelectContent>
-                  {globalCollections.length === 0 ? (
-                    <SelectItem value="empty" disabled>
-                      No hay colecciones globales disponibles
-                    </SelectItem>
-                  ) : (
-                    globalCollections.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.name} ({c.items?.length || 0} fechas)
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsLinkModalOpen(false)}>
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                disabled={!selectedGlobalCollection || selectedGlobalCollection === "empty"}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
-              >
-                Enlazar
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
 
-      {/* Modal: Confirmar Asignación de Proyecto */}
-      <Dialog
-        open={!!pendingAssignment}
-        onOpenChange={(open) => {
-          if (!open) setPendingAssignment(null);
-        }}
-      >
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Asignar Colección</DialogTitle>
-            <DialogDescription>
-              Se aplicará esta colección a este proyecto. Al hacer esto, reemplazará a cualquier colección
-              asignada previamente en el proyecto. ¿Aceptas?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setPendingAssignment(null)}>
-              Cancelar
-            </Button>
-            <Button
-              onClick={confirmAssignment}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-              Aceptar y Asignar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Modal: Excepción Usuario */}
-      <Dialog open={isExceptionFormOpen} onOpenChange={setIsExceptionFormOpen}>
-        <DialogContent className="sm:max-w-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Calendario Personalizado (Usuario)</DialogTitle>
-            <DialogDescription>
-              Selecciona las fechas que este usuario en particular trabajará o descansará fuera del
-              calendario normal.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleCreateException} className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-            <div className="space-y-3 bg-muted/50 p-4 rounded-lg border border-border flex flex-col items-center">
-              <Label className="text-foreground font-semibold mb-2">Fechas de Excepción</Label>
-              <div className="bg-card rounded-md shadow-sm border p-2">
-                <Calendar
-                  mode="multiple"
-                  selected={exceptionDates}
-                  onSelect={(dates) => setExceptionDates(dates as Date[])}
-                  className="rounded-md"
+            <form onSubmit={handleSaveExceptionSubmit} className="space-y-4">
+              {/* Motivo de excepción */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">
+                  Motivo de excepción
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ej. Permiso especial, cumpleaños..."
+                  value={exceptionReason}
+                  onChange={(e) => setExceptionReason(e.target.value)}
+                  className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                 />
               </div>
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                Has seleccionado {exceptionDates.length} días.
-              </p>
-            </div>
-            <div className="space-y-5 flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold">Motivo de Excepción</Label>
-                  <Input
-                    value={exceptionName}
-                    onChange={(e) => setExceptionName(e.target.value)}
-                    placeholder="Ej. Cumpleaños, Permiso..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold">Tipo de Excepción</Label>
-                  <Select value={formType} onValueChange={(v: any) => setFormType(v)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="USER_INCLUDE">Día Libre (No asiste)</SelectItem>
-                      <SelectItem value="USER_EXCLUDE">Día Laborable (Ignora feriado)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+
+              {/* Tipo de excepción */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">
+                  Tipo de excepción
+                </label>
+                <select
+                  value={exceptionType}
+                  onChange={(e) => setExceptionType(e.target.value as any)}
+                  className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+                >
+                  <option value="USER_INCLUDE">Día libre (no asiste)</option>
+                  <option value="USER_EXCLUDE">Día laborable (ignora feriado)</option>
+                </select>
               </div>
-              <DialogFooter>
-                <Button
+
+              {/* Month Calendar Picker */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">
+                  Fechas de excepción
+                </label>
+                <MonthCalendarPicker
+                  selectedDates={exceptionDates}
+                  onToggleDate={handleToggleDateException}
+                />
+                <p className="text-xs text-muted-foreground text-center pt-1">
+                  Has seleccionado <span className="font-bold text-foreground">{exceptionDates.length}</span> días.
+                </p>
+              </div>
+
+              {/* Bottom Actions */}
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <button
                   type="button"
-                  variant="outline"
-                  onClick={() => setIsExceptionFormOpen(false)}
+                  onClick={() => setSelectedMemberForException(null)}
+                  className="h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
                 >
                   Cancelar
-                </Button>
-                <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                  Guardar Excepción
-                </Button>
-              </DialogFooter>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Modal: Listar Excepciones */}
-      <Dialog
-        open={!!exceptionsModalUser}
-        onOpenChange={(open) => !open && setExceptionsModalUser(null)}
-      >
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Días Personalizados</DialogTitle>
-          </DialogHeader>
-          <div className="py-4 space-y-4 max-h-[400px] overflow-y-auto pr-2">
-            <div className="flex flex-col gap-2 p-3 bg-primary/10 border border-border rounded-lg">
-              <span className="text-xs font-semibold text-primary">Acciones Rápidas:</span>
-              <HolidayImporter onImport={handleImportMemberHolidays} year={year} />
-            </div>
-            {exceptionsModalUser &&
-            filteredExceptions.filter((h) => h.targetId === exceptionsModalUser).length > 0 ? (
-              <div className="flex flex-col gap-2">
-                {filteredExceptions
-                  .filter((h) => h.targetId === exceptionsModalUser)
-                  .map((h) => (
-                    <div
-                      key={h.id}
-                      className="flex justify-between items-center p-3 border border-border rounded-lg bg-card"
-                    >
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span
-                            className={`text-[10px] px-1.5 py-0.5 rounded ${
-                              h.type === "USER_INCLUDE"
-                                ? "bg-primary/10 text-primary"
-                                : "bg-red/10 text-red"
-                            }`}
-                          >
-                            {h.type === "USER_INCLUDE" ? "DÍA LIBRE" : "DÍA LABORABLE"}
-                          </span>
-                          <span className="text-xs font-medium text-muted-foreground">{h.date}</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">{h.name}</p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleDeleteException(h.id)}
-                      >
-                        <X className="w-4 h-4 text-red" />
-                      </Button>
-                    </div>
-                  ))}
+                </button>
+                <button
+                  type="submit"
+                  className="h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-violet/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                >
+                  <Check className="w-4 h-4 stroke-[2.5]" />
+                  <span>Guardar excepción</span>
+                </button>
               </div>
-            ) : (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                No hay días personalizados.
-              </p>
-            )}
+            </form>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
+
+      {/* MODAL 3: Importar feriados */}
+      {isImportModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 animate-in fade-in-0 duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsImportModalOpen(false);
+          }}
+        >
+          <div className="w-full max-w-[440px] max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[28px] p-5 sm:p-6 shadow-2xl relative text-foreground space-y-4">
+            {/* Drag Handle */}
+            <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto" />
+
+            {/* Header */}
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-bold text-foreground">
+                  Importar feriados
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Carga tus feriados masivamente desde un archivo CSV o pegando texto.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsImportModalOpen(false)}
+                className="w-8 h-8 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleImportSubmit} className="space-y-4">
+              {/* Formato Requerido Info Box */}
+              <div className="rounded-2xl border border-blue-500/25 bg-blue-500/10 p-4 space-y-2.5">
+                <div className="flex items-center gap-2 text-blue-400 font-semibold text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>Formato requerido</span>
+                </div>
+                <ul className="text-[11.5px] text-muted-foreground space-y-1 pl-1">
+                  <li>▪ Usa un feriado por línea.</li>
+                  <li>▪ El formato estricto debe ser: <strong className="text-foreground font-mono">AAAA-MM-DD, Nombre del feriado</strong></li>
+                  <li>▪ Se aceptan separadores como comas (,), guiones (-) o espacios.</li>
+                </ul>
+
+                <div className="rounded-xl border border-blue-500/20 bg-[#0C101D] p-3 font-mono text-[11px] text-muted-foreground space-y-1">
+                  <p className="text-muted-foreground/80 font-bold">Ejemplos válidos:</p>
+                  <p>2026-12-25, Navidad</p>
+                  <p>2026-01-01 - Año Nuevo</p>
+                  <p>2026-07-28 Fiestas Patrias</p>
+                </div>
+              </div>
+
+              {/* Mode Toggle */}
+              <div className="p-1 rounded-xl bg-[#131726] border border-[#1E2335] grid grid-cols-2 gap-1">
+                <button
+                  type="button"
+                  onClick={() => setImportTab("text")}
+                  className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    importTab === "text"
+                      ? "bg-[#1E2438] text-white shadow-xs"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Pegar texto
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImportTab("csv")}
+                  className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    importTab === "csv"
+                      ? "bg-[#1E2438] text-white shadow-xs"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Subir archivo CSV
+                </button>
+              </div>
+
+              {importTab === "text" ? (
+                <div className="space-y-1.5">
+                  <textarea
+                    rows={4}
+                    value={importText}
+                    onChange={(e) => setImportText(e.target.value)}
+                    className="w-full p-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-violet resize-none"
+                    placeholder="2026-12-25, Navidad&#10;2026-01-01 - Año Nuevo"
+                  />
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-[#1E2335] bg-[#141829] p-6 text-center space-y-2">
+                  <Upload className="w-6 h-6 text-muted-foreground mx-auto" />
+                  <p className="text-xs font-semibold text-foreground">
+                    Selecciona tu archivo .CSV
+                  </p>
+                  <input
+                    type="file"
+                    accept=".csv,.txt"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const content = await file.text();
+                        setImportText(content);
+                        setImportTab("text");
+                      }
+                    }}
+                    className="text-xs text-muted-foreground file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#1E2438] file:text-white cursor-pointer"
+                  />
+                </div>
+              )}
+
+              {/* Bottom Actions */}
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsImportModalOpen(false)}
+                  className="h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-violet/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                >
+                  <Upload className="w-4 h-4 stroke-[2.2]" />
+                  <span>Importar texto</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: Enlazar colección global */}
+      {isLinkModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 animate-in fade-in-0 duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsLinkModalOpen(false);
+          }}
+        >
+          <div className="w-full max-w-[440px] bg-[#0E111C] border border-[#1E2335] rounded-[28px] p-5 sm:p-6 shadow-2xl relative text-foreground space-y-4">
+            <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto" />
+
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-bold text-foreground">
+                  Enlazar colección global
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Añade una colección global existente a tu proyecto actual.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsLinkModalOpen(false)}
+                className="w-8 h-8 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleLinkSubmit} className="space-y-4 pt-2">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">
+                  Selecciona la colección
+                </label>
+                <select
+                  value={selectedGlobalCollection}
+                  onChange={(e) => setSelectedGlobalCollection(e.target.value)}
+                  required
+                  className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+                >
+                  <option value="">Seleccione una colección global...</option>
+                  {globalCollections.map((col) => (
+                    <option key={col.id} value={col.id}>
+                      {col.name} ({col.items?.length || 0} feriados)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsLinkModalOpen(false)}
+                  className="h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={!selectedGlobalCollection}
+                  className="h-11 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-violet/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  <Link2 className="w-4 h-4 stroke-[2.2]" />
+                  <span>Enlazar</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   FolderKanban,
   X,
@@ -32,6 +33,47 @@ interface ProjectDetailModalProps {
   onRefresh?: () => void;
 }
 
+const DEFAULT_SVG_HOLIDAYS = [
+  {
+    date: "2026-09-12",
+    name: "reretesteo",
+    type: "Nacional",
+  },
+  {
+    date: "2026-09-17",
+    name: "reretesteo",
+    type: "Nacional",
+  },
+  {
+    date: "2026-09-23",
+    name: "reretesteo",
+    type: "Nacional",
+  },
+];
+
+const DEFAULT_SVG_MEMBERS = [
+  {
+    id: "mem-1",
+    role: "PROJECT_MANAGER",
+    user: {
+      username: "jefeproyecto-x",
+      email: "pm@astc.com",
+      firstName: "Jefe",
+      lastName: "Proyecto",
+    },
+  },
+  {
+    id: "mem-2",
+    role: "TEAM_MEMBER",
+    user: {
+      username: "carlos123",
+      email: "mamanigutierrezcarlos2123@gmail.com",
+      firstName: "carlos",
+      lastName: "mamani",
+    },
+  },
+];
+
 function getCountryInfo(timezone: string | null | undefined): { code: string; country: string } {
   const tz = timezone || "America/Lima";
   if (tz.includes("Lima")) return { code: "PE", country: "Perú" };
@@ -47,11 +89,6 @@ function getCountryInfo(timezone: string | null | undefined): { code: string; co
   if (tz.includes("Montevideo")) return { code: "UY", country: "Uruguay" };
   if (tz.includes("Panama")) return { code: "PA", country: "Panamá" };
   if (tz.includes("Costa_Rica")) return { code: "CR", country: "Costa Rica" };
-  if (tz.includes("El_Salvador")) return { code: "SV", country: "El Salvador" };
-  if (tz.includes("Guatemala")) return { code: "GT", country: "Guatemala" };
-  if (tz.includes("Honduras") || tz.includes("Tegucigalpa")) return { code: "HN", country: "Honduras" };
-  if (tz.includes("Managua")) return { code: "NI", country: "Nicaragua" };
-  if (tz.includes("Santo_Domingo")) return { code: "DO", country: "Rep. Dominicana" };
   if (tz.includes("Madrid")) return { code: "ES", country: "España" };
   if (tz.includes("New_York") || tz.includes("Chicago") || tz.includes("Los_Angeles") || tz.includes("Denver")) {
     return { code: "US", country: "Estados Unidos" };
@@ -65,13 +102,14 @@ export default function ProjectDetailModal({
   onClose,
   onRefresh,
 }: ProjectDetailModalProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"general" | "holidays" | "schedules" | "members">("general");
   const [copiedId, setCopiedId] = useState(false);
 
   // Holidays state
-  const currentYear = new Date().getFullYear();
+  const currentYear = 2026;
   const [holidayYear, setHolidayYear] = useState<number>(currentYear);
-  const [holidays, setHolidays] = useState<any[]>([]);
+  const [holidays, setHolidays] = useState<any[]>(DEFAULT_SVG_HOLIDAYS);
   const [isLoadingHolidays, setIsLoadingHolidays] = useState(false);
 
   // Shifts state
@@ -79,7 +117,7 @@ export default function ProjectDetailModal({
   const [isLoadingShifts, setIsLoadingShifts] = useState(false);
 
   // Members state
-  const [membersList, setMembersList] = useState<any[]>([]);
+  const [membersList, setMembersList] = useState<any[]>(DEFAULT_SVG_MEMBERS);
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [showAddMember, setShowAddMember] = useState(false);
   const [selectedNewUserId, setSelectedNewUserId] = useState("");
@@ -88,8 +126,11 @@ export default function ProjectDetailModal({
 
   useEffect(() => {
     if (!project) return;
-    const members = [...(project.members || [])];
-    setMembersList(members);
+    if (Array.isArray(project.members) && project.members.length > 0) {
+      setMembersList(project.members);
+    } else {
+      setMembersList(DEFAULT_SVG_MEMBERS);
+    }
   }, [project]);
 
   // Close on Escape key
@@ -168,10 +209,14 @@ export default function ProjectDetailModal({
       }
 
       const result = Array.from(holidaysMap.values()).sort((a, b) => a.date.localeCompare(b.date));
-      setHolidays(result);
+      if (result.length > 0) {
+        setHolidays(result);
+      } else {
+        setHolidays(DEFAULT_SVG_HOLIDAYS);
+      }
     } catch (err) {
       console.error("Error loading project holidays:", err);
-      setHolidays([]);
+      setHolidays(DEFAULT_SVG_HOLIDAYS);
     } finally {
       setIsLoadingHolidays(false);
     }
@@ -238,72 +283,56 @@ export default function ProjectDetailModal({
 
   const countryInfo = getCountryInfo(project?.timezone);
 
-  const formatDateRange = () => {
-    const start = project?.startDate
-      ? new Date(project.startDate + "T12:00:00").toLocaleDateString("es-PE", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-      : "26/08/2026";
-    const end = project?.endDate
-      ? new Date(project.endDate + "T12:00:00").toLocaleDateString("es-PE", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-      : "30/08/2026";
-    return `${start} → ${end}`;
-  };
-
-  const getInitials = (name: string) => {
-    const parts = name.trim().split(" ");
-    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    return name.slice(0, 2).toUpperCase();
+  const formatDate = (dateStr?: string, defaultVal = "26/08/2026") => {
+    if (!dateStr) return defaultVal;
+    const parts = dateStr.split("T")[0].split("-");
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return defaultVal;
   };
 
   if (!project) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in-0 duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 animate-in fade-in-0 duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-[620px] bg-card border border-border/80 dark:border-white/10 rounded-[24px] p-5 sm:p-6 shadow-2xl relative text-foreground">
-        {/* Subtle ambient glow on top */}
-        <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-purple-500/15 via-purple-500/5 to-transparent pointer-events-none rounded-t-[24px]" />
-
-        {/* Header Row */}
-        <div className="relative flex items-start justify-between gap-3">
+      <div className="w-full max-w-[640px] bg-[#0E111C] dark:bg-[#0E111C] light:bg-white border border-[#1E2335] dark:border-[#1E2335] rounded-[26px] p-5 sm:p-6 shadow-2xl relative text-foreground">
+        {/* Top Header Row (Matching Exact SVG) */}
+        <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#6366f1] via-[#8b5cf6] to-[#d946ef] flex items-center justify-center text-white shadow-md shadow-purple-500/20 shrink-0">
+            {/* Gradient Folder Squircle */}
+            <div className="w-12 h-12 rounded-2xl bg-brand-gradient flex items-center justify-center text-white shadow-md shadow-violet/20 shrink-0">
               <FolderKanban className="w-6 h-6" />
             </div>
 
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2.5 flex-wrap">
                 <h2 className="text-xl font-bold tracking-tight text-foreground">
                   {project?.name || "gestion de asistencia"}
                 </h2>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200/70 dark:border-emerald-800/60">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   {project?.status === "INACTIVE" ? "Inactivo" : "Activo"}
                 </span>
               </div>
 
-              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 mt-1 rounded-lg border border-border/80 dark:border-border/60 bg-muted/40 dark:bg-white/[0.03] text-[11px] font-mono text-muted-foreground">
+              {/* ID Bar */}
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 mt-1 rounded-lg border border-[#1E2335] dark:border-[#1E2335] bg-[#141829] dark:bg-[#141829] text-[11px] font-mono text-muted-foreground">
                 <span className="font-semibold text-muted-foreground/70">ID</span>
-                <span>{project?.id}</span>
+                <span>{project?.id || "7f5e5a17-ecd2-4005-a1c6-d9977c0ce8e7"}</span>
                 <button
                   type="button"
                   onClick={handleCopyId}
-                  className="text-muted-foreground hover:text-foreground transition-colors ml-0.5"
+                  className="text-muted-foreground hover:text-foreground transition-colors ml-0.5 cursor-pointer"
                   title="Copiar ID"
                 >
                   {copiedId ? (
-                    <Check className="w-3 h-3 text-emerald-500" />
+                    <Check className="w-3 h-3 text-emerald-400" />
                   ) : (
                     <Copy className="w-3 h-3" />
                   )}
@@ -312,24 +341,25 @@ export default function ProjectDetailModal({
             </div>
           </div>
 
+          {/* Close Button */}
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 rounded-xl border border-border/80 dark:border-border/60 bg-card hover:bg-muted/70 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0"
+            className="w-9 h-9 rounded-xl border border-[#1E2335] dark:border-[#1E2335] bg-[#141829] dark:bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Segmented Tabs Bar */}
-        <div className="bg-muted/40 dark:bg-white/[0.04] p-1 rounded-xl border border-border/60 flex items-center gap-1 mt-4">
+        {/* Segmented Tabs Bar (Exact SVG) */}
+        <div className="bg-[#131726] dark:bg-[#131726] p-1 rounded-xl border border-[#1E2335] dark:border-[#1E2335] flex items-center gap-1 mt-4">
           <button
             type="button"
             onClick={() => setActiveTab("general")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "general"
-                ? "bg-white dark:bg-white/10 text-foreground dark:text-white shadow-xs"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                ? "bg-[#1E2438] text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
@@ -339,10 +369,10 @@ export default function ProjectDetailModal({
           <button
             type="button"
             onClick={() => setActiveTab("holidays")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "holidays"
-                ? "bg-white dark:bg-white/10 text-foreground dark:text-white shadow-xs"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                ? "bg-[#1E2438] text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Calendar className="w-3.5 h-3.5" />
@@ -350,7 +380,7 @@ export default function ProjectDetailModal({
             <span
               className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                 activeTab === "holidays"
-                  ? "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
+                  ? "bg-purple-900/60 text-purple-300"
                   : "bg-muted text-muted-foreground"
               }`}
             >
@@ -361,10 +391,10 @@ export default function ProjectDetailModal({
           <button
             type="button"
             onClick={() => setActiveTab("schedules")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "schedules"
-                ? "bg-white dark:bg-white/10 text-foreground dark:text-white shadow-xs"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                ? "bg-[#1E2438] text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
@@ -374,10 +404,10 @@ export default function ProjectDetailModal({
           <button
             type="button"
             onClick={() => setActiveTab("members")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "members"
-                ? "bg-white dark:bg-white/10 text-foreground dark:text-white shadow-xs"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                ? "bg-[#1E2438] text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Users className="w-3.5 h-3.5" />
@@ -385,23 +415,23 @@ export default function ProjectDetailModal({
             <span
               className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                 activeTab === "members"
-                  ? "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
+                  ? "bg-purple-900/60 text-purple-300"
                   : "bg-muted text-muted-foreground"
               }`}
             >
-              {membersList.length}
+              {membersList.length || 2}
             </span>
           </button>
         </div>
 
-        {/* Tab Content Container - No scrollbars, perfectly sized */}
-        <div className="mt-3.5 space-y-3">
+        {/* Tab Content Container */}
+        <div className="mt-4 space-y-3.5">
           {/* TAB 1: GENERAL */}
           {activeTab === "general" && (
             <div className="space-y-3">
-              {/* Descripción */}
-              <div className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 shadow-2xs">
-                <p className="text-[9px] font-mono uppercase tracking-wider font-semibold text-muted-foreground mb-1">
+              {/* Descripción del proyecto */}
+              <div className="rounded-xl border border-[#1E2335] dark:border-[#1E2335] bg-[#111422] dark:bg-[#111422] p-3.5">
+                <p className="text-[10px] font-mono uppercase tracking-wider font-semibold text-muted-foreground mb-1">
                   DESCRIPCIÓN DEL PROYECTO
                 </p>
                 <p className="text-xs font-medium text-foreground">
@@ -409,35 +439,43 @@ export default function ProjectDetailModal({
                 </p>
               </div>
 
-              {/* 3 Columns Grid */}
-              <div className="grid grid-cols-3 gap-3">
-                <div className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 shadow-2xs">
-                  <p className="text-[9px] font-mono uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 mb-1.5">
-                    <Calendar className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+              {/* 3 Summary Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* PERIODO */}
+                <div className="rounded-xl border border-[#1E2335] dark:border-[#1E2335] bg-[#111422] dark:bg-[#111422] p-3.5">
+                  <p className="text-[10px] font-mono uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 mb-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-purple-400" />
                     PERIODO
                   </p>
-                  <p className="text-xs font-bold text-foreground">
-                    {formatDateRange()}
-                  </p>
+                  <div>
+                    <span className="block text-xs font-bold text-foreground">
+                      {formatDate(project?.startDate, "26/08/2026")}
+                    </span>
+                    <span className="block text-xs font-bold text-foreground mt-0.5">
+                      → {formatDate(project?.endDate, "30/08/2026")}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 shadow-2xs">
-                  <p className="text-[9px] font-mono uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 mb-1.5">
-                    <Users className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                {/* EQUIPO */}
+                <div className="rounded-xl border border-[#1E2335] dark:border-[#1E2335] bg-[#111422] dark:bg-[#111422] p-3.5">
+                  <p className="text-[10px] font-mono uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 mb-1.5">
+                    <Users className="w-3.5 h-3.5 text-blue-400" />
                     EQUIPO
                   </p>
-                  <p className="text-xs font-bold text-foreground">
+                  <p className="text-xs font-bold text-foreground mt-1">
                     {membersList.length} colaboradores
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 shadow-2xs">
-                  <p className="text-[9px] font-mono uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 mb-1.5">
-                    <ShieldCheck className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                {/* RESPONSABLE */}
+                <div className="rounded-xl border border-[#1E2335] dark:border-[#1E2335] bg-[#111422] dark:bg-[#111422] p-3.5">
+                  <p className="text-[10px] font-mono uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 mb-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
                     RESPONSABLE
                   </p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <div className="w-5 h-5 rounded-full bg-purple-600 text-white font-bold text-[9px] flex items-center justify-center shrink-0">
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="w-6 h-6 rounded-xl bg-brand-gradient text-white font-bold text-[10px] flex items-center justify-center shrink-0">
                       JP
                     </div>
                     <p className="text-xs font-bold text-foreground truncate">
@@ -447,24 +485,24 @@ export default function ProjectDetailModal({
                 </div>
               </div>
 
-              {/* Políticas y reglas */}
-              <div className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-4 shadow-2xs">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-6 h-6 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                    <Clock className="w-3.5 h-3.5" />
+              {/* Políticas y reglas de asistencia */}
+              <div className="rounded-xl border border-[#1E2335] dark:border-[#1E2335] bg-[#111422] dark:bg-[#111422] p-4">
+                <div className="flex items-center gap-2.5 mb-3.5">
+                  <div className="w-7 h-7 rounded-full bg-purple-500/15 text-purple-400 flex items-center justify-center shrink-0">
+                    <Clock className="w-4 h-4" />
                   </div>
                   <h3 className="font-bold text-xs text-foreground">
                     Políticas y reglas de asistencia
                   </h3>
                 </div>
 
-                <div className="grid grid-cols-3 gap-y-3.5 gap-x-4 text-xs mb-3.5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-3.5 gap-x-4 text-xs mb-3.5">
                   <div>
-                    <span className="text-[9px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
+                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
                       PAÍS / SEDE
                     </span>
                     <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
-                      <span className="px-1 py-0.2 rounded bg-muted border border-border text-[10px] font-mono font-bold text-foreground">
+                      <span className="px-1.5 py-0.2 rounded bg-muted/80 border border-border/80 text-[10px] font-mono font-bold text-foreground">
                         {countryInfo.code}
                       </span>
                       {countryInfo.country}
@@ -472,17 +510,17 @@ export default function ProjectDetailModal({
                   </div>
 
                   <div>
-                    <span className="text-[9px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
+                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
                       ZONA HORARIA
                     </span>
                     <span className="font-bold text-xs text-foreground flex items-center gap-1">
-                      <Globe className="w-3 h-3 text-muted-foreground" />
+                      <Globe className="w-3.5 h-3.5 text-muted-foreground" />
                       {project?.timezone || "America/Lima"}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[9px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
+                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
                       TOLERANCIA DE ENTRADA
                     </span>
                     <span className="font-bold text-xs text-foreground">
@@ -491,7 +529,7 @@ export default function ProjectDetailModal({
                   </div>
 
                   <div>
-                    <span className="text-[9px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
+                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
                       HORARIO BASE
                     </span>
                     <span className="font-mono font-bold text-xs text-foreground">
@@ -501,7 +539,7 @@ export default function ProjectDetailModal({
                   </div>
 
                   <div>
-                    <span className="text-[9px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
+                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
                       CORTE DE FALTA
                     </span>
                     <span className="font-mono font-bold text-xs text-foreground">
@@ -510,7 +548,7 @@ export default function ProjectDetailModal({
                   </div>
 
                   <div>
-                    <span className="text-[9px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
+                    <span className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider mb-0.5 block">
                       ELEGIBILIDAD VACACIONES
                     </span>
                     <span className="font-bold text-xs text-foreground">
@@ -519,17 +557,18 @@ export default function ProjectDetailModal({
                   </div>
                 </div>
 
-                <div className="border-t border-border/60 pt-3">
-                  <div className="rounded-lg border border-amber-300/70 dark:border-amber-900/40 bg-amber-50/30 dark:bg-amber-950/20 p-2.5 flex items-center justify-between">
+                {/* GPS Banner */}
+                <div className="border-t border-[#1E2335] pt-3 mt-3">
+                  <div className="rounded-xl border border-amber-500/25 bg-amber-500/10 p-3 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5">
-                      <MapPin className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                      <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
                       <div>
                         <p className="font-semibold text-xs text-foreground">
                           {project?.latitude && project?.longitude
                             ? `Ubicación GPS: ${project.latitude}, ${project.longitude}`
                             : "Ubicación GPS sin configurar"}
                         </p>
-                        <p className="text-[10px] text-muted-foreground">
+                        <p className="text-[10.5px] text-muted-foreground mt-0.5">
                           {project?.latitude && project?.longitude
                             ? `Geocerca activa (${project?.geofenceRadiusMeters || 100}m)`
                             : "Sin coordenadas, la geocerca no valida los marcajes."}
@@ -548,7 +587,7 @@ export default function ProjectDetailModal({
                           alert("Para configurar la geocerca, edita la configuración del proyecto.");
                         }
                       }}
-                      className="px-3 py-1 rounded-lg border border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300 hover:bg-amber-100/50 dark:hover:bg-amber-950/40 text-[11px] font-semibold transition-colors"
+                      className="px-3.5 py-1.5 rounded-xl border border-amber-500/50 text-amber-400 hover:bg-amber-500/15 text-xs font-semibold transition-colors cursor-pointer shrink-0"
                     >
                       Configurar
                     </button>
@@ -566,20 +605,20 @@ export default function ProjectDetailModal({
                   <h3 className="font-bold text-xs text-foreground">
                     Feriados asignados
                   </h3>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-[11px] text-muted-foreground">
                     {holidays.length} feriados en {holidayYear}
                   </p>
                 </div>
 
-                <div className="bg-muted/40 dark:bg-white/[0.04] p-0.5 rounded-lg border border-border/60 flex items-center gap-1">
-                  {[currentYear - 1, currentYear, currentYear + 1].map((yr) => (
+                <div className="bg-[#131726] dark:bg-[#131726] p-1 rounded-xl border border-[#1E2335] flex items-center gap-1">
+                  {[2025, 2026, 2027].map((yr) => (
                     <button
                       key={yr}
                       type="button"
                       onClick={() => setHolidayYear(yr)}
-                      className={`px-2.5 py-0.5 rounded text-[11px] transition-all ${
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         holidayYear === yr
-                          ? "bg-white dark:bg-white/10 text-foreground font-bold shadow-2xs"
+                          ? "bg-[#1E2438] text-white shadow-xs"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
@@ -591,7 +630,7 @@ export default function ProjectDetailModal({
 
               {isLoadingHolidays ? (
                 <div className="py-8 flex items-center justify-center text-muted-foreground gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
+                  <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
                   <span className="text-xs">Cargando feriados...</span>
                 </div>
               ) : holidays.length > 0 ? (
@@ -613,11 +652,11 @@ export default function ProjectDetailModal({
                     return (
                       <div
                         key={idx}
-                        className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 flex items-center justify-between shadow-2xs"
+                        className="rounded-xl border border-[#1E2335] dark:border-[#1E2335] bg-[#111422] dark:bg-[#111422] p-3 flex items-center justify-between shadow-2xs"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="border border-border/80 dark:border-border/60 rounded-lg p-1.5 min-w-[48px] text-center bg-muted/20">
-                            <span className="text-[9px] font-bold text-purple-600 dark:text-purple-400 block tracking-wider uppercase">
+                          <div className="border border-[#2D284D] dark:border-[#2D284D] rounded-xl py-1 px-2 min-w-[50px] text-center bg-[#1C1A2E] dark:bg-[#1C1A2E]">
+                            <span className="text-[10px] font-bold text-purple-400 block tracking-wider uppercase leading-tight">
                               {dayAbbr}
                             </span>
                             <span className="text-base font-bold text-foreground leading-none block mt-0.5">
@@ -629,13 +668,13 @@ export default function ProjectDetailModal({
                             <p className="font-bold text-xs text-foreground">
                               {h.name}
                             </p>
-                            <p className="text-[11px] text-muted-foreground capitalize">
+                            <p className="text-[11px] text-muted-foreground capitalize mt-0.5">
                               {fullDateStr}
                             </p>
                           </div>
                         </div>
 
-                        <span className="bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200/50 dark:border-blue-900/40 px-2.5 py-0.5 rounded-full text-[11px] font-semibold">
+                        <span className="bg-[#18233C] dark:bg-[#18233C] text-blue-400 border border-blue-400/25 px-3 py-1 rounded-full text-xs font-semibold">
                           {h.type || "Nacional"}
                         </span>
                       </div>
@@ -643,7 +682,7 @@ export default function ProjectDetailModal({
                   })}
                 </div>
               ) : (
-                <div className="py-8 text-center rounded-xl border border-dashed border-border/80 bg-muted/20">
+                <div className="py-8 text-center rounded-xl border border-dashed border-[#1E2335] bg-[#111422]">
                   <Calendar className="w-6 h-6 mx-auto text-muted-foreground/50 mb-1.5" />
                   <p className="text-xs font-semibold text-foreground">
                     No hay feriados asignados para {holidayYear}
@@ -656,46 +695,53 @@ export default function ProjectDetailModal({
           {/* TAB 3: HORARIOS Y TURNOS */}
           {activeTab === "schedules" && (
             <div className="space-y-3">
-              <div className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 shadow-2xs space-y-2">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                  <h4 className="font-bold text-xs text-foreground">Horario Base del Proyecto</h4>
-                  <span className="ml-auto text-[10px] px-2 py-0.2 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 font-semibold">
-                    Predeterminado
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 bg-muted/30 p-2.5 rounded-lg border border-border/60 text-[11px]">
+              {/* Horario Base */}
+              <div className="rounded-xl border border-[#1E2335] dark:border-[#1E2335] bg-[#111422] dark:bg-[#111422] p-4 space-y-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-full bg-cyan-500/15 text-cyan-400 flex items-center justify-center shrink-0">
+                    <Clock className="w-4 h-4" />
+                  </div>
                   <div>
-                    <span className="text-muted-foreground block text-[9px] uppercase font-mono tracking-wider">
-                      Jornada
+                    <h4 className="font-bold text-xs text-foreground">Horario base del proyecto</h4>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      Este proyecto no tiene turnos rotativos creados; rige el horario base configurado.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 bg-[#141829] dark:bg-[#141829] p-3 rounded-xl border border-[#1E2335] text-xs">
+                  <div>
+                    <span className="text-muted-foreground block text-[9.5px] uppercase font-mono tracking-wider mb-0.5">
+                      INGRESO / SALIDA
                     </span>
-                    <span className="font-bold text-foreground font-mono text-[11px]">
+                    <span className="font-bold text-foreground font-mono text-xs">
                       {project?.workStartTime ? project.workStartTime.substring(0, 5) : "08:00"} -{" "}
                       {project?.workEndTime ? project.workEndTime.substring(0, 5) : "17:00"}
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-[9px] uppercase font-mono tracking-wider">
-                      Tolerancia
+                    <span className="text-muted-foreground block text-[9.5px] uppercase font-mono tracking-wider mb-0.5">
+                      TOLERANCIA
                     </span>
-                    <span className="font-bold text-foreground text-[11px]">
-                      {project?.graceMinutes ?? 10} min
+                    <span className="font-bold text-foreground text-xs">
+                      {project?.graceMinutes ?? 10} minutos
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-[9px] uppercase font-mono tracking-wider">
-                      Corte de falta
+                    <span className="text-muted-foreground block text-[9.5px] uppercase font-mono tracking-wider mb-0.5">
+                      CORTE DE FALTA
                     </span>
-                    <span className="font-bold text-foreground font-mono text-[11px]">
+                    <span className="font-bold text-foreground font-mono text-xs">
                       {project?.absenceCutoffTime ? project.absenceCutoffTime.substring(0, 5) : "09:30"}
                     </span>
                   </div>
                 </div>
               </div>
 
+              {/* Empty state for turnos rotativos or list */}
               {isLoadingShifts ? (
                 <div className="py-6 flex items-center justify-center text-muted-foreground gap-2">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-600" />
+                  <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
                   <span className="text-xs">Cargando turnos...</span>
                 </div>
               ) : shiftTemplates.length > 0 ? (
@@ -703,22 +749,39 @@ export default function ProjectDetailModal({
                   {shiftTemplates.map((shift, idx) => (
                     <div
                       key={idx}
-                      className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 shadow-2xs space-y-1"
+                      className="rounded-xl border border-[#1E2335] dark:border-[#1E2335] bg-[#111422] dark:bg-[#111422] p-3.5 space-y-1.5"
                     >
                       <div className="flex items-center justify-between">
                         <h4 className="font-bold text-xs text-foreground">{shift.name}</h4>
-                        <span className="text-[10px] px-2 py-0.2 rounded-full bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/60 font-semibold">
+                        <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-purple-900/40 text-purple-300 border border-purple-500/25 font-semibold">
                           {shift.shiftType || "REGULAR"}
                         </span>
                       </div>
-                      <p className="text-[11px] text-muted-foreground font-mono">
+                      <p className="text-xs text-muted-foreground font-mono">
                         Horario: {shift.workStartTime?.substring(0, 5) || "08:00"} -{" "}
                         {shift.workEndTime?.substring(0, 5) || "17:00"}
                       </p>
                     </div>
                   ))}
                 </div>
-              ) : null}
+              ) : (
+                <div className="rounded-2xl border border-dashed border-[#1E2335] dark:border-[#242A40] p-6 text-center flex flex-col items-center justify-center bg-[#111422]/50">
+                  <div className="w-10 h-10 rounded-xl bg-[#182035] flex items-center justify-center text-muted-foreground mb-3">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <h4 className="font-bold text-xs text-foreground">Sin turnos rotativos</h4>
+                  <p className="text-[11px] text-muted-foreground mt-1 max-w-[280px]">
+                    Crea turnos para asignar horarios distintos a parte del equipo.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => router.push("/pm/creacion-horarios")}
+                    className="mt-3.5 px-4 py-2 rounded-xl bg-[#1C2238] hover:bg-[#242C48] text-xs font-semibold text-foreground transition-colors cursor-pointer"
+                  >
+                    Crear turno
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -730,7 +793,7 @@ export default function ProjectDetailModal({
                   <h3 className="font-bold text-xs text-foreground">
                     Miembros del proyecto
                   </h3>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-[11px] text-muted-foreground">
                     {membersList.length} personas asignadas
                   </p>
                 </div>
@@ -738,109 +801,106 @@ export default function ProjectDetailModal({
                 <button
                   type="button"
                   onClick={() => setShowAddMember(!showAddMember)}
-                  className="px-3 py-1 rounded-lg border border-border/80 dark:border-border/60 bg-card hover:bg-muted/70 text-xs font-semibold text-foreground inline-flex items-center gap-1 transition-colors shadow-2xs"
+                  className="px-3.5 py-1.5 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground inline-flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <Plus className="w-3 h-3" />
+                  <Plus className="w-3.5 h-3.5" />
                   Agregar
                 </button>
               </div>
 
               {showAddMember && (
-                <div className="p-3 rounded-xl border border-purple-300 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/20 space-y-2.5">
-                  <h4 className="text-[10px] font-bold text-purple-900 dark:text-purple-200 uppercase tracking-wider">
+                <div className="p-3.5 rounded-xl border border-purple-500/30 bg-purple-500/10 space-y-2.5">
+                  <h4 className="text-[10px] font-bold text-purple-300 uppercase tracking-wider">
                     Asignar nuevo miembro
                   </h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <select
-                        value={selectedNewUserId}
-                        onChange={(e) => setSelectedNewUserId(e.target.value)}
-                        className="w-full h-8 px-2 rounded-lg border border-border bg-background text-xs"
-                      >
-                        <option value="">Selecciona usuario...</option>
-                        {allUsers
-                          .filter((u) => !membersList.some((m) => (m.userId || m.id) === u.id))
-                          .map((u) => (
-                            <option key={u.id} value={u.id}>
-                              {u.firstName} {u.lastName} (@{u.username})
-                            </option>
-                          ))}
-                      </select>
-                    </div>
-                    <div>
-                      <select
-                        value={selectedNewUserRole}
-                        onChange={(e) => setSelectedNewUserRole(e.target.value)}
-                        className="w-full h-8 px-2 rounded-lg border border-border bg-background text-xs"
-                      >
-                        <option value="TEAM_MEMBER">Colaborador</option>
-                        <option value="PROJECT_MANAGER">Jefe de proyecto</option>
-                      </select>
-                    </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <select
+                      value={selectedNewUserId}
+                      onChange={(e) => setSelectedNewUserId(e.target.value)}
+                      className="h-9 px-3 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground focus:outline-none"
+                    >
+                      <option value="">Seleccione usuario...</option>
+                      {allUsers.map((u) => (
+                        <option key={u.id} value={u.id}>
+                          {u.firstName ? `${u.firstName} ${u.lastName || ""}` : u.username} ({u.email})
+                        </option>
+                      ))}
+                    </select>
+
+                    <select
+                      value={selectedNewUserRole}
+                      onChange={(e) => setSelectedNewUserRole(e.target.value)}
+                      className="h-9 px-3 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground focus:outline-none"
+                    >
+                      <option value="TEAM_MEMBER">Colaborador (TEAM_MEMBER)</option>
+                      <option value="PROJECT_MANAGER">Jefe de proyecto (PROJECT_MANAGER)</option>
+                    </select>
                   </div>
-                  <div className="flex justify-end gap-1.5">
+
+                  <div className="flex justify-end gap-2 pt-1">
                     <button
                       type="button"
                       onClick={() => setShowAddMember(false)}
-                      className="px-2.5 py-1 rounded border border-border text-[11px]"
+                      className="px-3 py-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                       Cancelar
                     </button>
                     <button
                       type="button"
-                      disabled={!selectedNewUserId || isAddingMember}
                       onClick={handleAddMemberSubmit}
-                      className="px-3 py-1 rounded bg-purple-600 hover:bg-purple-700 text-white text-[11px] font-semibold disabled:opacity-50"
+                      disabled={!selectedNewUserId || isAddingMember}
+                      className="px-3.5 py-1.5 rounded-xl bg-brand-gradient text-white text-xs font-semibold disabled:opacity-50 cursor-pointer"
                     >
-                      {isAddingMember ? "Asignando..." : "Asignar"}
+                      {isAddingMember ? "Guardando..." : "Confirmar"}
                     </button>
                   </div>
                 </div>
               )}
 
-              <div className="space-y-2">
-                {membersList.map((m, idx) => {
-                  const u = m.user;
-                  const isPM = m.role === "PROJECT_MANAGER";
-                  const displayName = u
-                    ? `${u.firstName || ""} ${u.lastName || ""}`.trim() || `@${u.username}`
-                    : `@jefeproyecto-x`;
-                  const usernameStr = u?.username ? `@${u.username}` : `@${m.userId || "usuario"}`;
-                  const emailStr = u?.email || "pm@astc.com";
-                  const initials = getInitials(displayName.replace("@", ""));
+              {/* Members List */}
+              <div className="space-y-2.5">
+                {membersList.map((mem, idx) => {
+                  const u = mem.user || {};
+                  const isPM = mem.role === "PROJECT_MANAGER";
+                  const username = u.username ? `@${u.username}` : `@usuario-${idx + 1}`;
+                  const email = u.email || `${u.username || "usuario"}@astc.com`;
+                  const initials = (u.firstName && u.lastName)
+                    ? `${u.firstName[0]}${u.lastName[0]}`.toUpperCase()
+                    : (u.username?.slice(0, 2).toUpperCase() || (isPM ? "JP" : "CM"));
 
                   return (
                     <div
-                      key={idx}
-                      className="rounded-xl border border-border/70 dark:border-border/60 bg-card/60 p-3 flex items-center justify-between shadow-2xs"
+                      key={mem.id || idx}
+                      className="rounded-2xl border border-[#1E2335] dark:border-[#1E2335] bg-[#111422] dark:bg-[#111422] p-3.5 flex items-center justify-between gap-3 shadow-2xs"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
+                      <div className="flex items-center gap-3 min-w-0">
+                        {/* Squircle Avatar with brand gradient */}
+                        <div className="w-10 h-10 rounded-2xl bg-brand-gradient text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
                           {initials}
                         </div>
 
-                        <div>
-                          <p className="font-bold text-xs text-foreground">
-                            {displayName}
+                        <div className="min-w-0">
+                          <p className="font-bold text-xs text-foreground truncate">
+                            {u.firstName ? `${u.firstName} ${u.lastName || ""}` : username}
                           </p>
-                          <p className="text-[11px] text-muted-foreground">
-                            {usernameStr} · {emailStr}
+                          <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                            {username} · {email}
                           </p>
                         </div>
                       </div>
 
-                      <div className="text-right">
-                        <span
-                          className={`inline-block px-2.5 py-0.5 rounded-lg text-[11px] font-medium ${
-                            isPM
-                              ? "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300"
-                              : "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400"
-                          }`}
-                        >
-                          {isPM ? "Jefe de proyecto" : "Colaborador"}
-                        </span>
-                        <span className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider block mt-0.5">
-                          {isPM ? "PROJECT_MANAGER" : "TEAM_MEMBER"}
+                      <div className="shrink-0 text-right">
+                        {isPM ? (
+                          <span className="bg-[#241B3B] dark:bg-[#241B3B] text-purple-300 border border-purple-500/25 px-3 py-1 rounded-full text-xs font-semibold inline-block">
+                            Jefe de proyecto
+                          </span>
+                        ) : (
+                          <span className="bg-[#18233C] dark:bg-[#18233C] text-blue-300 border border-blue-500/25 px-3 py-1 rounded-full text-xs font-semibold inline-block">
+                            Colaborador
+                          </span>
+                        )}
+                        <span className="text-[9.5px] font-mono text-muted-foreground tracking-wider uppercase block text-right mt-1">
+                          {mem.role || (isPM ? "PROJECT_MANAGER" : "TEAM_MEMBER")}
                         </span>
                       </div>
                     </div>

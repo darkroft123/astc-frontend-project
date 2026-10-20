@@ -285,8 +285,102 @@ export function ProjectsManagementView({
           </button>
         </div>
 
-        {/* C. DATA TABLE (EXACT SVG COLUMNS AND STYLING) */}
-        <div className="overflow-x-auto rounded-xl border border-border/70">
+        {/* C. MOBILE CARD LIST (MATCHING EXACT SVG RESPONSIVE LAYOUT) */}
+        <div className="md:hidden space-y-3.5">
+          {paginatedProjects.length === 0 ? (
+            <div className="py-8 text-center text-muted-foreground text-xs">
+              No se encontraron proyectos.
+            </div>
+          ) : (
+            paginatedProjects.map((row) => {
+              const isActive = row.status === "ACTIVE" || !row.status;
+              return (
+                <div
+                  key={row.id}
+                  className="rounded-2xl border border-[#1E2335] bg-[#111422] dark:bg-[#111422] p-4 space-y-3.5 shadow-xs"
+                >
+                  {/* Top row */}
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-2xl bg-brand-gradient text-white flex items-center justify-center shrink-0 shadow-xs">
+                        <Folder className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <span className="font-bold text-foreground text-sm block truncate">
+                          {row.name}
+                        </span>
+                        <span className="text-[11px] text-muted-foreground font-mono block truncate mt-0.5">
+                          {row.id}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Badge */}
+                    {isActive ? (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shrink-0">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        Activo
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30 shrink-0">
+                        <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                        Inactivo
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Middle row: Inicio / Fin */}
+                  <div className="grid grid-cols-2 gap-2 bg-[#141829] dark:bg-[#141829] p-3 rounded-xl border border-[#1E2335] text-xs">
+                    <div>
+                      <span className="text-muted-foreground block text-[9.5px] uppercase font-mono tracking-wider mb-0.5">
+                        INICIO
+                      </span>
+                      <span className="font-bold font-mono text-foreground">
+                        {formatDate(row.startDate)}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block text-[9.5px] uppercase font-mono tracking-wider mb-0.5">
+                        FIN
+                      </span>
+                      <span className="font-bold font-mono text-foreground">
+                        {formatDate(row.endDate)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Bottom row: Responsable */}
+                  <div className="flex items-center justify-between text-xs pt-0.5">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-xl bg-brand-gradient flex items-center justify-center text-white font-bold text-[10px] shrink-0">
+                        JP
+                      </div>
+                      <span className="font-medium text-foreground">
+                        @{row.responsible?.username || "jefeproyecto-x"}
+                      </span>
+                    </div>
+                    <span className="text-muted-foreground text-xs">
+                      Responsable
+                    </span>
+                  </div>
+
+                  {/* Full-width Ver Detalle Button */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProjectForDetail(row)}
+                    className="w-full h-10 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+                  >
+                    <Eye className="w-4 h-4 text-muted-foreground" />
+                    <span>Ver detalle</span>
+                  </button>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* C2. DESKTOP DATA TABLE */}
+        <div className="hidden md:block overflow-x-auto rounded-xl border border-border/70">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="border-b border-border/70 bg-muted/30 dark:bg-surface/50 text-[10.5px] font-mono font-semibold text-muted-foreground tracking-wider uppercase">
