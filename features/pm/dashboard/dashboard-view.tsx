@@ -16,7 +16,6 @@ import {
   BarChart3,
   AlertTriangle,
 } from "lucide-react";
-import { MOCK_PROJECTS } from "@/lib/mock-data";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { DateRangeModal } from "@/components/ui/date-range-modal";
 import {
@@ -68,12 +67,12 @@ export function DashboardView() {
     from: "2026-09-01",
     to: "2026-09-03",
   });
-  const [activeProjects, setActiveProjects] = useState<any[]>(MOCK_PROJECTS);
+  const [activeProjects, setActiveProjects] = useState<any[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
   const [metrics, setMetrics] = useState({
-    totalAttendances: 2,
-    totalAbsences: 2,
-    pendingJustifications: 1,
+    totalAttendances: 0,
+    totalAbsences: 0,
+    pendingJustifications: 0,
   });
 
   const displayName =
@@ -120,9 +119,9 @@ export function DashboardView() {
         .then((data) => {
           if (data) {
             setMetrics({
-              totalAttendances: data.totalAttendances ?? 2,
-              totalAbsences: data.totalAbsences ?? 2,
-              pendingJustifications: data.pendingJustifications ?? 1,
+              totalAttendances: data.totalAttendances ?? 0,
+              totalAbsences: data.totalAbsences ?? 0,
+              pendingJustifications: data.pendingJustifications ?? 0,
             });
           }
         })
@@ -130,9 +129,9 @@ export function DashboardView() {
     }
   }, [hydrated, token, selectedProjectId]);
 
-  const totalAttendances = metrics.totalAttendances || 2;
-  const totalAbsences = metrics.totalAbsences || 2;
-  const pendingJustifications = metrics.pendingJustifications || 1;
+  const totalAttendances = metrics.totalAttendances;
+  const totalAbsences = metrics.totalAbsences;
+  const pendingJustifications = metrics.pendingJustifications;
 
   // Donut chart calculations: Radius = 46, Circumference = 2 * PI * 46 ≈ 289.026
   const R = 46;

@@ -32,47 +32,6 @@ interface ProjectDetailModalProps {
   onRefresh?: () => void;
 }
 
-const DEFAULT_SVG_HOLIDAYS = [
-  {
-    date: "2026-09-12",
-    name: "reretesteo",
-    type: "Nacional",
-  },
-  {
-    date: "2026-09-17",
-    name: "reretesteo",
-    type: "Nacional",
-  },
-  {
-    date: "2026-09-23",
-    name: "reretesteo",
-    type: "Nacional",
-  },
-];
-
-const DEFAULT_SVG_MEMBERS = [
-  {
-    id: "mem-1",
-    role: "PROJECT_MANAGER",
-    user: {
-      username: "jefeproyecto-x",
-      email: "pm@astc.com",
-      firstName: "Jefe",
-      lastName: "Proyecto",
-    },
-  },
-  {
-    id: "mem-2",
-    role: "TEAM_MEMBER",
-    user: {
-      username: "carlos123",
-      email: "mamanigutierrezcarlos2123@gmail.com",
-      firstName: "carlos",
-      lastName: "mamani",
-    },
-  },
-];
-
 function getCountryInfo(timezone: string | null | undefined): { code: string; country: string } {
   const tz = timezone || "America/Lima";
   if (tz.includes("Lima")) return { code: "PE", country: "Perú" };
@@ -108,7 +67,7 @@ export default function ProjectDetailModal({
   // Holidays state
   const currentYear = 2026;
   const [holidayYear, setHolidayYear] = useState<number>(currentYear);
-  const [holidays, setHolidays] = useState<any[]>(DEFAULT_SVG_HOLIDAYS);
+  const [holidays, setHolidays] = useState<any[]>([]);
   const [isLoadingHolidays, setIsLoadingHolidays] = useState(false);
 
   // Shifts state
@@ -116,7 +75,7 @@ export default function ProjectDetailModal({
   const [isLoadingShifts, setIsLoadingShifts] = useState(false);
 
   // Members state
-  const [membersList, setMembersList] = useState<any[]>(DEFAULT_SVG_MEMBERS);
+  const [membersList, setMembersList] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [showAddMember, setShowAddMember] = useState(false);
   const [selectedNewUserId, setSelectedNewUserId] = useState("");
@@ -128,7 +87,7 @@ export default function ProjectDetailModal({
     if (Array.isArray(project.members) && project.members.length > 0) {
       setMembersList(project.members);
     } else {
-      setMembersList(DEFAULT_SVG_MEMBERS);
+      setMembersList([]);
     }
   }, [project]);
 
@@ -208,14 +167,10 @@ export default function ProjectDetailModal({
       }
 
       const result = Array.from(holidaysMap.values()).sort((a, b) => a.date.localeCompare(b.date));
-      if (result.length > 0) {
-        setHolidays(result);
-      } else {
-        setHolidays(DEFAULT_SVG_HOLIDAYS);
-      }
+      setHolidays(result);
     } catch (err) {
       console.error("Error loading project holidays:", err);
-      setHolidays(DEFAULT_SVG_HOLIDAYS);
+      setHolidays([]);
     } finally {
       setIsLoadingHolidays(false);
     }
@@ -492,7 +447,7 @@ export default function ProjectDetailModal({
                     EQUIPO
                   </p>
                   <p className="text-xs font-bold text-[#EEF0F6] mt-2">
-                    {membersList.length} colaboradores
+                    {membersList.length} trabajadores
                   </p>
                 </div>
 
@@ -864,7 +819,7 @@ export default function ProjectDetailModal({
                       onChange={(e) => setSelectedNewUserRole(e.target.value)}
                       className="h-9 px-3 rounded-xl border border-white/10 bg-[#141829] text-xs font-medium text-white focus:outline-none"
                     >
-                      <option value="TEAM_MEMBER">Colaborador (TEAM_MEMBER)</option>
+                      <option value="TEAM_MEMBER">Trabajador (TEAM_MEMBER)</option>
                       <option value="PROJECT_MANAGER">Jefe de proyecto (PROJECT_MANAGER)</option>
                     </select>
                   </div>
@@ -935,7 +890,7 @@ export default function ProjectDetailModal({
                           </span>
                         ) : (
                           <span className="bg-[#18233C] text-[#8FA3D9] border border-[#25365E] px-3.5 py-1 rounded-lg text-xs font-semibold inline-block">
-                            Colaborador
+                            Trabajador
                           </span>
                         )}
                         <span className="text-[9.5px] font-mono text-[#8B7BD8] tracking-wider uppercase block text-right mt-1 font-semibold">

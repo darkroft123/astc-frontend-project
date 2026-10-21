@@ -61,26 +61,12 @@ type JustificationRow = {
   estado: "SUBMITTED" | "PENDING" | "APPROVED" | "REJECTED";
 };
 
-const DEFAULT_SVG_JUSTIFICATIONS: JustificationRow[] = [
-  {
-    id: "just-001",
-    userId: "usr-carlos",
-    userName: "carlos mamani",
-    userRoleBadge: "tsteo",
-    userEmail: "mamanigutierrezcarlos123@gmail.com",
-    motivo: "tsteo",
-    documentUrl: null,
-    fecha: "02/09/2026",
-    estado: "SUBMITTED",
-  },
-];
-
 export function JustificationsListView() {
   const { token } = useAuth();
   const [activePeriod, setActivePeriod] = useState<Period>("month");
   const [data, setData] = useState<{ items: JustificationRow[]; total: number }>({
-    items: DEFAULT_SVG_JUSTIFICATIONS,
-    total: 1,
+    items: [],
+    total: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -97,17 +83,23 @@ export function JustificationsListView() {
     status: "TODOS",
   });
 
-  const [projects, setProjects] = useState<any[]>([
-    { id: "all", name: "Todos los proyectos (3)" },
-    { id: "p1", name: "gestion de asistencia" },
-    { id: "p2", name: "proyecto testeo" },
-    { id: "p3", name: "testo6" },
-  ]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [userOptions, setUserOptions] = useState<any[]>([]);
 
-  const [userOptions, setUserOptions] = useState<any[]>([
-    { id: "all", name: "Todos los usuarios (5)" },
-    { id: "usr-carlos", name: "carlos mamani" },
-  ]);
+  useEffect(() => {
+    if (!token) return;
+    Promise.all([
+      getAllProjects(token).catch(() => []),
+      getAllUsers(token).catch(() => []),
+    ]).then(([projData, userData]) => {
+      if (Array.isArray(projData) && projData.length > 0) {
+        setProjects([{ id: "all", name: `Todos los proyectos (${projData.length})` }, ...projData]);
+      }
+      if (Array.isArray(userData) && userData.length > 0) {
+        setUserOptions([{ id: "all", name: `Todos los trabajadores (${userData.length})` }, ...userData]);
+      }
+    });
+  }, [token]);
 
   const fetchData = useCallback(async () => {
     if (!token) return;
@@ -151,28 +143,35 @@ export function JustificationsListView() {
 
       if (items.length > 0) {
         setData({
-          items: items.map((i: any) => ({
-            id: i.id,
-            userId: i.userId,
-            userName: i.userName || "carlos mamani",
-            userRoleBadge: "tsteo",
-            userEmail: i.userEmail || "mamanigutierrezcarlos123@gmail.com",
-            motivo: i.description || "tsteo",
-            documentUrl: i.documentUrl || null,
-            fecha: i.absenceDate || "02/09/2026",
-            estado: i.status || "SUBMITTED",
-          })),
+          items: items.map((i: any) => {
+            const usr = userOptions.find((u) => u.id === i.userId);
+            const userName = usr
+              ? `${usr.firstName || ""} ${usr.lastName || ""}`.trim() || usr.username
+              : i.userName || "Trabajador";
+            const userEmail = usr?.email || i.userEmail || "";
+            return {
+              id: i.id,
+              userId: i.userId,
+              userName,
+              userRoleBadge: "Trabajador",
+              userEmail,
+              motivo: i.description || "Sin descripción",
+              documentUrl: i.documentUrl || null,
+              fecha: i.absenceDate || (i.submittedAt ? new Date(i.submittedAt).toLocaleDateString("es-PE") : "-"),
+              estado: i.status || "SUBMITTED",
+            };
+          }),
           total,
         });
       } else {
-        setData({ items: DEFAULT_SVG_JUSTIFICATIONS, total: 1 });
+        setData({ items: [], total: 0 });
       }
     } catch {
-      setData({ items: DEFAULT_SVG_JUSTIFICATIONS, total: 1 });
+      setData({ items: [], total: 0 });
     } finally {
       setIsLoading(false);
     }
-  }, [token, page, filters]);
+  }, [token, page, filters, userOptions]);
 
   useEffect(() => {
     fetchData();

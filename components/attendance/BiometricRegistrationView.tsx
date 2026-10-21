@@ -190,10 +190,10 @@ export default function BiometricRegistrationView({
       };
     }
     return {
-      label: "Martes 01/09",
-      checkIn: "08:12",
-      checkOut: "17:00",
-      status: "Presente",
+      label: "Hoy",
+      checkIn: "--:--",
+      checkOut: "--:--",
+      status: "Sin registro",
     };
   }, [todayAtt]);
 
@@ -202,13 +202,7 @@ export default function BiometricRegistrationView({
     if (activeVacations.length > 0) {
       return activeVacations[0];
     }
-    return {
-      id: "mock-vac-1",
-      startDate: "2026-09-08",
-      endDate: "2026-10-09",
-      businessDays: 29,
-      status: "PENDING",
-    };
+    return null;
   }, [activeVacations]);
 
   if (!hydrated || checkingAuth || !token) {
@@ -677,40 +671,53 @@ export default function BiometricRegistrationView({
           </div>
 
           {/* Card: VACACIONES */}
-          <div className="bg-card border border-emerald-500/40 rounded-2xl p-4 space-y-2.5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-[11px] uppercase tracking-wider text-emerald-500 dark:text-[#34D399] font-semibold">
-                VACACIONES
-              </span>
-              <span className="font-mono text-[11px] font-semibold px-3 py-0.5 rounded-full bg-[#2B2011] text-[#FBBF24] border border-[#F59E0B]/30">
-                {primaryVacation?.status === "APPROVED" ? "Aprobadas" : "Pendiente"}
-              </span>
-            </div>
+          {primaryVacation ? (
+            <div className="bg-card border border-emerald-500/40 rounded-2xl p-4 space-y-2.5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-emerald-500 dark:text-[#34D399] font-semibold">
+                  VACACIONES
+                </span>
+                <span className="font-mono text-[11px] font-semibold px-3 py-0.5 rounded-full bg-[#2B2011] text-[#FBBF24] border border-[#F59E0B]/30">
+                  {primaryVacation.status === "APPROVED" ? "Aprobadas" : "Pendiente"}
+                </span>
+              </div>
 
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-mono text-foreground font-medium">
-                {primaryVacation
-                  ? `${primaryVacation.startDate
-                      .split("-")
-                      .reverse()
-                      .join("/")} → ${primaryVacation.endDate
-                      .split("-")
-                      .reverse()
-                      .join("/")}`
-                  : "08/09/2026 → 09/10/2026"}
-              </span>
-              <span className="font-mono text-muted-foreground">
-                {primaryVacation?.businessDays || 29} días
-              </span>
-            </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-mono text-foreground font-medium">
+                  {primaryVacation.startDate && primaryVacation.endDate
+                    ? `${primaryVacation.startDate.split("-").reverse().join("/")} → ${primaryVacation.endDate.split("-").reverse().join("/")}`
+                    : "Periodo programado"}
+                </span>
+                <span className="font-mono text-muted-foreground">
+                  {primaryVacation.businessDays || 0} días
+                </span>
+              </div>
 
-            <button
-              onClick={() => router.push(vacationsRoute)}
-              className="flex items-center gap-1 font-sans text-xs text-emerald-500 dark:text-[#34D399] hover:underline transition-colors font-medium cursor-pointer pt-1"
-            >
-              Ver solicitud <ArrowRight className="w-3 h-3 ml-0.5" />
-            </button>
-          </div>
+              <button
+                onClick={() => router.push(vacationsRoute)}
+                className="flex items-center gap-1 font-sans text-xs text-emerald-500 dark:text-[#34D399] hover:underline transition-colors font-medium cursor-pointer pt-1"
+              >
+                Ver solicitud <ArrowRight className="w-3 h-3 ml-0.5" />
+              </button>
+            </div>
+          ) : (
+            <div className="bg-card border border-border/40 rounded-2xl p-4 space-y-2.5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                  VACACIONES
+                </span>
+                <span className="font-mono text-[11px] font-medium text-muted-foreground">
+                  Sin solicitudes activas
+                </span>
+              </div>
+              <button
+                onClick={() => router.push(vacationsRoute)}
+                className="flex items-center gap-1 font-sans text-xs text-primary hover:underline transition-colors font-medium cursor-pointer pt-1"
+              >
+                Solicitar vacaciones <ArrowRight className="w-3 h-3 ml-0.5" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

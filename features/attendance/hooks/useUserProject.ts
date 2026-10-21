@@ -13,24 +13,24 @@ export interface Project {
   holidays?: string[];
 }
 
-export const DEFAULT_MOCK_PROJECT: Project = {
-  id: "proj-testo6",
-  name: "testo6",
-  workStartTime: "08:00",
-  workEndTime: "17:00",
-  graceMinutes: 15,
-  timezone: "America/Lima",
-  holidays: [],
-};
+export interface Project {
+  id: string;
+  name: string;
+  workStartTime?: string;
+  workEndTime?: string;
+  graceMinutes?: number;
+  timezone?: string | null;
+  holidays?: string[];
+}
 
-let cachedProjects: Project[] = [DEFAULT_MOCK_PROJECT];
+let cachedProjects: Project[] = [];
 let cachedPromise: Promise<Project[]> | null = null;
 let hasFetched = false;
 let cachedToken: string | null = null;
 
 export function useUserProject() {
   const { token, role, hydrated } = useAuth();
-  const [projects, setProjects] = useState<Project[]>(cachedProjects.length > 0 ? cachedProjects : [DEFAULT_MOCK_PROJECT]);
+  const [projects, setProjects] = useState<Project[]>(cachedProjects);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [loadingProject, setLoadingProject] = useState<boolean>(false);
 
@@ -61,19 +61,19 @@ export function useUserProject() {
 
     if (!token) {
       setLoadingProject(false);
-      setProjects([DEFAULT_MOCK_PROJECT]);
+      setProjects([]);
       return;
     }
 
     if (cachedToken !== token) {
       cachedToken = token;
-      cachedProjects = [DEFAULT_MOCK_PROJECT];
+      cachedProjects = [];
       cachedPromise = null;
       hasFetched = false;
     }
 
     if (hasFetched) {
-      setProjects(cachedProjects.length > 0 ? cachedProjects : [DEFAULT_MOCK_PROJECT]);
+      setProjects(cachedProjects);
       setLoadingProject(false);
       return;
     }
@@ -82,20 +82,20 @@ export function useUserProject() {
       setLoadingProject(true);
       cachedPromise = getMyProjects(token)
         .then((data) => {
-          cachedProjects = data && data.length > 0 ? data : [DEFAULT_MOCK_PROJECT];
+          cachedProjects = data || [];
           hasFetched = true;
           return cachedProjects;
         })
         .catch((err) => {
-          console.warn("Backend project fetch failed, using fallback mock project:", err);
-          cachedProjects = [DEFAULT_MOCK_PROJECT];
+          console.warn("Backend project fetch failed:", err);
+          cachedProjects = [];
           hasFetched = true;
-          return [DEFAULT_MOCK_PROJECT];
+          return [];
         });
     }
 
     cachedPromise.then((resolved) => {
-      setProjects(resolved && resolved.length > 0 ? resolved : [DEFAULT_MOCK_PROJECT]);
+      setProjects(resolved || []);
       setLoadingProject(false);
     });
   }, [token, role, hydrated]);
@@ -112,13 +112,13 @@ export function useUserProject() {
     selectedProjectId === "all"
       ? null
       : projects.find((p) => p.id === selectedProjectId) ||
-        (projects.length > 0 ? projects[0] : DEFAULT_MOCK_PROJECT);
+        (projects.length > 0 ? projects[0] : null);
 
   return {
     project,
-    projects: projects.length > 0 ? projects : [DEFAULT_MOCK_PROJECT],
+    projects,
     selectProject,
-    selectedProjectId: selectedProjectId ?? (project?.id ?? DEFAULT_MOCK_PROJECT.id),
+    selectedProjectId: selectedProjectId ?? project?.id ?? null,
     loadingProject,
   };
 }

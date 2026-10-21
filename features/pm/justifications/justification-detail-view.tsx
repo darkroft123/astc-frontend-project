@@ -134,51 +134,23 @@ function eventLabel(e: any) {
   return e.newStatus || "Cambio de estado";
 }
 
-const DEFAULT_MOCK_JUSTIFICATION: JustificationDetail = {
-  id: "just-001",
-  description: "Cita médica por chequeo general en EsSalud. Se adjunta constancia de atención médica emitida por el especialista.",
-  documentUrl: null,
-  status: "SUBMITTED",
-  comment: null,
-  submittedAt: "2026-09-02T09:15:00.000Z",
-  reviewedAt: null,
-  userId: "usr-carlos",
-  absenceDate: "2026-09-02",
-  absenceType: "FALTA_INJUSTIFICADA",
-  projectName: "testo6",
-  history: [
-    {
-      id: "hist-1",
-      previousStatus: undefined,
-      newStatus: "SUBMITTED",
-      comment: "Solicitud enviada para revisión",
-      changedBy: "carlos mamani",
-      changedAt: "2026-09-02T09:15:00.000Z",
-    },
-  ],
-};
-
 export function JustificationDetailView({ justificationId }: JustificationDetailViewProps) {
   const router = useRouter();
   const { token, hydrated } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [justification, setJustification] = useState<JustificationDetail>(DEFAULT_MOCK_JUSTIFICATION);
+  const [isLoading, setIsLoading] = useState(true);
+  const [justification, setJustification] = useState<JustificationDetail | null>(null);
   const [comment, setComment] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [userName, setUserName] = useState<string>("carlos mamani");
-  const [userEmail, setUserEmail] = useState<string>("mamanigutierrezcarlos123@gmail.com");
+  const [userName, setUserName] = useState<string>("");
+  const [userEmail, setUserEmail] = useState<string>("");
   const [copiedId, setCopiedId] = useState(false);
 
   useEffect(() => {
     async function fetchJustification() {
       if (!token) {
-        setJustification({
-          ...DEFAULT_MOCK_JUSTIFICATION,
-          id: justificationId || "just-001",
-        });
-        setUserName("carlos mamani");
-        setUserEmail("mamanigutierrezcarlos123@gmail.com");
+        setJustification(null);
+        setIsLoading(false);
         return;
       }
       setIsLoading(true);
@@ -200,17 +172,11 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
         if (data) {
           setJustification(data);
         } else {
-          setJustification({
-            ...DEFAULT_MOCK_JUSTIFICATION,
-            id: justificationId,
-          });
+          setJustification(null);
         }
       } catch (error) {
         console.error("Error fetching justification:", error);
-        setJustification({
-          ...DEFAULT_MOCK_JUSTIFICATION,
-          id: justificationId,
-        });
+        setJustification(null);
       } finally {
         setIsLoading(false);
       }
@@ -297,7 +263,27 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
     }
   }
 
-  const currentJustification = justification || DEFAULT_MOCK_JUSTIFICATION;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-16">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+      </div>
+    );
+  }
+
+  if (!justification) {
+    return (
+      <div className="w-full max-w-5xl mx-auto px-4 py-12 text-center space-y-4">
+        <h2 className="text-xl font-bold text-foreground">Justificación no encontrada</h2>
+        <p className="text-sm text-muted-foreground">La solicitud solicitada no existe o no se pudo cargar.</p>
+        <Link href="/pm/justificaciones" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 text-white text-xs font-semibold hover:bg-purple-700">
+          Volver a Justificaciones
+        </Link>
+      </div>
+    );
+  }
+
+  const currentJustification = justification;
   const isPending = currentJustification.status === "PENDING" || currentJustification.status === "SUBMITTED";
   const isRejected = currentJustification.status === "REJECTED";
   const isObservation = currentJustification.status === "OBSERVATION";

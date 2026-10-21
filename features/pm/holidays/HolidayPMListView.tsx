@@ -38,65 +38,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { NotificationBell } from "@/components/layout/notification-bell";
 
-// DEFAULT MOCK COLLECTIONS MATCHING SVG
-const DEFAULT_SVG_COLLECTIONS: CollectionOutput[] = [
-  {
-    id: "col-reretesteo",
-    name: "reretesteo",
-    scope: "GLOBAL",
-    createdAt: "2026-09-01T00:00:00Z",
-    items: [
-      { id: "item-1", collectionId: "col-reretesteo", date: "2026-09-12", name: "reretesteo" },
-      { id: "item-2", collectionId: "col-reretesteo", date: "2026-09-17", name: "reretesteo" },
-      { id: "item-3", collectionId: "col-reretesteo", date: "2026-09-23", name: "reretesteo" },
-    ],
-  },
-  {
-    id: "col-feriados",
-    name: "feriados",
-    scope: "GLOBAL",
-    createdAt: "2026-09-01T00:00:00Z",
-    items: [
-      { id: "item-4", collectionId: "col-feriados", date: "2026-05-01", name: "Día del Trabajo" },
-      { id: "item-5", collectionId: "col-feriados", date: "2026-07-28", name: "Fiestas Patrias" },
-      { id: "item-6", collectionId: "col-feriados", date: "2026-12-25", name: "Navidad" },
-    ],
-  },
-  {
-    id: "col-feriados2",
-    name: "feriados2",
-    scope: "GLOBAL",
-    createdAt: "2026-09-01T00:00:00Z",
-    items: [
-      { id: "item-7", collectionId: "col-feriados2", date: "2026-01-01", name: "Año Nuevo" },
-      { id: "item-8", collectionId: "col-feriados2", date: "2026-04-02", name: "Jueves Santo" },
-      { id: "item-9", collectionId: "col-feriados2", date: "2026-04-03", name: "Viernes Santo" },
-      { id: "item-10", collectionId: "col-feriados2", date: "2026-10-08", name: "Combate de Angamos" },
-    ],
-  },
-];
-
-const DEFAULT_SVG_MEMBERS = [
-  {
-    userId: "user-1",
-    displayName: "Sin nombre registrado",
-    email: "user@astc.com",
-    initials: null,
-  },
-  {
-    userId: "user-2",
-    displayName: "carlos mamani",
-    email: "mamanigutierrezcarlos123@gmail.com",
-    initials: "CM",
-  },
-  {
-    userId: "user-3",
-    displayName: "Sin nombre registrado",
-    email: "pm@astc.com",
-    initials: null,
-  },
-];
-
 const MONTH_NAMES_ES = [
   "Enero",
   "Febrero",
@@ -277,19 +218,19 @@ export function HolidayPMListView() {
 
   // Data States
   const [projects, setProjects] = useState<any[]>([]);
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("testo6");
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [members, setMembers] = useState<any[]>([]);
   const [userNames, setUserNames] = useState<Record<string, string>>({});
   const [userEmails, setUserEmails] = useState<Record<string, string>>({});
   const [projectCollections, setProjectCollections] = useState<CollectionOutput[]>([]);
-  const [globalCollections, setGlobalCollections] = useState<CollectionOutput[]>(DEFAULT_SVG_COLLECTIONS);
-  const [assignedCollectionId, setAssignedCollectionId] = useState<string | null>("col-reretesteo");
+  const [globalCollections, setGlobalCollections] = useState<CollectionOutput[]>([]);
+  const [assignedCollectionId, setAssignedCollectionId] = useState<string | null>(null);
 
   // UI States
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<"project" | "members">("project");
-  const [expandedId, setExpandedId] = useState<string | null>("col-reretesteo");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   // Modals States
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -299,43 +240,26 @@ export function HolidayPMListView() {
 
   // Create Collection Form State
   const [newCollectionName, setNewCollectionName] = useState("");
-  const [newCollectionDates, setNewCollectionDates] = useState<string[]>([
-    "2026-09-10",
-    "2026-09-15",
-    "2026-09-17",
-    "2026-09-23",
-    "2026-09-28",
-  ]);
+  const [newCollectionDates, setNewCollectionDates] = useState<string[]>([]);
   const [newCollectionDateNames, setNewCollectionDateNames] = useState<Record<string, string>>({});
 
   // User Exception Form State
   const [selectedMemberForException, setSelectedMemberForException] = useState<any | null>(null);
-  const [exceptionReason, setExceptionReason] = useState("uiiuuou");
+  const [exceptionReason, setExceptionReason] = useState("");
   const [exceptionType, setExceptionType] = useState<"USER_INCLUDE" | "USER_EXCLUDE">("USER_INCLUDE");
-  const [exceptionDates, setExceptionDates] = useState<string[]>([
-    "2026-09-11",
-    "2026-09-15",
-    "2026-09-18",
-    "2026-09-24",
-  ]);
+  const [exceptionDates, setExceptionDates] = useState<string[]>([]);
 
   // Import Modal State
   const [importTab, setImportTab] = useState<"text" | "csv">("text");
-  const [importText, setImportText] = useState(
-    "2026-12-25, Navidad\n2026-01-01 - Año Nuevo"
-  );
+  const [importText, setImportText] = useState("");
 
   // Load Projects
   useEffect(() => {
     if (!token) {
-      setProjects([
-        { id: "p1", name: "Gestión de Asistencia" },
-        { id: "p2", name: "Proyecto Testeo" },
-        { id: "p3", name: "Testo6" },
-      ]);
-      setSelectedProjectId("p1");
-      setMembers(DEFAULT_SVG_MEMBERS);
-      setGlobalCollections(DEFAULT_SVG_COLLECTIONS);
+      setProjects([]);
+      setSelectedProjectId("");
+      setMembers([]);
+      setGlobalCollections([]);
       setLoading(false);
       return;
     }
@@ -345,25 +269,17 @@ export function HolidayPMListView() {
           setProjects(data);
           setSelectedProjectId(data[0].id);
         } else {
-          setProjects([
-            { id: "p1", name: "Gestión de Asistencia" },
-            { id: "p2", name: "Proyecto Testeo" },
-            { id: "p3", name: "Testo6" },
-          ]);
-          setSelectedProjectId("p1");
-          setMembers(DEFAULT_SVG_MEMBERS);
-          setGlobalCollections(DEFAULT_SVG_COLLECTIONS);
+          setProjects([]);
+          setSelectedProjectId("");
+          setMembers([]);
+          setGlobalCollections([]);
         }
       })
       .catch(() => {
-        setProjects([
-          { id: "p1", name: "Gestión de Asistencia" },
-          { id: "p2", name: "Proyecto Testeo" },
-          { id: "p3", name: "Testo6" },
-        ]);
-        setSelectedProjectId("p1");
-        setMembers(DEFAULT_SVG_MEMBERS);
-        setGlobalCollections(DEFAULT_SVG_COLLECTIONS);
+        setProjects([]);
+        setSelectedProjectId("");
+        setMembers([]);
+        setGlobalCollections([]);
       });
   }, [token]);
 
@@ -388,11 +304,11 @@ export function HolidayPMListView() {
           setUserNames(names);
           setUserEmails(emails);
         } else {
-          setMembers(DEFAULT_SVG_MEMBERS);
+          setMembers([]);
         }
       })
       .catch(() => {
-        setMembers(DEFAULT_SVG_MEMBERS);
+        setMembers([]);
       });
   }, [token, selectedProjectId]);
 
@@ -406,16 +322,12 @@ export function HolidayPMListView() {
         getAdminSetting(token, "GLOBAL_ASSIGNED_COLLECTION_ID").catch(() => null),
       ]);
       setProjectCollections(pCols || []);
-      if (Array.isArray(gCols) && gCols.length > 0) {
-        setGlobalCollections(gCols);
-      } else {
-        setGlobalCollections(DEFAULT_SVG_COLLECTIONS);
-      }
+      setGlobalCollections(Array.isArray(gCols) ? gCols : []);
       if (gAssigned) {
         setAssignedCollectionId(gAssigned);
       }
     } catch {
-      setGlobalCollections(DEFAULT_SVG_COLLECTIONS);
+      setGlobalCollections([]);
     } finally {
       setLoading(false);
     }

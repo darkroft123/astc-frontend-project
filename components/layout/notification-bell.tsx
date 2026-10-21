@@ -30,59 +30,12 @@ const ICON_MAP = {
   UserCog,
 };
 
-const DEFAULT_MOCK_NOTIFICATIONS: InAppNotification[] = [
-  {
-    id: "notif-1",
-    notificationCode: "AST00012",
-    title: "Justificación enviada",
-    body: "Se ha recibido su justificación para la ausencia del día 2026-09-02. Estado: Enviado. Será revisada a la brevedad.",
-    icon: null,
-    color: null,
-    actionLink: "/team-member/notificaciones",
-    read: false,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "notif-2",
-    notificationCode: "AST00001",
-    title: "Asistencia registrada",
-    body: "Registro biométrico exitoso a las 08:00 AM para la jornada laboral.",
-    icon: null,
-    color: null,
-    actionLink: "/team-member/asistencias",
-    read: false,
-    createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
-  },
-  {
-    id: "notif-3",
-    notificationCode: "AST00009",
-    title: "Tardanza registrada",
-    body: "Se registró un ingreso tardío el día 2026-09-01 a las 08:24 AM.",
-    icon: null,
-    color: null,
-    actionLink: "/team-member/asistencias",
-    read: false,
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: "notif-4",
-    notificationCode: "AST00005",
-    title: "Falta injustificada",
-    body: "Ausencia sin registrar detectada. Puede emitir su justificación desde el panel.",
-    icon: null,
-    color: null,
-    actionLink: "/team-member/justificar",
-    read: true,
-    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-  },
-];
-
 export function NotificationBell() {
   const { user, hydrated } = useAuth();
   const router = useRouter();
-  const effectiveUserId = user?.id || "user-002";
-  const [unreadCount, setUnreadCount] = useState(3);
-  const [notifications, setNotifications] = useState<InAppNotification[]>(DEFAULT_MOCK_NOTIFICATIONS);
+  const effectiveUserId = user?.id || "";
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState<InAppNotification[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -107,28 +60,29 @@ export function NotificationBell() {
   };
 
   const fetchUnreadCount = useCallback(async () => {
+    if (!effectiveUserId) return;
     try {
       const count = await notificationService.getUnreadCount(effectiveUserId);
       if (typeof count === "number" && count >= 0) {
         setUnreadCount(count);
       }
     } catch {
-      // In offline/mock mode, calculate from notifications state
-      setUnreadCount((prev) => (prev > 0 ? prev : 3));
+      // ignore
     }
   }, [effectiveUserId]);
 
   const fetchNotifications = useCallback(async () => {
+    if (!effectiveUserId) return;
     setLoading(true);
     try {
       const res = await notificationService.getNotifications(effectiveUserId, 1, 10);
-      if (res && res.items && res.items.length > 0) {
+      if (res && res.items) {
         setNotifications(res.items);
       } else {
-        setNotifications(DEFAULT_MOCK_NOTIFICATIONS);
+        setNotifications([]);
       }
     } catch {
-      setNotifications(DEFAULT_MOCK_NOTIFICATIONS);
+      setNotifications([]);
     } finally {
       setLoading(false);
     }

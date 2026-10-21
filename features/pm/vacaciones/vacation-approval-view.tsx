@@ -34,36 +34,11 @@ import {
 import { Label } from "@/components/ui/label";
 import type { VacationRequest } from "@/components/types/dashboard";
 
-const DEFAULT_SVG_VACATIONS: any[] = [
-  {
-    id: "vac-001",
-    userId: "usr-carlos-1",
-    userName: "carlos mamani",
-    userCode: "a3d41431",
-    startDate: "2026-09-07T00:00:00.000Z",
-    endDate: "2026-10-08T00:00:00.000Z",
-    businessDays: 29,
-    status: "PENDING",
-    createdAt: "2026-09-02T00:00:00.000Z",
-  },
-  {
-    id: "vac-002",
-    userId: "usr-carlos-2",
-    userName: "carlos mamani",
-    userCode: "a3d41431",
-    startDate: "2026-08-26T00:00:00.000Z",
-    endDate: "2026-08-26T00:00:00.000Z",
-    businessDays: 1,
-    status: "REJECTED",
-    createdAt: "2026-09-01T00:00:00.000Z",
-  },
-];
-
 export function VacationApprovalView() {
   const { token, hydrated, user } = useAuth();
   const { toast } = useToast();
 
-  const [vacations, setVacations] = useState<any[]>(DEFAULT_SVG_VACATIONS);
+  const [vacations, setVacations] = useState<any[]>([]);
   const [userNames, setUserNames] = useState<Record<string, string>>({});
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -74,7 +49,7 @@ export function VacationApprovalView() {
 
   const fetchData = useCallback(async () => {
     if (!token) {
-      setVacations(DEFAULT_SVG_VACATIONS);
+      setVacations([]);
       return;
     }
     setLoading(true);
@@ -84,7 +59,7 @@ export function VacationApprovalView() {
         getAllUsers(token).catch(() => []),
         getAllProjects(token).catch(() => []),
       ]);
-      const list = Array.isArray(data) && data.length > 0 ? data : DEFAULT_SVG_VACATIONS;
+      const list = Array.isArray(data) ? data : [];
       setVacations(list);
       setProjects(Array.isArray(projectsList) ? projectsList : []);
 
@@ -103,7 +78,7 @@ export function VacationApprovalView() {
       }
       setUserNames(namesMap);
     } catch (e) {
-      setVacations(DEFAULT_SVG_VACATIONS);
+      setVacations([]);
     } finally {
       setLoading(false);
     }

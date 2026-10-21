@@ -31,57 +31,10 @@ const PAGE_SIZE = 10;
 
 type FilterType = "all" | "unread" | "read" | "attendance" | "justification";
 
-const defaultMockNotifications: InAppNotification[] = [
-  {
-    id: "notif-mock-1",
-    title: "Justificación enviada",
-    body: "Hola mamanigutierrezcarlos123, se ha recibido su justificación para la ausencia del día 2026-09-02. ID: 8432261f-e26a. Estado: Enviado. Será revisada a la brevedad.",
-    read: false,
-    icon: null,
-    color: null,
-    actionLink: null,
-    notificationCode: "AST00005",
-    createdAt: "2026-09-02T10:00:00.000Z",
-  },
-  {
-    id: "notif-mock-2",
-    title: "Justificación enviada",
-    body: "Hola mamanigutierrezcarlos123, se ha recibido su justificación para la ausencia del día 2026-09-02. ID: 8432261f-e26a. Estado: Borrador. Será revisada a la brevedad.",
-    read: false,
-    icon: null,
-    color: null,
-    actionLink: null,
-    notificationCode: "AST00005",
-    createdAt: "2026-09-02T09:30:00.000Z",
-  },
-  {
-    id: "notif-mock-3",
-    title: "Salida temprana",
-    body: "Hola mamanigutierrezcarlos123, se ha registrado su salida temprana el día 2026-09-02. Estado: Salida temprana. Proyecto: 2454b982-751d. Recuerde cumplir su horario.",
-    read: false,
-    icon: null,
-    color: null,
-    actionLink: null,
-    notificationCode: "AST00010",
-    createdAt: "2026-09-02T09:07:00.000Z",
-  },
-  {
-    id: "notif-mock-4",
-    title: "Justificación enviada",
-    body: "Hola mamanigutierrezcarlos123, se ha recibido su justificación para la ausencia del día 2026-09-02. ID: 8432261f-e26a. Estado: Enviado. Será revisada a la brevedad.",
-    read: false,
-    icon: null,
-    color: null,
-    actionLink: null,
-    notificationCode: "AST00005",
-    createdAt: "2026-09-02T08:50:00.000Z",
-  },
-];
-
 export default function NotificationsPage() {
   const { user, hydrated } = useAuth();
-  const [notifications, setNotifications] = useState<InAppNotification[]>(defaultMockNotifications);
-  const [unreadCount, setUnreadCount] = useState(28);
+  const [notifications, setNotifications] = useState<InAppNotification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [selected, setSelected] = useState<InAppNotification | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -93,16 +46,16 @@ export default function NotificationsPage() {
     setLoading(true);
     try {
       const res = await notificationService.getNotifications(user.id, 1, 100);
-      if (res?.items && res.items.length > 0) {
+      if (res?.items) {
         setNotifications(res.items);
       } else {
-        setNotifications(defaultMockNotifications);
+        setNotifications([]);
       }
       const count = await notificationService.getUnreadCount(user.id);
-      setUnreadCount(count > 0 ? count : 28);
+      setUnreadCount(count || 0);
     } catch (e) {
       console.error("Failed to fetch notifications", e);
-      setNotifications(defaultMockNotifications);
+      setNotifications([]);
     } finally {
       setLoading(false);
     }

@@ -23,39 +23,6 @@ import {
 import ProjectDetailModal from "@/components/dashboard/projects/ProjectDetailModal";
 import DeleteProjectModal from "@/components/features/projects/DeleteProjectModal";
 
-const DEFAULT_SVG_PROJECTS = [
-  {
-    id: "7f5e5a17-ecd2-4005-a1c6-d9977c0ce8e7",
-    name: "gestion de asistencia",
-    description: "Sistema integral de control de asistencia biométrica",
-    startDate: "2026-08-26",
-    endDate: "2026-08-30",
-    status: "ACTIVE",
-    responsible: { username: "jefeproyecto-x", firstName: "Jefe", lastName: "Proyecto" },
-    createdAt: "2026-08-26T00:00:00Z",
-  },
-  {
-    id: "74d45c3c-1b0b-4b52-8623-31be01fccb78",
-    name: "proyecto testeo",
-    description: "Ambiente de pruebas automatizadas y mock QA",
-    startDate: "2026-08-03",
-    endDate: "2026-08-11",
-    status: "ACTIVE",
-    responsible: { username: "jefeproyecto-x", firstName: "Jefe", lastName: "Proyecto" },
-    createdAt: "2026-08-03T00:00:00Z",
-  },
-  {
-    id: "2454b982-751d-43d2-938a-3ddb890168e1",
-    name: "testo6",
-    description: "Módulo de evaluación y auditoría",
-    startDate: "2026-08-09",
-    endDate: "2026-08-30",
-    status: "ACTIVE",
-    responsible: { username: "jefeproyecto-x", firstName: "Jefe", lastName: "Proyecto" },
-    createdAt: "2026-08-09T00:00:00Z",
-  },
-];
-
 export function ProjectsManagementView({
   context = "PM",
 }: {
@@ -64,7 +31,7 @@ export function ProjectsManagementView({
   const router = useRouter();
   const { token, hydrated } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [projects, setProjects] = useState<any[]>(DEFAULT_SVG_PROJECTS);
+  const [projects, setProjects] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [estadoFilter, setEstadoFilter] = useState("all");
@@ -77,13 +44,13 @@ export function ProjectsManagementView({
     setIsLoading(true);
     try {
       const data = await getAllProjects(token);
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         setProjects(data);
       } else {
-        setProjects(DEFAULT_SVG_PROJECTS);
+        setProjects([]);
       }
     } catch {
-      setProjects(DEFAULT_SVG_PROJECTS);
+      setProjects([]);
     } finally {
       setIsLoading(false);
     }
@@ -174,17 +141,19 @@ export function ProjectsManagementView({
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => router.push(context === "ADMIN" ? "/projects/create" : "/pm/proyectos")}
-              className="w-full md:w-auto h-11 px-5 rounded-2xl text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-[#A855F7]/25 hover:opacity-95 transition-all cursor-pointer"
-              style={{
-                background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 100%)",
-              }}
-            >
-              <Plus className="w-4 h-4 stroke-[2.5]" />
-              <span>Nuevo proyecto</span>
-            </button>
+            {context === "ADMIN" && (
+              <button
+                type="button"
+                onClick={() => router.push("/projects/create")}
+                className="w-full md:w-auto h-11 px-5 rounded-2xl text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-[#A855F7]/25 hover:opacity-95 transition-all cursor-pointer"
+                style={{
+                  background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 100%)",
+                }}
+              >
+                <Plus className="w-4 h-4 stroke-[2.5]" />
+                <span>Nuevo proyecto</span>
+              </button>
+            )}
             <div className="hidden md:block">
               <NotificationBell />
             </div>

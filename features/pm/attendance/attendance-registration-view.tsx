@@ -84,12 +84,6 @@ const SHIFT_LABELS: Record<string, string> = {
   TRANSITORY: "Transitorio",
 };
 
-const mockMembers: TeamMember[] = [
-  { id: "1", userId: "u1", fullName: "Carlos Mamani Gutierrez", checkIn: "08:15", status: "PRESENTE", location: "Oficina Principal", shiftType: "PERMANENT", workStartTime: "08:00", workEndTime: "17:00" },
-  { id: "2", userId: "u2", fullName: "María Torres López", checkIn: "08:45", status: "PRESENTE", location: "Oficina Principal", shiftType: "ROTATING_4X4", workStartTime: "08:00", workEndTime: "20:00" },
-  { id: "3", userId: "u3", fullName: "José Ramírez Flores", checkIn: null, status: "FALTA", location: null, shiftType: "PERMANENT", workStartTime: "22:00", workEndTime: "06:00" },
-  { id: "4", userId: "u4", fullName: "Ana Silva Mendoza", checkIn: "09:10", status: "PRESENTE", location: "Remoto", shiftType: "FLEXIBLE", workStartTime: null, workEndTime: null },
-];
 
 function getInitialRange(p: Period): DateRange {
   const today = new Date();

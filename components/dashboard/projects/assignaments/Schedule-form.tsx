@@ -62,19 +62,6 @@ const DAYS = [
   { key: "sunday" as const, label: "Domingo" },
 ];
 
-const DEFAULT_MOCK_USERS = [
-  { id: "usr-01", firstName: "carlos", lastName: "mamani", username: "carlos123", email: "mamanigutierrezcarlos123@gmail.com" },
-  { id: "usr-02", firstName: "Ana", lastName: "Silva Morales", username: "asilva", email: "asilva@empresa.com" },
-  { id: "usr-03", firstName: "Diego", lastName: "Torres Ramos", username: "dtorres", email: "dtorres@empresa.com" },
-  { id: "usr-04", firstName: "Lucía", lastName: "Fernández Cruz", username: "lfernandez", email: "lfernandez@empresa.com" },
-];
-
-const DEFAULT_MOCK_PROJECTS = [
-  { id: "p1", name: "testo6", timezone: "America/Lima" },
-  { id: "p2", name: "proyecto testeo", timezone: "America/Lima" },
-  { id: "p3", name: "gestion de asistencia", timezone: "America/Lima" },
-];
-
 export default function ScheduleForm({
   mode = "create",
   initialData,
@@ -83,11 +70,11 @@ export default function ScheduleForm({
   const searchParams = useSearchParams();
   const { token, hydrated } = useAuth();
 
-  const [users, setUsers] = useState<any[]>(DEFAULT_MOCK_USERS);
-  const [projects, setProjects] = useState<any[]>(DEFAULT_MOCK_PROJECTS);
+  const [users, setUsers] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
 
-  const [selectedUserId, setSelectedUserId] = useState("usr-01");
-  const [selectedProjectId, setSelectedProjectId] = useState("p1");
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [selectedProjectId, setSelectedProjectId] = useState("");
 
   const [shiftType, setShiftType] = useState<ShiftType>("REGULAR");
 
@@ -128,8 +115,8 @@ export default function ScheduleForm({
             const role = (u.roleCode || u.roleName || u.role || "").toUpperCase();
             return role !== "ADMIN" && role !== "ROLE_ADMIN" && u.username?.toLowerCase() !== "admin";
           });
-          const validUsers = nonAdminUsers.length > 0 ? nonAdminUsers : DEFAULT_MOCK_USERS;
-          const validProjects = projData && projData.length > 0 ? projData : DEFAULT_MOCK_PROJECTS;
+          const validUsers = nonAdminUsers || [];
+          const validProjects = projData || [];
 
           setUsers(validUsers);
           setProjects(validProjects);
@@ -174,12 +161,12 @@ export default function ScheduleForm({
           }
         })
         .catch(() => {
-          setUsers(DEFAULT_MOCK_USERS);
-          setProjects(DEFAULT_MOCK_PROJECTS);
+          setUsers([]);
+          setProjects([]);
         });
     } else {
-      setUsers(DEFAULT_MOCK_USERS);
-      setProjects(DEFAULT_MOCK_PROJECTS);
+      setUsers([]);
+      setProjects([]);
       const qUserId = searchParams.get("userId");
       if (qUserId) setSelectedUserId(qUserId);
       const qProjectId = searchParams.get("projectId");

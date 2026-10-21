@@ -13,7 +13,7 @@ export function formatUserName(userId: string | null | undefined, userMap?: Map<
   
   // If it's a raw UUID string (not resolved to a user name)
   if (/^[0-9a-fA-F-]{32,36}$/.test(userId)) {
-    return "Colaborador";
+    return "Trabajador";
   }
   
   return userId;
@@ -41,7 +41,7 @@ export function formatAlertMessage(msg: string | null | undefined, type?: string
     const t = type ? type.trim().toUpperCase() : "";
     if (t === "LATE_ARRIVAL") return "Registro de asistencia con tardanza respecto al horario";
     if (t === "NO_PHOTO") return "Asistencia registrada sin fotografía adjunta";
-    if (t === "NO_MATCH") return "El rostro de la foto no coincide con el colaborador";
+    if (t === "NO_MATCH") return "El rostro de la foto no coincide con el trabajador";
     if (t === "OUT_OF_RANGE") return "Registro de asistencia fuera del rango geográfico permitido";
     if (t === "OUTSIDE_SCHEDULE") return "Registro realizado fuera del horario laboral";
     return "Alerta de incidencia en el registro de asistencia";

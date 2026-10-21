@@ -51,24 +51,11 @@ type AttendanceItem = {
   locationName: string;
 };
 
-const DEFAULT_SVG_ATTENDANCES: AttendanceItem[] = [
-  {
-    id: "att-001",
-    date: "2026-09-02",
-    checkIn: "11:03 p. m.",
-    checkOut: "Sin salida",
-    status: "FUERA_DE_HORARIO",
-    statusLabel: "Fuera de horario",
-    photoUrl: null,
-    locationName: "Condevilla Señor",
-  },
-];
-
 export default function PMAsistenciasPage() {
   const router = useRouter();
   const { token, hydrated, user } = useAuth();
   const [activePeriod, setActivePeriod] = useState<Period>("month");
-  const [records, setRecords] = useState<AttendanceItem[]>(DEFAULT_SVG_ATTENDANCES);
+  const [records, setRecords] = useState<AttendanceItem[]>([]);
   const [searchDate, setSearchDate] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
@@ -80,7 +67,10 @@ export default function PMAsistenciasPage() {
   });
 
   const fetchRecords = useCallback(async () => {
-    if (!token) return;
+    if (!token) {
+      setRecords([]);
+      return;
+    }
     setIsLoading(true);
     try {
       const res = await listAttendance(token, {
@@ -94,8 +84,8 @@ export default function PMAsistenciasPage() {
           items.map((i: any) => ({
             id: i.id,
             date: i.date,
-            checkIn: i.checkIn || "11:03 p. m.",
-            checkOut: i.checkOut || "Sin salida",
+            checkIn: i.checkIn || "-",
+            checkOut: i.checkOut || "-",
             status: i.status,
             statusLabel:
               i.status === "PRESENTE"
@@ -106,14 +96,14 @@ export default function PMAsistenciasPage() {
                 ? "Tarde"
                 : "Fuera de horario",
             photoUrl: i.photoUrl || null,
-            locationName: "Condevilla Señor",
+            locationName: "Ubicación registrada",
           }))
         );
       } else {
-        setRecords(DEFAULT_SVG_ATTENDANCES);
+        setRecords([]);
       }
     } catch {
-      setRecords(DEFAULT_SVG_ATTENDANCES);
+      setRecords([]);
     } finally {
       setIsLoading(false);
     }

@@ -18,29 +18,26 @@ import {
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { getGraphQLUrl } from "@/lib/api-host";
+import { getAllProjects, getAllUsers } from "@/app/services/project.assistance.service";
 
 interface AlertDetailViewProps {
   alertId: string;
 }
 
 const GET_ALERT_DETAIL = `
-  query getAlertDetail($id: String!) {
+  query getAlertDetail($id: ID!) {
     getAlertDetail(id: $id) {
       id
       type
       status
+      detail
       message
-      detailMessage
+      severity
       projectId
-      projectName
       userId
-      userName
-      userEmail
       createdAt
       latitude
       longitude
-      district
-      delayMinutes
     }
   }
 `;
@@ -91,69 +88,60 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
 
   useEffect(() => {
     if (!token) {
-      setAlert({
-        id: alertId || "5dc39f2c8a1",
-        type: "ASISTENCIA_TARDE",
-        status: "PENDING",
-        message: "Análisis completado sin anomalías",
-        detailMessage:
-          "Análisis completado sin anomalías. El marcaje de entrada se registró después de la hora de inicio del turno (08:00).",
-        projectId: "proj-101",
-        projectName: "testo6",
-        userId: "user-002",
-        userName: "carlos mamani",
-        userEmail: "mamanigutierrezcarlos123@gmail.com",
-        createdAt: "2026-09-02T08:52:00.000Z",
-        latitude: -12.0184,
-        longitude: -77.0818,
-        district: "Condevilla Señor",
-        delayMinutes: 52,
-      });
+      setAlert(null);
       setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
 
-    fetch(getGraphQLUrl(), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        query: GET_ALERT_DETAIL,
-        variables: { id: alertId },
-      }),
-    })
-      .then((res) => res.json())
-      .then((json) => {
+    Promise.all([
+      fetch(getGraphQLUrl(), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          query: GET_ALERT_DETAIL,
+          variables: { id: alertId },
+        }),
+      }).then((res) => res.json()),
+      getAllProjects(token).catch(() => []),
+      getAllUsers(token).catch(() => []),
+    ])
+      .then(([json, projData, userData]) => {
         const data = json?.data?.getAlertDetail;
         if (data) {
-          setAlert(data);
-        } else {
+          const proj = Array.isArray(projData) ? projData.find((p) => p.id === data.projectId) : null;
+          const usr = Array.isArray(userData) ? userData.find((u) => u.id === data.userId) : null;
+          const userName = usr
+            ? `${usr.firstName || ""} ${usr.lastName || ""}`.trim() || usr.username
+            : "Trabajador";
           setAlert({
-            id: alertId || "5dc39f2c8a1",
-            type: "ASISTENCIA_TARDE",
-            status: "PENDING",
-            message: "Análisis completado sin anomalías",
-            detailMessage:
-              "Análisis completado sin anomalías. El marcaje de entrada se registró después de la hora de inicio del turno (08:00).",
-            projectId: "proj-101",
-            projectName: "testo6",
-            userId: "user-002",
-            userName: "carlos mamani",
-            userEmail: "mamanigutierrezcarlos123@gmail.com",
-            createdAt: "2026-09-02T08:52:00.000Z",
-            latitude: -12.0184,
-            longitude: -77.0818,
-            district: "Condevilla Señor",
-            delayMinutes: 52,
+            id: data.id,
+            type: data.type || "ASISTENCIA_TARDE",
+            status: data.status || "PENDING",
+            message: data.message || data.detail || "Análisis completado sin anomalías",
+            detailMessage: data.detail || data.message || "Análisis completado sin anomalías.",
+            projectId: data.projectId,
+            projectName: proj?.name || "Proyecto",
+            userId: data.userId,
+            userName,
+            userEmail: usr?.email || "",
+            createdAt: data.createdAt,
+            latitude: data.latitude ?? -12.0184,
+            longitude: data.longitude ?? -77.0818,
+            district: "Ubicación registrada",
+            delayMinutes: null,
           });
+        } else {
+          setAlert(null);
         }
       })
       .catch((err) => {
         console.error("Error loading alert detail:", err);
+        setAlert(null);
       })
       .finally(() => setIsLoading(false));
   }, [alertId, token]);

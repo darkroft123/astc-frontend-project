@@ -9,7 +9,7 @@ export function RecentActivityCard({ users = [] }: { users?: any[] }) {
   const displayActivities = users.length > 0
     ? users.slice(0, 3).map((user, index) => {
         const initials = `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase() || user.username?.[0]?.toUpperCase() || "U";
-        const name = `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username || "Colaborador";
+        const name = `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username || "Trabajador";
         const action = index === 0 ? "Registró asistencia de entrada" : index === 1 ? "Registró asistencia puntual" : "Marcó salida de jornada";
         const time = "Hoy";
         const color = index === 0 ? "emerald" as const : index === 1 ? "blue" as const : "blue" as const;

@@ -406,7 +406,7 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
                     Responsable y equipo
                   </h2>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Jefe de proyecto y colaboradores asignados
+                    Jefe de proyecto y trabajadores asignados
                   </p>
                 </div>
               </div>

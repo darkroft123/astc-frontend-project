@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { getGraphQLUrl } from "@/lib/api-host";
-import { getAllProjects, getAllUsers, cancelAlert } from "@/app/services/project.assistance.service";
+import { getAllProjects, getAllUsers, cancelAlert, approveAlert } from "@/app/services/project.assistance.service";
 import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
 
 const LIST_ATTENDANCE_ALERTS = `
@@ -57,12 +57,6 @@ const LIST_ATTENDANCE_ALERTS = `
   }
 `;
 
-const MARK_ALL_REVIEWED = `
-  mutation markAllAlertsAsReviewed {
-    markAllAlertsAsReviewed
-  }
-`;
-
 type AlertRow = {
   id: string;
   type?: string | null;
@@ -79,49 +73,14 @@ type AlertRow = {
   locationName?: string | null;
 };
 
-const DEFAULT_SVG_ALERTS: AlertRow[] = [
-  {
-    id: "alert-001",
-    type: "ASISTENCIA_TARDE",
-    status: "PENDING",
-    message: "Análisis completado sin anomalías",
-    projectId: "p3",
-    projectName: "testo6",
-    userId: "usr-carlos",
-    userName: "carlos mamani",
-    dateStr: "02/09/2026",
-    locationName: "Condevilla Señor",
-  },
-  {
-    id: "alert-002",
-    type: "ASISTENCIA_TARDE",
-    status: "PENDING",
-    message: "Análisis completado sin anomalías",
-    projectId: "p3",
-    projectName: "testo6",
-    userId: "usr-carlos",
-    userName: "carlos mamani",
-    dateStr: "01/09/2026",
-    locationName: "Condevilla Señor",
-  },
-];
-
 type PeriodTab = "Hoy" | "Esta semana" | "Este mes" | "3 meses" | "6 meses" | "9 meses" | "Total";
 
 export function AlertsListView() {
   const { token } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [alerts, setAlerts] = useState<AlertRow[]>(DEFAULT_SVG_ALERTS);
-  const [projects, setProjects] = useState<any[]>([
-    { id: "all", name: "Todos los proyectos (3)" },
-    { id: "p1", name: "gestion de asistencia" },
-    { id: "p2", name: "proyecto testeo" },
-    { id: "p3", name: "testo6" },
-  ]);
-  const [users, setUsers] = useState<any[]>([
-    { id: "all", name: "Todos los usuarios (5)" },
-    { id: "usr-carlos", name: "carlos mamani" },
-  ]);
+  const [alerts, setAlerts] = useState<AlertRow[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [activePeriod, setActivePeriod] = useState<PeriodTab>("Este mes");
   const [selectedProject, setSelectedProject] = useState("all");
   const [selectedUser, setSelectedUser] = useState("all");
@@ -150,7 +109,7 @@ export function AlertsListView() {
 
   const fetchAlerts = useCallback(async () => {
     if (!token) {
-      setAlerts(DEFAULT_SVG_ALERTS);
+      setAlerts([]);
       return;
     }
     setIsLoading(true);
@@ -176,50 +135,49 @@ export function AlertsListView() {
       const items = json?.data?.listAttendanceAlerts?.items;
       if (Array.isArray(items) && items.length > 0) {
         setAlerts(
-          items.map((i: any) => ({
-            id: i.id,
-            type: i.type || "ASISTENCIA_TARDE",
-            status: i.status || "PENDING",
-            message: i.message || "Análisis completado sin anomalías",
-            projectId: i.projectId,
-            projectName: "testo6",
-            userId: i.userId,
-            userName: "carlos mamani",
-            dateStr: i.createdAt ? new Date(i.createdAt).toLocaleDateString("es-PE") : "02/09/2026",
-            locationName: "Condevilla Señor",
-          }))
+          items.map((i: any) => {
+            const proj = projects.find((p) => p.id === i.projectId);
+            const usr = users.find((u) => u.id === i.userId);
+            const userName = usr
+              ? `${usr.firstName || ""} ${usr.lastName || ""}`.trim() || usr.username
+              : "Trabajador";
+            return {
+              id: i.id,
+              type: i.type || "ASISTENCIA_TARDE",
+              status: i.status || "PENDING",
+              message: i.message || "Análisis completado sin anomalías",
+              projectId: i.projectId,
+              projectName: proj?.name || "Proyecto",
+              userId: i.userId,
+              userName,
+              dateStr: i.createdAt ? new Date(i.createdAt).toLocaleDateString("es-PE") : "-",
+              locationName: "Ubicación registrada",
+            };
+          })
         );
       } else {
-        setAlerts(DEFAULT_SVG_ALERTS);
+        setAlerts([]);
       }
     } catch {
-      setAlerts(DEFAULT_SVG_ALERTS);
+      setAlerts([]);
     } finally {
       setIsLoading(false);
     }
-  }, [token, page, selectedStatus, selectedProject, selectedUser]);
+  }, [token, page, selectedStatus, selectedProject, selectedUser, projects, users]);
 
   useEffect(() => {
     fetchAlerts();
   }, [fetchAlerts]);
 
   const handleMarkAllReviewed = async () => {
-    if (!token) {
-      setAlerts((prev) => prev.map((a) => ({ ...a, status: "REVIEWED" })));
-      return;
-    }
+    if (!token) return;
+    const pendingAlerts = alerts.filter((a) => a.status === "PENDING");
+    if (pendingAlerts.length === 0) return;
     try {
-      await fetch(getGraphQLUrl(), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ query: MARK_ALL_REVIEWED }),
-      });
+      await Promise.all(pendingAlerts.map((a) => approveAlert(token, a.id)));
       await fetchAlerts();
     } catch {
-      setAlerts((prev) => prev.map((a) => ({ ...a, status: "REVIEWED" })));
+      await fetchAlerts();
     }
   };
 
