@@ -1,10 +1,11 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useAuth } from "./auth.provider";
 import { getApiBaseUrl } from "@/lib/api-host";
 
 export function useAuthGuard(allowedRoles: string[]) {
   const { token, user, role, hydrated, logout } = useAuth();
+  const rolesKey = allowedRoles.join(",");
 
   const [checking, setChecking] = useState(true);
   const checkedRef = useRef(false);
@@ -22,20 +23,24 @@ export function useAuthGuard(allowedRoles: string[]) {
       return;
     }
 
-    if (!role || !allowedRoles.includes(role)) {
+    const currentAllowed = rolesKey.split(",").filter(Boolean);
+    if (!role || !currentAllowed.includes(role)) {
       window.location.assign(getApiBaseUrl(3003));
       return;
     }
 
     checkedRef.current = true;
     setChecking(false);
-  }, [hydrated, token, user, role, allowedRoles, logout]);
+  }, [hydrated, token, user, role, rolesKey, logout]);
 
-  return {
-    hydrated,
-    token,
-    user,
-    role,
-    checkingAuth: checking,
-  };
+  return useMemo(
+    () => ({
+      hydrated,
+      token,
+      user,
+      role,
+      checkingAuth: checking,
+    }),
+    [hydrated, token, user, role, checking]
+  );
 }
