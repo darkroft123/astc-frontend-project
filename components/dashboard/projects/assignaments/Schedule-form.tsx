@@ -487,7 +487,7 @@ export default function ScheduleForm({
                       onClick={() => handleApplyQuickTemplate("day")}
                       className={`py-2 px-2 rounded-lg text-xs font-semibold transition-all text-center cursor-pointer ${
                         quickTemplate === "day"
-                          ? "bg-[#1E2438] text-white shadow-xs font-bold"
+                          ? "bg-primary/10 text-primary border border-primary/30 shadow-xs font-bold"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
@@ -499,7 +499,7 @@ export default function ScheduleForm({
                       onClick={() => handleApplyQuickTemplate("afternoon")}
                       className={`py-2 px-2 rounded-lg text-xs font-semibold transition-all text-center cursor-pointer ${
                         quickTemplate === "afternoon"
-                          ? "bg-[#1E2438] text-white shadow-xs font-bold"
+                          ? "bg-primary/10 text-primary border border-primary/30 shadow-xs font-bold"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
@@ -511,7 +511,7 @@ export default function ScheduleForm({
                       onClick={() => handleApplyQuickTemplate("night")}
                       className={`py-2 px-2 rounded-lg text-xs font-semibold transition-all text-center cursor-pointer ${
                         quickTemplate === "night"
-                          ? "bg-[#1E2438] text-white shadow-xs font-bold"
+                          ? "bg-primary/10 text-primary border border-primary/30 shadow-xs font-bold"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >

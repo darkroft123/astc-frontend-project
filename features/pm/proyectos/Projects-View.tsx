@@ -114,7 +114,7 @@ export function ProjectsManagementView({
     <div className="relative min-h-screen bg-transparent pb-16 font-sans">
       {/* Top Ambient Glow */}
       <div
-        className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-80 rounded-full opacity-30 blur-3xl z-0"
+        className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-80 rounded-full opacity-30 blur-3xl z-0 hidden dark:block"
         style={{
           background: "radial-gradient(circle, #7C3AED 0%, transparent 70%)",
         }}
@@ -141,19 +141,7 @@ export function ProjectsManagementView({
           </div>
 
           <div className="flex items-center gap-3">
-            {context === "ADMIN" && (
-              <button
-                type="button"
-                onClick={() => router.push("/projects/create")}
-                className="w-full md:w-auto h-11 px-5 rounded-2xl text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-[#A855F7]/25 hover:opacity-95 transition-all cursor-pointer"
-                style={{
-                  background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 100%)",
-                }}
-              >
-                <Plus className="w-4 h-4 stroke-[2.5]" />
-                <span>Nuevo proyecto</span>
-              </button>
-            )}
+            {/* Jefe de proyecto no crea proyectos */}
             <div className="hidden md:block">
               <NotificationBell />
             </div>
@@ -171,37 +159,37 @@ export function ProjectsManagementView({
             </div>
             <div>
               <span className="text-[10px] sm:text-xs text-[#8F96AE] block font-medium">Total</span>
-              <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-none">
+              <span className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight leading-none">
                 {total}
               </span>
             </div>
           </div>
 
           {/* Card 2: Activos */}
-          <div className="rounded-2xl border border-[#134E35] bg-[#0C1814] p-3.5 sm:p-5 flex flex-col justify-between h-[95px] sm:h-[110px] shadow-xs">
+          <div className="rounded-2xl border border-emerald-500/20 dark:border-[#134E35] bg-card dark:bg-[#0C1814] p-3.5 sm:p-5 flex flex-col justify-between h-[95px] sm:h-[110px] shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-[#0C251C] flex items-center justify-center text-[#34D399]">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-[#34D399]">
                 <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
             <div>
               <span className="text-[10px] sm:text-xs text-[#34D399] block font-semibold">Activos</span>
-              <span className="text-2xl sm:text-3xl font-bold text-[#34D399] tracking-tight leading-none">
+              <span className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight leading-none">
                 {activeCount}
               </span>
             </div>
           </div>
 
           {/* Card 3: Inactivos */}
-          <div className="rounded-2xl border border-[#5C1D24] bg-[#1A0F12] p-3.5 sm:p-5 flex flex-col justify-between h-[95px] sm:h-[110px] shadow-xs">
+          <div className="rounded-2xl border border-rose-500/20 dark:border-[#5C1D24] bg-card dark:bg-[#1A0F12] p-3.5 sm:p-5 flex flex-col justify-between h-[95px] sm:h-[110px] shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-[#251417] flex items-center justify-center text-[#F87171]">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-600 dark:text-[#F87171]">
                 <XCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
             <div>
               <span className="text-[10px] sm:text-xs text-[#F87171] block font-semibold">Inactivos</span>
-              <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-none">
+              <span className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight leading-none">
                 {inactiveCount}
               </span>
             </div>
@@ -280,11 +268,11 @@ export function ProjectsManagementView({
                   {/* Top row */}
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-[#1C1635] border border-[#312361] text-[#A855F7] flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-[#1C1635] border border-purple-200 dark:border-[#312361] text-purple-600 dark:text-[#A855F7] flex items-center justify-center shrink-0">
                         <Folder className="w-5 h-5" />
                       </div>
                       <div className="min-w-0">
-                        <span className="font-bold text-white text-sm block truncate">
+                        <span className="font-bold text-foreground text-sm block truncate">
                           {row.name}
                         </span>
                         <span className="text-[11px] text-[#8F96AE] font-mono block truncate mt-0.5">
@@ -295,12 +283,12 @@ export function ProjectsManagementView({
 
                     {/* Pill Badge */}
                     {isActive ? (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#0C251C] text-[#34D399] border border-[#194B37] shrink-0">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-[#0C251C] text-emerald-700 dark:text-[#34D399] border border-emerald-200 dark:border-[#194B37] shrink-0">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#34D399]" />
                         Activo
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#251417] text-[#F87171] border border-[#521C22] shrink-0">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 dark:bg-[#251417] text-rose-700 dark:text-[#F87171] border border-rose-200 dark:border-[#521C22] shrink-0">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#F87171]" />
                         Inactivo
                       </span>
@@ -313,7 +301,7 @@ export function ProjectsManagementView({
                       <span className="text-[9.5px] font-mono text-[#8B7BD8] uppercase tracking-wider block font-semibold">
                         INICIO
                       </span>
-                      <span className="text-xs text-white font-medium block mt-1">
+                      <span className="text-xs text-foreground font-medium block mt-1">
                         {formatDate(row.startDate)}
                       </span>
                     </div>
@@ -321,7 +309,7 @@ export function ProjectsManagementView({
                       <span className="text-[9.5px] font-mono text-[#8B7BD8] uppercase tracking-wider block font-semibold">
                         FIN
                       </span>
-                      <span className="text-xs text-white font-medium block mt-1">
+                      <span className="text-xs text-foreground font-medium block mt-1">
                         {formatDate(row.endDate)}
                       </span>
                     </div>
@@ -352,7 +340,7 @@ export function ProjectsManagementView({
                   <button
                     type="button"
                     onClick={() => setSelectedProjectForDetail(row)}
-                    className="w-full h-11 rounded-xl border border-border bg-background/50 hover:bg-[#1A1D2E] text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+                    className="w-full h-11 rounded-xl border border-border bg-background/50 hover:bg-muted text-xs font-semibold text-foreground flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
                   >
                     <Eye className="w-4 h-4 text-[#8F96AE]" />
                     <span>Ver detalle</span>
@@ -377,7 +365,7 @@ export function ProjectsManagementView({
                   <th className="py-4 px-5 text-right">ACCIONES</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1E2335]">
+              <tbody className="divide-y divide-border">
                 {paginatedProjects.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center text-[#8F96AE]">
@@ -400,7 +388,7 @@ export function ProjectsManagementView({
                               <Folder className="w-4 h-4" />
                             </div>
                             <div>
-                              <span className="font-semibold text-white text-xs block">
+                              <span className="font-semibold text-foreground text-xs block">
                                 {row.name}
                               </span>
                               <span className="text-[11px] text-[#8F96AE] font-mono block mt-0.5">
@@ -411,24 +399,24 @@ export function ProjectsManagementView({
                         </td>
 
                         {/* INICIO */}
-                        <td className="py-4 px-5 font-mono text-xs text-white">
+                        <td className="py-4 px-5 font-mono text-xs text-foreground">
                           {formatDate(row.startDate)}
                         </td>
 
                         {/* FIN */}
-                        <td className="py-4 px-5 font-mono text-xs text-white">
+                        <td className="py-4 px-5 font-mono text-xs text-foreground">
                           {formatDate(row.endDate)}
                         </td>
 
                         {/* ESTADO */}
                         <td className="py-4 px-5">
                           {isActive ? (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#0C251C] text-[#34D399] border border-[#194B37]">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-[#0C251C] text-emerald-700 dark:text-[#34D399] border border-emerald-200 dark:border-[#194B37]">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#34D399]" />
                               Activo
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#251417] text-[#F87171] border border-[#521C22]">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 dark:bg-[#251417] text-rose-700 dark:text-[#F87171] border border-rose-200 dark:border-[#521C22]">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#F87171]" />
                               Inactivo
                             </span>
@@ -447,7 +435,7 @@ export function ProjectsManagementView({
                             >
                               JP
                             </div>
-                            <span className="font-medium text-white text-xs">
+                            <span className="font-medium text-foreground text-xs">
                               @{row.responsible?.username || "jefeproyecto-x"}
                             </span>
                           </div>
@@ -458,7 +446,7 @@ export function ProjectsManagementView({
                           <button
                             type="button"
                             onClick={() => setSelectedProjectForDetail(row)}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-border bg-background/50 hover:bg-[#1A1D2E] text-xs font-semibold text-white transition-colors cursor-pointer shadow-xs"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-border bg-background/50 hover:bg-muted text-xs font-semibold text-foreground transition-colors cursor-pointer shadow-xs"
                           >
                             <Eye className="w-3.5 h-3.5 text-[#8F96AE]" />
                             <span>Ver detalle</span>
@@ -481,18 +469,18 @@ export function ProjectsManagementView({
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="w-9 h-9 rounded-xl border border-border bg-background/50 flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#1A1D2E] transition-colors"
+              className="w-9 h-9 rounded-xl border border-border bg-background/50 flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#1A1D2E] transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="font-medium px-2 text-white">
+            <span className="font-medium px-2 text-foreground">
               Página {page} de {totalPages}
             </span>
             <button
               type="button"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="w-9 h-9 rounded-xl border border-border bg-background/50 flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#1A1D2E] transition-colors"
+              className="w-9 h-9 rounded-xl border border-border bg-background/50 flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#1A1D2E] transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

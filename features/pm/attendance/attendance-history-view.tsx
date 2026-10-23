@@ -277,7 +277,7 @@ export function AttendanceHistoryView() {
 
       {/* 3. PERIOD SELECTOR TABS (Mobile only - 2 rows matching Figma SVG) */}
       <div className="md:hidden space-y-2.5">
-        <div className="p-2 sm:p-2.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335]">
+        <div className="p-2 sm:p-2.5 rounded-2xl bg-card dark:bg-[#0C0E18] border border-border dark:border-[#1E2335]">
           {/* Row 1: 4 tabs */}
           <div className="grid grid-cols-4 gap-1 text-center">
             {PERIOD_TABS.slice(0, 4).map((tab) => {
@@ -290,7 +290,7 @@ export function AttendanceHistoryView() {
                   className={`py-1.5 px-1 rounded-xl text-xs transition-all cursor-pointer truncate ${
                     isActive
                       ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
-                      : "text-[#8F96AE] hover:text-white font-medium"
+                      : "text-muted-foreground hover:text-foreground dark:hover:text-white font-medium"
                   }`}
                 >
                   {tab.label}
@@ -311,7 +311,7 @@ export function AttendanceHistoryView() {
                   className={`py-1.5 px-1 rounded-xl text-xs transition-all cursor-pointer truncate ${
                     isActive
                       ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
-                      : "text-[#8F96AE] hover:text-white font-medium"
+                      : "text-muted-foreground hover:text-foreground dark:hover:text-white font-medium"
                   }`}
                 >
                   {tab.label}
@@ -323,14 +323,14 @@ export function AttendanceHistoryView() {
 
         {/* 4. DATE RANGE SELECTOR BAR (Mobile only) */}
         <div className="flex items-center gap-2">
-          <div className="flex-1 h-11 px-3.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335] flex items-center justify-center gap-2 text-xs font-mono text-[#8F96AE]">
+          <div className="flex-1 h-11 px-3.5 rounded-2xl bg-card dark:bg-[#0C0E18] border border-border dark:border-[#1E2335] flex items-center justify-center gap-2 text-xs font-mono text-muted-foreground">
             <Calendar className="w-3.5 h-3.5 text-[#A855F7]" />
             <span className="text-blue-600 dark:text-blue-400 font-semibold">{dateRange.from} → {dateRange.to}</span>
           </div>
           <button
             type="button"
             onClick={() => setDateRangeModalOpen(true)}
-            className="w-11 h-11 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-[#8F96AE] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
+            className="w-11 h-11 rounded-2xl bg-card dark:bg-[#0C0E18] border border-border dark:border-[#1E2335] text-muted-foreground hover:text-foreground dark:hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
             title="Seleccionar rango"
           >
             <Calendar className="w-4 h-4" />
@@ -583,7 +583,7 @@ export function AttendanceHistoryView() {
 
                 {/* Project Tag & Date */}
                 <div className="flex items-center justify-between">
-                  <span className="inline-block bg-purple-950/60 text-purple-300 border border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                  <span className="inline-block bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
                     {r.projectName || "testo6"}
                   </span>
                   <span className="text-sm font-medium text-foreground">{r.date}</span>
@@ -701,7 +701,7 @@ export function AttendanceHistoryView() {
                     </td>
                     <td className="py-3 px-4 font-mono text-amber-400">{row.checkOut}</td>
                     <td className="py-3 px-4">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/50 text-emerald-400 border border-emerald-800/40">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                         {row.statusLabel || "Asistencia"}
                       </span>

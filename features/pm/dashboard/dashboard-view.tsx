@@ -139,6 +139,7 @@ export function DashboardView() {
   const GAP = 6; // Separation between slices, cut like admin
   const totalRecords = totalAttendances + totalAbsences + pendingJustifications;
   const totalAvailable = C - 3 * GAP;
+  const attendancePercentage = totalRecords > 0 ? Math.round((totalAttendances / totalRecords) * 100) : 50;
 
   const attArc = totalRecords > 0 ? (totalAttendances / totalRecords) * totalAvailable : 0.4 * totalAvailable;
   const absArc = totalRecords > 0 ? (totalAbsences / totalRecords) * totalAvailable : 0.4 * totalAvailable;
@@ -148,7 +149,7 @@ export function DashboardView() {
     <div className="relative min-h-screen bg-transparent pb-16 font-sans">
       {/* Top Ambient Glow */}
       <div
-        className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-80 rounded-full opacity-30 blur-3xl z-0"
+        className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-80 rounded-full opacity-30 blur-3xl z-0 hidden dark:block"
         style={{
           background: "radial-gradient(circle, #7C3AED 0%, transparent 70%)",
         }}
@@ -178,7 +179,7 @@ export function DashboardView() {
             <button
               type="button"
               onClick={() => router.push("/pm/justificaciones")}
-              className="w-full md:w-auto h-11 px-5 rounded-2xl text-foreground text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-[#A855F7]/25 hover:opacity-95 transition-all cursor-pointer"
+              className="w-full md:w-auto h-11 px-5 rounded-2xl text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-[#A855F7]/25 hover:opacity-95 transition-all cursor-pointer"
               style={{
                 background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 100%)",
               }}
@@ -409,7 +410,8 @@ export function DashboardView() {
                     cx="60"
                     cy="60"
                     r={R}
-                    stroke="#1F2438"
+                    stroke="currentColor"
+                    className="text-muted/40 dark:text-[#1F2438]"
                     strokeWidth="12"
                     fill="transparent"
                   />
@@ -449,7 +451,7 @@ export function DashboardView() {
                 </svg>
                 <div className="absolute flex flex-col items-center justify-center text-center">
                   <span className="text-3xl font-black text-foreground tracking-tight leading-none">
-                    50%
+                    {attendancePercentage}%
                   </span>
                   <span className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase mt-1 font-semibold">
                     ASISTENCIA

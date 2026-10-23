@@ -290,7 +290,7 @@ export function AlertsListView() {
 
       {/* 3. PERIOD SELECTOR TABS (Mobile only - 2 rows matching Figma SVG) */}
       <div className="md:hidden space-y-2.5">
-        <div className="p-2 sm:p-2.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335]">
+        <div className="p-2 sm:p-2.5 rounded-2xl bg-card dark:bg-[#0C0E18] border border-border dark:border-[#1E2335]">
           {/* Row 1: 4 tabs */}
           <div className="grid grid-cols-4 gap-1 text-center">
             {(["Hoy", "Esta semana", "Este mes", "3 meses"] as PeriodTab[]).map((tab) => {
@@ -303,7 +303,7 @@ export function AlertsListView() {
                   className={`py-1.5 px-1 rounded-xl text-xs transition-all cursor-pointer truncate ${
                     isActive
                       ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
-                      : "text-[#8F96AE] hover:text-white font-medium"
+                      : "text-muted-foreground hover:text-foreground dark:hover:text-white font-medium"
                   }`}
                 >
                   {tab}
@@ -324,7 +324,7 @@ export function AlertsListView() {
                   className={`py-1.5 px-1 rounded-xl text-xs transition-all cursor-pointer truncate ${
                     isActive
                       ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
-                      : "text-[#8F96AE] hover:text-white font-medium"
+                      : "text-muted-foreground hover:text-foreground dark:hover:text-white font-medium"
                   }`}
                 >
                   {tab}
@@ -336,14 +336,14 @@ export function AlertsListView() {
 
         {/* 4. DATE RANGE SELECTOR BAR (Mobile only) */}
         <div className="flex items-center gap-2">
-          <div className="flex-1 h-11 px-3.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335] flex items-center justify-center gap-2 text-xs font-mono text-[#8F96AE]">
+          <div className="flex-1 h-11 px-3.5 rounded-2xl bg-card dark:bg-[#0C0E18] border border-border dark:border-[#1E2335] flex items-center justify-center gap-2 text-xs font-mono text-muted-foreground">
             <Calendar className="w-3.5 h-3.5 text-[#A855F7]" />
             <span className="text-blue-600 dark:text-blue-400 font-semibold">{dateRange.from} → {dateRange.to}</span>
           </div>
           <button
             type="button"
             onClick={() => setDateRangeModalOpen(true)}
-            className="w-11 h-11 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-[#8F96AE] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
+            className="w-11 h-11 rounded-2xl bg-card dark:bg-[#0C0E18] border border-border dark:border-[#1E2335] text-muted-foreground hover:text-foreground dark:hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
             title="Seleccionar rango"
           >
             <Calendar className="w-4 h-4" />
@@ -601,7 +601,7 @@ export function AlertsListView() {
                   </div>
                 </div>
 
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-400 border border-amber-800/40">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                   {alert.status === "PENDING" ? "Pendiente" : alert.status === "REVIEWED" ? "Revisada" : "Aprobada"}
                 </span>
@@ -614,7 +614,7 @@ export function AlertsListView() {
 
               {/* Project Tag & Date */}
               <div className="flex items-center justify-between">
-                <span className="inline-block bg-purple-950/60 text-purple-300 border border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                <span className="inline-block bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
                   {alert.projectName || "testo6"}
                 </span>
                 <span className="text-sm font-medium text-foreground">{alert.dateStr || "02/09/2026"}</span>

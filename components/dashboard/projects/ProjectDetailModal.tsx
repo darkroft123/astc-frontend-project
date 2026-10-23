@@ -255,10 +255,10 @@ export default function ProjectDetailModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-[640px] max-h-[92vh] overflow-y-auto bg-[#0C0E18] border border-white/[0.09] rounded-[22px] p-5 sm:p-6 shadow-2xl relative text-white">
+      <div className="w-full max-w-[640px] max-h-[92vh] overflow-y-auto bg-card dark:bg-[#0C0E18] border border-border dark:border-white/[0.09] rounded-[22px] p-5 sm:p-6 shadow-2xl relative text-foreground dark:text-white">
         {/* Subtle Top Ambient Glow (Matching paint0_linear in SVG) */}
         <div
-          className="absolute top-0 left-0 right-0 h-[120px] rounded-t-[22px] pointer-events-none"
+          className="absolute top-0 left-0 right-0 h-[120px] rounded-t-[22px] pointer-events-none hidden dark:block"
           style={{
             background:
               "linear-gradient(180deg, rgba(124, 58, 237, 0.16) 0%, rgba(124, 58, 237, 0) 100%)",
@@ -293,18 +293,18 @@ export default function ProjectDetailModal({
 
             <div className="min-w-0">
               <div className="flex items-center gap-2.5 flex-wrap">
-                <h2 className="text-xl font-bold tracking-tight text-white truncate">
+                <h2 className="text-xl font-bold tracking-tight text-foreground dark:text-white truncate">
                   {project?.name || "gestion de asistencia"}
                 </h2>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#34D399]/14 text-[#6EE7B7]">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-[#34D399]/14 text-emerald-700 dark:text-[#6EE7B7] border border-emerald-200 dark:border-transparent">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#34D399]" />
                   {project?.status === "INACTIVE" ? "Inactivo" : "Activo"}
                 </span>
               </div>
 
               {/* ID Bar */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 mt-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-xs font-mono text-[#8F96AE]">
-                <span className="font-semibold text-white/60">ID</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 mt-1.5 rounded-lg border border-border dark:border-white/10 bg-muted/60 dark:bg-white/[0.03] text-xs font-mono text-muted-foreground">
+                <span className="font-semibold text-foreground/60 dark:text-white/60">ID</span>
                 <span className="truncate max-w-[200px] sm:max-w-none">
                   {project?.id || "7f5e5a17-ecd2-4005-a1c6-d9977c0ce8e7"}
                 </span>
@@ -328,21 +328,21 @@ export default function ProjectDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-10 h-10 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] flex items-center justify-center text-[#8F96AE] hover:text-white transition-colors shrink-0 cursor-pointer"
+            className="w-10 h-10 rounded-xl border border-border dark:border-white/10 bg-muted/50 dark:bg-white/[0.03] hover:bg-muted dark:hover:bg-white/[0.08] flex items-center justify-center text-muted-foreground hover:text-foreground dark:hover:text-white transition-colors shrink-0 cursor-pointer"
           >
             <X className="w-4 h-4 stroke-[2.2]" />
           </button>
         </div>
 
         {/* Segmented Tabs Bar (Exact SVG layout) */}
-        <div className="relative bg-[#0C0E18] p-1.5 rounded-2xl border border-white/[0.09] flex items-center gap-1 mt-4 overflow-x-auto no-scrollbar">
+        <div className="relative bg-muted/60 dark:bg-[#0C0E18] p-1.5 rounded-2xl border border-border dark:border-white/[0.09] flex items-center gap-1 mt-4 overflow-x-auto no-scrollbar">
           <button
             type="button"
             onClick={() => setActiveTab("general")}
             className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "general"
-                ? "bg-[#1E2438] text-white shadow-xs border border-white/[0.06]"
-                : "text-[#8F96AE] hover:text-white"
+                ? "bg-card dark:bg-[#1E2438] text-foreground dark:text-white shadow-xs border border-border dark:border-white/[0.06]"
+                : "text-muted-foreground hover:text-foreground dark:hover:text-white"
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
@@ -354,8 +354,8 @@ export default function ProjectDetailModal({
             onClick={() => setActiveTab("holidays")}
             className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "holidays"
-                ? "bg-[#1E2438] text-white shadow-xs border border-white/[0.06]"
-                : "text-[#8F96AE] hover:text-white"
+                ? "bg-card dark:bg-[#1E2438] text-foreground dark:text-white shadow-xs border border-border dark:border-white/[0.06]"
+                : "text-muted-foreground hover:text-foreground dark:hover:text-white"
             }`}
           >
             <Calendar className="w-3.5 h-3.5" />
@@ -364,7 +364,7 @@ export default function ProjectDetailModal({
               className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                 activeTab === "holidays"
                   ? "bg-[#342461] text-[#C084FC]"
-                  : "bg-[#1D2133] text-[#8F96AE]"
+                  : "bg-muted text-muted-foreground dark:bg-[#1D2133] dark:text-[#8F96AE]"
               }`}
             >
               {holidays.length || 3}
@@ -376,8 +376,8 @@ export default function ProjectDetailModal({
             onClick={() => setActiveTab("schedules")}
             className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "schedules"
-                ? "bg-[#1E2438] text-white shadow-xs border border-white/[0.06]"
-                : "text-[#8F96AE] hover:text-white"
+                ? "bg-card dark:bg-[#1E2438] text-foreground dark:text-white shadow-xs border border-border dark:border-white/[0.06]"
+                : "text-muted-foreground hover:text-foreground dark:hover:text-white"
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
@@ -389,8 +389,8 @@ export default function ProjectDetailModal({
             onClick={() => setActiveTab("members")}
             className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "members"
-                ? "bg-[#1E2438] text-white shadow-xs border border-white/[0.06]"
-                : "text-[#8F96AE] hover:text-white"
+                ? "bg-card dark:bg-[#1E2438] text-foreground dark:text-white shadow-xs border border-border dark:border-white/[0.06]"
+                : "text-muted-foreground hover:text-foreground dark:hover:text-white"
             }`}
           >
             <Users className="w-3.5 h-3.5" />
@@ -399,7 +399,7 @@ export default function ProjectDetailModal({
               className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                 activeTab === "members"
                   ? "bg-[#342461] text-[#C084FC]"
-                  : "bg-[#1D2133] text-[#8F96AE]"
+                  : "bg-muted text-muted-foreground dark:bg-[#1D2133] dark:text-[#8F96AE]"
               }`}
             >
               {membersList.length || 2}
@@ -413,11 +413,11 @@ export default function ProjectDetailModal({
           {activeTab === "general" && (
             <div className="space-y-3">
               {/* Descripción del proyecto */}
-              <div className="rounded-2xl border border-white/[0.08] bg-[#101322] p-4.5">
-                <p className="text-[10.5px] font-mono uppercase tracking-[0.08em] font-semibold text-[#8B7BD8]">
+              <div className="rounded-2xl border border-border dark:border-white/[0.08] bg-muted/40 dark:bg-[#101322] p-4.5">
+                <p className="text-[10.5px] font-mono uppercase tracking-[0.08em] font-semibold text-indigo-600 dark:text-[#8B7BD8]">
                   DESCRIPCIÓN DEL PROYECTO
                 </p>
-                <p className="text-xs font-semibold text-[#EEF0F6] mt-2">
+                <p className="text-xs font-semibold text-foreground dark:text-[#EEF0F6] mt-2">
                   {project?.description || project?.name || "gestion de asistencia"}
                 </p>
               </div>
@@ -425,35 +425,35 @@ export default function ProjectDetailModal({
               {/* 3 Summary Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {/* PERIODO */}
-                <div className="rounded-2xl border border-white/[0.08] bg-[#101322] p-4">
-                  <p className="text-[10px] font-mono uppercase tracking-[0.08em] font-semibold text-[#8B7BD8] flex items-center gap-1.5">
+                <div className="rounded-2xl border border-border dark:border-white/[0.08] bg-muted/40 dark:bg-[#101322] p-4">
+                  <p className="text-[10px] font-mono uppercase tracking-[0.08em] font-semibold text-indigo-600 dark:text-[#8B7BD8] flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 text-[#C084FC]" />
                     PERIODO
                   </p>
                   <div className="mt-2 space-y-0.5">
-                    <span className="block text-xs font-bold text-[#EEF0F6]">
+                    <span className="block text-xs font-bold text-foreground dark:text-[#EEF0F6]">
                       {formatDate(project?.startDate, "26/08/2026")}
                     </span>
-                    <span className="block text-xs font-bold text-[#EEF0F6]">
+                    <span className="block text-xs font-bold text-foreground dark:text-[#EEF0F6]">
                       → {formatDate(project?.endDate, "30/08/2026")}
                     </span>
                   </div>
                 </div>
 
                 {/* EQUIPO */}
-                <div className="rounded-2xl border border-white/[0.08] bg-[#101322] p-4">
-                  <p className="text-[10px] font-mono uppercase tracking-[0.08em] font-semibold text-[#8B7BD8] flex items-center gap-1.5">
+                <div className="rounded-2xl border border-border dark:border-white/[0.08] bg-muted/40 dark:bg-[#101322] p-4">
+                  <p className="text-[10px] font-mono uppercase tracking-[0.08em] font-semibold text-indigo-600 dark:text-[#8B7BD8] flex items-center gap-1.5">
                     <Users className="w-3.5 h-3.5 text-[#60A5FA]" />
                     EQUIPO
                   </p>
-                  <p className="text-xs font-bold text-[#EEF0F6] mt-2">
+                  <p className="text-xs font-bold text-foreground dark:text-[#EEF0F6] mt-2">
                     {membersList.length} trabajadores
                   </p>
                 </div>
 
                 {/* RESPONSABLE */}
-                <div className="rounded-2xl border border-white/[0.08] bg-[#101322] p-4">
-                  <p className="text-[10px] font-mono uppercase tracking-[0.08em] font-semibold text-[#8B7BD8] flex items-center gap-1.5">
+                <div className="rounded-2xl border border-border dark:border-white/[0.08] bg-muted/40 dark:bg-[#101322] p-4">
+                  <p className="text-[10px] font-mono uppercase tracking-[0.08em] font-semibold text-indigo-600 dark:text-[#8B7BD8] flex items-center gap-1.5">
                     <ShieldCheck className="w-3.5 h-3.5 text-[#2DD4BF]" />
                     RESPONSABLE
                   </p>
@@ -466,7 +466,7 @@ export default function ProjectDetailModal({
                     >
                       JP
                     </div>
-                    <p className="text-xs font-bold text-[#EEF0F6] truncate">
+                    <p className="text-xs font-bold text-foreground dark:text-[#EEF0F6] truncate">
                       {pmUsername}
                     </p>
                   </div>
@@ -474,22 +474,22 @@ export default function ProjectDetailModal({
               </div>
 
               {/* Políticas y reglas de asistencia */}
-              <div className="rounded-2xl border border-white/[0.08] bg-[#101322] p-5">
+              <div className="rounded-2xl border border-border dark:border-white/[0.08] bg-muted/40 dark:bg-[#101322] p-5">
                 <div className="flex items-center gap-2.5 mb-4">
                   <div className="w-7 h-7 rounded-xl bg-[#231B38] border border-[#3E2D66] text-[#C084FC] flex items-center justify-center shrink-0">
                     <Clock className="w-4 h-4" />
                   </div>
-                  <h3 className="font-bold text-xs text-[#EEF0F6]">
+                  <h3 className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">
                     Políticas y reglas de asistencia
                   </h3>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-4 text-xs mb-4">
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-[#8B7BD8] tracking-wider mb-1 block font-semibold">
+                    <span className="text-[10px] font-mono uppercase text-indigo-600 dark:text-[#8B7BD8] tracking-wider mb-1 block font-semibold">
                       PAÍS / SEDE
                     </span>
-                    <span className="font-bold text-xs text-[#EEF0F6] flex items-center gap-1.5">
+                    <span className="font-bold text-xs text-foreground dark:text-[#EEF0F6] flex items-center gap-1.5">
                       <span className="px-1.5 py-0.5 rounded bg-[#181D30] border border-white/10 text-[10px] font-mono font-bold text-white">
                         {countryInfo.code}
                       </span>
@@ -498,59 +498,59 @@ export default function ProjectDetailModal({
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-[#8B7BD8] tracking-wider mb-1 block font-semibold">
+                    <span className="text-[10px] font-mono uppercase text-indigo-600 dark:text-[#8B7BD8] tracking-wider mb-1 block font-semibold">
                       ZONA HORARIA
                     </span>
-                    <span className="font-bold text-xs text-[#EEF0F6] flex items-center gap-1.5">
+                    <span className="font-bold text-xs text-foreground dark:text-[#EEF0F6] flex items-center gap-1.5">
                       <Globe className="w-3.5 h-3.5 text-[#8F96AE]" />
                       {project?.timezone || "America/Lima"}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-[#8B7BD8] tracking-wider mb-1 block font-semibold">
+                    <span className="text-[10px] font-mono uppercase text-indigo-600 dark:text-[#8B7BD8] tracking-wider mb-1 block font-semibold">
                       TOLERANCIA DE ENTRADA
                     </span>
-                    <span className="font-bold text-xs text-[#EEF0F6]">
+                    <span className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">
                       {project?.graceMinutes ?? 10} minutos
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-[#8B7BD8] tracking-wider mb-1 block font-semibold">
+                    <span className="text-[10px] font-mono uppercase text-indigo-600 dark:text-[#8B7BD8] tracking-wider mb-1 block font-semibold">
                       HORARIO BASE
                     </span>
-                    <span className="font-mono font-bold text-xs text-[#EEF0F6]">
+                    <span className="font-mono font-bold text-xs text-foreground dark:text-[#EEF0F6]">
                       {project?.workStartTime ? project.workStartTime.substring(0, 5) : "08:00"} -{" "}
                       {project?.workEndTime ? project.workEndTime.substring(0, 5) : "17:00"}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-[#8B7BD8] tracking-wider mb-1 block font-semibold">
+                    <span className="text-[10px] font-mono uppercase text-indigo-600 dark:text-[#8B7BD8] tracking-wider mb-1 block font-semibold">
                       CORTE DE FALTA
                     </span>
-                    <span className="font-mono font-bold text-xs text-[#EEF0F6]">
+                    <span className="font-mono font-bold text-xs text-foreground dark:text-[#EEF0F6]">
                       {project?.absenceCutoffTime ? project.absenceCutoffTime.substring(0, 5) : "09:30"}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-[#8B7BD8] tracking-wider mb-1 block font-semibold">
+                    <span className="text-[10px] font-mono uppercase text-indigo-600 dark:text-[#8B7BD8] tracking-wider mb-1 block font-semibold">
                       ELEGIBILIDAD VACACIONES
                     </span>
-                    <span className="font-bold text-xs text-[#EEF0F6]">
+                    <span className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">
                       {project?.vacationEligibilityDays ?? 0} días
                     </span>
                   </div>
                 </div>
 
                 {/* Amber Warning Card */}
-                <div className="rounded-xl border border-[#483713] bg-[#17140B] p-3.5 flex items-center justify-between gap-3">
+                <div className="rounded-xl border border-amber-500/30 dark:border-[#483713] bg-amber-500/10 dark:bg-[#17140B] p-3.5 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <MapPin className="w-4 h-4 text-[#FBBF24] shrink-0" />
                     <div>
-                      <p className="font-semibold text-xs text-[#EEF0F6]">
+                      <p className="font-semibold text-xs text-foreground dark:text-[#EEF0F6]">
                         {project?.latitude && project?.longitude
                           ? `Ubicación GPS: ${project.latitude}, ${project.longitude}`
                           : "Ubicación GPS sin configurar"}
@@ -574,7 +574,7 @@ export default function ProjectDetailModal({
                         alert("Para configurar la geocerca, edita la configuración del proyecto.");
                       }
                     }}
-                    className="px-4 py-1.5 rounded-lg border border-[#483713] bg-[#221B0E] hover:bg-[#2C2313] text-[#FBBF24] text-xs font-semibold transition-colors cursor-pointer shrink-0"
+                    className="px-4 py-1.5 rounded-lg border border-amber-500/30 bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 dark:text-[#FBBF24] text-xs font-semibold transition-colors cursor-pointer shrink-0"
                   >
                     Configurar
                   </button>
@@ -588,7 +588,7 @@ export default function ProjectDetailModal({
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-bold text-xs text-[#EEF0F6]">
+                  <h3 className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">
                     Feriados asignados
                   </h3>
                   <p className="text-[11px] text-[#8F96AE]">
@@ -596,7 +596,7 @@ export default function ProjectDetailModal({
                   </p>
                 </div>
 
-                <div className="bg-[#0C0E18] p-1 rounded-xl border border-white/10 flex items-center gap-1">
+                <div className="bg-muted/50 dark:bg-[#0C0E18] p-1 rounded-xl border border-border dark:border-white/10 flex items-center gap-1">
                   {[2025, 2026, 2027].map((yr) => (
                     <button
                       key={yr}
@@ -604,8 +604,8 @@ export default function ProjectDetailModal({
                       onClick={() => setHolidayYear(yr)}
                       className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         holidayYear === yr
-                          ? "bg-[#1E2438] text-white shadow-xs"
-                          : "text-[#8F96AE] hover:text-white"
+                          ? "bg-card dark:bg-[#1E2438] text-foreground dark:text-white shadow-xs border border-border dark:border-transparent"
+                          : "text-muted-foreground hover:text-foreground dark:hover:text-white"
                       }`}
                     >
                       {yr}
@@ -638,7 +638,7 @@ export default function ProjectDetailModal({
                     return (
                       <div
                         key={idx}
-                        className="rounded-2xl border border-white/[0.08] bg-[#111422] p-3.5 flex items-center justify-between shadow-2xs"
+                        className="rounded-2xl border border-border dark:border-white/[0.08] bg-card dark:bg-[#111422] p-3.5 flex items-center justify-between shadow-2xs"
                       >
                         <div className="flex items-center gap-3">
                           {/* Squircle Date Box matching SVG */}
@@ -652,7 +652,7 @@ export default function ProjectDetailModal({
                           </div>
 
                           <div>
-                            <p className="font-bold text-xs text-[#EEF0F6]">
+                            <p className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">
                               {h.name}
                             </p>
                             <p className="text-[11px] text-[#8F96AE] capitalize mt-0.5">
@@ -669,9 +669,9 @@ export default function ProjectDetailModal({
                   })}
                 </div>
               ) : (
-                <div className="py-8 text-center rounded-2xl border border-dashed border-white/10 bg-[#111422]">
+                <div className="py-8 text-center rounded-2xl border border-dashed border-white/10 bg-card dark:bg-[#111422]">
                   <Calendar className="w-6 h-6 mx-auto text-[#8F96AE]/50 mb-1.5" />
-                  <p className="text-xs font-semibold text-[#EEF0F6]">
+                  <p className="text-xs font-semibold text-foreground dark:text-[#EEF0F6]">
                     No hay feriados asignados para {holidayYear}
                   </p>
                 </div>
@@ -683,42 +683,42 @@ export default function ProjectDetailModal({
           {activeTab === "schedules" && (
             <div className="space-y-3">
               {/* Horario Base */}
-              <div className="rounded-2xl border border-white/[0.08] bg-[#111422] p-5 space-y-3">
+              <div className="rounded-2xl border border-border dark:border-white/[0.08] bg-card dark:bg-[#111422] p-5 space-y-3">
                 <div className="flex items-center gap-2.5">
                   <div className="w-7 h-7 rounded-xl bg-[#0F242C] border border-[#164652] text-[#22D3EE] flex items-center justify-center shrink-0">
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-xs text-[#EEF0F6]">Horario base del proyecto</h4>
+                    <h4 className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">Horario base del proyecto</h4>
                     <p className="text-[11px] text-[#8F96AE] mt-0.5">
                       Este proyecto no tiene turnos rotativos creados; rige el horario base configurado.
                     </p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 bg-[#141829] p-3.5 rounded-xl border border-white/[0.06] text-xs">
+                <div className="grid grid-cols-3 gap-2 bg-muted/40 dark:bg-[#141829] p-3.5 rounded-xl border border-border dark:border-white/[0.06] text-xs">
                   <div>
-                    <span className="text-[#8B7BD8] block text-[9.5px] uppercase font-mono tracking-wider font-semibold mb-1">
+                    <span className="text-indigo-600 dark:text-[#8B7BD8] block text-[9.5px] uppercase font-mono tracking-wider font-semibold mb-1">
                       INGRESO / SALIDA
                     </span>
-                    <span className="font-bold text-[#EEF0F6] font-mono text-xs">
+                    <span className="font-bold text-foreground dark:text-[#EEF0F6] font-mono text-xs">
                       {project?.workStartTime ? project.workStartTime.substring(0, 5) : "08:00"} -{" "}
                       {project?.workEndTime ? project.workEndTime.substring(0, 5) : "17:00"}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[#8B7BD8] block text-[9.5px] uppercase font-mono tracking-wider font-semibold mb-1">
+                    <span className="text-indigo-600 dark:text-[#8B7BD8] block text-[9.5px] uppercase font-mono tracking-wider font-semibold mb-1">
                       TOLERANCIA
                     </span>
-                    <span className="font-bold text-[#EEF0F6] text-xs">
+                    <span className="font-bold text-foreground dark:text-[#EEF0F6] text-xs">
                       {project?.graceMinutes ?? 10} minutos
                     </span>
                   </div>
                   <div>
-                    <span className="text-[#8B7BD8] block text-[9.5px] uppercase font-mono tracking-wider font-semibold mb-1">
+                    <span className="text-indigo-600 dark:text-[#8B7BD8] block text-[9.5px] uppercase font-mono tracking-wider font-semibold mb-1">
                       CORTE DE FALTA
                     </span>
-                    <span className="font-bold text-[#EEF0F6] font-mono text-xs">
+                    <span className="font-bold text-foreground dark:text-[#EEF0F6] font-mono text-xs">
                       {project?.absenceCutoffTime ? project.absenceCutoffTime.substring(0, 5) : "09:30"}
                     </span>
                   </div>
@@ -736,10 +736,10 @@ export default function ProjectDetailModal({
                   {shiftTemplates.map((shift, idx) => (
                     <div
                       key={idx}
-                      className="rounded-2xl border border-white/[0.08] bg-[#111422] p-3.5 space-y-1.5"
+                      className="rounded-2xl border border-border dark:border-white/[0.08] bg-card dark:bg-[#111422] p-3.5 space-y-1.5"
                     >
                       <div className="flex items-center justify-between">
-                        <h4 className="font-bold text-xs text-[#EEF0F6]">{shift.name}</h4>
+                        <h4 className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">{shift.name}</h4>
                         <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-purple-900/40 text-purple-300 border border-purple-500/25 font-semibold">
                           {shift.shiftType || "REGULAR"}
                         </span>
@@ -752,18 +752,18 @@ export default function ProjectDetailModal({
                   ))}
                 </div>
               ) : (
-                <div className="rounded-2xl border border-dashed border-[#1E2335] p-7 text-center flex flex-col items-center justify-center bg-[#111422]/50">
+                <div className="rounded-2xl border border-dashed border-[#1E2335] p-7 text-center flex flex-col items-center justify-center bg-card dark:bg-[#111422]/50">
                   <div className="w-10 h-10 rounded-xl bg-[#141829] border border-white/[0.06] flex items-center justify-center text-[#8F96AE] mb-3">
                     <Clock className="w-5 h-5" />
                   </div>
-                  <h4 className="font-bold text-xs text-[#EEF0F6]">Sin turnos rotativos</h4>
+                  <h4 className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">Sin turnos rotativos</h4>
                   <p className="text-[11px] text-[#8F96AE] mt-1 max-w-[280px] leading-relaxed">
                     Crea turnos para asignar horarios distintos a parte del equipo.
                   </p>
                   <button
                     type="button"
                     onClick={() => router.push("/pm/creacion-horarios")}
-                    className="mt-4 px-5 py-2 rounded-xl bg-[#181C2E] border border-[#272E49] hover:bg-[#20263E] text-white text-xs font-semibold transition-colors cursor-pointer"
+                    className="mt-4 px-5 py-2 rounded-xl bg-card dark:bg-[#181C2E] border border-border dark:border-[#272E49] hover:bg-muted dark:hover:bg-[#20263E] text-foreground dark:text-white text-xs font-semibold transition-colors cursor-pointer"
                   >
                     Crear turno
                   </button>
@@ -777,7 +777,7 @@ export default function ProjectDetailModal({
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-bold text-xs text-[#EEF0F6]">
+                  <h3 className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">
                     Miembros del proyecto
                   </h3>
                   <p className="text-[11px] text-[#8F96AE]">
@@ -785,64 +785,7 @@ export default function ProjectDetailModal({
                   </p>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setShowAddMember(!showAddMember)}
-                  className="px-3.5 py-1.5 rounded-xl border border-white/10 bg-[#141829] hover:bg-[#1C2238] text-xs font-semibold text-white inline-flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  Agregar
-                </button>
-              </div>
-
-              {showAddMember && (
-                <div className="p-4 rounded-2xl border border-purple-500/30 bg-[#1A152E] space-y-3">
-                  <h4 className="text-[10px] font-bold text-purple-300 uppercase tracking-wider">
-                    Asignar nuevo miembro
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <select
-                      value={selectedNewUserId}
-                      onChange={(e) => setSelectedNewUserId(e.target.value)}
-                      className="h-9 px-3 rounded-xl border border-white/10 bg-[#141829] text-xs font-medium text-white focus:outline-none"
-                    >
-                      <option value="">Seleccione usuario...</option>
-                      {allUsers.map((u) => (
-                        <option key={u.id} value={u.id}>
-                          {u.firstName ? `${u.firstName} ${u.lastName || ""}` : u.username} ({u.email})
-                        </option>
-                      ))}
-                    </select>
-
-                    <select
-                      value={selectedNewUserRole}
-                      onChange={(e) => setSelectedNewUserRole(e.target.value)}
-                      className="h-9 px-3 rounded-xl border border-white/10 bg-[#141829] text-xs font-medium text-white focus:outline-none"
-                    >
-                      <option value="TEAM_MEMBER">Trabajador (TEAM_MEMBER)</option>
-                      <option value="PROJECT_MANAGER">Jefe de proyecto (PROJECT_MANAGER)</option>
-                    </select>
-                  </div>
-
-                  <div className="flex justify-end gap-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => setShowAddMember(false)}
-                      className="px-3 py-1 text-xs text-[#8F96AE] hover:text-white cursor-pointer"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleAddMemberSubmit}
-                      disabled={!selectedNewUserId || isAddingMember}
-                      className="px-4 py-1.5 rounded-xl bg-brand-gradient text-white text-xs font-semibold disabled:opacity-50 cursor-pointer"
-                    >
-                      {isAddingMember ? "Guardando..." : "Confirmar"}
-                    </button>
-                  </div>
                 </div>
-              )}
 
               {/* Members List matching SVG */}
               <div className="space-y-2.5">
@@ -860,7 +803,7 @@ export default function ProjectDetailModal({
                   return (
                     <div
                       key={mem.id || idx}
-                      className="rounded-2xl border border-white/[0.08] bg-[#111422] p-4 flex items-center justify-between gap-3 shadow-2xs"
+                      className="rounded-2xl border border-border dark:border-white/[0.08] bg-card dark:bg-[#111422] p-4 flex items-center justify-between gap-3 shadow-2xs"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         {/* Circular Avatar with gradient matching SVG paint2/paint3_linear */}
@@ -874,7 +817,7 @@ export default function ProjectDetailModal({
                         </div>
 
                         <div className="min-w-0">
-                          <p className="font-bold text-xs text-[#EEF0F6] truncate">
+                          <p className="font-bold text-xs text-foreground dark:text-[#EEF0F6] truncate">
                             {displayName}
                           </p>
                           <p className="text-[11px] text-[#8F96AE] truncate mt-0.5">
@@ -885,15 +828,15 @@ export default function ProjectDetailModal({
 
                       <div className="shrink-0 text-right">
                         {isPM ? (
-                          <span className="bg-[#241B3B] text-[#C084FC] border border-[#4A2D78] px-3.5 py-1 rounded-lg text-xs font-semibold inline-block">
+                          <span className="bg-purple-50 dark:bg-[#241B3B] text-purple-700 dark:text-[#C084FC] border border-purple-200 dark:border-[#4A2D78] px-3.5 py-1 rounded-lg text-xs font-semibold inline-block">
                             Jefe de proyecto
                           </span>
                         ) : (
-                          <span className="bg-[#18233C] text-[#8FA3D9] border border-[#25365E] px-3.5 py-1 rounded-lg text-xs font-semibold inline-block">
+                          <span className="bg-blue-50 dark:bg-[#18233C] text-blue-700 dark:text-[#8FA3D9] border border-blue-200 dark:border-[#25365E] px-3.5 py-1 rounded-lg text-xs font-semibold inline-block">
                             Trabajador
                           </span>
                         )}
-                        <span className="text-[9.5px] font-mono text-[#8B7BD8] tracking-wider uppercase block text-right mt-1 font-semibold">
+                        <span className="text-[9.5px] font-mono text-indigo-600 dark:text-[#8B7BD8] tracking-wider uppercase block text-right mt-1 font-semibold">
                           {mem.role || (isPM ? "PROJECT_MANAGER" : "TEAM_MEMBER")}
                         </span>
                       </div>

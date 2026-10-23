@@ -117,7 +117,7 @@ export function HorarioCreationView() {
     <div className="relative min-h-screen bg-transparent pb-16 font-sans">
       {/* Top Ambient Glow matching SVG */}
       <div
-        className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-lg h-72 rounded-full opacity-30 blur-3xl z-0"
+        className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-lg h-72 rounded-full opacity-30 blur-3xl z-0 hidden dark:block"
         style={{
           background: "radial-gradient(circle, #7C3AED 0%, transparent 70%)",
         }}
@@ -130,7 +130,7 @@ export function HorarioCreationView() {
           <button
             type="button"
             onClick={() => router.push("/pm/horarios")}
-            className="flex items-center gap-2 text-xs font-medium text-white hover:text-[#A855F7] transition-colors cursor-pointer"
+            className="flex items-center gap-2 text-xs font-medium text-foreground hover:text-[#A855F7] transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Gestión de horarios</span>
@@ -143,7 +143,7 @@ export function HorarioCreationView() {
 
         {/* Heading */}
         <div className="space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Crear horario
           </h1>
           <p className="text-xs text-[#8F96AE]">
@@ -155,13 +155,13 @@ export function HorarioCreationView() {
           {/* STEPS 1 & 2: PROYECTO Y NOMBRE (2 columns on desktop) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* STEP 1: PROYECTO */}
-            <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 sm:p-5 space-y-3 shadow-xs">
+            <div className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 sm:p-5 space-y-3 shadow-xs">
               <div className="flex items-start gap-3">
                 <div className="w-7 h-7 rounded-full bg-[#1F1836] border border-[#432C7A] text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
                   1
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Proyecto</h3>
+                  <h3 className="text-sm font-bold text-foreground">Proyecto</h3>
                   <p className="text-xs text-[#8F96AE] mt-0.5">
                     Selecciona el proyecto al que aplicarás el horario
                   </p>
@@ -169,7 +169,7 @@ export function HorarioCreationView() {
               </div>
 
               <div className="space-y-1.5 pt-1">
-                <label className="text-xs font-semibold text-white block">
+                <label className="text-xs font-semibold text-foreground block">
                   Proyecto
                 </label>
                 <div className="relative">
@@ -177,7 +177,7 @@ export function HorarioCreationView() {
                   <select
                     value={selectedProjectId}
                     onChange={(e) => setSelectedProjectId(e.target.value)}
-                    className="w-full h-11 pl-10 pr-9 rounded-xl border border-[#1E2335] bg-[#12141F] text-xs font-medium text-white focus:outline-none focus:border-[#A855F7] appearance-none cursor-pointer"
+                    className="w-full h-11 pl-10 pr-9 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] text-xs font-medium text-foreground focus:outline-none focus:border-[#A855F7] appearance-none cursor-pointer"
                   >
                     <option value="">Seleccionar proyecto...</option>
                     {projects.map((p) => (
@@ -197,13 +197,13 @@ export function HorarioCreationView() {
             </div>
 
             {/* STEP 2: NOMBRE DEL HORARIO */}
-            <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 sm:p-5 space-y-3 shadow-xs">
+            <div className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 sm:p-5 space-y-3 shadow-xs">
               <div className="flex items-start gap-3">
                 <div className="w-7 h-7 rounded-full bg-[#1F1836] border border-[#432C7A] text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
                   2
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Nombre del horario</h3>
+                  <h3 className="text-sm font-bold text-foreground">Nombre del horario</h3>
                   <p className="text-xs text-[#8F96AE] mt-0.5">
                     Un nombre para identificar este turno
                   </p>
@@ -211,7 +211,7 @@ export function HorarioCreationView() {
               </div>
 
               <div className="space-y-1.5 pt-1">
-                <label className="text-xs font-semibold text-white block">
+                <label className="text-xs font-semibold text-foreground block">
                   Nombre
                 </label>
                 <input
@@ -219,20 +219,20 @@ export function HorarioCreationView() {
                   placeholder="Ej: Mañana, Tarde, Noche, Equipo A"
                   value={templateName}
                   onChange={(e) => setTemplateName(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#12141F] text-xs font-medium text-white placeholder:text-[#8F96AE] focus:outline-none focus:border-[#A855F7]"
+                  className="w-full h-11 px-3.5 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] text-xs font-medium text-foreground placeholder:text-[#8F96AE] focus:outline-none focus:border-[#A855F7]"
                 />
               </div>
             </div>
           </div>
 
           {/* STEP 3: TIPO DE TURNO */}
-          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 sm:p-5 space-y-3 shadow-xs">
+          <div className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 sm:p-5 space-y-3 shadow-xs">
             <div className="flex items-start gap-3">
               <div className="w-7 h-7 rounded-full bg-[#1F1836] border border-[#432C7A] text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
                 3
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">Tipo de turno</h3>
+                <h3 className="text-sm font-bold text-foreground">Tipo de turno</h3>
                 <p className="text-xs text-[#8F96AE] mt-0.5">
                   Elige la modalidad de horario
                 </p>
@@ -247,10 +247,10 @@ export function HorarioCreationView() {
                 className={`p-3 rounded-xl text-left transition-all cursor-pointer border ${
                   shiftType === "REGULAR"
                     ? "bg-[#1A1435] border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
-                    : "bg-[#12141F] border-[#1E2335] hover:border-[#2D354E]"
+                    : "bg-card dark:bg-[#12141F] border-border dark:border-[#1E2335] hover:border-primary/50"
                 }`}
               >
-                <span className="font-bold text-xs text-white block">Regular</span>
+                <span className="font-bold text-xs text-foreground block">Regular</span>
                 <span className="text-[10.5px] text-[#8F96AE] block mt-1 leading-snug">
                   Lun–vie, horario fijo
                 </span>
@@ -263,10 +263,10 @@ export function HorarioCreationView() {
                 className={`p-3 rounded-xl text-left transition-all cursor-pointer border ${
                   shiftType === "ROTATING_4X4"
                     ? "bg-[#1A1435] border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
-                    : "bg-[#12141F] border-[#1E2335] hover:border-[#2D354E]"
+                    : "bg-card dark:bg-[#12141F] border-border dark:border-[#1E2335] hover:border-primary/50"
                 }`}
               >
-                <span className="font-bold text-xs text-white block">Rotativo 4×4</span>
+                <span className="font-bold text-xs text-foreground block">Rotativo 4×4</span>
                 <span className="text-[10.5px] text-[#8F96AE] block mt-1 leading-snug">
                   4 días trabajo, 4 descanso
                 </span>
@@ -279,10 +279,10 @@ export function HorarioCreationView() {
                 className={`p-3 rounded-xl text-left transition-all cursor-pointer border ${
                   shiftType === "ROTATING_7X7"
                     ? "bg-[#1A1435] border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
-                    : "bg-[#12141F] border-[#1E2335] hover:border-[#2D354E]"
+                    : "bg-card dark:bg-[#12141F] border-border dark:border-[#1E2335] hover:border-primary/50"
                 }`}
               >
-                <span className="font-bold text-xs text-white block">Rotativo 7×7</span>
+                <span className="font-bold text-xs text-foreground block">Rotativo 7×7</span>
                 <span className="text-[10.5px] text-[#8F96AE] block mt-1 leading-snug">
                   7 días trabajo, 7 descanso
                 </span>
@@ -295,10 +295,10 @@ export function HorarioCreationView() {
                 className={`p-3 rounded-xl text-left transition-all cursor-pointer border ${
                   shiftType === "FLEXIBLE"
                     ? "bg-[#1A1435] border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
-                    : "bg-[#12141F] border-[#1E2335] hover:border-[#2D354E]"
+                    : "bg-card dark:bg-[#12141F] border-border dark:border-[#1E2335] hover:border-primary/50"
                 }`}
               >
-                <span className="font-bold text-xs text-white block">Flexible</span>
+                <span className="font-bold text-xs text-foreground block">Flexible</span>
                 <span className="text-[10.5px] text-[#8F96AE] block mt-1 leading-snug">
                   Horas por día, sin hora fija
                 </span>
@@ -311,10 +311,10 @@ export function HorarioCreationView() {
                 className={`p-3 rounded-xl text-left transition-all cursor-pointer border col-span-2 sm:col-span-1 ${
                   shiftType === "TRANSITORY"
                     ? "bg-[#1A1435] border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
-                    : "bg-[#12141F] border-[#1E2335] hover:border-[#2D354E]"
+                    : "bg-card dark:bg-[#12141F] border-border dark:border-[#1E2335] hover:border-primary/50"
                 }`}
               >
-                <span className="font-bold text-xs text-white block">Transitorio</span>
+                <span className="font-bold text-xs text-foreground block">Transitorio</span>
                 <span className="text-[10.5px] text-[#8F96AE] block mt-1 leading-snug">
                   Por un periodo definido
                 </span>
@@ -325,13 +325,13 @@ export function HorarioCreationView() {
           {/* STEPS 4 & 5: HORARIO REGULAR Y REGLAS GENERALES (2 columns on desktop) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* STEP 4: HORARIO REGULAR */}
-            <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 sm:p-5 space-y-3.5 shadow-xs">
+            <div className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 sm:p-5 space-y-3.5 shadow-xs">
               <div className="flex items-start gap-3">
                 <div className="w-7 h-7 rounded-full bg-[#1F1836] border border-[#432C7A] text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
                   4
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Horario regular</h3>
+                  <h3 className="text-sm font-bold text-foreground">Horario regular</h3>
                   <p className="text-xs text-[#8F96AE] mt-0.5">
                     Define las horas de entrada y salida
                   </p>
@@ -348,7 +348,7 @@ export function HorarioCreationView() {
 
               {/* Plantilla Rápida */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-white block">
+                <label className="text-xs font-semibold text-foreground block">
                   Plantilla rápida
                 </label>
                 <div className="grid grid-cols-3 gap-2 p-1 rounded-xl bg-[#12141F] border border-[#1E2335]">
@@ -361,7 +361,7 @@ export function HorarioCreationView() {
                         onClick={() => handlePresetSelect(p)}
                         className={`py-2 px-2 rounded-lg text-center transition-all cursor-pointer ${
                           isSelected
-                            ? "bg-[#1E2338] text-white border border-[#2D354E] shadow-xs"
+                            ? "bg-primary/10 text-primary border border-primary/30 shadow-xs font-bold"
                             : "text-[#8F96AE] hover:text-white"
                         }`}
                       >
@@ -378,7 +378,7 @@ export function HorarioCreationView() {
               {/* Time Pickers */}
               <div className="grid grid-cols-2 gap-2.5 pt-1">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-white block">
+                  <label className="text-xs font-semibold text-foreground block">
                     Hora de entrada
                   </label>
                   <div className="relative">
@@ -386,14 +386,14 @@ export function HorarioCreationView() {
                       type="time"
                       value={startHour}
                       onChange={(e) => setStartHour(e.target.value)}
-                      className="w-full h-11 px-3.5 pr-9 rounded-xl border border-[#1E2335] bg-[#12141F] text-xs font-mono font-semibold text-white focus:outline-none focus:border-[#A855F7]"
+                      className="w-full h-11 px-3.5 pr-9 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] text-xs font-mono font-semibold text-foreground focus:outline-none focus:border-[#A855F7]"
                     />
                     <Clock className="w-4 h-4 text-[#8F96AE] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-white block">
+                  <label className="text-xs font-semibold text-foreground block">
                     Hora de salida
                   </label>
                   <div className="relative">
@@ -401,7 +401,7 @@ export function HorarioCreationView() {
                       type="time"
                       value={endHour}
                       onChange={(e) => setEndHour(e.target.value)}
-                      className="w-full h-11 px-3.5 pr-9 rounded-xl border border-[#1E2335] bg-[#12141F] text-xs font-mono font-semibold text-white focus:outline-none focus:border-[#A855F7]"
+                      className="w-full h-11 px-3.5 pr-9 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] text-xs font-mono font-semibold text-foreground focus:outline-none focus:border-[#A855F7]"
                     />
                     <Clock className="w-4 h-4 text-[#8F96AE] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
@@ -410,13 +410,13 @@ export function HorarioCreationView() {
             </div>
 
             {/* STEP 5: REGLAS GENERALES */}
-            <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 sm:p-5 space-y-3.5 shadow-xs">
+            <div className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 sm:p-5 space-y-3.5 shadow-xs">
               <div className="flex items-start gap-3">
                 <div className="w-7 h-7 rounded-full bg-[#1F1836] border border-[#432C7A] text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
                   5
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Reglas generales</h3>
+                  <h3 className="text-sm font-bold text-foreground">Reglas generales</h3>
                   <p className="text-xs text-[#8F96AE] mt-0.5">
                     Tolerancia y hora límite para faltas automáticas
                   </p>
@@ -425,7 +425,7 @@ export function HorarioCreationView() {
 
               {/* Tolerancia */}
               <div className="space-y-1 pt-1">
-                <label className="text-xs font-semibold text-white block">
+                <label className="text-xs font-semibold text-foreground block">
                   Tolerancia (minutos)
                 </label>
                 <input
@@ -434,7 +434,7 @@ export function HorarioCreationView() {
                   max="120"
                   value={graceMinutes}
                   onChange={(e) => setGraceMinutes(Number(e.target.value))}
-                  className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#12141F] text-xs font-mono font-semibold text-white focus:outline-none focus:border-[#A855F7]"
+                  className="w-full h-11 px-3.5 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] text-xs font-mono font-semibold text-foreground focus:outline-none focus:border-[#A855F7]"
                 />
                 <p className="text-[11px] text-[#8F96AE] mt-1 leading-snug">
                   Minutos después de la entrada en los que aún llega a tiempo.
@@ -443,7 +443,7 @@ export function HorarioCreationView() {
 
               {/* Corte de falta automática */}
               <div className="space-y-1 pt-1">
-                <label className="text-xs font-semibold text-white block">
+                <label className="text-xs font-semibold text-foreground block">
                   Corte de falta automática
                 </label>
                 <div className="relative">
@@ -451,7 +451,7 @@ export function HorarioCreationView() {
                     type="time"
                     value={absenceCutoffTime}
                     onChange={(e) => setAbsenceCutoffTime(e.target.value)}
-                    className="w-full h-11 px-3.5 pr-9 rounded-xl border border-[#1E2335] bg-[#12141F] text-xs font-mono font-semibold text-white focus:outline-none focus:border-[#A855F7]"
+                    className="w-full h-11 px-3.5 pr-9 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] text-xs font-mono font-semibold text-foreground focus:outline-none focus:border-[#A855F7]"
                   />
                   <Clock className="w-4 h-4 text-[#8F96AE] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
@@ -474,7 +474,7 @@ export function HorarioCreationView() {
               <button
                 type="button"
                 onClick={() => router.push("/pm/horarios")}
-                className="w-full sm:w-auto h-11 px-6 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] text-white text-xs font-semibold transition-colors cursor-pointer"
+                className="w-full sm:w-auto h-11 px-6 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] hover:bg-[#1A1D2E] text-white text-xs font-semibold transition-colors cursor-pointer"
               >
                 Cancelar
               </button>

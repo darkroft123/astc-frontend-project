@@ -513,7 +513,7 @@ export default function BiometricRegistrationView({
                   className={`w-[230px] h-[310px] rounded-[115px] border-2 border-dashed transition-all duration-300 pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${
                     faceInside
                       ? "border-emerald-400 border-solid shadow-[0_0_25px_rgba(52,211,153,0.35)]"
-                      : "border-white/25"
+                      : "border-slate-300 dark:border-white/25"
                   }`}
                 />
               )}
@@ -523,8 +523,8 @@ export default function BiometricRegistrationView({
                 <div
                   className={`absolute bottom-5 left-1/2 -translate-x-1/2 backdrop-blur-md rounded-full px-5 py-2.5 flex items-center gap-2.5 shadow-xl whitespace-nowrap text-xs transition-all ${
                     faceInside
-                      ? "bg-[#062419]/90 border border-emerald-500/50 text-emerald-300"
-                      : "bg-[#16130D]/90 border border-amber-500/50 text-amber-300"
+                      ? "bg-emerald-50/95 dark:bg-[#062419]/90 border border-emerald-300 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-300"
+                      : "bg-white/95 dark:bg-[#16130D]/90 border border-amber-300 dark:border-amber-500/50 text-amber-800 dark:text-amber-300"
                   }`}
                 >
                   {faceInside ? (
@@ -573,7 +573,7 @@ export default function BiometricRegistrationView({
                     onClick={() => handleActionClick("PHOTO")}
                     className="font-sans font-semibold text-sm px-8 py-3 rounded-2xl text-white transition-all shadow-lg shadow-indigo-500/25 active:scale-95 cursor-pointer"
                     style={{
-                      background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 52%, #22C3E6 100%)",
+                      background: "linear-gradient(135deg, #6366F1 0%, #A855F7 100%)",
                     }}
                   >
                     {faceInside
@@ -614,14 +614,14 @@ export default function BiometricRegistrationView({
               <span className="font-mono text-[11px] uppercase tracking-wider text-indigo-500 dark:text-[#818CF8] font-semibold">
                 PROYECTO
               </span>
-              <span className="font-mono text-[11px] px-3 py-0.5 rounded-full bg-[#2A2046] text-[#C4B5FD] border border-[#8B5CF6]/30 font-medium">
+              <span className="font-mono text-[11px] px-3 py-0.5 rounded-full bg-purple-100 dark:bg-[#2A2046] text-purple-700 dark:text-[#C4B5FD] border border-purple-200 dark:border-[#8B5CF6]/30 font-medium">
                 {schedule?.shiftType === "PERMANENT" || schedule?.shiftType === "REGULAR"
                   ? "Regular"
                   : schedule?.shiftType || "Regular"}
               </span>
             </div>
 
-            <h3 className="font-sans text-2xl font-bold text-foreground mt-1">
+            <h3 className="font-['Navigo',var(--font-inter),sans-serif] text-2xl font-bold text-foreground mt-1">
               {project?.name || "testo6"}
             </h3>
 
@@ -660,7 +660,7 @@ export default function BiometricRegistrationView({
               <span className="font-sans text-sm font-bold text-foreground">
                 {previousRecord.label}
               </span>
-              <span className="font-mono text-[11px] font-semibold px-3 py-0.5 rounded-full bg-[#0B2E24] text-[#34D399] border border-[#10B981]/30">
+              <span className="font-mono text-[11px] font-semibold px-3 py-0.5 rounded-full bg-emerald-50 dark:bg-[#0B2E24] text-emerald-700 dark:text-[#34D399] border border-emerald-200 dark:border-[#10B981]/30">
                 ● {previousRecord.status}
               </span>
             </div>
@@ -677,7 +677,7 @@ export default function BiometricRegistrationView({
                 <span className="font-mono text-[11px] uppercase tracking-wider text-emerald-500 dark:text-[#34D399] font-semibold">
                   VACACIONES
                 </span>
-                <span className="font-mono text-[11px] font-semibold px-3 py-0.5 rounded-full bg-[#2B2011] text-[#FBBF24] border border-[#F59E0B]/30">
+                <span className="font-mono text-[11px] font-semibold px-3 py-0.5 rounded-full bg-amber-50 dark:bg-[#2B2011] text-amber-700 dark:text-[#FBBF24] border border-amber-200 dark:border-[#F59E0B]/30">
                   {primaryVacation.status === "APPROVED" ? "Aprobadas" : "Pendiente"}
                 </span>
               </div>
