@@ -69,6 +69,7 @@ function getScheduleTimeDisplay(t: any): string {
 const DEFAULT_MOCK_PROJECTS = [
   { id: "p-testeo", name: "proyecto testeo" },
   { id: "p1", name: "Gestión de Asistencia" },
+  { id: "p2", name: "proyecto testeo" },
   { id: "p3", name: "Testo6" },
 ];
 
@@ -121,6 +122,16 @@ const DEFAULT_MOCK_TEMPLATES = [
   },
 ];
 
+function getProjectName(projectId: string, projectsList: any[] = []): string {
+  if (!projectId) return "proyecto testeo";
+  const found = projectsList.find((p) => p.id === projectId);
+  if (found?.name) return found.name;
+  if (projectId === "p-testeo" || projectId === "p2") return "proyecto testeo";
+  if (projectId === "p1") return "Gestión de Asistencia";
+  if (projectId === "p3") return "Testo6";
+  return projectId;
+}
+
 function TemplatePreview({
   template,
   projects,
@@ -132,25 +143,25 @@ function TemplatePreview({
   onAssign: (id: string) => void;
   onClose: () => void;
 }) {
-  const project = projects.find((p: any) => p.id === template.projectId);
+  const projectName = getProjectName(template.projectId, projects);
   const config = getShiftConfig(template.shiftType);
   const Icon = config.icon;
   const timeStr = getScheduleTimeDisplay(template);
 
   return (
-    <DialogContent className="sm:max-w-lg rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-white p-6 shadow-2xl">
+    <DialogContent className="sm:max-w-lg rounded-2xl bg-white dark:bg-[#0C0E18] border border-[#E2E4EB] dark:border-[#1E2335] text-[#11131C] dark:text-white p-6 shadow-2xl">
       <DialogHeader>
-        <DialogTitle className="flex items-center gap-2.5 text-white text-lg font-bold">
+        <DialogTitle className="flex items-center gap-2.5 text-[#11131C] dark:text-white text-lg font-bold">
           <div className="w-8 h-8 rounded-lg bg-[#0F2833] border border-[#164152] text-[#22C3E6] flex items-center justify-center shrink-0">
             <Clock className="w-4 h-4" />
           </div>
           <span>{template.name}</span>
         </DialogTitle>
-        <DialogDescription className="text-xs text-[#8F96AE] pt-1">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#24183E] text-[#C084FC] border border-[#40266B]">
-            {project?.name || template.projectId || "proyecto testeo"}
+        <DialogDescription className="text-xs text-[#5D6378] dark:text-[#8F96AE] pt-1">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-purple-100 dark:bg-[#24183E] text-purple-700 dark:text-[#C084FC] border border-purple-200 dark:border-[#40266B]">
+            {projectName}
           </span>
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-medium bg-[#161928] border border-[#272E49] text-white ml-2">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-medium bg-[#ECEEF5] dark:bg-[#161928] border border-[#D5D8E4] dark:border-[#272E49] text-[#11131C] dark:text-white ml-2">
             <Icon className="w-3 h-3 text-[#22C3E6]" />
             {config.label}
           </span>
@@ -158,34 +169,34 @@ function TemplatePreview({
       </DialogHeader>
 
       <div className="space-y-4 pt-2">
-        <div className="bg-[#12141F] border border-[#1E2335] rounded-xl p-4 text-xs space-y-2.5">
+        <div className="bg-[#F1F3F9] dark:bg-[#12141F] border border-[#E2E4EB] dark:border-[#1E2335] rounded-xl p-4 text-xs space-y-2.5">
           <div className="flex justify-between items-center">
-            <span className="text-[#8F96AE]">Proyecto</span>
-            <span className="font-semibold text-white">{project?.name || template.projectId}</span>
+            <span className="text-[#5D6378] dark:text-[#8F96AE]">Proyecto</span>
+            <span className="font-semibold text-[#11131C] dark:text-white">{projectName}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[#8F96AE]">Horario</span>
-            <span className="font-mono font-semibold text-white">{timeStr}</span>
+            <span className="text-[#5D6378] dark:text-[#8F96AE]">Horario</span>
+            <span className="font-mono font-semibold text-[#11131C] dark:text-white">{timeStr}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[#8F96AE]">Tolerancia</span>
-            <span className="font-semibold text-white">{template.graceMinutes ?? 10} min</span>
+            <span className="text-[#5D6378] dark:text-[#8F96AE]">Tolerancia</span>
+            <span className="font-semibold text-[#11131C] dark:text-white">{template.graceMinutes ?? 10} min</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[#8F96AE]">Corte falta</span>
-            <span className="font-semibold text-white">{template.absenceCutoffTime?.substring(0, 5) || "08:30"}</span>
+            <span className="text-[#5D6378] dark:text-[#8F96AE]">Corte falta</span>
+            <span className="font-semibold text-[#11131C] dark:text-white">{template.absenceCutoffTime?.substring(0, 5) || "08:30"}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[#8F96AE]">Zona horaria</span>
-            <span className="font-semibold text-white">{template.timezone || "America/Lima"}</span>
+            <span className="text-[#5D6378] dark:text-[#8F96AE]">Zona horaria</span>
+            <span className="font-semibold text-[#11131C] dark:text-white">{template.timezone || "America/Lima"}</span>
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#1E2335]">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#E2E4EB] dark:border-[#1E2335]">
           <button
             type="button"
             onClick={onClose}
-            className="h-10 px-4 rounded-xl border border-[#23293E] bg-[#141827] text-[#8F96AE] hover:text-white text-xs font-semibold transition-colors cursor-pointer"
+            className="h-10 px-4 rounded-xl border border-[#D5D8E4] dark:border-[#23293E] bg-[#ECEEF5] dark:bg-[#141827] text-[#5D6378] dark:text-[#8F96AE] hover:text-[#11131C] dark:hover:text-white text-xs font-semibold transition-colors cursor-pointer"
           >
             Cancelar
           </button>
@@ -215,7 +226,7 @@ export function ScheduleListView() {
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 8;
   const [previewTemplate, setPreviewTemplate] = useState<any | null>(null);
-  const [assignedTemplateIds, setAssignedTemplateIds] = useState<Set<string>>(new Set());
+  const [, setAssignedTemplateIds] = useState<Set<string>>(new Set());
   const [pendingAssignment, setPendingAssignment] = useState<{
     template: any;
     members: any[];
@@ -295,8 +306,8 @@ export function ScheduleListView() {
 
   const filteredTemplates = useMemo(() => {
     return templates.filter((t) => {
-      const p = projects.find((proj) => proj.id === t.projectId);
-      const searchStr = `${t.name} ${p?.name || ""}`.toLowerCase();
+      const projName = getProjectName(t.projectId, projects);
+      const searchStr = `${t.name} ${projName}`.toLowerCase();
       return searchStr.includes(searchTerm.toLowerCase());
     });
   }, [templates, projects, searchTerm]);
@@ -323,18 +334,18 @@ export function ScheduleListView() {
       <div className="hidden md:flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B7BD8]">
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-[#7C3AED] dark:text-[#8B7BD8]">
               PANEL DE GESTIÓN
             </span>
             <span className="text-[#8F96AE] text-xs">·</span>
-            <span className="text-xs text-[#8F96AE] font-normal">
+            <span className="text-xs text-[#5D6378] dark:text-[#8F96AE] font-normal">
               Administración
             </span>
           </div>
-          <h1 className="text-3xl lg:text-4xl font-bold text-white tracking-tight">
+          <h1 className="text-3xl lg:text-4xl font-bold text-[#11131C] dark:text-white tracking-tight">
             Gestión de horarios
           </h1>
-          <p className="text-xs lg:text-sm text-[#8F96AE] mt-1">
+          <p className="text-xs lg:text-sm text-[#5D6378] dark:text-[#8F96AE] mt-1">
             Visualiza y administra los diferentes horarios creados en tus proyectos.
           </p>
         </div>
@@ -342,7 +353,7 @@ export function ScheduleListView() {
         <div className="flex items-center gap-3 shrink-0 pt-2">
           <Button
             onClick={() => router.push("/pm/creacion-horarios")}
-            className="h-11 px-5 rounded-xl bg-gradient-to-r from-[#4F8BFF] to-[#A855F7] hover:opacity-95 text-white font-semibold text-sm flex items-center gap-2 shadow-lg shadow-purple-500/20 cursor-pointer"
+            className="h-11 px-5 rounded-xl bg-gradient-to-r from-[#4F8BFF] to-[#A855F7] hover:opacity-95 text-white font-semibold text-sm flex items-center gap-2 shadow-lg shadow-purple-500/20 cursor-pointer shrink-0"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Crear horario</span>
@@ -357,18 +368,18 @@ export function ScheduleListView() {
       <div className="md:hidden space-y-4">
         <div>
           <div className="flex items-center gap-1.5 mb-1">
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-[#8B7BD8]">
+            <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-[#7C3AED] dark:text-[#8B7BD8]">
               PANEL DE GESTIÓN
             </span>
             <span className="text-[#8F96AE] text-xs">·</span>
-            <span className="text-xs text-[#8F96AE]">
+            <span className="text-xs text-[#5D6378] dark:text-[#8F96AE]">
               Administración
             </span>
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl font-bold text-[#11131C] dark:text-white tracking-tight">
             Gestión de horarios
           </h1>
-          <p className="text-xs text-[#8F96AE] mt-1 leading-relaxed">
+          <p className="text-xs text-[#5D6378] dark:text-[#8F96AE] mt-1 leading-relaxed">
             Visualiza y administra los diferentes horarios creados en tus proyectos.
           </p>
         </div>
@@ -385,19 +396,19 @@ export function ScheduleListView() {
       {/* ======================================================== */}
       {/* DESKTOP MAIN CONTAINER CARD (Desktop Table View)         */}
       {/* ======================================================== */}
-      <div className="hidden md:block rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-6 shadow-xl space-y-5">
+      <div className="hidden md:block rounded-2xl border border-[#E2E4EB] dark:border-[#1E2335] bg-white dark:bg-[#0C0E18] p-6 shadow-sm dark:shadow-xl space-y-5">
         {/* Card Header with Search Input on Right */}
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h2 className="text-base font-bold text-white">
+            <h2 className="text-base font-bold text-[#11131C] dark:text-white">
               Horarios del proyecto
             </h2>
-            <p className="text-xs text-[#8F96AE] mt-0.5">
+            <p className="text-xs text-[#5D6378] dark:text-[#8F96AE] mt-0.5">
               Selecciona un horario y asígnalo a los miembros del proyecto.
             </p>
           </div>
           <div className="relative w-80">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5A627D] pointer-events-none" />
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5D6378] dark:text-[#5A627D] pointer-events-none" />
             <input
               type="text"
               placeholder="Buscar por proyecto u horario..."
@@ -406,112 +417,125 @@ export function ScheduleListView() {
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
-              className="w-full h-10 pl-9 pr-4 rounded-xl bg-[#12141F] border border-[#1E2335] text-xs text-white placeholder:text-[#525975] focus:outline-none focus:border-[#7F6CF6] transition-colors"
+              className="w-full h-10 pl-9 pr-4 rounded-xl bg-[#F1F3F9] dark:bg-[#12141F] border border-[#E2E4EB] dark:border-[#1E2335] text-xs text-[#11131C] dark:text-white placeholder:text-[#8F96AE] dark:placeholder:text-[#525975] focus:outline-none focus:border-[#7F6CF6] transition-colors"
             />
           </div>
         </div>
 
-        {/* Inner Table Box */}
-        <div className="rounded-xl border border-[#1E2335] bg-[#0E101A] overflow-hidden">
-          {/* Table Header */}
-          <div className="grid grid-cols-[180px_1fr_170px_140px_110px_180px] items-center px-6 py-3.5 border-b border-[#1A1E2F] text-[10.5px] font-mono uppercase tracking-wider text-[#8B7BD8]">
-            <div>PROYECTO</div>
-            <div>NOMBRE</div>
-            <div>TIPO DE TURNO</div>
-            <div>HORARIO</div>
-            <div>TOLERANCIA</div>
-            <div className="text-right">ACCIONES</div>
+        {/* Robust HTML Table Box */}
+        <div className="rounded-xl border border-[#E2E4EB] dark:border-[#1E2335] bg-[#F8F9FD] dark:bg-[#0E101A] overflow-hidden">
+          <div className="w-full overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-[#E2E4EB] dark:border-[#1A1E2F] text-[10.5px] font-mono uppercase tracking-wider text-[#7C3AED] dark:text-[#8B7BD8]">
+                  <th className="py-3 px-3 font-semibold">PROYECTO</th>
+                  <th className="py-3 px-3 font-semibold">NOMBRE</th>
+                  <th className="py-3 px-3 font-semibold">TIPO DE TURNO</th>
+                  <th className="py-3 px-3 font-semibold">HORARIO</th>
+                  <th className="py-3 px-3 font-semibold">TOLERANCIA</th>
+                  <th className="py-3 px-3 font-semibold text-right">ACCIONES</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E2E4EB] dark:divide-[#161928]">
+                {loading ? (
+                  <tr>
+                    <td colSpan={6} className="py-12 text-center">
+                      <Loader2 className="w-6 h-6 animate-spin text-[#8B7BD8] mx-auto" />
+                    </td>
+                  </tr>
+                ) : pageTemplates.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-12 text-center text-[#5D6378] dark:text-[#8F96AE]">
+                      <Clock className="w-10 h-10 mx-auto text-[#8F96AE] dark:text-[#454B64] mb-2" />
+                      <p className="text-sm font-medium text-[#11131C] dark:text-white">No hay horarios disponibles</p>
+                      <p className="text-xs text-[#5D6378] dark:text-[#8F96AE] mt-1">Crea horarios para tus proyectos.</p>
+                    </td>
+                  </tr>
+                ) : (
+                  pageTemplates.map((t, idx) => {
+                    const shiftCfg = getShiftConfig(t.shiftType);
+                    const ShiftIcon = shiftCfg.icon;
+                    const timeStr = getScheduleTimeDisplay(t);
+                    const projectName = getProjectName(t.projectId, projects);
+
+                    return (
+                      <tr
+                        key={t.id || idx}
+                        className="hover:bg-[#F1F3F9]/60 dark:hover:bg-[#131626]/50 transition-colors"
+                      >
+                        {/* PROYECTO */}
+                        <td className="py-3 px-3 whitespace-nowrap">
+                          <span className="inline-block px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-purple-100 dark:bg-[#24183E] text-purple-700 dark:text-[#C084FC] border border-purple-200 dark:border-[#40266B]">
+                            {projectName}
+                          </span>
+                        </td>
+
+                        {/* NOMBRE */}
+                        <td className="py-3 px-3 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-lg bg-[#0F2833] border border-[#164152] text-[#22C3E6] flex items-center justify-center shrink-0">
+                              <Clock className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="font-semibold text-sm text-[#11131C] dark:text-white">
+                              {t.name}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* TIPO DE TURNO */}
+                        <td className="py-3 px-3 whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-medium bg-[#ECEEF5] dark:bg-[#161928] border border-[#D5D8E4] dark:border-[#272E49] text-[#11131C] dark:text-white">
+                            <ShiftIcon className="w-3.5 h-3.5 text-[#22C3E6]" />
+                            <span>{shiftCfg.label}</span>
+                          </span>
+                        </td>
+
+                        {/* HORARIO */}
+                        <td className="py-3 px-3 whitespace-nowrap">
+                          <span className="font-mono text-xs text-[#11131C] dark:text-white tracking-wide">
+                            {timeStr}
+                          </span>
+                        </td>
+
+                        {/* TOLERANCIA */}
+                        <td className="py-3 px-3 whitespace-nowrap">
+                          <span className="text-xs text-[#5D6378] dark:text-[#8F96AE]">
+                            {t.graceMinutes ?? 10} min
+                          </span>
+                        </td>
+
+                        {/* ACCIONES */}
+                        <td className="py-3 px-3 text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => router.push(`/pm/creacion-horarios?id=${t.id}`)}
+                              className="w-8 h-8 rounded-xl bg-[#ECEEF5] dark:bg-[#161928] border border-[#D5D8E4] dark:border-[#282F48] text-[#5D6378] dark:text-[#8F96AE] hover:text-[#11131C] dark:hover:text-white hover:bg-[#E2E5F0] dark:hover:bg-[#1E2338] flex items-center justify-center transition-colors shrink-0 cursor-pointer"
+                              title="Editar horario"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setPreviewTemplate(t)}
+                              className="h-8 px-3 rounded-xl bg-[#2E1A47] hover:bg-[#3B225B] border border-[#582A88] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shrink-0 whitespace-nowrap cursor-pointer shadow-sm"
+                            >
+                              <Users className="w-3.5 h-3.5 text-[#C084FC]" />
+                              <span>Asignar a miembros</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
           </div>
-
-          {/* Table Rows */}
-          {loading ? (
-            <div className="flex items-center justify-center p-12">
-              <Loader2 className="w-6 h-6 animate-spin text-[#8B7BD8]" />
-            </div>
-          ) : pageTemplates.length === 0 ? (
-            <div className="text-center p-12 text-[#8F96AE]">
-              <Clock className="w-10 h-10 mx-auto text-[#454B64] mb-2" />
-              <p className="text-sm font-medium text-white">No hay horarios disponibles</p>
-              <p className="text-xs text-[#8F96AE] mt-1">Crea horarios para tus proyectos.</p>
-            </div>
-          ) : (
-            pageTemplates.map((t, idx) => {
-              const project = projects.find((p) => p.id === t.projectId);
-              const shiftCfg = getShiftConfig(t.shiftType);
-              const ShiftIcon = shiftCfg.icon;
-              const timeStr = getScheduleTimeDisplay(t);
-
-              return (
-                <div
-                  key={t.id || idx}
-                  className="grid grid-cols-[180px_1fr_170px_140px_110px_180px] items-center px-6 py-3.5 border-b border-[#161928] last:border-b-0 hover:bg-[#131626]/50 transition-colors"
-                >
-                  {/* PROYECTO */}
-                  <div>
-                    <span className="inline-block px-3 py-1 rounded-lg text-xs font-semibold bg-[#24183E] text-[#C084FC] border border-[#40266B] max-w-[160px] truncate">
-                      {project?.name || t.projectId || "proyecto testeo"}
-                    </span>
-                  </div>
-
-                  {/* NOMBRE */}
-                  <div className="flex items-center gap-2.5 min-w-0 pr-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#0F2833] border border-[#164152] text-[#22C3E6] flex items-center justify-center shrink-0">
-                      <Clock className="w-4 h-4" />
-                    </div>
-                    <span className="font-semibold text-sm text-white truncate">
-                      {t.name}
-                    </span>
-                  </div>
-
-                  {/* TIPO DE TURNO */}
-                  <div>
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium bg-[#161928] border border-[#272E49] text-white">
-                      <ShiftIcon className="w-3.5 h-3.5 text-[#22C3E6]" />
-                      <span>{shiftCfg.label}</span>
-                    </span>
-                  </div>
-
-                  {/* HORARIO */}
-                  <div>
-                    <span className="font-mono text-xs text-white tracking-wide">
-                      {timeStr}
-                    </span>
-                  </div>
-
-                  {/* TOLERANCIA */}
-                  <div>
-                    <span className="text-xs text-[#8F96AE]">
-                      {t.graceMinutes ?? 10} min
-                    </span>
-                  </div>
-
-                  {/* ACCIONES */}
-                  <div className="flex items-center justify-end gap-2">
-                    <button
-                      type="button"
-                      onClick={() => router.push(`/pm/creacion-horarios?id=${t.id}`)}
-                      className="w-9 h-9 rounded-xl bg-[#161928] border border-[#282F48] text-[#8F96AE] hover:text-white hover:bg-[#1E2338] flex items-center justify-center transition-colors cursor-pointer"
-                      title="Editar horario"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPreviewTemplate(t)}
-                      className="h-9 px-3.5 rounded-xl bg-[#2E1A47] hover:bg-[#3B225B] border border-[#582A88] text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Users className="w-3.5 h-3.5 text-[#C084FC]" />
-                      <span>Asignar a miembros</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })
-          )}
         </div>
 
         {/* Desktop Pagination inside Card (grouped on right, matching SVG) */}
-        <div className="flex items-center justify-end gap-3 pt-2 text-xs text-[#8F96AE]">
+        <div className="flex items-center justify-end gap-3 pt-2 text-xs text-[#5D6378] dark:text-[#8F96AE]">
           <span>
             Página {currentPage} de {totalPages}
           </span>
@@ -520,7 +544,7 @@ export function ScheduleListView() {
               type="button"
               disabled={currentPage <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="w-8 h-8 rounded-lg bg-[#141827] border border-[#23293E] text-[#8F96AE] hover:text-white disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-lg bg-[#F1F3F9] dark:bg-[#141827] border border-[#E2E4EB] dark:border-[#23293E] text-[#5D6378] dark:text-[#8F96AE] hover:text-[#11131C] dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -528,12 +552,12 @@ export function ScheduleListView() {
               type="button"
               disabled={currentPage >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="w-8 h-8 rounded-lg bg-[#141827] border border-[#23293E] text-[#8F96AE] hover:text-white disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-lg bg-[#F1F3F9] dark:bg-[#141827] border border-[#E2E4EB] dark:border-[#23293E] text-[#5D6378] dark:text-[#8F96AE] hover:text-[#11131C] dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-          <span className="font-mono text-xs text-[#8F96AE]">
+          <span className="font-mono text-xs text-[#5D6378] dark:text-[#8F96AE]">
             {filteredTemplates.length} horario{filteredTemplates.length === 1 ? "" : "s"}
           </span>
         </div>
@@ -544,15 +568,15 @@ export function ScheduleListView() {
       {/* ======================================================== */}
       <div className="md:hidden space-y-3">
         {/* Card 1: Horarios del proyecto & Search */}
-        <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 space-y-3 shadow-md">
+        <div className="rounded-2xl border border-[#E2E4EB] dark:border-[#1E2335] bg-white dark:bg-[#0C0E18] p-4 space-y-3 shadow-sm dark:shadow-md">
           <div>
-            <h2 className="text-base font-bold text-white">Horarios del proyecto</h2>
-            <p className="text-xs text-[#8F96AE] mt-0.5">
+            <h2 className="text-base font-bold text-[#11131C] dark:text-white">Horarios del proyecto</h2>
+            <p className="text-xs text-[#5D6378] dark:text-[#8F96AE] mt-0.5">
               Selecciona un horario y asígnalo a los miembros del proyecto.
             </p>
           </div>
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5A627D] pointer-events-none" />
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5D6378] dark:text-[#5A627D] pointer-events-none" />
             <input
               type="text"
               placeholder="Buscar por proyecto u horario..."
@@ -561,7 +585,7 @@ export function ScheduleListView() {
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
-              className="w-full h-11 pl-10 pr-4 rounded-xl bg-[#12141F] border border-[#1E2335] text-xs text-white placeholder:text-[#525975] focus:outline-none focus:border-[#7F6CF6]"
+              className="w-full h-11 pl-10 pr-4 rounded-xl bg-[#F1F3F9] dark:bg-[#12141F] border border-[#E2E4EB] dark:border-[#1E2335] text-xs text-[#11131C] dark:text-white placeholder:text-[#8F96AE] dark:placeholder:text-[#525975] focus:outline-none focus:border-[#7F6CF6]"
             />
           </div>
         </div>
@@ -572,22 +596,22 @@ export function ScheduleListView() {
             <Loader2 className="w-6 h-6 animate-spin text-[#8B7BD8]" />
           </div>
         ) : pageTemplates.length === 0 ? (
-          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-8 text-center text-[#8F96AE]">
-            <Clock className="w-10 h-10 mx-auto text-[#454B64] mb-2" />
-            <p className="text-sm font-medium text-white">No hay horarios disponibles</p>
-            <p className="text-xs text-[#8F96AE] mt-1">Crea horarios para tus proyectos.</p>
+          <div className="rounded-2xl border border-[#E2E4EB] dark:border-[#1E2335] bg-white dark:bg-[#0C0E18] p-8 text-center text-[#5D6378] dark:text-[#8F96AE]">
+            <Clock className="w-10 h-10 mx-auto text-[#8F96AE] dark:text-[#454B64] mb-2" />
+            <p className="text-sm font-medium text-[#11131C] dark:text-white">No hay horarios disponibles</p>
+            <p className="text-xs text-[#5D6378] dark:text-[#8F96AE] mt-1">Crea horarios para tus proyectos.</p>
           </div>
         ) : (
           pageTemplates.map((t, idx) => {
-            const project = projects.find((p) => p.id === t.projectId);
             const shiftCfg = getShiftConfig(t.shiftType);
             const ShiftIcon = shiftCfg.icon;
             const timeStr = getScheduleTimeDisplay(t);
+            const projectName = getProjectName(t.projectId, projects);
 
             return (
               <div
                 key={t.id || idx}
-                className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 space-y-3 shadow-md"
+                className="rounded-2xl border border-[#E2E4EB] dark:border-[#1E2335] bg-white dark:bg-[#0C0E18] p-4 space-y-3 shadow-sm dark:shadow-md"
               >
                 {/* Header of Card */}
                 <div className="flex items-start gap-3">
@@ -595,21 +619,21 @@ export function ScheduleListView() {
                     <Clock className="w-5 h-5" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-bold text-base text-white truncate leading-tight">
+                    <h3 className="font-bold text-base text-[#11131C] dark:text-white truncate leading-tight">
                       {t.name}
                     </h3>
-                    <span className="inline-block mt-1 px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#24183E] text-[#C084FC] border border-[#40266B] max-w-full truncate">
-                      {project?.name || t.projectId || "proyecto testeo"}
+                    <span className="inline-block mt-1 px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-purple-100 dark:bg-[#24183E] text-purple-700 dark:text-[#C084FC] border border-purple-200 dark:border-[#40266B] max-w-full truncate">
+                      {projectName}
                     </span>
                   </div>
                 </div>
 
                 {/* Middle Box: Tipo de turno */}
-                <div className="bg-[#12141F] border border-[#1E2335] rounded-xl px-3.5 py-2.5 flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-[#8B7BD8]">
+                <div className="bg-[#F1F3F9] dark:bg-[#12141F] border border-[#E2E4EB] dark:border-[#1E2335] rounded-xl px-3.5 py-2.5 flex items-center justify-between">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-[#7C3AED] dark:text-[#8B7BD8]">
                     TIPO DE TURNO
                   </span>
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-white">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-[#11131C] dark:text-white">
                     <ShiftIcon className="w-3.5 h-3.5 text-[#22C3E6]" />
                     <span>{shiftCfg.label}</span>
                   </div>
@@ -617,19 +641,19 @@ export function ScheduleListView() {
 
                 {/* Bottom Grid: Horario y Tolerancia */}
                 <div className="grid grid-cols-2 gap-2.5">
-                  <div className="bg-[#12141F] border border-[#1E2335] rounded-xl p-3">
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-[#8B7BD8] block mb-1">
+                  <div className="bg-[#F1F3F9] dark:bg-[#12141F] border border-[#E2E4EB] dark:border-[#1E2335] rounded-xl p-3">
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-[#7C3AED] dark:text-[#8B7BD8] block mb-1">
                       HORARIO
                     </span>
-                    <span className="font-mono text-xs font-semibold text-white">
+                    <span className="font-mono text-xs font-semibold text-[#11131C] dark:text-white">
                       {timeStr}
                     </span>
                   </div>
-                  <div className="bg-[#12141F] border border-[#1E2335] rounded-xl p-3">
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-[#8B7BD8] block mb-1">
+                  <div className="bg-[#F1F3F9] dark:bg-[#12141F] border border-[#E2E4EB] dark:border-[#1E2335] rounded-xl p-3">
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-[#7C3AED] dark:text-[#8B7BD8] block mb-1">
                       TOLERANCIA
                     </span>
-                    <span className="text-xs font-medium text-white">
+                    <span className="text-xs font-medium text-[#11131C] dark:text-white">
                       {t.graceMinutes ?? 10} min
                     </span>
                   </div>
@@ -640,7 +664,7 @@ export function ScheduleListView() {
                   <button
                     type="button"
                     onClick={() => router.push(`/pm/creacion-horarios?id=${t.id}`)}
-                    className="w-11 h-11 rounded-xl bg-[#161928] border border-[#282F48] text-white hover:bg-[#1E2338] flex items-center justify-center shrink-0 transition-colors cursor-pointer"
+                    className="w-11 h-11 rounded-xl bg-[#ECEEF5] dark:bg-[#161928] border border-[#D5D8E4] dark:border-[#282F48] text-[#5D6378] dark:text-white hover:bg-[#E2E5F0] dark:hover:bg-[#1E2338] flex items-center justify-center shrink-0 transition-colors cursor-pointer"
                     title="Editar horario"
                   >
                     <Pencil className="w-4 h-4" />
@@ -648,7 +672,7 @@ export function ScheduleListView() {
                   <button
                     type="button"
                     onClick={() => setPreviewTemplate(t)}
-                    className="flex-1 h-11 rounded-xl bg-[#2E1A47] hover:bg-[#3B225B] border border-[#582A88] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
+                    className="flex-1 h-11 rounded-xl bg-[#2E1A47] hover:bg-[#3B225B] border border-[#582A88] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer whitespace-nowrap"
                   >
                     <Users className="w-4 h-4 text-[#C084FC]" />
                     <span>Asignar a miembros</span>
@@ -660,7 +684,7 @@ export function ScheduleListView() {
         )}
 
         {/* Mobile Pagination */}
-        <div className="flex items-center justify-between pt-3 px-1 text-xs text-[#8F96AE]">
+        <div className="flex items-center justify-between pt-3 px-1 text-xs text-[#5D6378] dark:text-[#8F96AE]">
           <span className="font-mono">
             {filteredTemplates.length} horario{filteredTemplates.length === 1 ? "" : "s"}
           </span>
@@ -669,18 +693,18 @@ export function ScheduleListView() {
               type="button"
               disabled={currentPage <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="w-9 h-9 rounded-xl bg-[#141827] border border-[#23293E] text-[#8F96AE] hover:text-white disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-xl bg-[#F1F3F9] dark:bg-[#141827] border border-[#E2E4EB] dark:border-[#23293E] text-[#5D6378] dark:text-[#8F96AE] hover:text-[#11131C] dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-white px-1 font-medium">
+            <span className="text-[#11131C] dark:text-white px-1 font-medium">
               Página {currentPage} de {totalPages}
             </span>
             <button
               type="button"
               disabled={currentPage >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="w-9 h-9 rounded-xl bg-[#141827] border border-[#23293E] text-[#8F96AE] hover:text-white disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-xl bg-[#F1F3F9] dark:bg-[#141827] border border-[#E2E4EB] dark:border-[#23293E] text-[#5D6378] dark:text-[#8F96AE] hover:text-[#11131C] dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -749,15 +773,15 @@ export function ScheduleListView() {
         }}
       >
         {pendingAssignment && (
-          <DialogContent className="max-w-md rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-white p-6 shadow-2xl">
+          <DialogContent className="max-w-md rounded-2xl bg-white dark:bg-[#0C0E18] border border-[#E2E4EB] dark:border-[#1E2335] text-[#11131C] dark:text-white p-6 shadow-2xl">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-white">
+              <DialogTitle className="text-xl font-bold text-[#11131C] dark:text-white">
                 Sobrescribir Horarios
               </DialogTitle>
-              <DialogDescription className="text-xs text-[#8F96AE] pt-2">
-                <AlertTriangle className="w-10 h-10 text-amber-400 mx-auto my-3" />
+              <DialogDescription className="text-xs text-[#5D6378] dark:text-[#8F96AE] pt-2">
+                <AlertTriangle className="w-10 h-10 text-amber-500 mx-auto my-3" />
                 Se ha detectado que{" "}
-                <strong className="text-white">
+                <strong className="text-[#11131C] dark:text-white">
                   {pendingAssignment.membersWithSchedule.length}
                 </strong>{" "}
                 de los {pendingAssignment.members.length} miembros del proyecto ya tienen un horario personalizado asignado.
@@ -784,7 +808,7 @@ export function ScheduleListView() {
               </Button>
               <Button
                 variant="outline"
-                className="w-full justify-start text-left border-[#23293E] bg-[#141827] text-white hover:bg-[#1A2033] h-auto py-3 px-4 rounded-xl cursor-pointer"
+                className="w-full justify-start text-left border-[#D5D8E4] dark:border-[#23293E] bg-[#F1F3F9] dark:bg-[#141827] text-[#11131C] dark:text-white hover:bg-[#E2E5F0] dark:hover:bg-[#1A2033] h-auto py-3 px-4 rounded-xl cursor-pointer"
                 onClick={async () => {
                   const toAssign = pendingAssignment.members.filter((m: any) => !m.hasCustomSchedule);
                   if (toAssign.length > 0) {
@@ -800,14 +824,14 @@ export function ScheduleListView() {
               >
                 <div className="flex flex-col items-start">
                   <span className="font-bold text-xs">Solo a los sin horario</span>
-                  <span className="text-[11px] font-normal text-[#8F96AE]">
+                  <span className="text-[11px] font-normal text-[#5D6378] dark:text-[#8F96AE]">
                     Respetar horarios existentes y solo asignar a los nuevos.
                   </span>
                 </div>
               </Button>
               <button
                 type="button"
-                className="w-full py-2.5 text-xs text-[#8F96AE] hover:text-white transition-colors cursor-pointer"
+                className="w-full py-2.5 text-xs text-[#5D6378] dark:text-[#8F96AE] hover:text-[#11131C] dark:hover:text-white transition-colors cursor-pointer"
                 onClick={() => setPendingAssignment(null)}
               >
                 Cancelar
