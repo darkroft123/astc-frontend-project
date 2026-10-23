@@ -732,8 +732,7 @@ export function AlertsListView() {
                     </div>
                   </td>
                 </tr>
-              ))}
-              )}
+              )))}
             </tbody>
           </table>
         </div>

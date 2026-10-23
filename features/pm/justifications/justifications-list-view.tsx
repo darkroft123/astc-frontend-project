@@ -690,7 +690,7 @@ export function JustificationsListView() {
                   </td>
                 </tr>
               ) : (
-              {data.items.map((row) => {
+                data.items.map((row) => {
                 const initials = row.userName
                   .split(" ")
                   .map((n) => n[0])
@@ -763,8 +763,7 @@ export function JustificationsListView() {
                     </td>
                   </tr>
                 );
-              })}
-              )}
+              }))}
             </tbody>
           </table>
         </div>

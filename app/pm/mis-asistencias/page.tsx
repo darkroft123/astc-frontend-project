@@ -530,7 +530,7 @@ export default function PMAsistenciasPage() {
                   </td>
                 </tr>
               ) : (
-              {filteredRecords.map((row) => (
+                filteredRecords.map((row) => (
                 <tr key={row.id} className="hover:bg-muted/30 transition-colors">
                   <td className="py-4 px-4 font-mono text-xs text-foreground">{row.date}</td>
                   <td className="py-4 px-4 font-mono text-xs text-foreground font-medium">{row.checkIn}</td>
@@ -559,8 +559,7 @@ export default function PMAsistenciasPage() {
                     </span>
                   </td>
                 </tr>
-              ))}
-              )}
+              )))}
             </tbody>
           </table>
         </div>

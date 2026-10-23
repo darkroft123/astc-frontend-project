@@ -657,7 +657,7 @@ export function AttendanceHistoryView() {
                   </td>
                 </tr>
               ) : (
-              {records.map((row, idx) => {
+                records.map((row, idx) => {
                 const initials = (row.userName || "Carlos Mamani")
                   .split(" ")
                   .map((n: string) => n[0])
@@ -714,8 +714,7 @@ export function AttendanceHistoryView() {
                     </td>
                   </tr>
                 );
-              })}
-              )}
+              }))}
             </tbody>
           </table>
         </div>
