@@ -639,7 +639,7 @@ export function DashboardView() {
               <div className="grid grid-cols-2 gap-2.5">
                 <Link
                   href="/pm/registrar"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted dark:hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
                   <div className="w-7 h-7 rounded-lg bg-green/10 flex items-center justify-center text-green shrink-0">
                     <CheckCircle2 className="w-4 h-4" />
@@ -651,7 +651,7 @@ export function DashboardView() {
 
                 <Link
                   href="/pm/historial-asistencias"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted dark:hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
                   <div className="w-7 h-7 rounded-lg bg-violet/10 flex items-center justify-center text-[#A855F7] shrink-0">
                     <BarChart3 className="w-4 h-4" />
@@ -663,7 +663,7 @@ export function DashboardView() {
 
                 <Link
                   href="/pm/alertas"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted dark:hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
                   <div className="w-7 h-7 rounded-lg bg-red/10 flex items-center justify-center text-red shrink-0">
                     <AlertTriangle className="w-4 h-4" />
@@ -675,7 +675,7 @@ export function DashboardView() {
 
                 <Link
                   href="/pm/proyectos"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted dark:hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
                   <div className="w-7 h-7 rounded-lg bg-cyan/10 flex items-center justify-center text-cyan shrink-0">
                     <FolderKanban className="w-4 h-4" />
@@ -687,7 +687,7 @@ export function DashboardView() {
 
                 <Link
                   href="/pm/mis-asistencias"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted dark:hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
                   <div className="w-7 h-7 rounded-lg bg-blue/10 flex items-center justify-center text-blue shrink-0">
                     <Calendar className="w-4 h-4" />
@@ -699,7 +699,7 @@ export function DashboardView() {
 
                 <Link
                   href="/pm/horarios"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted dark:hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
                   <div className="w-7 h-7 rounded-lg bg-cyan/10 flex items-center justify-center text-cyan shrink-0">
                     <Clock className="w-4 h-4" />

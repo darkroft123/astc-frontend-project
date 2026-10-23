@@ -153,7 +153,7 @@ export function ProjectsManagementView({
           {/* Card 1: Total */}
           <div className="rounded-2xl border border-border bg-card p-3.5 sm:p-5 flex flex-col justify-between h-[95px] sm:h-[110px] shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-[#141829] flex items-center justify-center text-[#8F96AE]">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-card dark:bg-[#141829] flex items-center justify-center text-[#8F96AE]">
                 <Folder className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
@@ -241,7 +241,7 @@ export function ProjectsManagementView({
                 <button
                   type="button"
                   onClick={fetchProjects}
-                  className="w-11 h-11 rounded-xl border border-border bg-background/50 hover:bg-[#1A1D2E] text-[#8F96AE] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
+                  className="w-11 h-11 rounded-xl border border-border bg-background/50 hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
                   title="Actualizar"
                 >
                   <RotateCw className={`w-4 h-4 ${isLoading ? "animate-spin text-[#A855F7]" : ""}`} />
@@ -268,7 +268,7 @@ export function ProjectsManagementView({
                   {/* Top row */}
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-[#1C1635] border border-purple-200 dark:border-[#312361] text-purple-600 dark:text-[#A855F7] flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-50 dark:bg-[#1C1635] border border-purple-200 dark:border-[#312361] text-purple-600 dark:text-[#A855F7] flex items-center justify-center shrink-0">
                         <Folder className="w-5 h-5" />
                       </div>
                       <div className="min-w-0">
@@ -327,7 +327,7 @@ export function ProjectsManagementView({
                       >
                         JP
                       </div>
-                      <span className="font-medium text-white">
+                      <span className="font-medium text-foreground">
                         @{row.responsible?.username || "jefeproyecto-x"}
                       </span>
                     </div>
@@ -384,7 +384,7 @@ export function ProjectsManagementView({
                         {/* PROYECTO */}
                         <td className="py-4 px-5">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-[#1C1635] border border-[#312361] flex items-center justify-center text-[#A855F7] shrink-0">
+                            <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-[#1C1635] border border-[#312361] flex items-center justify-center text-[#A855F7] shrink-0">
                               <Folder className="w-4 h-4" />
                             </div>
                             <div>
@@ -469,7 +469,7 @@ export function ProjectsManagementView({
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="w-9 h-9 rounded-xl border border-border bg-background/50 flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#1A1D2E] transition-colors"
+              className="w-9 h-9 rounded-xl border border-border bg-background/50 flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed hover:bg-muted transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -480,7 +480,7 @@ export function ProjectsManagementView({
               type="button"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="w-9 h-9 rounded-xl border border-border bg-background/50 flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#1A1D2E] transition-colors"
+              className="w-9 h-9 rounded-xl border border-border bg-background/50 flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed hover:bg-muted transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

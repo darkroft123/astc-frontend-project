@@ -311,7 +311,7 @@ export default function ProjectDetailModal({
                 <button
                   type="button"
                   onClick={handleCopyId}
-                  className="text-[#8F96AE] hover:text-white transition-colors ml-0.5 cursor-pointer"
+                  className="text-muted-foreground hover:text-foreground transition-colors ml-0.5 cursor-pointer"
                   title="Copiar ID"
                 >
                   {copiedId ? (
@@ -476,7 +476,7 @@ export default function ProjectDetailModal({
               {/* Políticas y reglas de asistencia */}
               <div className="rounded-2xl border border-border dark:border-white/[0.08] bg-muted/40 dark:bg-[#101322] p-5">
                 <div className="flex items-center gap-2.5 mb-4">
-                  <div className="w-7 h-7 rounded-xl bg-[#231B38] border border-[#3E2D66] text-[#C084FC] flex items-center justify-center shrink-0">
+                  <div className="w-7 h-7 rounded-xl bg-purple-100 dark:bg-[#231B38] border border-purple-200 dark:border-[#3E2D66] text-purple-700 dark:text-[#C084FC] flex items-center justify-center shrink-0">
                     <Clock className="w-4 h-4" />
                   </div>
                   <h3 className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">
@@ -490,7 +490,7 @@ export default function ProjectDetailModal({
                       PAÍS / SEDE
                     </span>
                     <span className="font-bold text-xs text-foreground dark:text-[#EEF0F6] flex items-center gap-1.5">
-                      <span className="px-1.5 py-0.5 rounded bg-[#181D30] border border-white/10 text-[10px] font-mono font-bold text-white">
+                      <span className="px-1.5 py-0.5 rounded bg-muted dark:bg-[#181D30] border border-border dark:border-white/10 text-[10px] font-mono font-bold text-foreground">
                         {countryInfo.code}
                       </span>
                       {countryInfo.country}
@@ -642,11 +642,11 @@ export default function ProjectDetailModal({
                       >
                         <div className="flex items-center gap-3">
                           {/* Squircle Date Box matching SVG */}
-                          <div className="min-w-[48px] h-[48px] rounded-xl border border-[#342461] bg-[#1D1635] flex flex-col items-center justify-center p-1 shrink-0">
+                          <div className="min-w-[48px] h-[48px] rounded-xl border border-purple-200 dark:border-[#342461] bg-purple-50 dark:bg-[#1D1635] flex flex-col items-center justify-center p-1 shrink-0">
                             <span className="text-[9.5px] font-bold text-[#A855F7] tracking-wider uppercase leading-none">
                               {dayAbbr}
                             </span>
-                            <span className="text-base font-bold text-white leading-none mt-1">
+                            <span className="text-base font-bold text-foreground leading-none mt-1">
                               {dayNum}
                             </span>
                           </div>
@@ -661,7 +661,7 @@ export default function ProjectDetailModal({
                           </div>
                         </div>
 
-                        <span className="bg-[#161B30] text-[#8FA3D9] border border-[#232B4D] px-3.5 py-1 rounded-lg text-xs font-semibold">
+                        <span className="bg-blue-50 dark:bg-[#161B30] text-blue-700 dark:text-[#8FA3D9] border border-blue-200 dark:border-[#232B4D] px-3.5 py-1 rounded-lg text-xs font-semibold">
                           {h.type || "Nacional"}
                         </span>
                       </div>
@@ -685,7 +685,7 @@ export default function ProjectDetailModal({
               {/* Horario Base */}
               <div className="rounded-2xl border border-border dark:border-white/[0.08] bg-card dark:bg-[#111422] p-5 space-y-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-xl bg-[#0F242C] border border-[#164652] text-[#22D3EE] flex items-center justify-center shrink-0">
+                  <div className="w-7 h-7 rounded-xl bg-cyan-50 dark:bg-[#0F242C] border border-cyan-200 dark:border-[#164652] text-cyan-700 dark:text-[#22D3EE] flex items-center justify-center shrink-0">
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>

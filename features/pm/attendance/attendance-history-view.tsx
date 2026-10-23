@@ -679,7 +679,7 @@ export function AttendanceHistoryView() {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-950/60 text-purple-300 border border-purple-800/40">
+                      <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40">
                         {row.projectName}
                       </span>
                     </td>

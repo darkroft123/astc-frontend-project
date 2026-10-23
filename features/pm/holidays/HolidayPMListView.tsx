@@ -199,8 +199,8 @@ function MonthCalendarPicker({
                 isSelected
                   ? "bg-brand-gradient text-white shadow-xs font-bold"
                   : cell.isCurrentMonth
-                  ? "text-foreground hover:bg-[#1C2238]"
-                  : "text-muted-foreground/40 hover:bg-[#1C2238]/50"
+                  ? "text-foreground hover:bg-muted dark:hover:bg-[#1C2238]"
+                  : "text-muted-foreground/40 hover:bg-muted dark:hover:bg-[#1C2238]/50"
               }`}
             >
               {cell.dayNumber}
@@ -591,7 +591,7 @@ export function HolidayPMListView() {
         </div>
 
         {/* 3. FILTERS & SEARCH BAR */}
-        <div className="rounded-2xl border border-border dark:border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 shadow-xs">
+        <div className="rounded-2xl border border-border dark:border-border dark:border-[#1E2335] bg-card dark:bg-card dark:bg-[#0C0E18] p-4 shadow-xs">
           <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3.5">
             {/* BUSCAR */}
             <div className="space-y-1.5 flex-1">
@@ -656,7 +656,7 @@ export function HolidayPMListView() {
               onClick={() => setActiveTab("project")}
               className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === "project"
-                  ? "bg-[#1E2438] text-white shadow-xs"
+                  ? "bg-muted dark:bg-[#1E2438] text-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -667,7 +667,7 @@ export function HolidayPMListView() {
               onClick={() => setActiveTab("members")}
               className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === "members"
-                  ? "bg-[#1E2438] text-white shadow-xs"
+                  ? "bg-muted dark:bg-[#1E2438] text-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -713,8 +713,8 @@ export function HolidayPMListView() {
                   key={col.id}
                   className={`rounded-2xl border transition-all ${
                     isAssigned
-                      ? "border-[#34D399]/40 bg-[#0C0E18]"
-                      : "border-border dark:border-[#1E2335] bg-[#0C0E18]"
+                      ? "border-[#34D399]/40 bg-card dark:bg-[#0C0E18]"
+                      : "border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18]"
                   }`}
                 >
                   {/* Card Header Row */}
@@ -723,11 +723,11 @@ export function HolidayPMListView() {
                     className="p-4 flex items-center justify-between gap-3 cursor-pointer select-none"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#281B0C] border border-[#483713] flex items-center justify-center text-[#FBBF24] shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-[#281B0C] border border-amber-200 dark:border-[#483713] flex items-center justify-center text-amber-600 dark:text-[#FBBF24] shrink-0">
                         <Layers className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-white">
+                        <h4 className="text-sm font-bold text-foreground">
                           {col.name}
                         </h4>
                         <p className="text-xs text-muted-foreground mt-0.5">
@@ -754,7 +754,7 @@ export function HolidayPMListView() {
                               setAssignedCollectionId(col.id);
                               toast({ title: `Colección '${col.name}' asignada al proyecto` });
                             }}
-                            className="px-3.5 py-1.5 rounded-xl bg-[#20183A] hover:bg-[#2B1F4F] border border-[#3E256C] text-[#C4B5FD] text-xs font-semibold cursor-pointer transition-colors"
+                            className="px-3.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 dark:bg-[#20183A] dark:hover:bg-[#2B1F4F] dark:border-[#3E256C] dark:text-[#C4B5FD] text-xs font-semibold cursor-pointer transition-colors"
                           >
                             Asignar
                           </button>
@@ -786,13 +786,13 @@ export function HolidayPMListView() {
                                 <span className="text-[10px] font-bold text-[#A855F7] block tracking-wider uppercase leading-tight">
                                   SEP
                                 </span>
-                                <span className="text-base font-bold text-white leading-none block mt-0.5">
+                                <span className="text-base font-bold text-foreground leading-none block mt-0.5">
                                   {dayNumber}
                                 </span>
                               </div>
 
                               <div>
-                                <p className="font-bold text-xs text-white">
+                                <p className="font-bold text-xs text-foreground">
                                   {item.name}
                                 </p>
                                 <p className="text-[11px] text-muted-foreground capitalize mt-0.5">
@@ -851,7 +851,7 @@ export function HolidayPMListView() {
                 return (
                   <div
                     key={m.userId || idx}
-                    className="rounded-2xl border border-border dark:border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 space-y-3 shadow-2xs"
+                    className="rounded-2xl border border-border dark:border-border dark:border-[#1E2335] bg-card dark:bg-card dark:bg-[#0C0E18] p-4 space-y-3 shadow-2xs"
                   >
                     <div className="flex items-center gap-3">
                       {initials ? (
@@ -871,7 +871,7 @@ export function HolidayPMListView() {
                       )}
 
                       <div className="min-w-0 flex-1">
-                        <p className="font-bold text-xs text-white truncate">
+                        <p className="font-bold text-xs text-foreground truncate">
                           {displayName}
                         </p>
                         <p className="text-[11px] text-muted-foreground font-mono truncate mt-0.5">
@@ -1222,7 +1222,7 @@ export function HolidayPMListView() {
                   onClick={() => setImportTab("text")}
                   className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     importTab === "text"
-                      ? "bg-[#1E2438] text-white shadow-xs"
+                      ? "bg-muted dark:bg-[#1E2438] text-foreground shadow-xs"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -1233,7 +1233,7 @@ export function HolidayPMListView() {
                   onClick={() => setImportTab("csv")}
                   className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     importTab === "csv"
-                      ? "bg-[#1E2438] text-white shadow-xs"
+                      ? "bg-muted dark:bg-[#1E2438] text-foreground shadow-xs"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -1268,7 +1268,7 @@ export function HolidayPMListView() {
                         setImportTab("text");
                       }
                     }}
-                    className="text-xs text-muted-foreground file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#1E2438] file:text-white cursor-pointer"
+                    className="text-xs text-muted-foreground file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-muted dark:file:bg-[#1E2438] file:text-foreground cursor-pointer"
                   />
                 </div>
               )}

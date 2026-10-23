@@ -146,7 +146,7 @@ export function HorarioCreationView() {
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Crear horario
           </h1>
-          <p className="text-xs text-[#8F96AE]">
+          <p className="font-hanken text-xs text-muted-foreground">
             Define horarios con distintos tipos de turno para los proyectos.
           </p>
         </div>
@@ -157,7 +157,7 @@ export function HorarioCreationView() {
             {/* STEP 1: PROYECTO */}
             <div className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 sm:p-5 space-y-3 shadow-xs">
               <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-full bg-[#1F1836] border border-[#432C7A] text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-[#1F1836] border border-purple-200 dark:border-[#432C7A] text-purple-700 dark:text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
                   1
                 </div>
                 <div>
@@ -199,7 +199,7 @@ export function HorarioCreationView() {
             {/* STEP 2: NOMBRE DEL HORARIO */}
             <div className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 sm:p-5 space-y-3 shadow-xs">
               <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-full bg-[#1F1836] border border-[#432C7A] text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-[#1F1836] border border-purple-200 dark:border-[#432C7A] text-purple-700 dark:text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
                   2
                 </div>
                 <div>
@@ -228,7 +228,7 @@ export function HorarioCreationView() {
           {/* STEP 3: TIPO DE TURNO */}
           <div className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 sm:p-5 space-y-3 shadow-xs">
             <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-full bg-[#1F1836] border border-[#432C7A] text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-[#1F1836] border border-purple-200 dark:border-[#432C7A] text-purple-700 dark:text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
                 3
               </div>
               <div>
@@ -246,7 +246,7 @@ export function HorarioCreationView() {
                 onClick={() => setShiftType("REGULAR")}
                 className={`p-3 rounded-xl text-left transition-all cursor-pointer border ${
                   shiftType === "REGULAR"
-                    ? "bg-[#1A1435] border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
+                    ? "bg-purple-50 dark:bg-[#1A1435] border-purple-500 dark:border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
                     : "bg-card dark:bg-[#12141F] border-border dark:border-[#1E2335] hover:border-primary/50"
                 }`}
               >
@@ -262,7 +262,7 @@ export function HorarioCreationView() {
                 onClick={() => setShiftType("ROTATING_4X4")}
                 className={`p-3 rounded-xl text-left transition-all cursor-pointer border ${
                   shiftType === "ROTATING_4X4"
-                    ? "bg-[#1A1435] border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
+                    ? "bg-purple-50 dark:bg-[#1A1435] border-purple-500 dark:border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
                     : "bg-card dark:bg-[#12141F] border-border dark:border-[#1E2335] hover:border-primary/50"
                 }`}
               >
@@ -278,7 +278,7 @@ export function HorarioCreationView() {
                 onClick={() => setShiftType("ROTATING_7X7")}
                 className={`p-3 rounded-xl text-left transition-all cursor-pointer border ${
                   shiftType === "ROTATING_7X7"
-                    ? "bg-[#1A1435] border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
+                    ? "bg-purple-50 dark:bg-[#1A1435] border-purple-500 dark:border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
                     : "bg-card dark:bg-[#12141F] border-border dark:border-[#1E2335] hover:border-primary/50"
                 }`}
               >
@@ -294,7 +294,7 @@ export function HorarioCreationView() {
                 onClick={() => setShiftType("FLEXIBLE")}
                 className={`p-3 rounded-xl text-left transition-all cursor-pointer border ${
                   shiftType === "FLEXIBLE"
-                    ? "bg-[#1A1435] border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
+                    ? "bg-purple-50 dark:bg-[#1A1435] border-purple-500 dark:border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
                     : "bg-card dark:bg-[#12141F] border-border dark:border-[#1E2335] hover:border-primary/50"
                 }`}
               >
@@ -310,7 +310,7 @@ export function HorarioCreationView() {
                 onClick={() => setShiftType("TRANSITORY")}
                 className={`p-3 rounded-xl text-left transition-all cursor-pointer border col-span-2 sm:col-span-1 ${
                   shiftType === "TRANSITORY"
-                    ? "bg-[#1A1435] border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
+                    ? "bg-purple-50 dark:bg-[#1A1435] border-purple-500 dark:border-[#A855F7] shadow-sm shadow-[#A855F7]/20"
                     : "bg-card dark:bg-[#12141F] border-border dark:border-[#1E2335] hover:border-primary/50"
                 }`}
               >
@@ -327,7 +327,7 @@ export function HorarioCreationView() {
             {/* STEP 4: HORARIO REGULAR */}
             <div className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 sm:p-5 space-y-3.5 shadow-xs">
               <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-full bg-[#1F1836] border border-[#432C7A] text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-[#1F1836] border border-purple-200 dark:border-[#432C7A] text-purple-700 dark:text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
                   4
                 </div>
                 <div>
@@ -339,9 +339,9 @@ export function HorarioCreationView() {
               </div>
 
               {/* Blue Info Alert Box */}
-              <div className="p-3 rounded-xl bg-[#0E1528] border border-[#1A2E56] flex items-start gap-2.5">
+              <div className="p-3 rounded-xl bg-blue-50 dark:bg-[#0E1528] border border-blue-200 dark:border-[#1A2E56] flex items-start gap-2.5">
                 <Info className="w-4 h-4 text-[#5B8CFF] shrink-0 mt-0.5" />
-                <p className="text-[11px] text-[#A5C0FF] leading-relaxed">
+                <p className="text-[11px] text-blue-700 dark:text-[#A5C0FF] leading-relaxed">
                   Lunes a viernes. Sábados y domingos son descanso automático: no se exige marcar ni se genera falta.
                 </p>
               </div>
@@ -351,7 +351,7 @@ export function HorarioCreationView() {
                 <label className="text-xs font-semibold text-foreground block">
                   Plantilla rápida
                 </label>
-                <div className="grid grid-cols-3 gap-2 p-1 rounded-xl bg-[#12141F] border border-[#1E2335]">
+                <div className="grid grid-cols-3 gap-2 p-1 rounded-xl bg-muted/50 dark:bg-[#12141F] border border-border dark:border-[#1E2335]">
                   {PRESETS.map((p) => {
                     const isSelected = selectedPreset === p.id;
                     return (
@@ -362,7 +362,7 @@ export function HorarioCreationView() {
                         className={`py-2 px-2 rounded-lg text-center transition-all cursor-pointer ${
                           isSelected
                             ? "bg-primary/10 text-primary border border-primary/30 shadow-xs font-bold"
-                            : "text-[#8F96AE] hover:text-white"
+                            : "text-muted-foreground hover:text-foreground"
                         }`}
                       >
                         <span className="font-bold text-xs block">{p.label}</span>
@@ -412,7 +412,7 @@ export function HorarioCreationView() {
             {/* STEP 5: REGLAS GENERALES */}
             <div className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 sm:p-5 space-y-3.5 shadow-xs">
               <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-full bg-[#1F1836] border border-[#432C7A] text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-[#1F1836] border border-purple-200 dark:border-[#432C7A] text-purple-700 dark:text-[#A855F7] font-bold text-xs flex items-center justify-center shrink-0">
                   5
                 </div>
                 <div>
@@ -474,7 +474,7 @@ export function HorarioCreationView() {
               <button
                 type="button"
                 onClick={() => router.push("/pm/horarios")}
-                className="w-full sm:w-auto h-11 px-6 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] hover:bg-[#1A1D2E] text-white text-xs font-semibold transition-colors cursor-pointer"
+                className="w-full sm:w-auto h-11 px-6 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] hover:bg-muted text-foreground text-xs font-semibold transition-colors cursor-pointer"
               >
                 Cancelar
               </button>
@@ -485,7 +485,7 @@ export function HorarioCreationView() {
                 className={`w-full sm:w-auto h-11 px-8 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
                   isFormValid && !isSubmitting
                     ? "text-white shadow-lg shadow-[#A855F7]/25 cursor-pointer hover:opacity-95"
-                    : "bg-[#1E2338] text-[#6F7690] cursor-not-allowed border border-[#2D354E]"
+                    : "bg-muted text-muted-foreground cursor-not-allowed border border-border dark:bg-[#1E2338] dark:text-[#6F7690] dark:border-[#2D354E]"
                 }`}
                 style={
                   isFormValid && !isSubmitting

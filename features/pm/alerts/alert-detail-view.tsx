@@ -196,7 +196,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
   const lng = alert.longitude ?? -77.0818;
 
   return (
-    <div className="w-full space-y-6 text-white font-sans bg-transparent pb-16 max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
+    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-16 max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
       {/* 1. TOP HEADER ROW */}
       <div className="flex items-center justify-between gap-3">
         <Link
@@ -212,7 +212,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
           <button
             type="button"
             onClick={handleCopyId}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-mono text-[#8F96AE] hover:text-white transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-border bg-card dark:bg-[#141829] text-xs font-mono text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
             <span>ID {alert.id.slice(0, 8)}...</span>
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -222,18 +222,18 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
       </div>
 
       {/* 2. TOP BANNER CARD */}
-      <div className="rounded-2xl p-5 border border-[#483713] bg-[#17140B] shadow-sm space-y-3">
+      <div className="rounded-2xl p-5 border border-amber-200 dark:border-[#483713] bg-amber-50/70 dark:bg-[#17140B] shadow-sm space-y-3">
         <div className="flex items-start gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-[#281E0E] border border-[#483713] text-[#F59E0B] flex items-center justify-center shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-[#281E0E] border border-amber-300 dark:border-[#483713] text-amber-600 dark:text-[#F59E0B] flex items-center justify-center shrink-0">
             <Clock className="w-5 h-5" />
           </div>
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <h2 className="text-xl font-bold text-white tracking-tight">
+              <h2 className="text-xl font-bold text-foreground tracking-tight">
                 Asistencia tarde
               </h2>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#2A1D0B] text-[#FBBF24] border border-[#483713]">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-[#2A1D0B] text-amber-700 dark:text-[#FBBF24] border border-amber-300 dark:border-[#483713]">
                 ● {alert.status === "PENDING" ? "Pendiente" : alert.status === "APPROVED" ? "Aprobada" : "Cancelada"}
               </span>
             </div>
@@ -242,7 +242,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
               {alert.type || "ASISTENCIA_TARDE"}
             </p>
 
-            <p className="text-xs text-[#8F96AE] mt-2 leading-relaxed">
+            <p className="font-hanken text-xs text-muted-foreground mt-2 leading-relaxed">
               {alert.detailMessage ||
                 "Análisis completado sin anomalías. El marcaje de entrada se registró después de la hora de inicio del turno (08:00)."}
             </p>
@@ -253,8 +253,8 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
       {/* 3 & 4. DETAILS GRID (1 col mobile, 2 cols desktop) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* 3. INFORMACIÓN DE LA ALERTA CARD */}
-        <div className="bg-[#101322] border border-[#1E2335] rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 className="text-sm font-semibold text-white">
+        <div className="bg-card dark:bg-[#101322] border border-border dark:border-[#1E2335] rounded-2xl p-5 shadow-sm space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">
             Información de la alerta
           </h3>
 
@@ -267,7 +267,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
               <span className="text-[10px] font-mono tracking-wider text-[#8B7BD8] uppercase block font-semibold">
                 PROYECTO
               </span>
-              <span className="inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold bg-[#241B3B] text-[#C084FC] border border-[#4A2D78]">
+              <span className="inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 dark:bg-[#241B3B] text-purple-700 dark:text-[#C084FC] border border-purple-200 dark:border-[#4A2D78]">
                 {alert.projectName || "testo6"}
               </span>
             </div>
@@ -282,7 +282,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
               <span className="text-[10px] font-mono tracking-wider text-[#8B7BD8] uppercase block font-semibold">
                 USUARIO
               </span>
-              <div className="text-sm font-bold text-white mt-0.5">
+              <div className="text-sm font-bold text-foreground mt-0.5">
                 {alert.userName || "carlos mamani"}
               </div>
               <div className="text-xs text-[#8F96AE]">
@@ -300,7 +300,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
               <span className="text-[10px] font-mono tracking-wider text-[#8B7BD8] uppercase block font-semibold">
                 FECHA Y HORA
               </span>
-              <div className="text-sm font-bold text-white mt-0.5 font-mono">
+              <div className="text-sm font-bold text-foreground mt-0.5 font-mono">
                 02 sep 2026 · 08:52 a. m.
               </div>
               <div className="text-xs text-amber-400 font-medium mt-0.5">
@@ -311,8 +311,8 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
         </div>
 
         {/* 4. UBICACIÓN DEL REGISTRO CARD */}
-        <div className="bg-[#101322] border border-[#1E2335] rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 className="text-sm font-semibold text-white">
+        <div className="bg-card dark:bg-[#101322] border border-border dark:border-[#1E2335] rounded-2xl p-5 shadow-sm space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">
             Ubicación del registro
           </h3>
 
@@ -324,7 +324,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
               <span className="text-[10px] font-mono tracking-wider text-[#8B7BD8] uppercase block font-semibold">
                 DISTRITO / ZONA
               </span>
-              <div className="text-sm font-bold text-white">
+              <div className="text-sm font-bold text-foreground">
                 {alert.district || "Condevilla Señor"}
               </div>
             </div>
@@ -335,7 +335,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
           </div>
 
           {/* Map View Canvas Container */}
-          <div className="h-44 rounded-xl border border-[#1E2335] bg-[#0C0E18] relative overflow-hidden flex items-center justify-center">
+          <div className="h-44 rounded-xl border border-border dark:border-[#1E2335] bg-muted/30 dark:bg-[#0C0E18] relative overflow-hidden flex items-center justify-center">
             <div
               className="absolute inset-0 opacity-20"
               style={{
@@ -358,7 +358,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
             href={`https://www.google.com/maps?q=${lat},${lng}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1C2238] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+            className="w-full h-11 rounded-xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#141829] hover:bg-muted text-foreground text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
           >
             <ExternalLink className="w-3.5 h-3.5 text-[#8F96AE]" />
             <span>Abrir en Google Maps</span>
@@ -367,7 +367,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
       </div>
 
       {/* 5. BOTTOM ACTION FOOTER BAR */}
-      <div className="rounded-2xl border border-[#1E2335] bg-[#101322] p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 shadow-sm">
+      <div className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#101322] p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 shadow-sm">
         <p className="text-xs text-muted-foreground text-center md:text-left leading-relaxed max-w-lg">
           Al aprobar, la tardanza queda registrada en el historial del trabajador. Al cancelar, la alerta se descarta.
         </p>

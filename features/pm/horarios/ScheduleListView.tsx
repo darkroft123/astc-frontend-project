@@ -298,7 +298,7 @@ export function ScheduleListView() {
           </Button>
           <Button 
             size="sm" 
-            className="h-8 text-xs bg-[#2A1E4A] hover:bg-[#34255C] border border-purple-700/40 text-purple-200" 
+            className="h-8 text-xs bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 dark:bg-[#2A1E4A] dark:hover:bg-[#34255C] dark:border-purple-700/40 dark:text-purple-200 font-semibold cursor-pointer" 
             onClick={() => setPreviewTemplate(r)}
             disabled={assignedTemplateIds.has(r.id)}
           >
@@ -422,7 +422,7 @@ export function ScheduleListView() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <h4 className="font-bold text-base text-foreground truncate">{t.name}</h4>
-                    <span className="inline-block bg-purple-950/60 text-purple-300 border border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full mt-1 font-medium">
+                    <span className="inline-block bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full mt-1 font-medium">
                       {project?.name || t.projectId || "proyecto testeo"}
                     </span>
                   </div>
@@ -460,7 +460,7 @@ export function ScheduleListView() {
                     <Pencil className="w-4 h-4" />
                   </Button>
                   <Button
-                    className="flex-1 h-11 rounded-xl bg-[#2A1E4A] hover:bg-[#34255C] border border-purple-700/40 text-purple-200 font-medium text-sm flex items-center justify-center gap-2"
+                    className="flex-1 h-11 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 dark:bg-[#2A1E4A] dark:hover:bg-[#34255C] dark:border-purple-700/40 dark:text-purple-200 font-semibold text-sm flex items-center justify-center gap-2 cursor-pointer"
                     onClick={() => setPreviewTemplate(t)}
                     disabled={assignedTemplateIds.has(t.id)}
                   >
