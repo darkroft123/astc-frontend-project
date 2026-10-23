@@ -65,6 +65,17 @@ export default function RootLayout({
                   }
                   return origError.apply(console, arguments);
                 };
+                if (typeof window !== "undefined") {
+                  if (window.location.search.indexOf("theme=light") !== -1) {
+                    document.documentElement.classList.remove("dark");
+                    document.documentElement.classList.add("light");
+                    try { localStorage.setItem("theme", "light"); } catch(e) {}
+                  } else if (window.location.search.indexOf("theme=dark") !== -1) {
+                    document.documentElement.classList.remove("light");
+                    document.documentElement.classList.add("dark");
+                    try { localStorage.setItem("theme", "dark"); } catch(e) {}
+                  }
+                }
               })();
             `,
           }}
