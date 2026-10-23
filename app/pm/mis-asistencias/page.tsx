@@ -463,8 +463,8 @@ export default function PMAsistenciasPage() {
                   <Calendar className="w-4 h-4 text-muted-foreground" />
                   <span>{r.date}</span>
                 </div>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${r.status === "PRESENTE" || r.status === "ON_TIME" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40" : r.status === "FALTA" ? "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40" : r.status === "TARDE" ? "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40" : "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40"}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${r.status === "PRESENTE" || r.status === "ON_TIME" ? "bg-emerald-500" : r.status === "FALTA" ? "bg-rose-500" : r.status === "TARDE" ? "bg-amber-500" : "bg-blue-500"}`} />
                   {r.statusLabel}
                 </span>
               </div>
@@ -542,8 +542,8 @@ export default function PMAsistenciasPage() {
                   <td className="py-4 px-4 font-mono text-xs text-foreground font-medium">{row.checkIn}</td>
                   <td className="py-4 px-4 font-mono text-xs text-muted-foreground">{row.checkOut}</td>
                   <td className="py-4 px-4">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-400 border border-amber-800/40">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${row.status === "PRESENTE" || row.status === "ON_TIME" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40" : row.status === "FALTA" ? "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40" : row.status === "TARDE" ? "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40" : "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40"}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${row.status === "PRESENTE" || row.status === "ON_TIME" ? "bg-emerald-500" : row.status === "FALTA" ? "bg-rose-500" : row.status === "TARDE" ? "bg-amber-500" : "bg-blue-500"}`} />
                       {row.statusLabel}
                     </span>
                   </td>

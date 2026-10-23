@@ -592,8 +592,8 @@ export function JustificationsListView() {
                       </p>
                     </div>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${row.estado === "APPROVED" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40" : row.estado === "REJECTED" ? "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40" : row.estado === "SUBMITTED" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40" : "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40"}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${row.estado === "APPROVED" ? "bg-emerald-500" : row.estado === "REJECTED" ? "bg-rose-500" : row.estado === "SUBMITTED" ? "bg-blue-500" : "bg-amber-500"}`} />
                     {row.estado === "SUBMITTED" ? "Enviada" : row.estado === "APPROVED" ? "Aprobada" : row.estado === "REJECTED" ? "Rechazada" : "Pendiente"}
                   </span>
                 </div>
@@ -726,8 +726,8 @@ export function JustificationsListView() {
                     </td>
                     <td className="py-4 px-4 font-mono text-xs text-foreground">{row.fecha}</td>
                     <td className="py-4 px-4">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-950/60 text-blue-400 border border-blue-800/40">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${row.estado === "APPROVED" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40" : row.estado === "REJECTED" ? "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40" : row.estado === "SUBMITTED" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40" : "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40"}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${row.estado === "APPROVED" ? "bg-emerald-500" : row.estado === "REJECTED" ? "bg-rose-500" : row.estado === "SUBMITTED" ? "bg-blue-500" : "bg-amber-500"}`} />
                         {row.estado === "SUBMITTED" ? "Enviada" : row.estado === "APPROVED" ? "Aprobada" : row.estado === "REJECTED" ? "Rechazada" : "Pendiente"}
                       </span>
                     </td>

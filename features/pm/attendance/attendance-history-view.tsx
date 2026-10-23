@@ -572,8 +572,8 @@ export function AttendanceHistoryView() {
                       <h4 className="font-bold text-base text-foreground leading-tight">{r.userName}</h4>
                     </div>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-400 border border-emerald-800/40">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                     {r.statusLabel || "Asistencia"}
                   </span>
                 </div>
@@ -702,7 +702,7 @@ export function AttendanceHistoryView() {
                     <td className="py-3 px-4 font-mono text-amber-400">{row.checkOut}</td>
                     <td className="py-3 px-4">
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                         {row.statusLabel || "Asistencia"}
                       </span>
                     </td>

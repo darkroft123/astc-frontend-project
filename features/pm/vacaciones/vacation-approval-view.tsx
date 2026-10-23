@@ -214,10 +214,10 @@ export function VacationApprovalView() {
       render: (r) => (
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
           r.status === "PENDING"
-            ? "bg-amber-950/60 text-amber-400 border-amber-800/40"
+            ? "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/40"
             : r.status === "APPROVED"
-            ? "bg-emerald-950/60 text-emerald-400 border-emerald-800/40"
-            : "bg-rose-950/60 text-rose-400 border-rose-800/40"
+            ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40"
+            : "bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800/40"
         }`}>
           {r.status === "PENDING" ? "Pendiente" : r.status === "APPROVED" ? "Aprobada" : "Rechazada"}
         </span>
@@ -433,13 +433,13 @@ export function VacationApprovalView() {
 
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
                     isPending
-                      ? "bg-amber-950/60 text-amber-400 border border-amber-800/40"
+                      ? "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40"
                       : isApproved
-                      ? "bg-emerald-950/60 text-emerald-400 border border-emerald-800/40"
-                      : "bg-rose-950/60 text-rose-400 border border-rose-800/40"
+                      ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40"
+                      : "bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40"
                   }`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${
-                      isPending ? "bg-amber-400" : isApproved ? "bg-emerald-400" : "bg-rose-400"
+                      isPending ? "bg-amber-500" : isApproved ? "bg-emerald-500" : "bg-rose-500"
                     }`} />
                     {isPending ? "Pendiente" : isApproved ? "Aprobada" : "Rechazada"}
                   </span>

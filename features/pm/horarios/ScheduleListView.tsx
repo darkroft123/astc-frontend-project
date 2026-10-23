@@ -152,7 +152,7 @@ function TemplatePreview({
     <DialogContent className="sm:max-w-lg rounded-2xl bg-white dark:bg-[#0C0E18] border border-[#E2E4EB] dark:border-[#1E2335] text-[#11131C] dark:text-white p-6 shadow-2xl">
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2.5 text-[#11131C] dark:text-white text-lg font-bold">
-          <div className="w-8 h-8 rounded-lg bg-[#0F2833] border border-[#164152] text-[#22C3E6] flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-cyan-50 dark:bg-[#0F2833] border border-cyan-200 dark:border-[#164152] text-cyan-600 dark:text-[#22C3E6] flex items-center justify-center shrink-0">
             <Clock className="w-4 h-4" />
           </div>
           <span>{template.name}</span>
@@ -473,7 +473,7 @@ export function ScheduleListView() {
                         {/* NOMBRE */}
                         <td className="py-3 px-3 whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-lg bg-[#0F2833] border border-[#164152] text-[#22C3E6] flex items-center justify-center shrink-0">
+                            <div className="w-7 h-7 rounded-lg bg-cyan-50 dark:bg-[#0F2833] border border-cyan-200 dark:border-[#164152] text-cyan-600 dark:text-[#22C3E6] flex items-center justify-center shrink-0">
                               <Clock className="w-3.5 h-3.5" />
                             </div>
                             <span className="font-semibold text-sm text-[#11131C] dark:text-white">
@@ -518,9 +518,9 @@ export function ScheduleListView() {
                             <button
                               type="button"
                               onClick={() => setPreviewTemplate(t)}
-                              className="h-8 px-3 rounded-xl bg-[#2E1A47] hover:bg-[#3B225B] border border-[#582A88] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shrink-0 whitespace-nowrap cursor-pointer shadow-sm"
+                              className="h-8 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 dark:bg-[#2E1A47] dark:hover:bg-[#3B225B] dark:border-[#582A88] dark:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shrink-0 whitespace-nowrap cursor-pointer shadow-sm"
                             >
-                              <Users className="w-3.5 h-3.5 text-[#C084FC]" />
+                              <Users className="w-3.5 h-3.5 text-purple-600 dark:text-[#C084FC]" />
                               <span>Asignar a miembros</span>
                             </button>
                           </div>
@@ -615,7 +615,7 @@ export function ScheduleListView() {
               >
                 {/* Header of Card */}
                 <div className="flex items-start gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-[#0F2833] border border-[#164152] text-[#22C3E6] flex items-center justify-center shrink-0">
+                  <div className="w-11 h-11 rounded-xl bg-cyan-50 dark:bg-[#0F2833] border border-cyan-200 dark:border-[#164152] text-cyan-600 dark:text-[#22C3E6] flex items-center justify-center shrink-0">
                     <Clock className="w-5 h-5" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -672,9 +672,9 @@ export function ScheduleListView() {
                   <button
                     type="button"
                     onClick={() => setPreviewTemplate(t)}
-                    className="flex-1 h-11 rounded-xl bg-[#2E1A47] hover:bg-[#3B225B] border border-[#582A88] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer whitespace-nowrap"
+                    className="flex-1 h-11 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 dark:bg-[#2E1A47] dark:hover:bg-[#3B225B] dark:border-[#582A88] dark:text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer whitespace-nowrap"
                   >
-                    <Users className="w-4 h-4 text-[#C084FC]" />
+                    <Users className="w-4 h-4 text-purple-600 dark:text-[#C084FC]" />
                     <span>Asignar a miembros</span>
                   </button>
                 </div>

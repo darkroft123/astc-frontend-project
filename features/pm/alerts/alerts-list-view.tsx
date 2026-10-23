@@ -626,7 +626,7 @@ export function AlertsListView() {
               {/* Header: Type icon, Type Name, Status Badge */}
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-950/40 border border-amber-800/40 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
                     <Clock className="w-5 h-5" />
                   </div>
                   <div>
@@ -639,8 +639,8 @@ export function AlertsListView() {
                   </div>
                 </div>
 
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${alert.status === "PENDING" ? "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40" : "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40"}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${alert.status === "PENDING" ? "bg-amber-500" : "bg-emerald-500"}`} />
                   {alert.status === "PENDING" ? "Pendiente" : alert.status === "REVIEWED" ? "Revisada" : "Aprobada"}
                 </span>
               </div>
@@ -735,8 +735,8 @@ export function AlertsListView() {
                     </div>
                   </td>
                   <td className="py-3.5 px-4">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-400 border border-amber-800/40">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${alert.status === "PENDING" ? "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40" : "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40"}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${alert.status === "PENDING" ? "bg-amber-500" : "bg-emerald-500"}`} />
                       {alert.status === "PENDING" ? "Pendiente" : "Revisada"}
                     </span>
                   </td>
