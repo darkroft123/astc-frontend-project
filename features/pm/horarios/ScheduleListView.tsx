@@ -249,8 +249,23 @@ export function ScheduleListView() {
   }, [hydrated, token]);
 
   const fetchTemplates = useCallback(async () => {
+    let customList: any[] = [];
+    if (typeof window !== "undefined") {
+      try {
+        customList = JSON.parse(localStorage.getItem("pm_shift_templates_custom") || "[]");
+      } catch {}
+    }
+
+    const mergeWithCustom = (baseList: any[]) => {
+      if (!customList || customList.length === 0) return baseList;
+      const map = new Map<string, any>();
+      baseList.forEach((t) => map.set(t.id, t));
+      customList.forEach((t) => map.set(t.id, { ...map.get(t.id), ...t }));
+      return Array.from(map.values());
+    };
+
     if (!token) {
-      setTemplates(DEFAULT_MOCK_TEMPLATES);
+      setTemplates(mergeWithCustom(DEFAULT_MOCK_TEMPLATES));
       setProjects(DEFAULT_MOCK_PROJECTS);
       return;
     }
@@ -258,13 +273,13 @@ export function ScheduleListView() {
     try {
       const data = await listShiftTemplates(token);
       if (Array.isArray(data) && data.length > 0) {
-        setTemplates(data);
+        setTemplates(mergeWithCustom(data));
       } else {
-        setTemplates(DEFAULT_MOCK_TEMPLATES);
+        setTemplates(mergeWithCustom(DEFAULT_MOCK_TEMPLATES));
       }
     } catch (error) {
       console.error("Error fetching templates:", error);
-      setTemplates(DEFAULT_MOCK_TEMPLATES);
+      setTemplates(mergeWithCustom(DEFAULT_MOCK_TEMPLATES));
     } finally {
       setLoading(false);
     }
