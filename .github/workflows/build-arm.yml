@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE: ghcr.io/joyit-yprogram/astc-frontend-project
+  IMAGE: ghcr.io/darkroft123/astc-frontend-project
 
 jobs:
   build:
