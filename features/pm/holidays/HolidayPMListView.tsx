@@ -74,6 +74,58 @@ const DEFAULT_SVG_COLLECTIONS: CollectionOutput[] = [
       { id: "item-10", collectionId: "col-feriados2", date: "2026-10-08", name: "Combate de Angamos" },
     ],
   },
+  {
+    id: "col-nacional-2026",
+    name: "Calendario Anual Completo 2026",
+    scope: "GLOBAL",
+    createdAt: "2026-08-20T09:00:00Z",
+    items: [
+      { id: "item-11", collectionId: "col-nacional-2026", date: "2026-01-01", name: "Año Nuevo" },
+      { id: "item-12", collectionId: "col-nacional-2026", date: "2026-04-02", name: "Jueves Santo" },
+      { id: "item-13", collectionId: "col-nacional-2026", date: "2026-04-03", name: "Viernes Santo" },
+      { id: "item-14", collectionId: "col-nacional-2026", date: "2026-05-01", name: "Día del Trabajo" },
+      { id: "item-15", collectionId: "col-nacional-2026", date: "2026-06-07", name: "Batalla de Arica y Día de la Bandera" },
+      { id: "item-16", collectionId: "col-nacional-2026", date: "2026-06-29", name: "San Pedro y San Pablo" },
+      { id: "item-17", collectionId: "col-nacional-2026", date: "2026-07-23", name: "Día de la FAP" },
+      { id: "item-18", collectionId: "col-nacional-2026", date: "2026-07-28", name: "Fiestas Patrias Día 1" },
+      { id: "item-19", collectionId: "col-nacional-2026", date: "2026-07-29", name: "Fiestas Patrias Día 2" },
+      { id: "item-20", collectionId: "col-nacional-2026", date: "2026-08-06", name: "Batalla de Junín" },
+      { id: "item-21", collectionId: "col-nacional-2026", date: "2026-08-30", name: "Santa Rosa de Lima" },
+      { id: "item-22", collectionId: "col-nacional-2026", date: "2026-10-08", name: "Combate de Angamos" },
+      { id: "item-23", collectionId: "col-nacional-2026", date: "2026-11-01", name: "Día de Todos los Santos" },
+      { id: "item-24", collectionId: "col-nacional-2026", date: "2026-12-08", name: "Inmaculada Concepción" },
+      { id: "item-25", collectionId: "col-nacional-2026", date: "2026-12-09", name: "Batalla de Ayacucho" },
+      { id: "item-26", collectionId: "col-nacional-2026", date: "2026-12-25", name: "Navidad" },
+    ],
+  },
+  {
+    id: "col-5",
+    name: "Días No Laborables Compensables",
+    scope: "PROJECT",
+    createdAt: "2026-08-15T14:00:00Z",
+    items: [
+      { id: "item-27", collectionId: "col-5", date: "2026-01-02", name: "Puente Año Nuevo" },
+      { id: "item-28", collectionId: "col-5", date: "2026-07-27", name: "Puente Fiestas Patrias" },
+    ],
+  },
+  {
+    id: "col-6",
+    name: "Sede Regional Arequipa",
+    scope: "PROJECT",
+    createdAt: "2026-08-10T16:00:00Z",
+    items: [
+      { id: "item-29", collectionId: "col-6", date: "2026-08-15", name: "Aniversario de Arequipa" },
+    ],
+  },
+  {
+    id: "col-7",
+    name: "Sede Regional Cusco",
+    scope: "PROJECT",
+    createdAt: "2026-08-05T12:00:00Z",
+    items: [
+      { id: "item-30", collectionId: "col-7", date: "2026-06-24", name: "Inti Raymi - Día del Cusco" },
+    ],
+  },
 ];
 
 const DEFAULT_SVG_MEMBERS = [
@@ -463,6 +515,56 @@ export function HolidayPMListView() {
     return availableCollections.reduce((acc, c) => acc + (c.items?.length || 0), 0) || 10;
   }, [availableCollections]);
 
+  // Tab 1 Pagination (Collections)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const totalPages = Math.max(1, Math.ceil(filteredCollections.length / pageSize));
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedProjectId]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
+
+  const paginatedCollections = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredCollections.slice(start, start + pageSize);
+  }, [filteredCollections, currentPage, pageSize]);
+
+  // Tab 2 Filtered & Paginated Members
+  const filteredMembers = useMemo(() => {
+    if (!searchTerm.trim()) return members;
+    const lower = searchTerm.toLowerCase();
+    return members.filter((m) => {
+      const name = (userNames[m.userId] || m.displayName || "").toLowerCase();
+      const email = (userEmails[m.userId] || m.email || "").toLowerCase();
+      return name.includes(lower) || email.includes(lower);
+    });
+  }, [members, searchTerm, userNames, userEmails]);
+
+  const [membersPage, setMembersPage] = useState(1);
+  const [membersPageSize, setMembersPageSize] = useState(5);
+  const totalMemberPages = Math.max(1, Math.ceil(filteredMembers.length / membersPageSize));
+
+  useEffect(() => {
+    setMembersPage(1);
+  }, [searchTerm, selectedProjectId]);
+
+  useEffect(() => {
+    if (membersPage > totalMemberPages) {
+      setMembersPage(totalMemberPages);
+    }
+  }, [totalMemberPages, membersPage]);
+
+  const paginatedMembers = useMemo(() => {
+    const start = (membersPage - 1) * membersPageSize;
+    return filteredMembers.slice(start, start + membersPageSize);
+  }, [filteredMembers, membersPage, membersPageSize]);
+
   // Handlers
   const handleToggleDateCreate = (dateStr: string) => {
     setNewCollectionDates((prev) =>
@@ -811,7 +913,7 @@ export function HolidayPMListView() {
         {/* TAB 1: Colecciones del proyecto */}
         {activeTab === "project" && (
           <div className="space-y-3.5">
-            {filteredCollections.map((col) => {
+            {paginatedCollections.map((col) => {
               const isAssigned = col.id === assignedCollectionId;
               const isExpanded = expandedId === col.id;
 
@@ -876,40 +978,54 @@ export function HolidayPMListView() {
                   {/* Expanded Content: Holidays Cards List */}
                   {isExpanded && col.items && col.items.length > 0 && (
                     <div className="px-4 pb-4 pt-1 space-y-2.5">
-                      {col.items.map((item, idx) => {
-                        const dateObj = new Date(item.date + "T12:00:00");
-                        const dayName = WEEKDAY_NAMES_ES[dateObj.getDay()];
-                        const dayNumber = dateObj.getDate();
-                        const yearNum = dateObj.getFullYear();
+                      <div className="flex items-center justify-between pb-2 border-b border-border/40 dark:border-[#1E2335] text-xs">
+                        <span className="font-semibold text-foreground">
+                          {col.items.length} {col.items.length === 1 ? "feriado en esta colección" : "feriados en esta colección"}
+                        </span>
+                        {col.items.length > 4 && (
+                          <span className="text-[11px] text-muted-foreground">
+                            Desplázate para ver todos
+                          </span>
+                        )}
+                      </div>
 
-                        return (
-                          <div
-                            key={item.id || idx}
-                            className="rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] p-3 flex items-center justify-between shadow-2xs"
-                          >
-                            <div className="flex items-center gap-3">
-                              {/* Date Squircle (SEP 12) */}
-                              <div className="border border-purple-200 dark:border-[#342461] rounded-xl py-1 px-2.5 min-w-[50px] text-center bg-purple-50 dark:bg-[#1D1635]">
-                                <span className="text-[10px] font-bold text-purple-700 dark:text-[#A855F7] block tracking-wider uppercase leading-tight">
-                                  {MONTH_NAMES_ES[dateObj.getMonth()].slice(0, 3).toUpperCase()}
-                                </span>
-                                <span className="text-base font-bold text-purple-950 dark:text-white leading-none block mt-0.5">
-                                  {dayNumber}
-                                </span>
-                              </div>
+                      {/* Contenedor acotado con scroll vertical */}
+                      <div className="max-h-[320px] sm:max-h-[360px] overflow-y-auto pr-1 sm:pr-1.5 space-y-2.5">
+                        {col.items.map((item, idx) => {
+                          const dateObj = new Date(item.date + "T12:00:00");
+                          const dayName = WEEKDAY_NAMES_ES[dateObj.getDay()];
+                          const dayNumber = dateObj.getDate();
+                          const yearNum = dateObj.getFullYear();
 
-                              <div>
-                                <p className="font-bold text-xs text-foreground">
-                                  {item.name}
-                                </p>
-                                <p className="text-[11px] text-muted-foreground capitalize mt-0.5">
-                                  {dayName}, {yearNum}
-                                </p>
+                          return (
+                            <div
+                              key={item.id || idx}
+                              className="rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] p-3 flex items-center justify-between shadow-2xs"
+                            >
+                              <div className="flex items-center gap-3">
+                                {/* Date Squircle (SEP 12) */}
+                                <div className="border border-purple-200 dark:border-[#342461] rounded-xl py-1 px-2.5 min-w-[50px] text-center bg-purple-50 dark:bg-[#1D1635]">
+                                  <span className="text-[10px] font-bold text-purple-700 dark:text-[#A855F7] block tracking-wider uppercase leading-tight">
+                                    {MONTH_NAMES_ES[dateObj.getMonth()].slice(0, 3).toUpperCase()}
+                                  </span>
+                                  <span className="text-base font-bold text-purple-950 dark:text-white leading-none block mt-0.5">
+                                    {dayNumber}
+                                  </span>
+                                </div>
+
+                                <div>
+                                  <p className="font-bold text-xs text-foreground">
+                                    {item.name}
+                                  </p>
+                                  <p className="text-[11px] text-muted-foreground capitalize mt-0.5">
+                                    {dayName}, {yearNum}
+                                  </p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
 
                       {/* Footer bar for assigned collection */}
                       {isAssigned && (
@@ -936,6 +1052,45 @@ export function HolidayPMListView() {
                 </div>
               );
             })}
+
+            {/* PAGINACIÓN DE COLECCIONES DEL PROYECTO */}
+            {filteredCollections.length > 0 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 px-1 text-xs text-muted-foreground">
+                <div>
+                  <span>
+                    Mostrando <strong className="text-foreground">{Math.min((currentPage - 1) * pageSize + 1, filteredCollections.length)}</strong> - <strong className="text-foreground">{Math.min(currentPage * pageSize, filteredCollections.length)}</strong> de <strong className="text-foreground">{filteredCollections.length}</strong> colecciones
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span>
+                    Página <strong className="text-foreground">{currentPage}</strong> de <strong className="text-foreground">{totalPages}</strong>
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      disabled={currentPage <= 1}
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
+                      title="Página anterior"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline text-xs">Anterior</span>
+                    </button>
+                    <button
+                      type="button"
+                      disabled={currentPage >= totalPages}
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
+                      title="Página siguiente"
+                    >
+                      <span className="hidden sm:inline text-xs">Siguiente</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -944,11 +1099,11 @@ export function HolidayPMListView() {
           <div className="space-y-4">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>Configura calendarios distintos para miembros individuales</span>
-              <span className="font-mono">{members.length} miembros</span>
+              <span className="font-mono">{filteredMembers.length} {filteredMembers.length === 1 ? "miembro" : "miembros"}</span>
             </div>
 
             <div className="space-y-3">
-              {members.map((m, idx) => {
+              {paginatedMembers.map((m, idx) => {
                 const displayName = userNames[m.userId] || m.displayName || "Sin nombre registrado";
                 const email = userEmails[m.userId] || m.email || "user@astc.com";
                 const initials = m.initials || (displayName !== "Sin nombre registrado"
@@ -958,7 +1113,7 @@ export function HolidayPMListView() {
                 return (
                   <div
                     key={m.userId || idx}
-                    className="rounded-2xl border border-border dark:border-border dark:border-[#1E2335] bg-card dark:bg-card dark:bg-[#0C0E18] p-4 space-y-3 shadow-2xs"
+                    className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 space-y-3 shadow-2xs"
                   >
                     <div className="flex items-center gap-3">
                       {initials ? (
@@ -1011,6 +1166,45 @@ export function HolidayPMListView() {
                 );
               })}
             </div>
+
+            {/* PAGINACIÓN DE MIEMBROS */}
+            {filteredMembers.length > 0 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 px-1 text-xs text-muted-foreground">
+                <div>
+                  <span>
+                    Mostrando <strong className="text-foreground">{Math.min((membersPage - 1) * membersPageSize + 1, filteredMembers.length)}</strong> - <strong className="text-foreground">{Math.min(membersPage * membersPageSize, filteredMembers.length)}</strong> de <strong className="text-foreground">{filteredMembers.length}</strong> miembros
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span>
+                    Página <strong className="text-foreground">{membersPage}</strong> de <strong className="text-foreground">{totalMemberPages}</strong>
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      disabled={membersPage <= 1}
+                      onClick={() => setMembersPage((p) => Math.max(1, p - 1))}
+                      className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
+                      title="Página anterior"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline text-xs">Anterior</span>
+                    </button>
+                    <button
+                      type="button"
+                      disabled={membersPage >= totalMemberPages}
+                      onClick={() => setMembersPage((p) => Math.min(totalMemberPages, p + 1))}
+                      className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
+                      title="Página siguiente"
+                    >
+                      <span className="hidden sm:inline text-xs">Siguiente</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
         </div>
