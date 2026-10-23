@@ -27,6 +27,10 @@ function getBaseDomain(): string {
  * Returns the GraphQL Gateway endpoint for client requests.
  */
 export function getGraphQLUrl(): string {
+  if (typeof window !== "undefined" && window.location.port && window.location.port !== "80" && window.location.port !== "443") {
+    const scheme = window.location.protocol.replace(":", "");
+    return `${scheme}://astc-api.joyit.io:${window.location.port}/graphql`;
+  }
   if (process.env.NEXT_PUBLIC_GRAPHQL_URL) {
     return process.env.NEXT_PUBLIC_GRAPHQL_URL;
   }

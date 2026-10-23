@@ -457,7 +457,7 @@ export function ScheduleManagementView() {
             </div>
           ) : paginated.length === 0 ? (
             <div className="p-8 text-center text-sm text-muted-foreground bg-card rounded-2xl border border-border">
-              No se encontraron asignaciones de horario.
+              No hay asignaciones de horario disponibles.
             </div>
           ) : (
             paginated.map((r, idx) => {
@@ -610,7 +610,7 @@ export function ScheduleManagementView() {
                 ) : paginated.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-8 text-center text-sm text-muted-foreground">
-                      No se encontraron asignaciones de horario.
+                      No hay asignaciones de horario disponibles.
                     </td>
                   </tr>
                 ) : (

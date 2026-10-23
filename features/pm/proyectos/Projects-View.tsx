@@ -132,10 +132,10 @@ export function ProjectsManagementView({
                 · Administración
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
               Gestión de proyectos
             </h1>
-            <p className="text-xs text-[#8F96AE] leading-relaxed max-w-xl">
+            <p className="font-hanken text-xs text-muted-foreground leading-relaxed max-w-xl">
               Administración de proyectos, configuración y asignación de recursos del sistema.
             </p>
           </div>
@@ -163,7 +163,7 @@ export function ProjectsManagementView({
         {/* 2. 3 STAT CARDS (ROW OF 3 MATCHING EXACT SVG) */}
         <div className="grid grid-cols-3 gap-2.5 sm:gap-4 pt-1">
           {/* Card 1: Total */}
-          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-3.5 sm:p-5 flex flex-col justify-between h-[95px] sm:h-[110px] shadow-xs">
+          <div className="rounded-2xl border border-border bg-card p-3.5 sm:p-5 flex flex-col justify-between h-[95px] sm:h-[110px] shadow-xs">
             <div className="flex items-center justify-between">
               <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-[#141829] flex items-center justify-center text-[#8F96AE]">
                 <Folder className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -209,7 +209,7 @@ export function ProjectsManagementView({
         </div>
 
         {/* 3. FILTERS BAR */}
-        <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 shadow-xs">
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-xs">
           <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3.5">
             {/* Buscar */}
             <div className="space-y-1.5 flex-1">
@@ -226,7 +226,7 @@ export function ProjectsManagementView({
                     setSearch(e.target.value);
                     setPage(1);
                   }}
-                  className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-[#1E2335] bg-[#12141F] text-xs font-medium text-white placeholder:text-[#8F96AE] focus:outline-none focus:border-[#A855F7]"
+                  className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-border bg-background/50 text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#A855F7]"
                 />
               </div>
             </div>
@@ -243,7 +243,7 @@ export function ProjectsManagementView({
                     setEstadoFilter(e.target.value);
                     setPage(1);
                   }}
-                  className="flex-1 h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#12141F] text-xs font-medium text-white focus:outline-none focus:border-[#A855F7]"
+                  className="flex-1 h-11 px-3.5 rounded-xl border border-border bg-background/50 text-xs font-medium text-foreground focus:outline-none focus:border-[#A855F7]"
                 >
                   <option value="all">Todos</option>
                   <option value="ACTIVE">Activo</option>
@@ -253,7 +253,7 @@ export function ProjectsManagementView({
                 <button
                   type="button"
                   onClick={fetchProjects}
-                  className="w-11 h-11 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] text-[#8F96AE] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
+                  className="w-11 h-11 rounded-xl border border-border bg-background/50 hover:bg-[#1A1D2E] text-[#8F96AE] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
                   title="Actualizar"
                 >
                   <RotateCw className={`w-4 h-4 ${isLoading ? "animate-spin text-[#A855F7]" : ""}`} />
@@ -266,8 +266,8 @@ export function ProjectsManagementView({
         {/* 4. RESPONSIVE VIEW: MOBILE PROJECT CARDS (md:hidden) */}
         <div className="md:hidden space-y-3.5">
           {paginatedProjects.length === 0 ? (
-            <div className="py-12 text-center text-[#8F96AE] text-xs bg-[#0C0E18] rounded-2xl border border-[#1E2335]">
-              No se encontraron proyectos.
+            <div className="py-12 text-center text-[#8F96AE] text-xs bg-card rounded-2xl border border-border">
+              No hay proyectos disponibles
             </div>
           ) : (
             paginatedProjects.map((row) => {
@@ -275,7 +275,7 @@ export function ProjectsManagementView({
               return (
                 <div
                   key={row.id}
-                  className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 space-y-3.5 shadow-xs"
+                  className="rounded-2xl border border-border bg-card p-4 space-y-3.5 shadow-xs"
                 >
                   {/* Top row */}
                   <div className="flex items-center justify-between gap-3">
@@ -309,7 +309,7 @@ export function ProjectsManagementView({
 
                   {/* Middle row: 2 boxes (INICIO & FIN) */}
                   <div className="grid grid-cols-2 gap-2.5">
-                    <div className="rounded-xl border border-[#1E2335] bg-[#12141F] p-2.5">
+                    <div className="rounded-xl border border-border bg-background/50 p-2.5">
                       <span className="text-[9.5px] font-mono text-[#8B7BD8] uppercase tracking-wider block font-semibold">
                         INICIO
                       </span>
@@ -317,7 +317,7 @@ export function ProjectsManagementView({
                         {formatDate(row.startDate)}
                       </span>
                     </div>
-                    <div className="rounded-xl border border-[#1E2335] bg-[#12141F] p-2.5">
+                    <div className="rounded-xl border border-border bg-background/50 p-2.5">
                       <span className="text-[9.5px] font-mono text-[#8B7BD8] uppercase tracking-wider block font-semibold">
                         FIN
                       </span>
@@ -352,7 +352,7 @@ export function ProjectsManagementView({
                   <button
                     type="button"
                     onClick={() => setSelectedProjectForDetail(row)}
-                    className="w-full h-11 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+                    className="w-full h-11 rounded-xl border border-border bg-background/50 hover:bg-[#1A1D2E] text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
                   >
                     <Eye className="w-4 h-4 text-[#8F96AE]" />
                     <span>Ver detalle</span>
@@ -364,11 +364,11 @@ export function ProjectsManagementView({
         </div>
 
         {/* 5. DESKTOP VIEW: DATA TABLE (hidden md:block - WEB IS PRESERVED!) */}
-        <div className="hidden md:block rounded-2xl border border-[#1E2335] bg-[#0C0E18] overflow-hidden shadow-xs">
+        <div className="hidden md:block rounded-2xl border border-border bg-card overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-[#1E2335] bg-[#101322] text-[10.5px] font-mono font-semibold text-[#8B7BD8] tracking-wider uppercase">
+                <tr className="border-b border-border bg-background/50 text-[10.5px] font-mono font-semibold text-[#8B7BD8] tracking-wider uppercase">
                   <th className="py-4 px-5">PROYECTO</th>
                   <th className="py-4 px-5">INICIO</th>
                   <th className="py-4 px-5">FIN</th>
@@ -381,7 +381,7 @@ export function ProjectsManagementView({
                 {paginatedProjects.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center text-[#8F96AE]">
-                      No se encontraron proyectos.
+                      No hay proyectos disponibles
                     </td>
                   </tr>
                 ) : (
@@ -391,7 +391,7 @@ export function ProjectsManagementView({
                     return (
                       <tr
                         key={row.id}
-                        className="hover:bg-[#12141F]/80 transition-colors"
+                        className="hover:bg-background/50/80 transition-colors"
                       >
                         {/* PROYECTO */}
                         <td className="py-4 px-5">
@@ -458,7 +458,7 @@ export function ProjectsManagementView({
                           <button
                             type="button"
                             onClick={() => setSelectedProjectForDetail(row)}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] text-xs font-semibold text-white transition-colors cursor-pointer shadow-xs"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-border bg-background/50 hover:bg-[#1A1D2E] text-xs font-semibold text-white transition-colors cursor-pointer shadow-xs"
                           >
                             <Eye className="w-3.5 h-3.5 text-[#8F96AE]" />
                             <span>Ver detalle</span>
@@ -481,7 +481,7 @@ export function ProjectsManagementView({
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="w-9 h-9 rounded-xl border border-[#1E2335] bg-[#12141F] flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#1A1D2E] transition-colors"
+              className="w-9 h-9 rounded-xl border border-border bg-background/50 flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#1A1D2E] transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -492,7 +492,7 @@ export function ProjectsManagementView({
               type="button"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="w-9 h-9 rounded-xl border border-[#1E2335] bg-[#12141F] flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#1A1D2E] transition-colors"
+              className="w-9 h-9 rounded-xl border border-border bg-background/50 flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#1A1D2E] transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

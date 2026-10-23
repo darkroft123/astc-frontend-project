@@ -252,7 +252,7 @@ export function AttendanceRegistrationView() {
                   ) : members.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="py-16 text-center">
-                        <p className="text-sm text-muted-foreground">No se pudo cargar la información del equipo. Intente más tarde.</p>
+                        <p className="text-sm text-muted-foreground">No hay trabajadores disponibles para registrar asistencia.</p>
                       </td>
                     </tr>
                   ) : (
@@ -311,7 +311,7 @@ export function AttendanceRegistrationView() {
                   ) : members.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="py-16 text-center">
-                        <p className="text-sm text-muted-foreground">No se pudo cargar la información del equipo. Intente más tarde.</p>
+                        <p className="text-sm text-muted-foreground">No hay trabajadores disponibles para registrar asistencia.</p>
                       </td>
                     </tr>
                   ) : (

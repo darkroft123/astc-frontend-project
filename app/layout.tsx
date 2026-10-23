@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 
@@ -15,6 +15,12 @@ const inter = Inter({
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains-mono",
+  preload: false,
+});
+
+const hankenGrotesk = Hanken_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-hanken",
   preload: false,
 });
 
@@ -64,7 +70,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} ${inter.variable} ${jetbrainsMono.variable} font-sans antialiased w-full min-h-screen`}>
+      <body className={`${inter.className} ${inter.variable} ${jetbrainsMono.variable} ${hankenGrotesk.variable} font-sans antialiased w-full min-h-screen`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <AuthProvider>{children}</AuthProvider>
           <Toaster />

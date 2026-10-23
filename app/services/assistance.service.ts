@@ -287,7 +287,8 @@ export async function checkOut(
 /* ================= GET TODAY ATTENDANCE ================= */
 
 export async function getTodayAttendance(token: string, projectId?: string | null) {
-  if (!token) throw new Error("Token de autenticación no encontrado");
+  if (!token) return null;
+  try {
 
   const res = await fetch(getGraphQLUrl(), {
     method: "POST",
@@ -323,6 +324,10 @@ export async function getTodayAttendance(token: string, projectId?: string | nul
   }
 
   return json.data?.getTodayAttendance || null;
+  } catch (err) {
+    console.warn("[API] TODAY_ATTENDANCE_FAILED (network error):", err);
+    return null;
+  }
 }
 
 /* ================= SAVE JUSTIFICATION ================= */
