@@ -28,9 +28,16 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Sistema de Gestión de Asistencias - Jefe de Proyecto",
+  title: "ASTC-PROJECT MANAGER",
   description:
-    "Sistema de gestión de asistencias, justificaciones y alertas para el Jefe de Proyecto",
+    "Sistema de gestión de asistencias, justificaciones y alertas para el Jefe de Proyecto - ASTC",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico" },
+    ],
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({
