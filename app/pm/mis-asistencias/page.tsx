@@ -155,7 +155,7 @@ export default function PMAsistenciasPage() {
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Mis asistencias
           </h1>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="font-hanken text-xs text-muted-foreground mt-1">
             Consulta y filtra el historial completo de tus registros de asistencia personal.
           </p>
         </div>
@@ -186,7 +186,7 @@ export default function PMAsistenciasPage() {
 
       {/* 3. PERIOD SELECTOR - Desktop View (Compact inline tabs + button + badge) */}
       <div className="hidden md:flex items-center gap-3 flex-wrap">
-        <div className="inline-flex items-center gap-1 p-1 rounded-2xl bg-[#0C0E18] border border-[#1E2335]">
+        <div className="inline-flex items-center gap-1 p-1 rounded-2xl bg-card border border-border">
           {PERIOD_TABS.map((tab) => {
             const isActive = activePeriod === tab.id;
             return (
@@ -196,8 +196,8 @@ export default function PMAsistenciasPage() {
                 onClick={() => setActivePeriod(tab.id)}
                 className={`py-2 px-3.5 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   isActive
-                    ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
-                    : "text-[#8F96AE] hover:text-white"
+                    ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {tab.label}
@@ -209,16 +209,16 @@ export default function PMAsistenciasPage() {
         <button
           type="button"
           onClick={() => setDateRangeModalOpen(true)}
-          className="h-10 px-4 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-xs font-medium text-[#8F96AE] hover:text-white flex items-center gap-2 transition-colors cursor-pointer shrink-0 shadow-xs"
+          className="h-10 px-4 rounded-2xl bg-card border border-border text-xs font-medium text-foreground hover:text-primary flex items-center gap-2 transition-colors cursor-pointer shrink-0 shadow-xs"
           title="Seleccionar rango personalizado"
         >
           <Calendar className="w-4 h-4 text-[#A855F7]" />
           <span>Rango personalizado</span>
         </button>
 
-        <div className="h-10 px-4 rounded-2xl bg-[#0C0E18] border border-[#1E2335] flex items-center gap-2 text-xs font-mono shrink-0 shadow-xs">
-          <span className="text-[#8F96AE]">Período:</span>
-          <span className="text-[#EEF0F6] font-semibold">
+        <div className="h-10 px-4 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/40 flex items-center text-xs font-mono font-semibold text-blue-600 dark:text-blue-400 shrink-0 shadow-xs">
+          <span className="hidden">Período:</span>
+          <span className="text-blue-600 dark:text-blue-400 font-semibold">
             {dateRange.from} → {dateRange.to}
           </span>
         </div>
@@ -226,7 +226,7 @@ export default function PMAsistenciasPage() {
 
       {/* 3. PERIOD SELECTOR TABS (Mobile only - 2 rows matching Figma SVG) */}
       <div className="md:hidden space-y-2.5">
-        <div className="p-2 sm:p-2.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335]">
+        <div className="p-2 sm:p-2.5 rounded-2xl bg-card dark:bg-[#0C0E18] border border-border dark:border-[#1E2335]">
           {/* Row 1: 4 tabs */}
           <div className="grid grid-cols-4 gap-1 text-center">
             {PERIOD_TABS.slice(0, 4).map((tab) => {
@@ -238,8 +238,8 @@ export default function PMAsistenciasPage() {
                   onClick={() => setActivePeriod(tab.id)}
                   className={`py-1.5 px-1 rounded-xl text-xs transition-all cursor-pointer truncate ${
                     isActive
-                      ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
-                      : "text-[#8F96AE] hover:text-white font-medium"
+                      ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
+                      : "text-muted-foreground hover:text-foreground font-medium"
                   }`}
                 >
                   {tab.label}
@@ -259,8 +259,8 @@ export default function PMAsistenciasPage() {
                   onClick={() => setActivePeriod(tab.id)}
                   className={`py-1.5 px-1 rounded-xl text-xs transition-all cursor-pointer truncate ${
                     isActive
-                      ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
-                      : "text-[#8F96AE] hover:text-white font-medium"
+                      ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
+                      : "text-muted-foreground hover:text-foreground font-medium"
                   }`}
                 >
                   {tab.label}
@@ -272,14 +272,14 @@ export default function PMAsistenciasPage() {
 
         {/* 4. DATE RANGE SELECTOR BAR (Mobile only) */}
         <div className="flex items-center gap-2">
-          <div className="flex-1 h-11 px-3.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335] flex items-center justify-center gap-2 text-xs font-mono text-[#8F96AE]">
+          <div className="flex-1 h-11 px-3.5 rounded-2xl bg-card dark:bg-[#0C0E18] border border-border dark:border-[#1E2335] flex items-center justify-center gap-2 text-xs font-mono text-[#8F96AE]">
             <Calendar className="w-3.5 h-3.5 text-[#A855F7]" />
-            <span className="text-[#EEF0F6] font-semibold">{dateRange.from} → {dateRange.to}</span>
+            <span className="text-blue-600 dark:text-blue-400 font-semibold">{dateRange.from} → {dateRange.to}</span>
           </div>
           <button
             type="button"
             onClick={() => setDateRangeModalOpen(true)}
-            className="w-11 h-11 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-[#8F96AE] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
+            className="w-11 h-11 rounded-2xl bg-card dark:bg-[#0C0E18] border border-border dark:border-[#1E2335] text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
             title="Seleccionar rango"
           >
             <Calendar className="w-4 h-4" />
@@ -452,7 +452,7 @@ export default function PMAsistenciasPage() {
       <div className="space-y-3 md:hidden">
         {filteredRecords.length === 0 ? (
           <div className="text-center p-8 text-muted-foreground bg-card rounded-2xl border border-border">
-            No se encontraron registros de asistencias.
+            No hay registros de asistencia disponibles
           </div>
         ) : (
           filteredRecords.map((r, idx) => (
@@ -463,7 +463,7 @@ export default function PMAsistenciasPage() {
                   <Calendar className="w-4 h-4 text-muted-foreground" />
                   <span>{r.date}</span>
                 </div>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-400 border border-amber-800/40">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                   {r.statusLabel}
                 </span>
@@ -529,7 +529,14 @@ export default function PMAsistenciasPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {filteredRecords.map((row) => (
+              {filteredRecords.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-muted-foreground text-sm font-medium">
+                    No hay registros de asistencia disponibles
+                  </td>
+                </tr>
+              ) : (
+                filteredRecords.map((row) => (
                 <tr key={row.id} className="hover:bg-muted/30 transition-colors">
                   <td className="py-4 px-4 font-mono text-xs text-foreground">{row.date}</td>
                   <td className="py-4 px-4 font-mono text-xs text-foreground font-medium">{row.checkIn}</td>
@@ -558,7 +565,7 @@ export default function PMAsistenciasPage() {
                     </span>
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>

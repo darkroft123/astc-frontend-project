@@ -322,7 +322,7 @@ export default function ScheduleForm({
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             {mode === "create" ? "Asignar horario personalizado" : "Editar horario personalizado"}
           </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-2xl leading-relaxed">
+          <p className="font-hanken text-xs sm:text-sm text-muted-foreground mt-1 max-w-2xl leading-relaxed">
             Configura un horario específico para un usuario. Reemplaza el horario heredado del proyecto.
           </p>
         </div>
@@ -346,7 +346,7 @@ export default function ScheduleForm({
           {/* CARD 1: Asignación */}
           <div className="rounded-[20px] sm:rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0E111C] p-4 sm:p-6 space-y-4 shadow-sm">
             <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-xl bg-[#231B42] text-purple-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-7 h-7 rounded-xl bg-purple-100 dark:bg-[#231B42] text-purple-700 dark:text-purple-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                 1
               </div>
               <div>
@@ -417,7 +417,7 @@ export default function ScheduleForm({
           {/* CARD 2: Tipo de turno */}
           <div className="rounded-[20px] sm:rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0E111C] p-4 sm:p-6 space-y-4 shadow-sm">
             <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-xl bg-[#231B42] text-purple-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-7 h-7 rounded-xl bg-purple-100 dark:bg-[#231B42] text-purple-700 dark:text-purple-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                 2
               </div>
               <div>
@@ -441,11 +441,11 @@ export default function ScheduleForm({
                     onClick={() => setShiftType(opt.key)}
                     className={`text-left p-3.5 rounded-xl border transition-all flex flex-col justify-between cursor-pointer ${
                       isSelected
-                        ? "border-purple-500 bg-purple-950/20 text-purple-300 ring-1 ring-purple-500/40 shadow-xs"
+                        ? "border-purple-500 bg-purple-50 text-purple-700 ring-1 ring-purple-500/30 dark:bg-purple-950/30 dark:text-purple-300 shadow-xs"
                         : "border-border dark:border-[#1E2335] bg-card/60 dark:bg-[#141829] hover:bg-muted/40 text-foreground"
                     }`}
                   >
-                    <p className={`text-xs sm:text-sm font-bold leading-tight ${isSelected ? "text-purple-300" : "text-foreground"}`}>
+                    <p className={`text-xs sm:text-sm font-bold leading-tight ${isSelected ? "text-purple-700 dark:text-purple-300" : "text-foreground"}`}>
                       {opt.title}
                     </p>
                     <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
@@ -463,7 +463,7 @@ export default function ScheduleForm({
           {/* CARD 3: Configuración de horario */}
           <div className="rounded-[20px] sm:rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0E111C] p-4 sm:p-6 space-y-4 shadow-sm">
             <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-xl bg-[#231B42] text-purple-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-7 h-7 rounded-xl bg-purple-100 dark:bg-[#231B42] text-purple-700 dark:text-purple-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                 3
               </div>
               <div>
@@ -482,7 +482,7 @@ export default function ScheduleForm({
             {(shiftType === "REGULAR" || shiftType === "TRANSITORY") && (
               <div className="space-y-4 pt-1">
                 {/* Info banner matching exact SVG text */}
-                <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs flex items-start gap-2.5">
+                <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs flex items-start gap-2.5">
                   <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-400" />
                   <p className="leading-relaxed">
                     Lunes a viernes. Sábados y domingos son descanso automático: no se exige marcar ni se genera falta. Ideal para personal administrativo u oficina.
@@ -500,7 +500,7 @@ export default function ScheduleForm({
                       onClick={() => handleApplyQuickTemplate("day")}
                       className={`py-2 px-2 rounded-lg text-xs font-semibold transition-all text-center cursor-pointer ${
                         quickTemplate === "day"
-                          ? "bg-[#1E2438] text-white shadow-xs font-bold"
+                          ? "bg-primary/10 text-primary border border-primary/30 shadow-xs font-bold"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
@@ -512,7 +512,7 @@ export default function ScheduleForm({
                       onClick={() => handleApplyQuickTemplate("afternoon")}
                       className={`py-2 px-2 rounded-lg text-xs font-semibold transition-all text-center cursor-pointer ${
                         quickTemplate === "afternoon"
-                          ? "bg-[#1E2438] text-white shadow-xs font-bold"
+                          ? "bg-primary/10 text-primary border border-primary/30 shadow-xs font-bold"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
@@ -524,7 +524,7 @@ export default function ScheduleForm({
                       onClick={() => handleApplyQuickTemplate("night")}
                       className={`py-2 px-2 rounded-lg text-xs font-semibold transition-all text-center cursor-pointer ${
                         quickTemplate === "night"
-                          ? "bg-[#1E2438] text-white shadow-xs font-bold"
+                          ? "bg-primary/10 text-primary border border-primary/30 shadow-xs font-bold"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
@@ -604,7 +604,7 @@ export default function ScheduleForm({
             {/* ROTATING */}
             {shiftType.startsWith("ROTATING") && (
               <div className="space-y-4 pt-1">
-                <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs flex items-start gap-2.5">
+                <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs flex items-start gap-2.5">
                   <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-400" />
                   <p className="leading-relaxed">
                     Ciclo continuo de <strong>{rotationWorkDays} días de trabajo</strong> seguidos de <strong>{rotationRestDays} días de descanso</strong>.
@@ -659,7 +659,7 @@ export default function ScheduleForm({
             {/* FLEXIBLE */}
             {shiftType === "FLEXIBLE" && (
               <div className="space-y-3 pt-1">
-                <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs flex items-start gap-2.5">
+                <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs flex items-start gap-2.5">
                   <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-400" />
                   <p className="leading-relaxed">
                     Configura horas distintas por día. Los días vacíos se consideran descanso automático.
@@ -699,7 +699,7 @@ export default function ScheduleForm({
           {/* CARD 4: Reglas generales */}
           <div className="rounded-[20px] sm:rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0E111C] p-4 sm:p-6 space-y-4 shadow-sm">
             <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-xl bg-[#231B42] text-purple-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-7 h-7 rounded-xl bg-purple-100 dark:bg-[#231B42] text-purple-700 dark:text-purple-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                 4
               </div>
               <div>
@@ -772,7 +772,7 @@ export default function ScheduleForm({
             type="button"
             onClick={handleSubmit}
             disabled={!isFormReady || isSubmitting}
-            className="flex-1 sm:flex-initial h-11 px-6 rounded-xl bg-purple-950/40 border border-purple-800/50 hover:bg-purple-900/40 text-purple-200 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+            className="flex-1 sm:flex-initial h-11 px-6 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-purple-500/20"
           >
             <Save className="w-4 h-4" />
             <span>{isSubmitting ? "Guardando..." : "Guardar horario"}</span>

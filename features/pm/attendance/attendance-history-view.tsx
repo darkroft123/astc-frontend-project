@@ -206,7 +206,7 @@ export function AttendanceHistoryView() {
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Historial de asistencias
           </h1>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="font-hanken text-xs text-muted-foreground mt-1">
             Registro completo de ingresos, salidas y ubicaciones del equipo.
           </p>
         </div>
@@ -237,7 +237,7 @@ export function AttendanceHistoryView() {
 
       {/* 3. PERIOD SELECTOR - Desktop View (Compact inline tabs + button + badge) */}
       <div className="hidden md:flex items-center gap-3 flex-wrap">
-        <div className="inline-flex items-center gap-1 p-1 rounded-2xl bg-[#0C0E18] border border-[#1E2335]">
+        <div className="inline-flex items-center gap-1 p-1 rounded-2xl bg-card border border-border">
           {PERIOD_TABS.map((tab) => {
             const isActive = activePeriod === tab.id;
             return (
@@ -247,8 +247,8 @@ export function AttendanceHistoryView() {
                 onClick={() => setActivePeriod(tab.id)}
                 className={`py-2 px-3.5 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   isActive
-                    ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
-                    : "text-[#8F96AE] hover:text-white"
+                    ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {tab.label}
@@ -260,16 +260,16 @@ export function AttendanceHistoryView() {
         <button
           type="button"
           onClick={() => setDateRangeModalOpen(true)}
-          className="h-10 px-4 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-xs font-medium text-[#8F96AE] hover:text-white flex items-center gap-2 transition-colors cursor-pointer shrink-0 shadow-xs"
+          className="h-10 px-4 rounded-2xl bg-card border border-border text-xs font-medium text-foreground hover:text-primary flex items-center gap-2 transition-colors cursor-pointer shrink-0 shadow-xs"
           title="Seleccionar rango personalizado"
         >
           <Calendar className="w-4 h-4 text-[#A855F7]" />
           <span>Rango personalizado</span>
         </button>
 
-        <div className="h-10 px-4 rounded-2xl bg-[#0C0E18] border border-[#1E2335] flex items-center gap-2 text-xs font-mono shrink-0 shadow-xs">
-          <span className="text-[#8F96AE]">Período:</span>
-          <span className="text-[#EEF0F6] font-semibold">
+        <div className="h-10 px-4 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/40 flex items-center text-xs font-mono font-semibold text-blue-600 dark:text-blue-400 shrink-0 shadow-xs">
+          <span className="hidden">Período:</span>
+          <span className="text-blue-600 dark:text-blue-400 font-semibold">
             {dateRange.from} → {dateRange.to}
           </span>
         </div>
@@ -277,7 +277,7 @@ export function AttendanceHistoryView() {
 
       {/* 3. PERIOD SELECTOR TABS (Mobile only - 2 rows matching Figma SVG) */}
       <div className="md:hidden space-y-2.5">
-        <div className="p-2 sm:p-2.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335]">
+        <div className="p-2 sm:p-2.5 rounded-2xl bg-card dark:bg-[#0C0E18] border border-border dark:border-[#1E2335]">
           {/* Row 1: 4 tabs */}
           <div className="grid grid-cols-4 gap-1 text-center">
             {PERIOD_TABS.slice(0, 4).map((tab) => {
@@ -289,8 +289,8 @@ export function AttendanceHistoryView() {
                   onClick={() => setActivePeriod(tab.id)}
                   className={`py-1.5 px-1 rounded-xl text-xs transition-all cursor-pointer truncate ${
                     isActive
-                      ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
-                      : "text-[#8F96AE] hover:text-white font-medium"
+                      ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
+                      : "text-muted-foreground hover:text-foreground dark:hover:text-white font-medium"
                   }`}
                 >
                   {tab.label}
@@ -310,8 +310,8 @@ export function AttendanceHistoryView() {
                   onClick={() => setActivePeriod(tab.id)}
                   className={`py-1.5 px-1 rounded-xl text-xs transition-all cursor-pointer truncate ${
                     isActive
-                      ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
-                      : "text-[#8F96AE] hover:text-white font-medium"
+                      ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
+                      : "text-muted-foreground hover:text-foreground dark:hover:text-white font-medium"
                   }`}
                 >
                   {tab.label}
@@ -323,14 +323,14 @@ export function AttendanceHistoryView() {
 
         {/* 4. DATE RANGE SELECTOR BAR (Mobile only) */}
         <div className="flex items-center gap-2">
-          <div className="flex-1 h-11 px-3.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335] flex items-center justify-center gap-2 text-xs font-mono text-[#8F96AE]">
+          <div className="flex-1 h-11 px-3.5 rounded-2xl bg-card dark:bg-[#0C0E18] border border-border dark:border-[#1E2335] flex items-center justify-center gap-2 text-xs font-mono text-muted-foreground">
             <Calendar className="w-3.5 h-3.5 text-[#A855F7]" />
-            <span className="text-[#EEF0F6] font-semibold">{dateRange.from} → {dateRange.to}</span>
+            <span className="text-blue-600 dark:text-blue-400 font-semibold">{dateRange.from} → {dateRange.to}</span>
           </div>
           <button
             type="button"
             onClick={() => setDateRangeModalOpen(true)}
-            className="w-11 h-11 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-[#8F96AE] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
+            className="w-11 h-11 rounded-2xl bg-card dark:bg-[#0C0E18] border border-border dark:border-[#1E2335] text-muted-foreground hover:text-foreground dark:hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
             title="Seleccionar rango"
           >
             <Calendar className="w-4 h-4" />
@@ -549,7 +549,7 @@ export function AttendanceHistoryView() {
       <div className="space-y-3 md:hidden">
         {records.length === 0 ? (
           <div className="text-center p-8 text-muted-foreground bg-card rounded-2xl border border-border">
-            No se encontraron registros de asistencias.
+            No hay registros de asistencias disponibles
           </div>
         ) : (
           records.map((r, idx) => {
@@ -583,7 +583,7 @@ export function AttendanceHistoryView() {
 
                 {/* Project Tag & Date */}
                 <div className="flex items-center justify-between">
-                  <span className="inline-block bg-purple-950/60 text-purple-300 border border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                  <span className="inline-block bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
                     {r.projectName || "testo6"}
                   </span>
                   <span className="text-sm font-medium text-foreground">{r.date}</span>
@@ -650,7 +650,14 @@ export function AttendanceHistoryView() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {records.map((row, idx) => {
+              {records.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-muted-foreground text-sm font-medium">
+                    No hay registros de asistencias disponibles
+                  </td>
+                </tr>
+              ) : (
+                records.map((row, idx) => {
                 const initials = (row.userName || "Carlos Mamani")
                   .split(" ")
                   .map((n: string) => n[0])
@@ -672,7 +679,7 @@ export function AttendanceHistoryView() {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-950/60 text-purple-300 border border-purple-800/40">
+                      <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40">
                         {row.projectName}
                       </span>
                     </td>
@@ -694,7 +701,7 @@ export function AttendanceHistoryView() {
                     </td>
                     <td className="py-3 px-4 font-mono text-amber-400">{row.checkOut}</td>
                     <td className="py-3 px-4">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/50 text-emerald-400 border border-emerald-800/40">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                         {row.statusLabel || "Asistencia"}
                       </span>
@@ -707,7 +714,7 @@ export function AttendanceHistoryView() {
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>

@@ -544,7 +544,7 @@ export function ScheduleManagementView() {
             </div>
           ) : paginated.length === 0 ? (
             <div className="p-8 text-center text-sm text-muted-foreground bg-card rounded-2xl border border-border">
-              No se encontraron asignaciones de horario.
+              No hay asignaciones de horario disponibles.
             </div>
           ) : (
             paginated.map((r, idx) => {
@@ -574,7 +574,7 @@ export function ScheduleManagementView() {
                   {/* Badges row */}
                   <div className="flex items-center gap-1.5 flex-wrap">
                     {r.projectId ? (
-                      <span className="inline-block bg-purple-950/60 text-purple-300 border border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                      <span className="inline-block bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
                         {r.projectName}
                       </span>
                     ) : (
@@ -584,19 +584,19 @@ export function ScheduleManagementView() {
                     )}
 
                     {r.hasOverride ? (
-                      <span className="inline-flex items-center gap-1 bg-purple-950/50 text-purple-300 border border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                      <span className="inline-flex items-center gap-1 bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
                         <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
                         Personalizado
                       </span>
                     ) : r.projectId ? (
-                      <span className="inline-flex items-center gap-1 bg-emerald-950/50 text-emerald-400 border border-emerald-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                      <span className="inline-flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                         Del proyecto
                       </span>
                     ) : null}
 
                     {shiftBadge && (
-                      <span className="inline-block bg-cyan-950/50 text-cyan-400 border border-cyan-800/40 text-xs px-2 py-0.5 rounded-md font-medium">
+                      <span className="inline-block bg-cyan-50 dark:bg-cyan-950/50 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800/40 text-xs px-2 py-0.5 rounded-md font-medium">
                         {shiftBadge}
                       </span>
                     )}
@@ -697,7 +697,7 @@ export function ScheduleManagementView() {
                 ) : paginated.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-8 text-center text-sm text-muted-foreground">
-                      No se encontraron asignaciones de horario.
+                      No hay asignaciones de horario disponibles.
                     </td>
                   </tr>
                 ) : (
@@ -723,7 +723,7 @@ export function ScheduleManagementView() {
                         </td>
                         <td className="py-3 px-4">
                           {r.projectId ? (
-                            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-950/60 text-purple-300 border border-purple-800/40">
+                            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40">
                               {r.projectName}
                             </span>
                           ) : (
@@ -737,24 +737,24 @@ export function ScheduleManagementView() {
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs text-muted-foreground bg-muted">Sin proyecto</span>
                           ) : r.hasOverride ? (
                             <div className="inline-flex items-center gap-1.5 flex-wrap">
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-950/50 text-purple-300 border border-purple-800/40">
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40">
                                 <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
                                 Personalizado
                               </span>
                               {shiftBadge && (
-                                <span className="inline-block bg-cyan-950/50 text-cyan-400 border border-cyan-800/40 text-xs px-2 py-0.5 rounded-md font-medium">
+                                <span className="inline-block bg-cyan-50 dark:bg-cyan-950/50 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800/40 text-xs px-2 py-0.5 rounded-md font-medium">
                                   {shiftBadge}
                                 </span>
                               )}
                             </div>
                           ) : (
                             <div className="inline-flex items-center gap-1.5 flex-wrap">
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-950/50 text-emerald-400 border border-emerald-800/40">
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                                 Del proyecto
                               </span>
                               {shiftBadge && (
-                                <span className="inline-block bg-cyan-950/50 text-cyan-400 border border-cyan-800/40 text-xs px-2 py-0.5 rounded-md font-medium">
+                                <span className="inline-block bg-cyan-50 dark:bg-cyan-950/50 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800/40 text-xs px-2 py-0.5 rounded-md font-medium">
                                   {shiftBadge}
                                 </span>
                               )}

@@ -210,13 +210,13 @@ function MonthCalendarPicker({
   }, [currentYear, currentMonth]);
 
   return (
-    <div className="rounded-2xl border border-[#1E2335] dark:border-[#1E2335] bg-[#141829] dark:bg-[#141829] p-4 text-foreground">
+    <div className="rounded-2xl border border-border dark:border-[#1E2335] dark:border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] dark:bg-background dark:bg-[#141829] p-4 text-foreground">
       {/* Month Header */}
       <div className="flex items-center justify-between mb-4 px-1">
         <button
           type="button"
           onClick={handlePrevMonth}
-          className="w-8 h-8 rounded-lg border border-[#1E2335] bg-[#101322] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          className="w-8 h-8 rounded-lg border border-border dark:border-[#1E2335] bg-[#101322] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -226,7 +226,7 @@ function MonthCalendarPicker({
         <button
           type="button"
           onClick={handleNextMonth}
-          className="w-8 h-8 rounded-lg border border-[#1E2335] bg-[#101322] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          className="w-8 h-8 rounded-lg border border-border dark:border-[#1E2335] bg-[#101322] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -258,8 +258,8 @@ function MonthCalendarPicker({
                 isSelected
                   ? "bg-brand-gradient text-white shadow-xs font-bold"
                   : cell.isCurrentMonth
-                  ? "text-foreground hover:bg-[#1C2238]"
-                  : "text-muted-foreground/40 hover:bg-[#1C2238]/50"
+                  ? "text-foreground hover:bg-muted dark:hover:bg-[#1C2238]"
+                  : "text-muted-foreground/40 hover:bg-muted dark:hover:bg-[#1C2238]/50"
               }`}
             >
               {cell.dayNumber}
@@ -579,7 +579,7 @@ export function HolidayPMListView() {
     <div className="relative min-h-screen bg-transparent pb-16 font-sans">
       {/* Top Ambient Glow */}
       <div
-        className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-80 rounded-full opacity-30 blur-3xl z-0"
+        className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-80 rounded-full opacity-30 blur-3xl z-0 hidden dark:block"
         style={{
           background: "radial-gradient(circle, #7C3AED 0%, transparent 70%)",
         }}
@@ -593,14 +593,14 @@ export function HolidayPMListView() {
               <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.05em] text-[#8B7BD8]">
                 PANEL DE GESTIÓN
               </span>
-              <span className="text-xs text-[#8F96AE]">
+              <span className="text-xs text-muted-foreground">
                 · Calendario
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
               Feriados del proyecto
             </h1>
-            <p className="text-xs text-[#8F96AE] leading-relaxed max-w-xl">
+            <p className="font-hanken text-xs text-muted-foreground leading-relaxed max-w-xl">
               Administra colecciones de feriados del proyecto y excepciones para miembros específicos.
             </p>
           </div>
@@ -610,7 +610,7 @@ export function HolidayPMListView() {
             <button
               type="button"
               onClick={() => setIsCreateModalOpen(true)}
-              className="w-full md:w-auto h-11 px-5 rounded-2xl text-white font-semibold text-xs shadow-lg shadow-[#A855F7]/25 hover:opacity-95 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
+              className="w-full md:w-auto h-11 px-5 rounded-2xl text-foreground font-semibold text-xs shadow-lg shadow-[#A855F7]/25 hover:opacity-95 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
               style={{
                 background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 100%)",
               }}
@@ -627,9 +627,9 @@ export function HolidayPMListView() {
         {/* 2. TOP 3 KPI METRIC CARDS (EXACT SVG COLORS & BORDERS) */}
         <div className="grid grid-cols-3 gap-2.5 sm:gap-4 pt-1">
           {/* Card 1: Colecciones disponibles (Amber) */}
-          <div className="rounded-2xl border border-[#483713] bg-[#16140D] p-3 sm:p-4 flex flex-col justify-between h-[95px] sm:h-[105px] shadow-xs">
+          <div className="rounded-2xl border border-amber-500/20 dark:border-[#483713] bg-card dark:bg-[#16140D] p-3 sm:p-4 flex flex-col justify-between h-[95px] sm:h-[105px] shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-[#281B0C] border border-[#483713] flex items-center justify-center text-[#FBBF24]">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-[#FBBF24]">
                 <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
@@ -637,16 +637,16 @@ export function HolidayPMListView() {
               <span className="text-[9.5px] sm:text-xs font-semibold text-[#FBBF24] block leading-tight">
                 Colecciones disponibles
               </span>
-              <div className="text-2xl sm:text-3xl font-bold text-white leading-none mt-1">
+              <div className="text-2xl sm:text-3xl font-bold text-foreground leading-none mt-1">
                 {availableCollections.length || 3}
               </div>
             </div>
           </div>
 
           {/* Card 2: Asignadas al proyecto (Purple) */}
-          <div className="rounded-2xl border border-[#3E256C] bg-[#161226] p-3 sm:p-4 flex flex-col justify-between h-[95px] sm:h-[105px] shadow-xs">
+          <div className="rounded-2xl border border-purple-500/20 dark:border-[#3E256C] bg-card dark:bg-[#161226] p-3 sm:p-4 flex flex-col justify-between h-[95px] sm:h-[105px] shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-[#21163F] border border-[#3E256C] flex items-center justify-center text-[#A855F7]">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-[#A855F7]">
                 <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
               </div>
             </div>
@@ -654,16 +654,16 @@ export function HolidayPMListView() {
               <span className="text-[9.5px] sm:text-xs font-semibold text-[#C4B5FD] block leading-tight">
                 Asignadas al proyecto
               </span>
-              <div className="text-2xl sm:text-3xl font-bold text-white leading-none mt-1">
+              <div className="text-2xl sm:text-3xl font-bold text-foreground leading-none mt-1">
                 {assignedCollectionId ? 1 : 0}
               </div>
             </div>
           </div>
 
           {/* Card 3: Total feriados (Green/Teal) */}
-          <div className="rounded-2xl border border-[#134E35] bg-[#0C1814] p-3 sm:p-4 flex flex-col justify-between h-[95px] sm:h-[105px] shadow-xs">
+          <div className="rounded-2xl border border-emerald-500/20 dark:border-[#134E35] bg-card dark:bg-[#0C1814] p-3 sm:p-4 flex flex-col justify-between h-[95px] sm:h-[105px] shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-[#0C251C] border border-[#134E35] flex items-center justify-center text-[#34D399]">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-[#34D399]">
                 <CalendarIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
@@ -671,7 +671,7 @@ export function HolidayPMListView() {
               <span className="text-[9.5px] sm:text-xs font-semibold text-[#34D399] block leading-tight">
                 Total feriados
               </span>
-              <div className="text-2xl sm:text-3xl font-bold text-white leading-none mt-1">
+              <div className="text-2xl sm:text-3xl font-bold text-foreground leading-none mt-1">
                 {totalHolidaysCount}
               </div>
             </div>
@@ -679,37 +679,37 @@ export function HolidayPMListView() {
         </div>
 
         {/* 3. FILTERS & SEARCH BAR */}
-        <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 shadow-xs">
+        <div className="rounded-2xl border border-border dark:border-border dark:border-[#1E2335] bg-card dark:bg-card dark:bg-[#0C0E18] p-4 shadow-xs">
           <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3.5">
             {/* BUSCAR */}
             <div className="space-y-1.5 flex-1">
-              <label className="text-[10px] font-mono font-semibold text-[#8F96AE] uppercase tracking-wider block">
+              <label className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider block">
                 BUSCAR
               </label>
               <div className="relative">
-                <Search className="w-4 h-4 text-[#8F96AE] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Feriado o usuario..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-[#1E2335] bg-[#12141F] text-xs font-medium text-white placeholder:text-[#8F96AE] focus:outline-none focus:border-[#A855F7]"
+                  className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] text-xs font-medium text-white placeholder:text-muted-foreground focus:outline-none focus:border-[#A855F7]"
                 />
               </div>
             </div>
 
             {/* PROYECTO */}
             <div className="space-y-1.5 w-full md:w-64">
-              <label className="text-[10px] font-mono font-semibold text-[#8F96AE] uppercase tracking-wider block">
+              <label className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider block">
                 PROYECTO
               </label>
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
-                  <Folder className="w-4 h-4 text-[#8F96AE] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <Folder className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <select
                     value={selectedProjectId}
                     onChange={(e) => setSelectedProjectId(e.target.value)}
-                    className="w-full h-11 pl-10 pr-8 rounded-xl border border-[#1E2335] bg-[#12141F] text-xs font-medium text-white focus:outline-none focus:border-[#A855F7] appearance-none"
+                    className="w-full h-11 pl-10 pr-8 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] text-xs font-medium text-white focus:outline-none focus:border-[#A855F7] appearance-none"
                   >
                     {projects.map((p) => (
                       <option key={p.id} value={p.id}>
@@ -717,14 +717,14 @@ export function HolidayPMListView() {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-[#8F96AE] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
 
                 {/* Actualizar Button */}
                 <button
                   type="button"
                   onClick={fetchData}
-                  className="w-11 h-11 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] flex items-center justify-center text-[#8F96AE] hover:text-white transition-colors cursor-pointer shrink-0 shadow-xs"
+                  className="w-11 h-11 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] hover:bg-[#1A1D2E] flex items-center justify-center text-muted-foreground hover:text-white transition-colors cursor-pointer shrink-0 shadow-xs"
                   title="Recargar"
                 >
                   <RotateCw className={`w-4 h-4 ${loading ? "animate-spin text-[#A855F7]" : ""}`} />
@@ -738,13 +738,13 @@ export function HolidayPMListView() {
       <div className="space-y-4 pt-1">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           {/* Segmented control */}
-          <div className="p-1 rounded-xl bg-[#131726] dark:bg-[#131726] border border-[#1E2335] flex items-center gap-1 w-full sm:w-auto">
+          <div className="p-1 rounded-xl bg-[#131726] dark:bg-[#131726] border border-border dark:border-[#1E2335] flex items-center gap-1 w-full sm:w-auto">
             <button
               type="button"
               onClick={() => setActiveTab("project")}
               className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === "project"
-                  ? "bg-[#1E2438] text-white shadow-xs"
+                  ? "bg-muted dark:bg-[#1E2438] text-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -755,7 +755,7 @@ export function HolidayPMListView() {
               onClick={() => setActiveTab("members")}
               className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === "members"
-                  ? "bg-[#1E2438] text-white shadow-xs"
+                  ? "bg-muted dark:bg-[#1E2438] text-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -769,7 +769,7 @@ export function HolidayPMListView() {
               <button
                 type="button"
                 onClick={() => setIsImportModalOpen(true)}
-                className="h-10 px-4 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-xs"
+                className="h-10 px-4 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-xs"
               >
                 <Upload className="w-3.5 h-3.5" />
                 <span>Importar</span>
@@ -778,7 +778,7 @@ export function HolidayPMListView() {
               <button
                 type="button"
                 onClick={() => setIsLinkModalOpen(true)}
-                className="h-10 px-4 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-xs"
+                className="h-10 px-4 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-xs"
               >
                 <Link2 className="w-3.5 h-3.5" />
                 <span>Enlazar global</span>
@@ -801,8 +801,8 @@ export function HolidayPMListView() {
                   key={col.id}
                   className={`rounded-2xl border transition-all ${
                     isAssigned
-                      ? "border-[#34D399]/40 bg-[#0C0E18]"
-                      : "border-[#1E2335] bg-[#0C0E18]"
+                      ? "border-[#34D399]/40 bg-card dark:bg-[#0C0E18]"
+                      : "border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18]"
                   }`}
                 >
                   {/* Card Header Row */}
@@ -811,14 +811,14 @@ export function HolidayPMListView() {
                     className="p-4 flex items-center justify-between gap-3 cursor-pointer select-none"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#281B0C] border border-[#483713] flex items-center justify-center text-[#FBBF24] shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-[#281B0C] border border-amber-200 dark:border-[#483713] flex items-center justify-center text-amber-600 dark:text-[#FBBF24] shrink-0">
                         <Layers className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-white">
+                        <h4 className="text-sm font-bold text-foreground">
                           {col.name}
                         </h4>
-                        <p className="text-xs text-[#8F96AE] mt-0.5">
+                        <p className="text-xs text-muted-foreground mt-0.5">
                           {col.items?.length || 0} feriados · {col.scope === "GLOBAL" ? "Global" : "Proyecto"}
                         </p>
                       </div>
@@ -826,7 +826,7 @@ export function HolidayPMListView() {
 
                     <div className="flex items-center gap-2">
                       {isAssigned ? (
-                        <div className="w-8 h-8 rounded-xl bg-[#12141F] border border-[#1E2335] flex items-center justify-center text-[#8F96AE]">
+                        <div className="w-8 h-8 rounded-xl bg-background dark:bg-[#12141F] border border-border dark:border-[#1E2335] flex items-center justify-center text-muted-foreground">
                           {isExpanded ? (
                             <ChevronUp className="w-4 h-4" />
                           ) : (
@@ -842,11 +842,11 @@ export function HolidayPMListView() {
                               setAssignedCollectionId(col.id);
                               toast({ title: `Colección '${col.name}' asignada al proyecto` });
                             }}
-                            className="px-3.5 py-1.5 rounded-xl bg-[#20183A] hover:bg-[#2B1F4F] border border-[#3E256C] text-[#C4B5FD] text-xs font-semibold cursor-pointer transition-colors"
+                            className="px-3.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 dark:bg-[#20183A] dark:hover:bg-[#2B1F4F] dark:border-[#3E256C] dark:text-[#C4B5FD] text-xs font-semibold cursor-pointer transition-colors"
                           >
                             Asignar
                           </button>
-                          <div className="w-8 h-8 rounded-xl bg-[#12141F] border border-[#1E2335] flex items-center justify-center text-[#8F96AE]">
+                          <div className="w-8 h-8 rounded-xl bg-background dark:bg-[#12141F] border border-border dark:border-[#1E2335] flex items-center justify-center text-muted-foreground">
                             <ChevronRight className="w-4 h-4" />
                           </div>
                         </div>
@@ -866,7 +866,7 @@ export function HolidayPMListView() {
                         return (
                           <div
                             key={item.id || idx}
-                            className="rounded-xl border border-[#1E2335] bg-[#12141F] p-3 flex items-center justify-between shadow-2xs"
+                            className="rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] p-3 flex items-center justify-between shadow-2xs"
                           >
                             <div className="flex items-center gap-3">
                               {/* Date Squircle (SEP 12) */}
@@ -874,16 +874,16 @@ export function HolidayPMListView() {
                                 <span className="text-[10px] font-bold text-[#A855F7] block tracking-wider uppercase leading-tight">
                                   SEP
                                 </span>
-                                <span className="text-base font-bold text-white leading-none block mt-0.5">
+                                <span className="text-base font-bold text-foreground leading-none block mt-0.5">
                                   {dayNumber}
                                 </span>
                               </div>
 
                               <div>
-                                <p className="font-bold text-xs text-white">
+                                <p className="font-bold text-xs text-foreground">
                                   {item.name}
                                 </p>
-                                <p className="text-[11px] text-[#8F96AE] capitalize mt-0.5">
+                                <p className="text-[11px] text-muted-foreground capitalize mt-0.5">
                                   {dayName}, {yearNum}
                                 </p>
                               </div>
@@ -894,7 +894,7 @@ export function HolidayPMListView() {
 
                       {/* Footer bar for assigned collection */}
                       {isAssigned && (
-                        <div className="pt-3 border-t border-[#1E2335] flex items-center justify-between">
+                        <div className="pt-3 border-t border-border dark:border-[#1E2335] flex items-center justify-between">
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#0C251C] text-[#34D399] border border-[#194B37]">
                             <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                             <span>Asignada</span>
@@ -923,7 +923,7 @@ export function HolidayPMListView() {
         {/* TAB 2: Calendarios personalizados (EXACT SVG) */}
         {activeTab === "members" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs text-[#8F96AE]">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>Configura calendarios distintos para miembros individuales</span>
               <span className="font-mono">{members.length} miembros</span>
             </div>
@@ -939,7 +939,7 @@ export function HolidayPMListView() {
                 return (
                   <div
                     key={m.userId || idx}
-                    className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 space-y-3 shadow-2xs"
+                    className="rounded-2xl border border-border dark:border-border dark:border-[#1E2335] bg-card dark:bg-card dark:bg-[#0C0E18] p-4 space-y-3 shadow-2xs"
                   >
                     <div className="flex items-center gap-3">
                       {initials ? (
@@ -953,16 +953,16 @@ export function HolidayPMListView() {
                           {initials}
                         </div>
                       ) : (
-                        <div className="w-10 h-10 rounded-2xl bg-[#141829] border border-[#1E2335] text-[#8F96AE] flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 rounded-2xl bg-background dark:bg-[#141829] border border-border dark:border-[#1E2335] text-muted-foreground flex items-center justify-center shrink-0">
                           <UserIcon className="w-5 h-5" />
                         </div>
                       )}
 
                       <div className="min-w-0 flex-1">
-                        <p className="font-bold text-xs text-white truncate">
+                        <p className="font-bold text-xs text-foreground truncate">
                           {displayName}
                         </p>
-                        <p className="text-[11px] text-[#8F96AE] font-mono truncate mt-0.5">
+                        <p className="text-[11px] text-muted-foreground font-mono truncate mt-0.5">
                           {email}
                         </p>
                       </div>
@@ -973,8 +973,8 @@ export function HolidayPMListView() {
                         DÍAS PERSONALIZADOS
                       </span>
 
-                      <span className="bg-[#12141F] border border-[#1E2335] text-[#8F96AE] text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1.5">
-                        <span className="text-[8px] text-[#8F96AE]">●</span>
+                      <span className="bg-background dark:bg-[#12141F] border border-border dark:border-[#1E2335] text-muted-foreground text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1.5">
+                        <span className="text-[8px] text-muted-foreground">●</span>
                         <span>Sin excepciones</span>
                       </span>
                     </div>
@@ -983,7 +983,7 @@ export function HolidayPMListView() {
                     <button
                       type="button"
                       onClick={() => setSelectedMemberForException(m)}
-                      className="w-full h-11 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+                      className="w-full h-11 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] hover:bg-[#1A1D2E] text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Configurar calendario</span>
@@ -1007,12 +1007,12 @@ export function HolidayPMListView() {
             if (e.target === e.currentTarget) setIsCreateModalOpen(false);
           }}
         >
-          <div className="w-full max-w-lg md:max-w-4xl max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl relative text-foreground space-y-5">
+          <div className="w-full max-w-lg md:max-w-4xl max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-border dark:border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl relative text-foreground space-y-5">
             {/* Drag Handle (Mobile only) */}
             <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto md:hidden" />
 
             {/* Header */}
-            <div className="flex items-start justify-between gap-3 pb-2 border-b border-[#1E2335]">
+            <div className="flex items-start justify-between gap-3 pb-2 border-b border-border dark:border-[#1E2335]">
               <div>
                 <h3 className="text-lg font-bold text-foreground">
                   Crear colección para el proyecto
@@ -1025,7 +1025,7 @@ export function HolidayPMListView() {
               <button
                 type="button"
                 onClick={() => setIsCreateModalOpen(false)}
-                className="w-8 h-8 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
+                className="w-8 h-8 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1046,7 +1046,7 @@ export function HolidayPMListView() {
                       placeholder="Ej. Feriados Perú 2026"
                       value={newCollectionName}
                       onChange={(e) => setNewCollectionName(e.target.value)}
-                      className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+                      className="w-full h-11 px-3.5 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                     />
                   </div>
 
@@ -1073,14 +1073,14 @@ export function HolidayPMListView() {
                   </label>
 
                   {newCollectionDates.length > 0 ? (
-                    <div className="rounded-2xl border border-[#1E2335] bg-[#111422] p-4 space-y-3">
+                    <div className="rounded-2xl border border-border dark:border-[#1E2335] bg-[#111422] p-4 space-y-3">
                       <p className="text-[11px] text-muted-foreground">
                         Asigna un nombre a cada feriado seleccionado para que tus trabajadores lo identifiquen fácilmente:
                       </p>
                       <div className="space-y-2 max-h-[300px] md:max-h-[350px] overflow-y-auto pr-1">
                         {newCollectionDates.map((dateStr) => (
                           <div key={dateStr} className="flex items-center gap-2">
-                            <span className="px-3 py-2 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-mono text-muted-foreground min-w-[105px] text-center shrink-0">
+                            <span className="px-3 py-2 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs font-mono text-muted-foreground min-w-[105px] text-center shrink-0">
                               {dateStr}
                             </span>
                             <input
@@ -1093,15 +1093,15 @@ export function HolidayPMListView() {
                                   [dateStr]: e.target.value,
                                 }))
                               }
-                              className="flex-1 h-9 px-3 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+                              className="flex-1 h-9 px-3 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                             />
                           </div>
                         ))}
                       </div>
                     </div>
                   ) : (
-                    <div className="rounded-2xl border border-dashed border-[#1E2335] bg-[#111422]/60 p-8 flex flex-col items-center justify-center text-center space-y-3 min-h-[260px]">
-                      <div className="w-12 h-12 rounded-2xl bg-[#141829] border border-[#1E2335] flex items-center justify-center text-violet">
+                    <div className="rounded-2xl border border-dashed border-border dark:border-[#1E2335] bg-[#111422]/60 p-8 flex flex-col items-center justify-center text-center space-y-3 min-h-[260px]">
+                      <div className="w-12 h-12 rounded-2xl bg-background dark:bg-[#141829] border border-border dark:border-[#1E2335] flex items-center justify-center text-violet">
                         <CalendarIcon className="w-6 h-6 stroke-[1.8]" />
                       </div>
                       <p className="text-xs font-semibold text-foreground">
@@ -1116,11 +1116,11 @@ export function HolidayPMListView() {
               </div>
 
               {/* Bottom Actions */}
-              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-[#1E2335]">
+              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-border dark:border-[#1E2335]">
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="w-full sm:w-32 h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
+                  className="w-full sm:w-32 h-11 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>
@@ -1145,12 +1145,12 @@ export function HolidayPMListView() {
             if (e.target === e.currentTarget) setSelectedMemberForException(null);
           }}
         >
-          <div className="w-full max-w-lg md:max-w-3xl max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl relative text-foreground space-y-5">
+          <div className="w-full max-w-lg md:max-w-3xl max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-border dark:border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl relative text-foreground space-y-5">
             {/* Drag Handle (Mobile only) */}
             <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto md:hidden" />
 
             {/* Header */}
-            <div className="flex items-start justify-between gap-3 pb-2 border-b border-[#1E2335]">
+            <div className="flex items-start justify-between gap-3 pb-2 border-b border-border dark:border-[#1E2335]">
               <div>
                 <h3 className="text-lg font-bold text-foreground">
                   Calendario personalizado (usuario)
@@ -1163,7 +1163,7 @@ export function HolidayPMListView() {
               <button
                 type="button"
                 onClick={() => setSelectedMemberForException(null)}
-                className="w-8 h-8 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
+                className="w-8 h-8 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1182,7 +1182,7 @@ export function HolidayPMListView() {
                       placeholder="Ej. Permiso especial, cumpleaños..."
                       value={exceptionReason}
                       onChange={(e) => setExceptionReason(e.target.value)}
-                      className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+                      className="w-full h-11 px-3.5 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                     />
                   </div>
 
@@ -1193,7 +1193,7 @@ export function HolidayPMListView() {
                     <select
                       value={exceptionType}
                       onChange={(e) => setExceptionType(e.target.value as any)}
-                      className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+                      className="w-full h-11 px-3.5 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                     >
                       <option value="USER_INCLUDE">Día libre (no asiste)</option>
                       <option value="USER_EXCLUDE">Día laborable (ignora feriado)</option>
@@ -1229,11 +1229,11 @@ export function HolidayPMListView() {
               </div>
 
               {/* Bottom Actions */}
-              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-[#1E2335]">
+              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-border dark:border-[#1E2335]">
                 <button
                   type="button"
                   onClick={() => setSelectedMemberForException(null)}
-                  className="w-full sm:w-32 h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
+                  className="w-full sm:w-32 h-11 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>
@@ -1258,12 +1258,12 @@ export function HolidayPMListView() {
             if (e.target === e.currentTarget) setIsImportModalOpen(false);
           }}
         >
-          <div className="w-full max-w-lg md:max-w-2xl max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl relative text-foreground space-y-5">
+          <div className="w-full max-w-lg md:max-w-2xl max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-border dark:border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl relative text-foreground space-y-5">
             {/* Drag Handle (Mobile only) */}
             <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto md:hidden" />
 
             {/* Header */}
-            <div className="flex items-start justify-between gap-3 pb-2 border-b border-[#1E2335]">
+            <div className="flex items-start justify-between gap-3 pb-2 border-b border-border dark:border-[#1E2335]">
               <div>
                 <h3 className="text-lg font-bold text-foreground">
                   Importar feriados
@@ -1276,7 +1276,7 @@ export function HolidayPMListView() {
               <button
                 type="button"
                 onClick={() => setIsImportModalOpen(false)}
-                className="w-8 h-8 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
+                className="w-8 h-8 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1304,13 +1304,13 @@ export function HolidayPMListView() {
               </div>
 
               {/* Mode Toggle */}
-              <div className="p-1 rounded-xl bg-[#131726] border border-[#1E2335] grid grid-cols-2 gap-1">
+              <div className="p-1 rounded-xl bg-[#131726] border border-border dark:border-[#1E2335] grid grid-cols-2 gap-1">
                 <button
                   type="button"
                   onClick={() => setImportTab("text")}
                   className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     importTab === "text"
-                      ? "bg-[#1E2438] text-white shadow-xs"
+                      ? "bg-muted dark:bg-[#1E2438] text-foreground shadow-xs"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -1321,7 +1321,7 @@ export function HolidayPMListView() {
                   onClick={() => setImportTab("csv")}
                   className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     importTab === "csv"
-                      ? "bg-[#1E2438] text-white shadow-xs"
+                      ? "bg-muted dark:bg-[#1E2438] text-foreground shadow-xs"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -1335,12 +1335,12 @@ export function HolidayPMListView() {
                     rows={4}
                     value={importText}
                     onChange={(e) => setImportText(e.target.value)}
-                    className="w-full p-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-violet resize-none"
+                    className="w-full p-3.5 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-violet resize-none"
                     placeholder="2026-12-25, Navidad&#10;2026-01-01 - Año Nuevo"
                   />
                 </div>
               ) : (
-                <div className="rounded-xl border border-dashed border-[#1E2335] bg-[#141829] p-6 text-center space-y-2">
+                <div className="rounded-xl border border-dashed border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] p-6 text-center space-y-2">
                   <Upload className="w-6 h-6 text-muted-foreground mx-auto" />
                   <p className="text-xs font-semibold text-foreground">
                     Selecciona tu archivo .CSV
@@ -1356,17 +1356,17 @@ export function HolidayPMListView() {
                         setImportTab("text");
                       }
                     }}
-                    className="text-xs text-muted-foreground file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#1E2438] file:text-white cursor-pointer"
+                    className="text-xs text-muted-foreground file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-muted dark:file:bg-[#1E2438] file:text-foreground cursor-pointer"
                   />
                 </div>
               )}
 
               {/* Bottom Actions */}
-              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-[#1E2335]">
+              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-border dark:border-[#1E2335]">
                 <button
                   type="button"
                   onClick={() => setIsImportModalOpen(false)}
-                  className="w-full sm:w-32 h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
+                  className="w-full sm:w-32 h-11 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>
@@ -1391,10 +1391,10 @@ export function HolidayPMListView() {
             if (e.target === e.currentTarget) setIsLinkModalOpen(false);
           }}
         >
-          <div className="w-full max-w-lg md:max-w-xl max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl relative text-foreground space-y-5">
+          <div className="w-full max-w-lg md:max-w-xl max-h-[92vh] overflow-y-auto bg-[#0E111C] border border-border dark:border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl relative text-foreground space-y-5">
             <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto md:hidden" />
 
-            <div className="flex items-start justify-between gap-3 pb-2 border-b border-[#1E2335]">
+            <div className="flex items-start justify-between gap-3 pb-2 border-b border-border dark:border-[#1E2335]">
               <div>
                 <h3 className="text-lg font-bold text-foreground">
                   Enlazar colección global
@@ -1407,7 +1407,7 @@ export function HolidayPMListView() {
               <button
                 type="button"
                 onClick={() => setIsLinkModalOpen(false)}
-                className="w-8 h-8 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
+                className="w-8 h-8 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-[#1c2238] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1422,7 +1422,7 @@ export function HolidayPMListView() {
                   value={selectedGlobalCollection}
                   onChange={(e) => setSelectedGlobalCollection(e.target.value)}
                   required
-                  className="w-full h-11 px-3.5 rounded-xl border border-[#1E2335] bg-[#141829] text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
+                  className="w-full h-11 px-3.5 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet"
                 >
                   <option value="">Seleccione una colección global...</option>
                   {globalCollections.map((col) => (
@@ -1433,11 +1433,11 @@ export function HolidayPMListView() {
                 </select>
               </div>
 
-              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-[#1E2335]">
+              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-border dark:border-[#1E2335]">
                 <button
                   type="button"
                   onClick={() => setIsLinkModalOpen(false)}
-                  className="w-full sm:w-32 h-11 rounded-xl border border-[#1E2335] bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
+                  className="w-full sm:w-32 h-11 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-[#1c2238] text-xs font-semibold text-foreground transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>

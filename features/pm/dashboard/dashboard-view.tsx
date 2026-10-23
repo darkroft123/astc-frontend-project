@@ -140,6 +140,7 @@ export function DashboardView() {
   const GAP = 6; // Separation between slices, cut like admin
   const totalRecords = totalAttendances + totalAbsences + pendingJustifications;
   const totalAvailable = C - 3 * GAP;
+  const attendancePercentage = totalRecords > 0 ? Math.round((totalAttendances / totalRecords) * 100) : 50;
 
   const attArc = totalRecords > 0 ? (totalAttendances / totalRecords) * totalAvailable : 0.4 * totalAvailable;
   const absArc = totalRecords > 0 ? (totalAbsences / totalRecords) * totalAvailable : 0.4 * totalAvailable;
@@ -149,7 +150,7 @@ export function DashboardView() {
     <div className="relative min-h-screen bg-transparent pb-16 font-sans">
       {/* Top Ambient Glow */}
       <div
-        className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-80 rounded-full opacity-30 blur-3xl z-0"
+        className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-80 rounded-full opacity-30 blur-3xl z-0 hidden dark:block"
         style={{
           background: "radial-gradient(circle, #7C3AED 0%, transparent 70%)",
         }}
@@ -160,17 +161,17 @@ export function DashboardView() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.05em] text-[#8B7BD8]">
+              <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.05em] text-violet">
                 PANEL DE GESTIÓN
               </span>
-              <span className="text-xs text-[#8F96AE]">
+              <span className="text-xs text-muted-foreground">
                 · {activeProjects.length || 3} proyectos
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
               Hola, {displayName}
             </h1>
-            <p className="text-xs text-[#8F96AE] leading-relaxed max-w-xl">
+            <p className="font-hanken text-xs text-muted-foreground leading-relaxed max-w-xl">
               Visión general del rendimiento y la actividad del equipo. Hay 1 justificación esperando tu revisión.
             </p>
           </div>
@@ -199,7 +200,7 @@ export function DashboardView() {
           {PERIOD_ROWS.map((row, rIdx) => (
             <div
               key={rIdx}
-              className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#0C0E18] border border-[#1E2335]"
+              className="flex items-center gap-1.5 p-1 rounded-2xl bg-card border border-border"
             >
               {row.map((tab) => {
                 const isActive = activePeriod === tab.id;
@@ -210,8 +211,8 @@ export function DashboardView() {
                     onClick={() => setActivePeriod(tab.id)}
                     className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-medium transition-all text-center cursor-pointer ${
                       isActive
-                        ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
-                        : "text-[#8F96AE] hover:text-white"
+                        ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {tab.label}
@@ -223,21 +224,21 @@ export function DashboardView() {
 
           {/* Mobile Date Selector Pill */}
           <div className="flex items-center gap-2 pt-0.5">
-            <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-xs font-mono">
+            <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-card border border-border text-xs font-mono">
               <Calendar className="w-4 h-4 text-[#A855F7] shrink-0" />
-              <span className="text-[#8F96AE]">Rango:</span>
-              <span className="text-[#EEF0F6] font-semibold">
+              <span className="text-muted-foreground">Rango:</span>
+              <span className="font-semibold text-blue-600 dark:text-blue-400">
                 {customRange.from.split("-").reverse().join("/")}
               </span>
-              <span className="text-[#8F96AE]">→</span>
-              <span className="text-[#EEF0F6] font-semibold">
+              <span className="text-muted-foreground">→</span>
+              <span className="font-semibold text-blue-600 dark:text-blue-400">
                 {customRange.to.split("-").reverse().join("/")}
               </span>
             </div>
             <button
               type="button"
               onClick={() => setCustomModalOpen(true)}
-              className="w-10 h-10 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-[#8F96AE] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
+              className="w-10 h-10 rounded-2xl bg-card border border-border text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs"
               title="Seleccionar rango"
             >
               <Calendar className="w-4 h-4" />
@@ -247,7 +248,7 @@ export function DashboardView() {
 
         {/* Desktop View: Compact tabs pill + Rango personalizado button + dates badge matching official SVG */}
         <div className="hidden md:flex items-center gap-3 flex-wrap">
-          <div className="inline-flex items-center gap-1 p-1 rounded-2xl bg-[#0C0E18] border border-[#1E2335]">
+          <div className="inline-flex items-center gap-1 p-1 rounded-2xl bg-card border border-border">
             {PERIOD_TABS_ALL.map((tab) => {
               const isActive = activePeriod === tab.id;
               return (
@@ -257,8 +258,8 @@ export function DashboardView() {
                   onClick={() => setActivePeriod(tab.id)}
                   className={`py-2 px-3.5 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                     isActive
-                      ? "bg-[#1E2338] text-white border border-[#2D354E] font-semibold shadow-xs"
-                      : "text-[#8F96AE] hover:text-white"
+                      ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {tab.label}
@@ -270,16 +271,16 @@ export function DashboardView() {
           <button
             type="button"
             onClick={() => setCustomModalOpen(true)}
-            className="h-10 px-4 rounded-2xl bg-[#0C0E18] border border-[#1E2335] text-xs font-medium text-[#8F96AE] hover:text-white flex items-center gap-2 transition-colors cursor-pointer shrink-0 shadow-xs"
+            className="h-10 px-4 rounded-2xl bg-card border border-border text-xs font-medium text-muted-foreground hover:text-foreground flex items-center gap-2 transition-colors cursor-pointer shrink-0 shadow-xs"
             title="Seleccionar rango personalizado"
           >
             <Calendar className="w-4 h-4 text-[#A855F7]" />
             <span>Rango personalizado</span>
           </button>
 
-          <div className="h-10 px-4 rounded-2xl bg-[#0C0E18] border border-[#1E2335] flex items-center gap-2 text-xs font-mono shrink-0 shadow-xs">
-            <span className="text-[#8F96AE]">Período:</span>
-            <span className="text-[#EEF0F6] font-semibold">
+          <div className="h-10 px-4 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/40 flex items-center text-xs font-mono font-semibold text-blue-600 dark:text-blue-400 shrink-0 shadow-xs">
+            <span className="hidden">Período:</span>
+            <span className="font-semibold text-blue-600 dark:text-blue-400">
               {customRange.from.split("-").reverse().join("/")} → {customRange.to.split("-").reverse().join("/")}
             </span>
           </div>
@@ -288,67 +289,67 @@ export function DashboardView() {
         {/* 3. THE 4 STAT CARDS (2x2 on mobile, 4 in row on desktop) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Card 1: Asistencias */}
-          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 flex flex-col justify-between h-[124px] shadow-xs">
+          <div className="rounded-2xl border border-border bg-card p-4 flex flex-col justify-between h-[124px] shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-[#0C251C] border border-[#194B37] flex items-center justify-center text-[#34D399]">
+              <div className="w-7 h-7 rounded-lg bg-green/10 border border-green/20 flex items-center justify-center text-green">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
-              <span className="text-xs font-semibold text-[#34D399]">
+              <span className="text-xs font-semibold text-green">
                 Asistencias
               </span>
             </div>
             <div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                <span className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
                   {totalAttendances}
                 </span>
-                <span className="text-[11px] text-[#8F96AE]">días presentes</span>
+                <span className="text-[11px] text-muted-foreground">días presentes</span>
               </div>
-              <p className="text-[10.5px] text-[#8F96AE] mt-1">Último periodo</p>
+              <p className="text-[10.5px] text-muted-foreground mt-1">Último periodo</p>
             </div>
           </div>
 
           {/* Card 2: Faltas */}
-          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 flex flex-col justify-between h-[124px] shadow-xs">
+          <div className="rounded-2xl border border-border bg-card p-4 flex flex-col justify-between h-[124px] shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-[#251417] border border-[#521C22] flex items-center justify-center text-[#F87171]">
+              <div className="w-7 h-7 rounded-lg bg-red/10 border border-red/20 flex items-center justify-center text-red">
                 <XCircle className="w-4 h-4" />
               </div>
-              <span className="text-xs font-semibold text-[#F87171]">
+              <span className="text-xs font-semibold text-red">
                 Faltas
               </span>
             </div>
             <div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                <span className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
                   {totalAbsences}
                 </span>
-                <span className="text-[11px] text-[#8F96AE]">días ausentes</span>
+                <span className="text-[11px] text-muted-foreground">días ausentes</span>
               </div>
-              <p className="text-[10.5px] text-[#8F96AE] mt-1">Histórico del equipo</p>
+              <p className="text-[10.5px] text-muted-foreground mt-1">Histórico del equipo</p>
             </div>
           </div>
 
           {/* Card 3: Por revisar */}
-          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 flex flex-col justify-between h-[124px] shadow-xs">
+          <div className="rounded-2xl border border-border bg-card p-4 flex flex-col justify-between h-[124px] shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-[#251E0E] border border-[#533E16] flex items-center justify-center text-[#FBBF24]">
+              <div className="w-7 h-7 rounded-lg bg-amber/10 border border-amber/20 flex items-center justify-center text-amber">
                 <FileText className="w-4 h-4" />
               </div>
-              <span className="text-xs font-semibold text-[#FBBF24]">
+              <span className="text-xs font-semibold text-amber">
                 Por revisar
               </span>
             </div>
             <div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                <span className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
                   {pendingJustifications}
                 </span>
-                <span className="text-[11px] text-[#8F96AE]">por justificar</span>
+                <span className="text-[11px] text-muted-foreground">por justificar</span>
               </div>
               <Link
                 href="/pm/justificaciones"
-                className="text-[10.5px] text-[#FBBF24] font-medium hover:underline mt-1 inline-flex items-center gap-0.5"
+                className="text-[10.5px] text-amber font-medium hover:underline mt-1 inline-flex items-center gap-0.5"
               >
                 Revisar solicitud →
               </Link>
@@ -356,23 +357,23 @@ export function DashboardView() {
           </div>
 
           {/* Card 4: Meta 90% */}
-          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-4 flex flex-col justify-between h-[124px] shadow-xs">
+          <div className="rounded-2xl border border-border bg-card p-4 flex flex-col justify-between h-[124px] shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-[#1F1836] border border-[#432C7A] flex items-center justify-center text-[#A855F7]">
+              <div className="w-7 h-7 rounded-lg bg-violet/10 border border-violet/20 flex items-center justify-center text-[#A855F7]">
                 <TrendingUp className="w-4 h-4" />
               </div>
-              <span className="text-xs font-semibold text-[#C4B5FD]">
+              <span className="text-xs font-semibold text-violet">
                 Meta 90%
               </span>
             </div>
             <div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                <span className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
                   50%
                 </span>
-                <span className="text-[11px] text-[#8F96AE]">cumplimiento</span>
+                <span className="text-[11px] text-muted-foreground">cumplimiento</span>
               </div>
-              <div className="w-full bg-[#1F2438] rounded-full h-1.5 mt-2.5 overflow-hidden">
+              <div className="w-full bg-muted rounded-full h-1.5 mt-2.5 overflow-hidden">
                 <div
                   className="h-1.5 rounded-full w-[50%]"
                   style={{
@@ -387,17 +388,17 @@ export function DashboardView() {
         {/* 4. MIDDLE ROW: Resumen general & Actividad reciente */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Card: Resumen general */}
-          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-5 shadow-xs space-y-4">
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-xs space-y-4">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-sm font-bold text-white tracking-tight">
+                <h3 className="text-sm font-bold text-foreground tracking-tight">
                   Resumen general
                 </h3>
-                <p className="text-xs text-[#8F96AE] mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   5 registros del equipo en el periodo
                 </p>
               </div>
-              <span className="text-[10.5px] font-semibold bg-[#1D1735] text-[#C4B5FD] border border-[#3A2A69] px-2.5 py-0.5 rounded-full">
+              <span className="text-[10.5px] font-semibold bg-violet/10 text-violet border border-violet/20 px-2.5 py-0.5 rounded-full">
                 Todos los proyectos
               </span>
             </div>
@@ -410,7 +411,8 @@ export function DashboardView() {
                     cx="60"
                     cy="60"
                     r={R}
-                    stroke="#1F2438"
+                    stroke="currentColor"
+                    className="text-muted/40 dark:text-[#1F2438]"
                     strokeWidth="12"
                     fill="transparent"
                   />
@@ -449,10 +451,10 @@ export function DashboardView() {
                   />
                 </svg>
                 <div className="absolute flex flex-col items-center justify-center text-center">
-                  <span className="text-3xl font-black text-white tracking-tight leading-none">
-                    50%
+                  <span className="text-3xl font-black text-foreground tracking-tight leading-none">
+                    {attendancePercentage}%
                   </span>
-                  <span className="text-[10px] font-mono tracking-widest text-[#8F96AE] uppercase mt-1 font-semibold">
+                  <span className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase mt-1 font-semibold">
                     ASISTENCIA
                   </span>
                 </div>
@@ -463,33 +465,33 @@ export function DashboardView() {
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#34D399]" />
-                    <span className="text-white font-medium">Asistencias</span>
+                    <span className="text-foreground font-medium">Asistencias</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="font-bold text-white">2</span>
-                    <span className="text-[#8F96AE] w-8 text-right">40%</span>
+                    <span className="font-bold text-foreground">2</span>
+                    <span className="text-muted-foreground w-8 text-right">40%</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#F87171]" />
-                    <span className="text-white font-medium">Faltas</span>
+                    <span className="text-foreground font-medium">Faltas</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="font-bold text-white">2</span>
-                    <span className="text-[#8F96AE] w-8 text-right">40%</span>
+                    <span className="font-bold text-foreground">2</span>
+                    <span className="text-muted-foreground w-8 text-right">40%</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#FBBF24]" />
-                    <span className="text-white font-medium">Pendientes</span>
+                    <span className="text-foreground font-medium">Pendientes</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="font-bold text-white">1</span>
-                    <span className="text-[#8F96AE] w-8 text-right">20%</span>
+                    <span className="font-bold text-foreground">1</span>
+                    <span className="text-muted-foreground w-8 text-right">20%</span>
                   </div>
                 </div>
               </div>
@@ -497,37 +499,37 @@ export function DashboardView() {
           </div>
 
           {/* Card: Actividad reciente */}
-          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-5 shadow-xs space-y-3 flex flex-col justify-between">
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-xs space-y-3 flex flex-col justify-between">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-sm font-bold text-white tracking-tight">
+                <h3 className="text-sm font-bold text-foreground tracking-tight">
                   Actividad reciente
                 </h3>
-                <p className="text-xs text-[#8F96AE] mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   Últimas acciones del equipo
                 </p>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold bg-[#0C251C] text-[#34D399] border border-[#194B37]">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold bg-green/10 text-green border border-green/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#34D399] animate-pulse" />
                 En vivo
               </span>
             </div>
 
             {/* Dashed Empty State Box */}
-            <div className="my-auto py-7 px-4 rounded-xl border border-dashed border-[#1E2335] bg-[#0E101C] flex flex-col items-center justify-center text-center">
-              <div className="w-10 h-10 rounded-xl bg-[#141829] border border-[#1E2335] flex items-center justify-center text-[#8F96AE] mb-2.5">
+            <div className="my-auto py-7 px-4 rounded-xl border border-dashed border-border bg-muted flex flex-col items-center justify-center text-center">
+              <div className="w-10 h-10 rounded-xl bg-raised border border-border flex items-center justify-center text-muted-foreground mb-2.5">
                 <Activity className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-xs text-white">
+              <h4 className="font-bold text-xs text-foreground">
                 Aún no hay actividad en tu equipo
               </h4>
-              <p className="text-[11px] text-[#8F96AE] max-w-xs mt-1 mb-3.5 leading-relaxed">
+              <p className="text-[11px] text-muted-foreground max-w-xs mt-1 mb-3.5 leading-relaxed">
                 Asigna trabajadores a tus proyectos para ver sus marcajes aquí en tiempo real.
               </p>
               <button
                 type="button"
                 onClick={() => router.push("/pm/proyectos")}
-                className="px-4 py-2 rounded-xl border border-[#272E49] bg-[#181C2E] hover:bg-[#20263E] text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+                className="px-4 py-2 rounded-xl border border-border bg-raised hover:bg-muted text-foreground text-xs font-semibold transition-colors cursor-pointer shadow-xs"
               >
                 Gestionar proyectos
               </button>
@@ -536,7 +538,7 @@ export function DashboardView() {
             <div className="pt-2 text-center">
               <Link
                 href="/pm/historial-asistencias"
-                className="block w-full py-2.5 rounded-xl border border-[#1E2335] bg-[#101322] hover:bg-[#15192D] text-xs font-medium text-[#EEF0F6] transition-colors"
+                className="block w-full py-2.5 rounded-xl border border-border bg-card hover:bg-muted text-xs font-medium text-foreground transition-colors"
               >
                 Ver todas las asistencias →
               </Link>
@@ -547,21 +549,21 @@ export function DashboardView() {
         {/* 5. BOTTOM ROW: Resumen de asistencias & Acciones rápidas */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Card: Resumen de asistencias (Bar Chart with exact linear gradients) */}
-          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-5 shadow-xs space-y-4 flex flex-col justify-between">
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-xs space-y-4 flex flex-col justify-between">
             <div>
-              <h3 className="text-sm font-bold text-white tracking-tight">
+              <h3 className="text-sm font-bold text-foreground tracking-tight">
                 Resumen de asistencias
               </h3>
-              <p className="text-xs text-[#8F96AE] mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Distribución de asistencias, faltas y solicitudes
               </p>
             </div>
 
             <div className="pt-4 pb-2">
-              <div className="grid grid-cols-3 gap-6 items-end h-[160px] pb-2 border-b border-[#1E2335]">
+              <div className="grid grid-cols-3 gap-6 items-end h-[160px] pb-2 border-b border-border">
                 {/* Bar 1: Asistencias (Height 124px, Exact Green Gradient) */}
                 <div className="flex flex-col items-center">
-                  <span className="text-xs font-bold text-white mb-2">2</span>
+                  <span className="text-xs font-bold text-foreground mb-2">2</span>
                   <div
                     className="w-16 h-[124px] rounded-t-xl transition-all hover:brightness-110"
                     style={{
@@ -573,7 +575,7 @@ export function DashboardView() {
 
                 {/* Bar 2: Faltas (Height 124px, Exact Red Gradient) */}
                 <div className="flex flex-col items-center">
-                  <span className="text-xs font-bold text-white mb-2">2</span>
+                  <span className="text-xs font-bold text-foreground mb-2">2</span>
                   <div
                     className="w-16 h-[124px] rounded-t-xl transition-all hover:brightness-110"
                     style={{
@@ -585,7 +587,7 @@ export function DashboardView() {
 
                 {/* Bar 3: Pendientes (Height 62px, Exact Amber Gradient) */}
                 <div className="flex flex-col items-center">
-                  <span className="text-xs font-bold text-white mb-2">1</span>
+                  <span className="text-xs font-bold text-foreground mb-2">1</span>
                   <div
                     className="w-16 h-[62px] rounded-t-xl transition-all hover:brightness-110"
                     style={{
@@ -596,7 +598,7 @@ export function DashboardView() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-6 pt-3 text-center text-xs text-[#8F96AE] font-medium">
+              <div className="grid grid-cols-3 gap-6 pt-3 text-center text-xs text-muted-foreground font-medium">
                 <span>Asistencias</span>
                 <span>Faltas</span>
                 <span>Pendientes</span>
@@ -605,12 +607,12 @@ export function DashboardView() {
           </div>
 
           {/* Card: Acciones rápidas */}
-          <div className="rounded-2xl border border-[#1E2335] bg-[#0C0E18] p-5 shadow-xs space-y-3 flex flex-col justify-between">
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-xs space-y-3 flex flex-col justify-between">
             <div>
-              <h3 className="text-sm font-bold text-white tracking-tight">
+              <h3 className="text-sm font-bold text-foreground tracking-tight">
                 Acciones rápidas
               </h3>
-              <p className="text-xs text-[#8F96AE] mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Gestiona el equipo de forma inmediata
               </p>
             </div>
@@ -619,13 +621,13 @@ export function DashboardView() {
               {/* Featured Justificaciones Card */}
               <Link
                 href="/pm/justificaciones"
-                className="flex items-center justify-between p-3.5 rounded-xl border border-[#533E16] bg-[#251E0E] hover:bg-[#322712] transition-colors shadow-2xs group"
+                className="flex items-center justify-between p-3.5 rounded-xl border border-amber/20 bg-amber/10 hover:bg-amber/15 transition-colors shadow-2xs group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#3C2F15] flex items-center justify-center text-[#FBBF24] shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-amber/15 flex items-center justify-center text-amber shrink-0">
                     <FileText className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-semibold text-white group-hover:text-[#FBBF24] transition-colors">
+                  <span className="text-xs font-semibold text-foreground group-hover:text-amber transition-colors">
                     Justificaciones
                   </span>
                 </div>
@@ -638,72 +640,72 @@ export function DashboardView() {
               <div className="grid grid-cols-2 gap-2.5">
                 <Link
                   href="/pm/registrar"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted dark:hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-[#0C251C] flex items-center justify-center text-[#34D399] shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-green/10 flex items-center justify-center text-green shrink-0">
                     <CheckCircle2 className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-medium text-white group-hover:text-[#34D399] transition-colors">
+                  <span className="text-xs font-medium text-foreground group-hover:text-green transition-colors">
                     Registrar
                   </span>
                 </Link>
 
                 <Link
                   href="/pm/historial-asistencias"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted dark:hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-[#1F1836] flex items-center justify-center text-[#A855F7] shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-violet/10 flex items-center justify-center text-[#A855F7] shrink-0">
                     <BarChart3 className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-medium text-white group-hover:text-[#A855F7] transition-colors">
+                  <span className="text-xs font-medium text-foreground group-hover:text-[#A855F7] transition-colors">
                     Asistencias
                   </span>
                 </Link>
 
                 <Link
                   href="/pm/alertas"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted dark:hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-[#251417] flex items-center justify-center text-[#F87171] shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-red/10 flex items-center justify-center text-red shrink-0">
                     <AlertTriangle className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-medium text-white group-hover:text-[#F87171] transition-colors">
+                  <span className="text-xs font-medium text-foreground group-hover:text-red transition-colors">
                     Alertas
                   </span>
                 </Link>
 
                 <Link
                   href="/pm/proyectos"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted dark:hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-[#0E202B] flex items-center justify-center text-[#22C3E6] shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-cyan/10 flex items-center justify-center text-cyan shrink-0">
                     <FolderKanban className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-medium text-white group-hover:text-[#22C3E6] transition-colors">
+                  <span className="text-xs font-medium text-foreground group-hover:text-cyan transition-colors">
                     Proyectos
                   </span>
                 </Link>
 
                 <Link
                   href="/pm/mis-asistencias"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted dark:hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-[#101B33] flex items-center justify-center text-[#5B8CFF] shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-blue/10 flex items-center justify-center text-blue shrink-0">
                     <Calendar className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-medium text-white group-hover:text-[#5B8CFF] transition-colors">
+                  <span className="text-xs font-medium text-foreground group-hover:text-blue transition-colors">
                     Historial
                   </span>
                 </Link>
 
                 <Link
                   href="/pm/horarios"
-                  className="flex items-center gap-3 p-3 rounded-xl border border-[#1E2335] bg-[#12141F] hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted dark:hover:bg-[#1A1D2E] transition-colors shadow-2xs group"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-[#0D2423] flex items-center justify-center text-[#2DD4BF] shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-cyan/10 flex items-center justify-center text-cyan shrink-0">
                     <Clock className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-medium text-white group-hover:text-[#2DD4BF] transition-colors">
+                  <span className="text-xs font-medium text-foreground group-hover:text-cyan transition-colors">
                     Horarios
                   </span>
                 </Link>

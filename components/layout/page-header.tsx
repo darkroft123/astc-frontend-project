@@ -73,7 +73,7 @@ export default function PageHeader({
         </h1>
 
         {description && (
-          <p className="text-[13.5px] text-text-4 mt-1 leading-normal">{description}</p>
+          <p className="font-hanken text-[13.5px] text-text-4 mt-1 leading-normal">{description}</p>
         )}
 
         {showDateRange && (

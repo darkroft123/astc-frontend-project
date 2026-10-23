@@ -371,7 +371,7 @@ export function ScheduleListView() {
           </Button>
           <Button 
             size="sm" 
-            className="h-8 text-xs bg-[#2A1E4A] hover:bg-[#34255C] border border-purple-700/40 text-purple-200" 
+            className="h-8 text-xs bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 dark:bg-[#2A1E4A] dark:hover:bg-[#34255C] dark:border-purple-700/40 dark:text-purple-200 font-semibold cursor-pointer" 
             onClick={() => setPreviewTemplate(r)}
             disabled={assignedTemplateIds.has(r.id)}
           >
@@ -418,7 +418,7 @@ export function ScheduleListView() {
       <div className="hidden md:flex md:items-center md:justify-between gap-4 rounded-2xl border border-border bg-card/60 p-4 shadow-sm">
         <div>
           <h3 className="text-base font-semibold text-foreground">Horarios del proyecto</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="font-hanken text-xs text-muted-foreground mt-0.5">
             Selecciona un horario y asígnalo a los miembros del proyecto.
           </p>
         </div>
@@ -447,7 +447,7 @@ export function ScheduleListView() {
         <CardContent className="p-4 sm:p-5 space-y-3">
           <div>
             <h3 className="text-base font-semibold text-foreground">Horarios del proyecto</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="font-hanken text-xs text-muted-foreground mt-0.5">
               Selecciona un horario y asígnalo a los miembros del proyecto.
             </p>
           </div>
@@ -472,7 +472,7 @@ export function ScheduleListView() {
         ) : filteredTemplates.length === 0 ? (
           <div className="text-center p-12 text-muted-foreground bg-card rounded-2xl border border-border">
             <Clock className="w-12 h-12 mx-auto text-muted-foreground mb-3 opacity-40" />
-            <p className="text-sm font-medium text-foreground">No hay horarios configurados</p>
+            <p className="text-sm font-medium text-foreground">No hay horarios disponibles</p>
             <p className="text-xs mt-1">Crea horarios para tus proyectos.</p>
           </div>
         ) : (
@@ -495,7 +495,7 @@ export function ScheduleListView() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <h4 className="font-bold text-base text-foreground truncate">{t.name}</h4>
-                    <span className="inline-block bg-purple-950/60 text-purple-300 border border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full mt-1 font-medium">
+                    <span className="inline-block bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full mt-1 font-medium">
                       {project?.name || t.projectId || "proyecto testeo"}
                     </span>
                   </div>
@@ -533,7 +533,7 @@ export function ScheduleListView() {
                     <Pencil className="w-4 h-4" />
                   </Button>
                   <Button
-                    className="flex-1 h-11 rounded-xl bg-[#2A1E4A] hover:bg-[#34255C] border border-purple-700/40 text-purple-200 font-medium text-sm flex items-center justify-center gap-2"
+                    className="flex-1 h-11 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 dark:bg-[#2A1E4A] dark:hover:bg-[#34255C] dark:border-purple-700/40 dark:text-purple-200 font-semibold text-sm flex items-center justify-center gap-2 cursor-pointer"
                     onClick={() => setPreviewTemplate(t)}
                     disabled={assignedTemplateIds.has(t.id)}
                   >
@@ -558,7 +558,7 @@ export function ScheduleListView() {
             ) : filteredTemplates.length === 0 ? (
               <div className="text-center p-12 text-muted-foreground">
                 <Clock className="w-12 h-12 mx-auto text-muted-foreground mb-3 opacity-40" />
-                <p className="text-sm font-medium text-foreground">No hay horarios configurados</p>
+                <p className="text-sm font-medium text-foreground">No hay horarios disponibles</p>
                 <p className="text-xs mt-1">Crea horarios para tus proyectos.</p>
               </div>
             ) : (
