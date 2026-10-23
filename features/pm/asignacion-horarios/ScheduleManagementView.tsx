@@ -309,7 +309,7 @@ export function ScheduleManagementView() {
 
   return (
     <div className="min-h-screen bg-transparent">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 space-y-6">
+      <div className="w-full max-w-7xl mx-auto  space-y-6">
 
         {/* Top Header */}
         <PageHeader
@@ -319,6 +319,8 @@ export function ScheduleManagementView() {
           showPeriodSelector={false}
         />
 
+        {/* UNIFIED MAIN CONTAINER ("Un cuadro entero, no 3") */}
+        <div className="rounded-[22px] border border-border bg-card/60 dark:bg-[#0C0E18] p-4 sm:p-5 md:p-6 shadow-sm space-y-5 sm:space-y-6">
         {/* 4 Metric Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
           {/* Card 1: Total */}
@@ -374,8 +376,11 @@ export function ScheduleManagementView() {
           </div>
         </div>
 
-        {/* Filters Container - Desktop View (1 Row) */}
-        <div className="hidden md:grid md:grid-cols-4 gap-4 items-end rounded-2xl border border-border bg-card/60 p-4 shadow-sm">
+        {/* Divider Line */}
+          <div className="border-t border-border/60 -mx-4 sm:-mx-5 md:-mx-6" />
+
+          {/* Filters Container - Desktop View (1 Row) */}
+          <div className="hidden md:grid md:grid-cols-4 gap-4 items-end pt-1">
           {/* Proyecto */}
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-foreground">
@@ -835,6 +840,7 @@ export function ScheduleManagementView() {
             </div>
           </div>
         )}
+        </div>
 
       </div>
     </div>

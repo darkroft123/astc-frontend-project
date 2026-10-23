@@ -287,7 +287,7 @@ export function VacationApprovalView() {
   ];
 
   return (
-    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-12 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
+    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-12 max-w-7xl mx-auto ">
       {/* 1. TOP HEADER */}
       <PageHeader
         categoryTag={{ badge: "PANEL DE GESTIÓN", text: "Solicitudes del equipo" }}
@@ -298,6 +298,8 @@ export function VacationApprovalView() {
 
       
 
+      {/* UNIFIED MAIN CONTAINER ("Un cuadro entero, no 3") */}
+      <div className="rounded-[22px] border border-border bg-card/60 dark:bg-[#0C0E18] p-4 sm:p-5 md:p-6 shadow-sm space-y-5 sm:space-y-6">
       {/* 3. 4 KPI CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
         {/* Card 1: Total solicitudes */}
@@ -355,8 +357,11 @@ export function VacationApprovalView() {
         </div>
       </div>
 
-      {/* 4. FILTERS CONTAINER - Desktop View (1 Row) */}
-      <div className="hidden md:flex md:items-center md:justify-between gap-4 rounded-2xl border border-border bg-card/60 p-4 shadow-sm">
+      {/* Divider Line */}
+        <div className="border-t border-border/60 -mx-4 sm:-mx-5 md:-mx-6" />
+
+        {/* 4. FILTERS CONTAINER - Desktop View (1 Row) */}
+        <div className="hidden md:flex md:items-center md:justify-between gap-4 pt-1">
         <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
           <Sun className="w-4 h-4 text-amber-400" />
           Solicitudes de vacaciones
@@ -570,6 +575,7 @@ export function VacationApprovalView() {
         <span className="text-xs text-muted-foreground font-mono">
           {filteredVacations.length} solicitud{filteredVacations.length === 1 ? "" : "es"}
         </span>
+      </div>
       </div>
 
       {/* Dialogs */}

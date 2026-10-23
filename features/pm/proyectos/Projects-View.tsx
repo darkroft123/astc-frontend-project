@@ -189,6 +189,8 @@ export function ProjectsManagementView({
           </div>
         </div>
 
+        {/* UNIFIED MAIN CONTAINER ("Un cuadro entero, no 3") */}
+        <div className="rounded-[22px] border border-border bg-card/60 dark:bg-[#0C0E18] p-4 sm:p-5 md:p-6 shadow-sm space-y-5 sm:space-y-6">
         {/* 2. 3 STAT CARDS (ROW OF 3 MATCHING EXACT SVG) */}
         <div className="grid grid-cols-3 gap-2.5 sm:gap-4 pt-1">
           {/* Card 1: Total */}
@@ -237,8 +239,11 @@ export function ProjectsManagementView({
           </div>
         </div>
 
-        {/* 3. FILTERS BAR */}
-        <div className="rounded-2xl border border-border bg-card p-4 shadow-xs">
+        {/* Divider Line */}
+          <div className="border-t border-border/60 -mx-4 sm:-mx-5 md:-mx-6" />
+
+          {/* 3. FILTERS BAR */}
+          <div className="pt-1">
           <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3.5">
             {/* Buscar */}
             <div className="space-y-1.5 flex-1">
@@ -526,6 +531,7 @@ export function ProjectsManagementView({
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
+        </div>
         </div>
       </div>
 

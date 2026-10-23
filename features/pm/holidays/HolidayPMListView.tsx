@@ -599,7 +599,7 @@ export function HolidayPMListView() {
         }}
       />
 
-      <div className="relative w-full max-w-7xl mx-auto space-y-6 z-10 px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
+      <div className="relative w-full max-w-7xl mx-auto space-y-6 z-10 ">
         {/* 1. TOP HEADER & CREATE COLLECTION BUTTON */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
@@ -638,6 +638,8 @@ export function HolidayPMListView() {
           </div>
         </div>
 
+        {/* UNIFIED MAIN CONTAINER ("Un cuadro entero, no 3") */}
+        <div className="rounded-[22px] border border-border bg-card/60 dark:bg-[#0C0E18] p-4 sm:p-5 md:p-6 shadow-sm space-y-5 sm:space-y-6">
         {/* 2. TOP 3 KPI METRIC CARDS (EXACT SVG COLORS & BORDERS) */}
         <div className="grid grid-cols-3 gap-2.5 sm:gap-4 pt-1">
           {/* Card 1: Colecciones disponibles (Amber) */}
@@ -692,8 +694,11 @@ export function HolidayPMListView() {
           </div>
         </div>
 
-        {/* 3. FILTERS & SEARCH BAR */}
-        <div className="rounded-2xl border border-border dark:border-border dark:border-[#1E2335] bg-card dark:bg-card dark:bg-[#0C0E18] p-4 shadow-xs">
+        {/* Divider Line */}
+          <div className="border-t border-border/60 -mx-4 sm:-mx-5 md:-mx-6" />
+
+          {/* 3. FILTERS & SEARCH BAR */}
+          <div className="pt-1">
           <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3.5">
             {/* BUSCAR */}
             <div className="space-y-1.5 flex-1">
@@ -1008,6 +1013,7 @@ export function HolidayPMListView() {
             </div>
           </div>
         )}
+        </div>
       </div>
       </div>
 

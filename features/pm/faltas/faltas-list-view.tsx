@@ -204,7 +204,7 @@ export function FaltasListView() {
 
   return (
     <div className="min-h-screen bg-raised">
-      <div className="max-w-7xl mx-auto px-0 md:px-5 py-2 md:py-5">
+      <div className="max-w-7xl mx-auto px-0 md:px-5 ">
 
         {/* HEADER */}
         <PageHeader

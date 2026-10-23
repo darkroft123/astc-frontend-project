@@ -124,7 +124,7 @@ export function HorarioCreationView() {
       />
 
       {/* Viewport Container */}
-      <div className="relative w-full max-w-5xl mx-auto space-y-6 z-10 px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
+      <div className="relative w-full max-w-5xl mx-auto space-y-6 z-10 ">
         {/* Top Back Link & Header */}
         <div className="flex items-center justify-between pt-1">
           <button
