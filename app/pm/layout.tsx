@@ -38,7 +38,7 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
         <MobileSidebar>
           <SidebarNav onNavigate={() => {}} />
         </MobileSidebar>
-        <div className="flex-1 min-w-0 md:ml-[268px] flex flex-col min-h-screen relative bg-background">
+        <div className="flex-1 min-w-0 md:ml-[268px] flex flex-col min-h-screen relative bg-background overflow-x-hidden">
           {/* Mobile Top Header (hidden on sub/detail pages that have their own back header) */}
           {!isSubPage && <MobileHeader />}
 

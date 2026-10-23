@@ -71,7 +71,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} ${inter.variable} ${jetbrainsMono.variable} ${hankenGrotesk.variable} font-sans antialiased w-full min-h-screen`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           <AuthProvider>{children}</AuthProvider>
           <Toaster />
         </ThemeProvider>
