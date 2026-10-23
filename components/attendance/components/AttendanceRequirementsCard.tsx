@@ -10,21 +10,30 @@ interface ChecklistItem {
 
 interface AttendanceRequirementsCardProps {
   checklist: ChecklistItem[];
-  readyCount: number;
+  readyRequirementsCount?: number;
   projectTimezone?: string;
   nearestDistrict?: string | null;
+  currentPosition?: { lat: number; lng: number } | null;
   coords?: { lat: number; lng: number } | null;
 }
 
 export function AttendanceRequirementsCard({
   checklist,
-  readyCount,
+  readyRequirementsCount,
   projectTimezone = "America/Lima",
   nearestDistrict,
+  currentPosition,
   coords,
 }: AttendanceRequirementsCardProps) {
+  const readyCount =
+    readyRequirementsCount !== undefined
+      ? readyRequirementsCount
+      : checklist.filter((item) => item.done).length;
+
+  const effectiveCoords = currentPosition || coords;
+
   return (
-    <div className="space-y-4">
+    <div className="lg:col-span-3 space-y-4 order-2 lg:order-1 w-full">
       {/* Card: REQUISITOS */}
       <div className="bg-card border border-border/80 rounded-2xl p-4 space-y-4 shadow-sm">
         <div className="flex items-center justify-between">
@@ -71,7 +80,7 @@ export function AttendanceRequirementsCard({
             ZONA HORARIA
           </span>
           <p className="font-mono text-sm font-bold text-foreground tracking-wide">
-            {projectTimezone}
+            {projectTimezone || "America/Lima"}
           </p>
           <p className="font-sans text-[11px] text-muted-foreground">
             Todos los horarios se muestran en esta zona.
@@ -96,8 +105,8 @@ export function AttendanceRequirementsCard({
         </p>
 
         <p className="font-mono text-xs text-muted-foreground">
-          LAT {coords ? coords.lat.toFixed(4) : "-12.0184"} · LNG{" "}
-          {coords ? coords.lng.toFixed(4) : "-77.0818"}
+          LAT {effectiveCoords ? effectiveCoords.lat.toFixed(4) : "-12.0184"} · LNG{" "}
+          {effectiveCoords ? effectiveCoords.lng.toFixed(4) : "-77.0818"}
         </p>
 
         <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">

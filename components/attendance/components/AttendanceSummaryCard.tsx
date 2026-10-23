@@ -33,7 +33,7 @@ export function AttendanceSummaryCard({
   onViewVacations,
 }: AttendanceSummaryCardProps) {
   return (
-    <div className="lg:col-span-3 space-y-4 order-3">
+    <div className="lg:col-span-3 space-y-4 order-3 w-full">
       {/* Card: PROYECTO */}
       <div className="bg-card border border-border/80 rounded-2xl p-4 space-y-3 shadow-sm">
         <div className="flex items-center justify-between">

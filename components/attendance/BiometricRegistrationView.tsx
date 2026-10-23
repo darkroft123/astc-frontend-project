@@ -173,6 +173,10 @@ export default function BiometricRegistrationView({
     ];
   }, [faceInside, coords, isEntryDone]);
 
+  const readyRequirementsCount = useMemo(() => {
+    return checklist.filter((item) => item.done).length;
+  }, [checklist]);
+
   // Format previous attendance
   const previousRecord = useMemo(() => {
     if (todayAtt?.checkIn) {
@@ -307,24 +311,23 @@ export default function BiometricRegistrationView({
         {/* COLUMNA IZQUIERDA (Requisitos, Zona horaria, GPS) */}
         <AttendanceRequirementsCard
           checklist={checklist}
+          readyRequirementsCount={readyRequirementsCount}
           projectTimezone={projectTimezone}
           currentPosition={currentPosition}
           nearestDistrict={nearestDistrict}
         />
 
         {/* COLUMNA CENTRAL (Cámara y Scanner Biométrico) */}
-        <div className="lg:col-span-6 flex flex-col items-center order-1 lg:order-2">
-          <AttendanceCameraCard
-            videoRef={videoRef}
-            cameraOn={cameraOn}
-            photo={photo}
-            faceInside={faceInside}
-            isEntryDone={isEntryDone}
-            onStartCamera={startCamera}
-            onRetakePhoto={retakePhoto}
-            onActionClick={handleActionClick}
-          />
-        </div>
+        <AttendanceCameraCard
+          videoRef={videoRef}
+          cameraOn={cameraOn}
+          photo={photo}
+          faceInside={faceInside}
+          isEntryDone={isEntryDone}
+          onStartCamera={startCamera}
+          onRetakePhoto={retakePhoto}
+          onActionClick={handleActionClick}
+        />
 
         {/* COLUMNA DERECHA (Proyecto, Marcaje anterior, Vacaciones) */}
         <AttendanceSummaryCard
