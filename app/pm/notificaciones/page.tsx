@@ -27,7 +27,7 @@ import {
 } from "@/lib/notification.service";
 import { cn } from "@/lib/utils";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 5;
 
 type FilterType = "all" | "unread" | "read" | "attendance" | "justification";
 

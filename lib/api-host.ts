@@ -41,7 +41,7 @@ export function getAuthFrontendUrl(path: string = "/login"): string {
   const scheme = getProtocol();
   const authFrontendUrl =
     process.env.NEXT_PUBLIC_AUTH_FRONTEND_URL ||
-    `${scheme}://astc-joyit.io`;
+    `${scheme}://astc-auth.joyit.io`;
   return `${authFrontendUrl}${path}`;
 }
 

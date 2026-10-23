@@ -15,9 +15,6 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 export default function PmLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { hydrated, checkingAuth } = useAuthGuard(PM_ROLES);
-  if (!hydrated || checkingAuth) {
-    return (<div className="min-h-screen flex items-center justify-center">Cargando...</div>);
-  }
   const isSubPage = useMemo(() => {
     if (!pathname) return false;
     return (
@@ -30,6 +27,10 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
       pathname.startsWith("/pm/registrar/prev")
     );
   }, [pathname]);
+
+  if (!hydrated || checkingAuth) {
+    return (<div className="min-h-screen flex items-center justify-center">Cargando...</div>);
+  }
 
   return (
     <div className="flex min-h-screen w-full">

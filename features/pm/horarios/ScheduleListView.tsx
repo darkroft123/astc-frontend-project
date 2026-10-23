@@ -162,7 +162,7 @@ export function ScheduleListView() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const PAGE_SIZE = 8;
+  const PAGE_SIZE = 5;
   const [previewTemplate, setPreviewTemplate] = useState<any | null>(null);
   const [assignedTemplateIds, setAssignedTemplateIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();

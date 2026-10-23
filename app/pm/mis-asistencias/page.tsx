@@ -60,6 +60,7 @@ export default function PMAsistenciasPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
   const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>({
     from: "01/09/2026",
@@ -75,10 +76,11 @@ export default function PMAsistenciasPage() {
     try {
       const res = await listAttendance(token, {
         page,
-        size: 10,
+        size: 5,
         status: statusFilter === "all" ? undefined : statusFilter,
       });
       const items = res?.items || [];
+      setTotalRecords(Number(res?.total) || items.length);
       if (items.length > 0) {
         setRecords(
           items.map((i: any) => ({
@@ -104,6 +106,7 @@ export default function PMAsistenciasPage() {
       }
     } catch {
       setRecords([]);
+      setTotalRecords(0);
     } finally {
       setIsLoading(false);
     }
@@ -125,6 +128,7 @@ export default function PMAsistenciasPage() {
   }, [records, searchDate, statusFilter]);
 
   const total = filteredRecords.length;
+  const totalPages = Math.max(1, Math.ceil(totalRecords / 5));
   const presentes = filteredRecords.filter((r) => r.status === "PRESENTE").length;
   const faltas = filteredRecords.filter((r) => r.status === "FALTA").length;
   const porcentaje = total > 0 ? Math.round((presentes / total) * 100) : 0;
@@ -557,7 +561,7 @@ export default function PMAsistenciasPage() {
       {/* 9. PAGINATION FOOTER */}
       <div className="flex items-center justify-between pt-1 px-1">
         <span className="text-xs text-muted-foreground font-medium">
-          {total} registro{total === 1 ? "" : "s"} total{total === 1 ? "" : "es"}
+          {totalRecords} registro{totalRecords === 1 ? "" : "s"} total{totalRecords === 1 ? "" : "es"}
         </span>
         <div className="flex items-center gap-2">
           <button
@@ -569,11 +573,12 @@ export default function PMAsistenciasPage() {
             <ChevronLeft className="w-4 h-4" />
           </button>
           <span className="text-xs text-muted-foreground font-medium px-1">
-            Página {page} de 1
+            Página {page} de {totalPages}
           </span>
           <button
             type="button"
-            disabled
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => p + 1)}
             className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40"
           >
             <ChevronRight className="w-4 h-4" />

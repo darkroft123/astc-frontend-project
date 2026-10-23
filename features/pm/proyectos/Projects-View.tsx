@@ -93,7 +93,7 @@ export function ProjectsManagementView({
   ).length;
   const inactiveCount = filteredProjects.filter((p) => p.status === "INACTIVE").length;
 
-  const pageSize = 10;
+  const pageSize = 5;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const paginatedProjects = useMemo(() => {
     const start = (page - 1) * pageSize;

@@ -88,7 +88,7 @@ export function FaltasListView() {
   const [data, setData] = useState({ items: [] as AbsenceRow[], total: 0 });
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const size = 10;
+  const size = 5;
 
   const [dateRange, setDateRange] = useState<DateRange>(getInitialMonthRange());
 

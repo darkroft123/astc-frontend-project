@@ -119,7 +119,7 @@ export function AttendanceManagementView() {
   const [selectedUser, setSelectedUser] = useState("all");
   const [page, setPage] = useState(1);
 
-  const totalPages = attendance ? Math.ceil(attendance.total / 10) : 1;
+  const totalPages = attendance ? Math.max(1, Math.ceil(attendance.total / 5)) : 1;
 
   useEffect(() => {
     if (!token) return;

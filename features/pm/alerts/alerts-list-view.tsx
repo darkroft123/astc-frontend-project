@@ -86,6 +86,7 @@ export function AlertsListView() {
   const [selectedUser, setSelectedUser] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [page, setPage] = useState(1);
+  const [totalAlerts, setTotalAlerts] = useState(0);
   const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>({
     from: "01/09/2026",
@@ -124,7 +125,7 @@ export function AlertsListView() {
           query: LIST_ATTENDANCE_ALERTS,
           variables: {
             page,
-            size: 10,
+            size: 5,
             status: selectedStatus === "all" ? undefined : selectedStatus,
             projectId: selectedProject === "all" ? undefined : selectedProject,
             userId: selectedUser === "all" ? undefined : selectedUser,
@@ -133,6 +134,7 @@ export function AlertsListView() {
       });
       const json = await res.json();
       const items = json?.data?.listAttendanceAlerts?.items;
+      setTotalAlerts(Number(json?.data?.listAttendanceAlerts?.total) || items?.length || 0);
       if (Array.isArray(items) && items.length > 0) {
         setAlerts(
           items.map((i: any) => {
@@ -160,6 +162,7 @@ export function AlertsListView() {
       }
     } catch {
       setAlerts([]);
+      setTotalAlerts(0);
     } finally {
       setIsLoading(false);
     }
@@ -195,6 +198,7 @@ export function AlertsListView() {
   };
 
   const total = alerts.length;
+  const totalPages = Math.max(1, Math.ceil(totalAlerts / 5));
   const pendientes = alerts.filter((a) => a.status === "PENDING").length;
   const revisadas = alerts.filter((a) => a.status === "REVIEWED" || a.status === "APPROVED").length;
   const porcentaje = total > 0 ? Math.round((revisadas / total) * 100) : 0;
@@ -730,22 +734,24 @@ export function AlertsListView() {
       {/* 9. PAGINATION FOOTER */}
       <div className="flex items-center justify-between pt-1 px-1">
         <span className="text-xs text-muted-foreground font-medium">
-          {total} alerta{total === 1 ? "" : "s"}
+          {totalAlerts} alerta{totalAlerts === 1 ? "" : "s"}
         </span>
         <div className="flex items-center gap-2">
           <button
             type="button"
-            disabled
+            disabled={page <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
             className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <span className="text-xs text-muted-foreground font-medium px-1">
-            Página 1 de 1
+            Página {page} de {totalPages}
           </span>
           <button
             type="button"
-            disabled
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => p + 1)}
             className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40"
           >
             <ChevronRight className="w-4 h-4" />
