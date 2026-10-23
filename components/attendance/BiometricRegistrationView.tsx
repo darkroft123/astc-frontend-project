@@ -128,7 +128,7 @@ export default function BiometricRegistrationView({
     return () => {
       stopCamera();
     };
-  }, []);
+  }, [startCamera, stopCamera]);
 
   // Fetch today attendance & schedule & vacations
   useEffect(() => {
@@ -705,7 +705,7 @@ export default function BiometricRegistrationView({
             </div>
 
             <button
-              onClick={() => router.push(vacationsRoute)}
+              onClick={() => { stopCamera(); router.push(vacationsRoute); }}
               className="flex items-center gap-1 font-sans text-xs text-emerald-500 dark:text-[#34D399] hover:underline transition-colors font-medium cursor-pointer pt-1"
             >
               Ver solicitud <ArrowRight className="w-3 h-3 ml-0.5" />
