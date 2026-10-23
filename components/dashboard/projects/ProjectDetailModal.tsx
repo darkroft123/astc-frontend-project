@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   X,
   Copy,
@@ -102,7 +102,8 @@ export default function ProjectDetailModal({
   onRefresh,
 }: ProjectDetailModalProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"general" | "holidays" | "schedules" | "members">("general");
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<"general" | "holidays" | "schedules" | "members">((searchParams?.get("tab") as any) || "general");
   const [copiedId, setCopiedId] = useState(false);
 
   // Holidays state
@@ -408,8 +409,8 @@ export default function ProjectDetailModal({
             <span
               className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                 activeTab === "holidays"
-                  ? "bg-[#342461] text-[#C084FC]"
-                  : "bg-muted text-muted-foreground dark:bg-[#1D2133] dark:text-[#8F96AE]"
+                  ? "bg-purple-100 text-purple-700 dark:bg-[#342461] dark:text-[#C084FC]"
+                  : "bg-[#ECEEF4] text-[#4E5468] dark:bg-[#1D2133] dark:text-[#8F96AE]"
               }`}
             >
               {holidays.length || 3}
@@ -443,8 +444,8 @@ export default function ProjectDetailModal({
             <span
               className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                 activeTab === "members"
-                  ? "bg-[#342461] text-[#C084FC]"
-                  : "bg-muted text-muted-foreground dark:bg-[#1D2133] dark:text-[#8F96AE]"
+                  ? "bg-purple-100 text-purple-700 dark:bg-[#342461] dark:text-[#C084FC]"
+                  : "bg-[#ECEEF4] text-[#4E5468] dark:bg-[#1D2133] dark:text-[#8F96AE]"
               }`}
             >
               {membersList.length || 2}
@@ -636,7 +637,7 @@ export default function ProjectDetailModal({
                   <h3 className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">
                     Feriados asignados
                   </h3>
-                  <p className="text-[11px] text-[#8F96AE]">
+                  <p className="text-[11px] text-muted-foreground dark:text-[#8F96AE]">
                     {holidays.length} feriados en {holidayYear}
                   </p>
                 </div>
@@ -825,7 +826,7 @@ export default function ProjectDetailModal({
                   <h3 className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">
                     Miembros del proyecto
                   </h3>
-                  <p className="text-[11px] text-[#8F96AE]">
+                  <p className="text-[11px] text-muted-foreground dark:text-[#8F96AE]">
                     {membersList.length} personas asignadas
                   </p>
                 </div>
