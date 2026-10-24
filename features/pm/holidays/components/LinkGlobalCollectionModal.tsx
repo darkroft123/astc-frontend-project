@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createPortal } from "react";
+import { createPortal } from "react-dom";
 import { X, Link2 } from "lucide-react";
 import { CollectionOutput } from "@/app/services/project.assistance.service";
 

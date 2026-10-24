@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createPortal } from "react";
+import { createPortal } from "react-dom";
 import { X, Upload, AlertCircle } from "lucide-react";
 
 interface ImportHolidaysModalProps {

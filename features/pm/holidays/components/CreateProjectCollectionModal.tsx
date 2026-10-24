@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createPortal } from "react";
+import { createPortal } from "react-dom";
 import { X, Check, Calendar as CalendarIcon } from "lucide-react";
 import { MonthCalendarPicker } from "./MonthCalendarPicker";
 
