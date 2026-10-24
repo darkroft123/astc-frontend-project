@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react";
 import { X, Check } from "lucide-react";
 import { MonthCalendarPicker } from "./MonthCalendarPicker";
 
@@ -20,7 +21,10 @@ export function MemberExceptionModal({
   const [dates, setDates] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   if (!member) return null;
+  if (!mounted) return null;
 
   const handleToggleDate = (dateStr: string) => {
     setDates((prev) =>
@@ -41,9 +45,8 @@ export function MemberExceptionModal({
     }
   };
 
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 animate-in fade-in-0 duration-200"
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 animate-in fade-in-0 duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -153,4 +156,6 @@ export function MemberExceptionModal({
       </div>
     </div>
   );
+
+  return typeof document !== "undefined" ? createPortal(modalNode, document.body) : null;
 }

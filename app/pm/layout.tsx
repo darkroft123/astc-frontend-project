@@ -43,8 +43,8 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
           {!isSubPage && <MobileHeader />}
 
           {/* Ambient light for all screens in dark mode (50px higher, 100px left) */}
-          <div className="absolute top-[-300px] right-0 w-[600px] h-[450px] bg-violet/10 dark:bg-violet/20 blur-[140px] rounded-full pointer-events-none hidden dark:block z-0" />
-          <div className="absolute top-[-130px] right-[200px] w-[350px] h-[250px] bg-indigo-500/10 dark:bg-indigo-500/15 blur-[100px] rounded-full pointer-events-none hidden dark:block z-0" />
+          <div className="absolute top-[-300px] right-0 w-[600px] h-[450px] bg-violet/10 dark:bg-violet/20 blur-[140px] rounded-full pointer-events-none hidden md:dark:block z-0" />
+          <div className="absolute top-[-130px] right-[200px] w-[350px] h-[250px] bg-indigo-500/10 dark:bg-indigo-500/15 blur-[100px] rounded-full pointer-events-none hidden md:dark:block z-0" />
 
           <main className={`flex-1 p-4 md:px-8 md:pt-5 md:pb-8 bg-transparent relative z-10 ${isSubPage ? "pb-8" : "pb-28 md:pb-8"}`}>
             {children}

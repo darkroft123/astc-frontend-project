@@ -423,13 +423,7 @@ export function HolidayPMListView() {
 
   return (
     <div className="relative min-h-screen bg-transparent pb-16 font-sans">
-      {/* Top Ambient Glow */}
-      <div
-        className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-80 rounded-full opacity-30 blur-3xl z-0 hidden dark:block"
-        style={{
-          background: "radial-gradient(circle, #7C3AED 0%, transparent 70%)",
-        }}
-      />
+      
 
       <div className="relative w-full max-w-7xl mx-auto space-y-6 z-10 ">
         {/* 1. TOP HEADER & CREATE COLLECTION BUTTON */}

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { AlertTriangle } from "lucide-react";
 
 interface AttendanceWarningModalProps {
@@ -17,11 +19,17 @@ export function AttendanceWarningModal({
   onCancel,
   onConfirm,
 }: AttendanceWarningModalProps) {
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-card border border-border/80 rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-foreground">
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
+
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+      <div className="bg-card border border-border/80 rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-foreground relative z-[101]">
         <div className="flex items-center gap-4 mb-4">
           <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
             <AlertTriangle className="w-6 h-6 text-amber-500" />
@@ -60,4 +68,6 @@ export function AttendanceWarningModal({
       </div>
     </div>
   );
+
+  return typeof document !== "undefined" ? createPortal(modalNode, document.body) : null;
 }
