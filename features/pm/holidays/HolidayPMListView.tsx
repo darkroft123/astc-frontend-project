@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
 import {
   getAllProjects,
@@ -175,10 +176,17 @@ export function HolidayPMListView() {
   const [expandedId, setExpandedId] = useState<string | null>("col-reretesteo");
 
   // Modal Visibility States
+  const searchParams = useSearchParams();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedMemberForException, setSelectedMemberForException] = useState<any | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams?.get("modal") === "exception") {
+      setSelectedMemberForException(DEFAULT_SVG_MEMBERS[0]);
+    }
+  }, [searchParams]);
 
   // Load Projects
   useEffect(() => {

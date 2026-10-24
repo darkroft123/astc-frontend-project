@@ -57,9 +57,24 @@ export function ImportHolidaysModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-lg md:max-w-2xl max-h-[92vh] overflow-y-auto bg-card dark:bg-[#0E111C] border border-border dark:border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl relative text-foreground space-y-5">
-        {/* Drag Handle (Mobile only) */}
-        <div className="w-12 h-1 rounded-full bg-muted-foreground/30 mx-auto md:hidden" />
+      <div className="w-full max-w-lg md:max-w-2xl max-h-[92vh] overflow-y-auto overscroll-contain bg-card dark:bg-[#0E111C] border border-border dark:border-[#1E2335] rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 pb-8 sm:pb-8 shadow-2xl relative text-foreground space-y-5">
+        {/* Mobile Slide-Down to Close Button & Handle */}
+        <button
+          type="button"
+          onClick={onClose}
+          onTouchStart={(e) => {
+            (e.currentTarget as any)._startY = e.touches[0].clientY;
+          }}
+          onTouchEnd={(e) => {
+            const startY = (e.currentTarget as any)._startY;
+            if (startY && e.changedTouches[0].clientY - startY > 20) {
+              onClose();
+            }
+          }}
+          className="w-12 h-1.5 rounded-full bg-muted-foreground/30 hover:bg-muted-foreground/60 active:bg-muted-foreground/80 active:scale-95 transition-all mx-auto md:hidden block cursor-pointer -mt-1 mb-2 touch-none"
+          title="Deslizar hacia abajo o pulsar para cerrar"
+          aria-label="Cerrar modal"
+        />
 
         {/* Header */}
         <div className="flex items-start justify-between gap-3 pb-2 border-b border-border dark:border-[#1E2335]">

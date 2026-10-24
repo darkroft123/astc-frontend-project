@@ -384,7 +384,7 @@ export default function ProjectDetailModal({
         </div>
 
         {/* Segmented Tabs Bar (Exact SVG layout) */}
-        <div className="relative bg-muted/60 dark:bg-[#0C0E18] p-1.5 rounded-2xl border border-border dark:border-white/[0.09] flex items-center gap-1 mt-4 overflow-x-auto no-scrollbar">
+        <div className="relative bg-muted/60 dark:bg-[#0C0E18] p-1.5 rounded-2xl border border-border dark:border-white/[0.09] grid grid-cols-2 sm:grid-cols-4 gap-1.5 mt-4">
           <button
             type="button"
             onClick={() => setActiveTab("general")}
@@ -490,11 +490,20 @@ export default function ProjectDetailModal({
                 </div>
 
                 {/* EQUIPO */}
-                <div className="rounded-2xl border border-border dark:border-white/[0.08] bg-muted/40 dark:bg-[#101322] p-4">
-                  <p className="text-[10px] font-mono uppercase tracking-[0.08em] font-semibold text-indigo-600 dark:text-[#8B7BD8] flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-[#60A5FA]" />
-                    EQUIPO
-                  </p>
+                <div
+                  onClick={() => setActiveTab("members")}
+                  className="rounded-2xl border border-border dark:border-white/[0.08] bg-muted/40 dark:bg-[#101322] p-4 cursor-pointer hover:border-purple-500/40 transition-colors group"
+                  title="Ver miembros del proyecto"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] font-mono uppercase tracking-[0.08em] font-semibold text-indigo-600 dark:text-[#8B7BD8] flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5 text-[#60A5FA]" />
+                      EQUIPO
+                    </p>
+                    <span className="text-[10px] font-semibold text-purple-600 dark:text-[#C084FC] group-hover:underline">
+                      Ver →
+                    </span>
+                  </div>
                   <p className="text-xs font-bold text-foreground dark:text-[#EEF0F6] mt-2">
                     {membersList.length} trabajadores
                   </p>
@@ -801,18 +810,18 @@ export default function ProjectDetailModal({
                   ))}
                 </div>
               ) : (
-                <div className="rounded-2xl border border-dashed border-[#1E2335] p-7 text-center flex flex-col items-center justify-center bg-card dark:bg-[#111422]/50">
-                  <div className="w-10 h-10 rounded-xl bg-[#141829] border border-white/[0.06] flex items-center justify-center text-[#8F96AE] mb-3">
+                <div className="rounded-2xl border border-dashed border-border dark:border-[#1E2335] p-7 text-center flex flex-col items-center justify-center bg-muted/20 dark:bg-[#111422]/50">
+                  <div className="w-10 h-10 rounded-xl bg-muted dark:bg-[#141829] border border-border dark:border-white/[0.06] flex items-center justify-center text-muted-foreground dark:text-[#8F96AE] mb-3">
                     <Clock className="w-5 h-5" />
                   </div>
                   <h4 className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">Sin turnos rotativos</h4>
-                  <p className="text-[11px] text-[#8F96AE] mt-1 max-w-[280px] leading-relaxed">
+                  <p className="text-[11px] text-muted-foreground dark:text-[#8F96AE] mt-1 max-w-[280px] leading-relaxed">
                     Crea turnos para asignar horarios distintos a parte del equipo.
                   </p>
                   <button
                     type="button"
                     onClick={() => router.push("/pm/creacion-horarios")}
-                    className="mt-4 px-5 py-2 rounded-xl bg-card dark:bg-[#181C2E] border border-border dark:border-[#272E49] hover:bg-muted dark:hover:bg-[#20263E] text-foreground dark:text-white text-xs font-semibold transition-colors cursor-pointer"
+                    className="mt-4 px-5 py-2 rounded-xl bg-card hover:bg-muted dark:bg-[#181C2E] dark:hover:bg-[#20263E] border border-border dark:border-[#272E49] text-foreground dark:text-white text-xs font-semibold transition-all cursor-pointer shadow-xs"
                   >
                     Crear turno
                   </button>
@@ -834,7 +843,73 @@ export default function ProjectDetailModal({
                   </p>
                 </div>
 
+                <button
+                  type="button"
+                  onClick={() => setShowAddMember(!showAddMember)}
+                  className="px-3.5 py-1.5 rounded-xl border border-border dark:border-white/10 bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1c2238] text-xs font-semibold text-foreground dark:text-white flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{showAddMember ? "Cerrar" : "Asignar"}</span>
+                </button>
+              </div>
+
+              {/* Form to add member */}
+              {showAddMember && (
+                <div className="p-4 rounded-2xl border border-border dark:border-white/10 bg-muted/40 dark:bg-[#101322] space-y-3">
+                  <h4 className="text-xs font-bold text-foreground dark:text-white">Asignar nuevo miembro</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[11px] font-semibold text-muted-foreground block mb-1">
+                        Usuario
+                      </label>
+                      <select
+                        value={selectedNewUserId}
+                        onChange={(e) => setSelectedNewUserId(e.target.value)}
+                        className="w-full h-9 px-3 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs text-foreground dark:text-white"
+                      >
+                        <option value="">Selecciona usuario...</option>
+                        {allUsers
+                          .filter((u) => !membersList.some((m) => (m.userId || m.id) === u.id))
+                          .map((u) => (
+                            <option key={u.id} value={u.id}>
+                              {u.firstName} {u.lastName} (@{u.username})
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-semibold text-muted-foreground block mb-1">
+                        Rol en el proyecto
+                      </label>
+                      <select
+                        value={selectedNewUserRole}
+                        onChange={(e) => setSelectedNewUserRole(e.target.value)}
+                        className="w-full h-9 px-3 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs text-foreground dark:text-white"
+                      >
+                        <option value="TEAM_MEMBER">Colaborador</option>
+                        <option value="PROJECT_MANAGER">Jefe de proyecto</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddMember(false)}
+                      className="px-3 py-1.5 rounded-xl border border-border dark:border-[#1E2335] text-xs font-medium cursor-pointer"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!selectedNewUserId || isAddingMember}
+                      onClick={handleAddMemberSubmit}
+                      className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-[#5B8CFF] to-[#A855F7] text-white text-xs font-semibold disabled:opacity-50 cursor-pointer shadow-xs"
+                    >
+                      {isAddingMember ? "Asignando..." : "Asignar"}
+                    </button>
+                  </div>
                 </div>
+              )}
 
               {/* Members List matching SVG */}
               <div className="space-y-2.5">
