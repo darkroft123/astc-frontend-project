@@ -2,17 +2,16 @@
 const nextConfig = {
   output: 'standalone',
   env: {
-    NEXT_PUBLIC_GRAPHQL_URL: "https://astc-api.joyit.io/graphql",
-    NEXT_PUBLIC_API_URL: "https://astc-api.joyit.io/graphql",
-    NEXT_PUBLIC_PROJECT_GRAPHQL_URL: "https://astc-api.joyit.io/graphql",
-    NEXT_PUBLIC_BACKOFFICE_GRAPHQL_URL: "https://astc-api.joyit.io/graphql",
+    NEXT_PUBLIC_GRAPHQL_URL: "https://astc.joyit.io/graphql",
+    NEXT_PUBLIC_API_URL: "https://astc.joyit.io/graphql",
+    NEXT_PUBLIC_PROJECT_GRAPHQL_URL: "https://astc.joyit.io/graphql",
+    NEXT_PUBLIC_BACKOFFICE_GRAPHQL_URL: "https://astc.joyit.io/graphql",
+    NEXT_PUBLIC_AUTH_FRONTEND_URL: "https://astc.joyit.io",
+    NEXT_PUBLIC_AUTH_API_URL: "https://auth-api.astc.joyit.io",
   },
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Limita los workers del build a 2. Sin esto Next calcula cpus-1 = 11 workers
-  // (por los nucleos del host) y en emulacion ARM se excede la RAM de Docker
-  // ("Collecting page data" -> rpc error Unavailable / EOF).
   experimental: {
     cpus: 2,
   },
@@ -22,16 +21,32 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: '/(.*)',
         headers: [
-          { key: 'X-Frame-Options', value: 'DENY' },
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Permissions-Policy', value: 'camera=*, geolocation=*, microphone=()' },
-        ],
+          {
+                    "key": "X-Content-Type-Options",
+                    "value": "nosniff"
+          },
+          {
+                    "key": "X-Frame-Options",
+                    "value": "SAMEORIGIN"
+          },
+          {
+                    "key": "Referrer-Policy",
+                    "value": "strict-origin-when-cross-origin"
+          },
+          {
+                    "key": "Strict-Transport-Security",
+                    "value": "max-age=31536000; includeSubDomains"
+          },
+          {
+                    "key": "Permissions-Policy",
+                    "value": "camera=(self), microphone=(), geolocation=()"
+          }
+],
       },
     ];
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;

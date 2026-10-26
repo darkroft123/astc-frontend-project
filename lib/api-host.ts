@@ -27,15 +27,11 @@ function getBaseDomain(): string {
  * Returns the GraphQL Gateway endpoint for client requests.
  */
 export function getGraphQLUrl(): string {
-  // [MOCK LOCAL] Usa endpoint mock local de Next.js para desarrollo sin backend ni Docker
-  // Valor real anterior:
-  // if (process.env.NEXT_PUBLIC_GRAPHQL_URL) {
-  //   return process.env.NEXT_PUBLIC_GRAPHQL_URL;
-  // }
-  // const scheme = getProtocol();
-  // return `${scheme}://astc-joyit.io/graphql`;
-
-  return "/api/graphql";
+  if (process.env.NEXT_PUBLIC_GRAPHQL_URL) {
+    return process.env.NEXT_PUBLIC_GRAPHQL_URL;
+  }
+  const scheme = getProtocol();
+  return `${scheme}://astc.joyit.io/graphql`;
 }
 
 /**
@@ -45,7 +41,7 @@ export function getAuthFrontendUrl(path: string = "/login"): string {
   const scheme = getProtocol();
   const authFrontendUrl =
     process.env.NEXT_PUBLIC_AUTH_FRONTEND_URL ||
-    `${scheme}://astc-joyit.io`;
+    `${scheme}://astc.joyit.io`;
   return `${authFrontendUrl}${path}`;
 }
 
@@ -69,6 +65,6 @@ export function getApiBaseUrl(port?: number | string, path: string = ""): string
 
   const apiHost =
     process.env.NEXT_PUBLIC_API_URL ||
-    `${scheme}://astc-joyit.io/graphql`;
+    `${scheme}://astc.joyit.io/graphql`;
   return `${apiHost}${path}`;
 }
