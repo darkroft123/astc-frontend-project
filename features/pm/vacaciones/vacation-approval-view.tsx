@@ -169,6 +169,24 @@ export function VacationApprovalView() {
     return vacations.filter((v) => v.status === statusFilter);
   }, [vacations, statusFilter]);
 
+  const PAGE_SIZE = 5;
+  const totalPages = Math.max(1, Math.ceil(filteredVacations.length / PAGE_SIZE));
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter]);
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  const paginatedVacations = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return filteredVacations.slice(start, start + PAGE_SIZE);
+  }, [filteredVacations, page]);
+
   const columns: Column<any>[] = [
     { 
       key: "userId", 
@@ -523,34 +541,44 @@ export function VacationApprovalView() {
 
       {/* 6. DESKTOP TABLE VIEW (hidden md:block) */}
       <div className="hidden md:block rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
-        <DataTable columns={columns} data={filteredVacations} />
+        <DataTable columns={columns} data={paginatedVacations} />
       </div>
 
       {/* 7. PAGINATION FOOTER */}
-      <div className="flex items-center justify-end gap-3 pt-3 px-1">
-        <span className="text-xs text-muted-foreground font-medium">
-          Página {page} de 1
-        </span>
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            disabled
-            className="w-8 h-8 rounded-lg border border-border bg-card/60 flex items-center justify-center text-muted-foreground disabled:opacity-40 hover:bg-card"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            disabled
-            className="w-8 h-8 rounded-lg border border-border bg-card/60 flex items-center justify-center text-muted-foreground disabled:opacity-40 hover:bg-card"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
+      {filteredVacations.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 px-1 text-xs text-muted-foreground">
+          <div>
+            <span>
+              Mostrando <strong className="text-foreground">{Math.min((page - 1) * PAGE_SIZE + 1, filteredVacations.length)}</strong> - <strong className="text-foreground">{Math.min(page * PAGE_SIZE, filteredVacations.length)}</strong> de <strong className="text-foreground">{filteredVacations.length}</strong> solicitudes
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span>
+              Página <strong className="text-foreground">{page}</strong> de <strong className="text-foreground">{totalPages}</strong>
+            </span>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className="w-8 h-8 rounded-lg border border-border bg-card/60 hover:bg-card flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                title="Página anterior"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                disabled={page >= totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                className="w-8 h-8 rounded-lg border border-border bg-card/60 hover:bg-card flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                title="Página siguiente"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
-        <span className="text-xs text-muted-foreground font-mono">
-          {filteredVacations.length} solicitud{filteredVacations.length === 1 ? "" : "es"}
-        </span>
-      </div>
+      )}
       </div>
 
       {/* Dialogs */}

@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
 import {
   getAllProjects,
+  getMyProjects,
   getProjectMembers,
   getUserById,
   bulkCreateHolidays,
@@ -195,17 +196,33 @@ export function HolidayPMListView() {
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
           setProjects(data);
-          if (!selectedProjectId) {
+          if (!selectedProjectId || !data.some((p: any) => p.id === selectedProjectId)) {
             setSelectedProjectId(data[0].id);
           }
         } else {
-          setProjects([{ id: "testo6", name: "Gestión de Asistencia" }]);
+          return getMyProjects(token).then((mine) => {
+            const list = Array.isArray(mine) ? mine : [];
+            setProjects(list);
+            if (list.length > 0 && (!selectedProjectId || !list.some((p: any) => p.id === selectedProjectId))) {
+              setSelectedProjectId(list[0].id);
+            }
+          });
         }
       })
       .catch(() => {
-        setProjects([{ id: "testo6", name: "Gestión de Asistencia" }]);
+        getMyProjects(token)
+          .then((mine) => {
+            const list = Array.isArray(mine) ? mine : [];
+            setProjects(list);
+            if (list.length > 0 && (!selectedProjectId || !list.some((p: any) => p.id === selectedProjectId))) {
+              setSelectedProjectId(list[0].id);
+            }
+          })
+          .catch(() => {
+            setProjects([]);
+          });
       });
-  }, [token]);
+  }, [token, selectedProjectId]);
 
   // Load Global Collections
   useEffect(() => {
@@ -215,7 +232,7 @@ export function HolidayPMListView() {
         if (Array.isArray(data) && data.length > 0) {
           setGlobalCollections(data);
         } else {
-          setGlobalCollections(DEFAULT_SVG_COLLECTIONS);
+          setGlobalCollections([]);
         }
       })
       .catch(() => {
@@ -304,6 +321,7 @@ export function HolidayPMListView() {
   // Tab 1 Pagination (Collections)
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [itemsPage, setItemsPage] = useState<Record<string, number>>({});
   const totalPages = Math.max(1, Math.ceil(filteredCollections.length / pageSize));
 
   useEffect(() => {
@@ -719,7 +737,7 @@ export function HolidayPMListView() {
 
                           {/* Contenedor acotado con scroll vertical */}
                           <div className="max-h-[320px] sm:max-h-[360px] overflow-y-auto pr-1 sm:pr-1.5 space-y-2.5">
-                            {col.items.map((item, idx) => {
+                            {(col.items || []).slice(((itemsPage[col.id] || 1) - 1) * 5, (itemsPage[col.id] || 1) * 5).map((item, idx) => {
                               const dateObj = new Date(item.date + "T12:00:00");
                               const dayName = WEEKDAY_NAMES_ES[dateObj.getDay()];
                               const dayNumber = dateObj.getDate();
@@ -754,6 +772,51 @@ export function HolidayPMListView() {
                               );
                             })}
                           </div>
+                          {col.items && col.items.length > 5 && (
+                            <div className="flex items-center justify-between pt-2 px-1 text-xs text-muted-foreground border-t border-border/30 dark:border-[#1E2335]">
+                              <span>
+                                Mostrando {Math.min(((itemsPage[col.id] || 1) - 1) * 5 + 1, col.items.length)} - {Math.min((itemsPage[col.id] || 1) * 5, col.items.length)} de {col.items.length} feriados
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <span>
+                                  Página {itemsPage[col.id] || 1} de {Math.max(1, Math.ceil(col.items.length / 5))}
+                                </span>
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    type="button"
+                                    disabled={(itemsPage[col.id] || 1) <= 1}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setItemsPage((prev) => ({
+                                        ...prev,
+                                        [col.id]: Math.max(1, (prev[col.id] || 1) - 1),
+                                      }));
+                                    }}
+                                    className="p-1 rounded border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                                    title="Página anterior"
+                                  >
+                                    <ChevronLeft className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    disabled={(itemsPage[col.id] || 1) >= Math.ceil(col.items.length / 5)}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const maxP = Math.ceil(col.items.length / 5);
+                                      setItemsPage((prev) => ({
+                                        ...prev,
+                                        [col.id]: Math.min(maxP, (prev[col.id] || 1) + 1),
+                                      }));
+                                    }}
+                                    className="p-1 rounded border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                                    title="Página siguiente"
+                                  >
+                                    <ChevronRight className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
 
                           {/* Footer bar for assigned collection */}
                           {isAssigned && (

@@ -244,8 +244,13 @@ export default function BiometricRegistrationView({
       currentPosition ? String(currentPosition.lng) : "-77.0817"
     );
     sessionStorage.setItem("attendance_time", new Date().toISOString());
-    sessionStorage.setItem("attendance_project_id", activeProject.id);
-    sessionStorage.setItem("attendance_project_name", activeProject.name);
+    const targetProject = activeProject || (projects && projects.length > 0 ? projects[0] : null);
+    if (!targetProject) {
+      alert("Por favor selecciona un proyecto antes de registrar asistencia.");
+      return;
+    }
+    sessionStorage.setItem("attendance_project_id", targetProject.id);
+    sessionStorage.setItem("attendance_project_name", targetProject.name || "Proyecto");
     stopCamera();
     router.push(previewRoute);
   };
@@ -261,8 +266,13 @@ export default function BiometricRegistrationView({
       currentPosition ? String(currentPosition.lng) : "-77.0817"
     );
     sessionStorage.setItem("attendance_time", new Date().toISOString());
-    sessionStorage.setItem("attendance_project_id", activeProject.id);
-    sessionStorage.setItem("attendance_project_name", activeProject.name);
+    const targetProject = activeProject || (projects && projects.length > 0 ? projects[0] : null);
+    if (!targetProject) {
+      alert("Por favor selecciona un proyecto antes de registrar asistencia.");
+      return;
+    }
+    sessionStorage.setItem("attendance_project_id", targetProject.id);
+    sessionStorage.setItem("attendance_project_name", targetProject.name || "Proyecto");
     stopCamera();
     router.push(previewRoute);
   };

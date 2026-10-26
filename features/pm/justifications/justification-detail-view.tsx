@@ -20,6 +20,7 @@ import {
   XCircle,
   Copy,
   Check,
+  Loader2,
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { getGraphQLUrl } from "@/lib/api-host";

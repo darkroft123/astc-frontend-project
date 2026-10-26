@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
 import {
   getAllProjects,
+  getMyProjects,
   getAllUsers,
   listScheduleOverrides,
   deleteSchedule,
@@ -109,40 +110,58 @@ export function ScheduleManagementView() {
     if (!token) return;
     setIsLoading(true);
     try {
-      const [projs, users, overrides] = await Promise.all([
-        getAllProjects(token).catch(() => []),
+      let projs = await getAllProjects(token).catch(() => []);
+      if (!projs || projs.length === 0) {
+        projs = await getMyProjects(token).catch(() => []);
+      }
+      const [users, overrides] = await Promise.all([
         getAllUsers(token).catch(() => []),
         listScheduleOverrides(token).catch(() => []),
       ]);
 
-      setProjects(projs || []);
+      const projectList = Array.isArray(projs) ? projs : [];
+      setProjects(projectList);
 
       const overrideMap = new Map<string, any>();
       for (const ov of overrides || []) {
         overrideMap.set(`${ov.userId}:${ov.projectId}`, ov);
       }
 
+      const projectMap = new Map<string, any>();
+      for (const p of projectList) {
+        projectMap.set(p.id, p);
+      }
+
       const list: UserSchedule[] = [];
-      const userList = users || [];
+      const userList = Array.isArray(users) ? users : [];
 
       for (const u of userList) {
-        const uProjects =
-          u.projects && u.projects.length > 0
-            ? u.projects
-            : [{ id: "p1", name: "Gestión de Asistencia" }];
+        let uProjects = u.projects && u.projects.length > 0 ? u.projects : [];
+        if (uProjects.length === 0 && projectList.length > 0) {
+          const memberOf = projectList.filter((pr: any) =>
+            pr.members?.some((m: any) => m.userId === u.id) ||
+            overrideMap.has(`${u.id}:${pr.id}`)
+          );
+          uProjects = memberOf.length > 0 ? memberOf : [projectList[0]];
+        }
+        if (uProjects.length === 0) {
+          uProjects = [{ id: "p1", name: "Gestión de Asistencia" }];
+        }
 
         for (const p of uProjects) {
           const ov = overrideMap.get(`${u.id}:${p.id}`);
-          const pStart = p.startHour || "09:00";
-          const pEnd = p.endHour || "18:00";
-          const pGrace = p.graceMinutes ?? 10;
+          const realProject = projectMap.get(p.id) || p;
+          const pStart = realProject.workStartTime?.substring(0, 5) || realProject.startHour || "09:00";
+          const pEnd = realProject.workEndTime?.substring(0, 5) || realProject.endHour || "18:00";
+          const pGrace = realProject.graceMinutes ?? 10;
+          const pName = realProject.name || p.name || "Proyecto";
 
           list.push({
             userId: u.id,
-            userName: `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.email,
+            userName: `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || u.email,
             userEmail: u.email,
-            projectId: p.id,
-            projectName: p.name,
+            projectId: realProject.id || p.id,
+            projectName: pName,
             projectStartHour: pStart,
             projectEndHour: pEnd,
             projectGraceMinutes: pGrace,
@@ -154,7 +173,7 @@ export function ScheduleManagementView() {
               : pEnd,
             hasOverride: !!ov,
             overrideId: ov ? ov.id : null,
-            shiftType: ov ? ov.shiftType || "CUSTOM" : "REGULAR",
+            shiftType: ov ? ov.shiftType || "CUSTOM" : (realProject.shiftType || "REGULAR"),
           });
         }
       }

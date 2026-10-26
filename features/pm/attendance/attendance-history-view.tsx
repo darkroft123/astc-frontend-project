@@ -24,6 +24,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
 import {
   getAllProjects,
+  getMyProjects,
   getAllUsers,
   listTeamAttendance,
   exportAttendance,
@@ -114,7 +115,17 @@ export function AttendanceHistoryView() {
 
   useEffect(() => {
     if (!token) return;
-    Promise.all([getAllProjects(token), getAllUsers(token)])
+    const fetchProjs = async () => {
+      try {
+        const list = await getAllProjects(token);
+        if (Array.isArray(list) && list.length > 0) return list;
+        return await getMyProjects(token);
+      } catch {
+        return await getMyProjects(token).catch(() => []);
+      }
+    };
+
+    Promise.all([fetchProjs(), getAllUsers(token).catch(() => [])])
       .then(([pRes, uRes]) => {
         if (Array.isArray(pRes) && pRes.length > 0) {
           setProjects([{ id: "all", name: `Todos los proyectos (${pRes.length})` }, ...pRes]);
@@ -182,6 +193,47 @@ export function AttendanceHistoryView() {
       console.error("Error exporting:", err);
     }
   };
+
+
+  const projectMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of projects) {
+      if (p.id && p.id !== "all") map.set(p.id, p.name);
+    }
+    return map;
+  }, [projects]);
+
+  const userMap = useMemo(() => {
+    const map = new Map<string, any>();
+    for (const u of users) {
+      if (u.id && u.id !== "all") map.set(u.id, u);
+    }
+    return map;
+  }, [users]);
+
+  const enrichedRecords = useMemo(() => {
+    return records.map((r) => {
+      const u = userMap.get(r.userId);
+      const userName =
+        r.userName ||
+        (u
+          ? `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || u.name
+          : r.userId
+          ? `Usuario (${r.userId.slice(0, 8)})`
+          : "Colaborador");
+      const userEmail = r.userEmail || u?.email || "";
+      const projectName =
+        r.projectName ||
+        projectMap.get(r.projectId) ||
+        (r.projectId ? `Proyecto (${r.projectId.slice(0, 8)})` : "Sin proyecto");
+      return {
+        ...r,
+        userName,
+        userEmail,
+        projectName,
+      };
+    });
+  }, [records, projectMap, userMap]);
 
   const total = records.length || 2;
   const presentes = records.filter((r) => r.status === "PRESENTE").length;
@@ -557,7 +609,7 @@ export function AttendanceHistoryView() {
             No hay registros de asistencias disponibles
           </div>
         ) : (
-          records.map((r, idx) => {
+          enrichedRecords.map((r, idx) => {
             const initials = (r.userName || "Carlos Mamani")
               .split(" ")
               .map((n: string) => n[0])
@@ -662,7 +714,7 @@ export function AttendanceHistoryView() {
                   </td>
                 </tr>
               ) : (
-                records.map((row, idx) => {
+                enrichedRecords.map((row, idx) => {
                 const initials = (row.userName || "Carlos Mamani")
                   .split(" ")
                   .map((n: string) => n[0])

@@ -657,6 +657,50 @@ export async function getAllProjects(
   return data.getAllProjects;
 }
 
+type GetMyProjectsResponse = {
+  getMyProjects: Project[];
+};
+
+export async function getMyProjects(token: string): Promise<Project[]> {
+  try {
+    const data = await graphqlRequest<GetMyProjectsResponse>(
+      `
+      query getMyProjects {
+        getMyProjects {
+          id
+          name
+          description
+          status
+          startDate
+          endDate
+          budget
+          currency
+          workStartTime
+          workEndTime
+          graceMinutes
+          absenceCutoffTime
+          vacationEligibilityDays
+          holidays
+          timezone
+          shiftType
+          responsibleId
+          latitude
+          longitude
+          createdAt
+        }
+      }
+      `,
+      {},
+      token
+    );
+    return data?.getMyProjects || [];
+  } catch (e) {
+    console.error("Error getMyProjects:", e);
+    return [];
+  }
+}
+
+
 /* ================= SCHEDULE OVERRIDES ================= */
 
 type ListScheduleOverridesResponse = {

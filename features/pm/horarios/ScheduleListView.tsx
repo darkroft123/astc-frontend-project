@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
 import {
   getAllProjects,
+  getMyProjects,
   listShiftTemplates,
   getProjectMembers,
   graphqlRequest,
@@ -122,13 +123,14 @@ const DEFAULT_MOCK_TEMPLATES = [
 ];
 
 function getProjectName(projectId: string, projectsList: any[] = []): string {
-  if (!projectId) return "proyecto testeo";
+  if (!projectId) return projectsList[0]?.name || "Proyecto";
   const found = projectsList.find((p) => p.id === projectId);
   if (found?.name) return found.name;
   if (projectId === "p-testeo" || projectId === "p2") return "proyecto testeo";
   if (projectId === "p1") return "Gestión de Asistencia";
   if (projectId === "p3") return "Testo6";
-  return projectId;
+  if (projectsList.length === 1 && projectsList[0]?.name) return projectsList[0].name;
+  return found?.name || "Proyecto";
 }
 
 export function ScheduleListView() {
@@ -154,10 +156,14 @@ export function ScheduleListView() {
     if (token) {
       getAllProjects(token)
         .then((data) => {
-          setProjects(Array.isArray(data) ? data : []);
+          if (Array.isArray(data) && data.length > 0) {
+            setProjects(data);
+          } else {
+            getMyProjects(token).then((mine) => setProjects(Array.isArray(mine) ? mine : [])).catch(() => setProjects([]));
+          }
         })
         .catch(() => {
-          setProjects([]);
+          getMyProjects(token).then((mine) => setProjects(Array.isArray(mine) ? mine : [])).catch(() => setProjects([]));
         });
     } else {
       setProjects([]);

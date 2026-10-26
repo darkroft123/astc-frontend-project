@@ -784,17 +784,20 @@ export function JustificationsListView() {
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer"
+              className="w-9 h-9 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+              title="Página anterior"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <span className="text-xs text-muted-foreground font-medium px-1">
-              Página 1 de 1
+              Página {page} de {totalPages}
             </span>
             <button
               type="button"
-              disabled
-              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="w-9 h-9 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+              title="Página siguiente"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

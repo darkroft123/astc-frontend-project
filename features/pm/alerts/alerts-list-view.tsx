@@ -23,6 +23,7 @@ import { NotificationBell } from "@/components/layout/notification-bell";
 import { getGraphQLUrl } from "@/lib/api-host";
 import { getAllProjects, getAllUsers, cancelAlert, approveAlert } from "@/app/services/project.assistance.service";
 import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
+import { formatAlertType, formatAlertMessage } from "@/lib/formatters";
 
 const LIST_ATTENDANCE_ALERTS = `
   query listAttendanceAlerts(
@@ -146,6 +147,7 @@ export function AlertsListView() {
             return {
               id: i.id,
               type: i.type || "ASISTENCIA_TARDE",
+              rawType: i.type || "ASISTENCIA_TARDE",
               status: i.status || "PENDING",
               message: i.message || "Análisis completado sin anomalías",
               projectId: i.projectId,
@@ -598,10 +600,10 @@ export function AlertsListView() {
                   </div>
                   <div>
                     <h4 className="font-bold text-base text-foreground leading-tight">
-                      {alert.type === "ASISTENCIA_TARDE" ? "Asistencia tarde" : alert.type || "Alerta"}
+                      {formatAlertType(alert.type)}
                     </h4>
                     <p className="text-[10px] font-mono uppercase text-muted-foreground mt-0.5">
-                      {alert.type || "ASISTENCIA_TARDE"}
+                      {formatAlertType(alert.type).toUpperCase()}
                     </p>
                   </div>
                 </div>
@@ -695,9 +697,9 @@ export function AlertsListView() {
                       </div>
                       <div>
                         <div className="text-xs font-semibold text-foreground">
-                          {alert.type === "ASISTENCIA_TARDE" ? "Asistencia tarde" : alert.type || "Alerta"}
+                          {formatAlertType(alert.type)}
                         </div>
-                        <div className="text-[10px] font-mono text-muted-foreground">{alert.type}</div>
+                        <div className="text-[10px] font-mono text-muted-foreground">{formatAlertType(alert.type).toUpperCase()}</div>
                       </div>
                     </div>
                   </td>
@@ -707,7 +709,7 @@ export function AlertsListView() {
                       {alert.status === "PENDING" ? "Pendiente" : "Revisada"}
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 text-muted-foreground max-w-xs truncate">{alert.message}</td>
+                  <td className="py-3.5 px-4 text-muted-foreground max-w-xs truncate">{formatAlertMessage(alert.message, alert.type)}</td>
                   <td className="py-3.5 px-4">
                     <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40">
                       {alert.projectName}

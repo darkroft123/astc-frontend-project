@@ -239,7 +239,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
             </div>
 
             <p className="text-[11px] font-mono uppercase text-[#8F96AE] mt-1 font-semibold">
-              {alert.type || "ASISTENCIA_TARDE"}
+              {formatAlertType(alert.type).toUpperCase()}
             </p>
 
             <p className="font-hanken text-xs text-muted-foreground mt-2 leading-relaxed">
@@ -268,7 +268,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
                 PROYECTO
               </span>
               <span className="inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 dark:bg-[#241B3B] text-purple-700 dark:text-[#C084FC] border border-purple-200 dark:border-[#4A2D78]">
-                {alert.projectName || "testo6"}
+                {alert.projectName || "Proyecto"}
               </span>
             </div>
           </div>
@@ -283,10 +283,10 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
                 USUARIO
               </span>
               <div className="text-sm font-bold text-foreground mt-0.5">
-                {alert.userName || "carlos mamani"}
+                {alert.userName || "Trabajador"}
               </div>
               <div className="text-xs text-[#8F96AE]">
-                {alert.userEmail || "mamanigutierrezcarlos123@gmail.com"}
+                {alert.userEmail || "Sin correo"}
               </div>
             </div>
           </div>
@@ -304,7 +304,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
                 02 sep 2026 · 08:52 a. m.
               </div>
               <div className="text-xs text-amber-400 font-medium mt-0.5">
-                {alert.delayMinutes || 52} min después del inicio del turno
+                {alert.delayMinutes ? `${alert.delayMinutes} min después del inicio del turno` : "Horario regular"}
               </div>
             </div>
           </div>
@@ -325,7 +325,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
                 DISTRITO / ZONA
               </span>
               <div className="text-sm font-bold text-foreground">
-                {alert.district || "Condevilla Señor"}
+                {alert.district || "Ubicación del registro"}
               </div>
             </div>
           </div>

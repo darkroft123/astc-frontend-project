@@ -234,6 +234,13 @@ export default function NotificationsPage() {
 
             <div className="pt-2 flex justify-end gap-3">
               <button
+                onClick={() => handleDelete(selected)}
+                className="px-4 py-2 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Eliminar
+              </button>
+              <button
                 onClick={() => setSelected(null)}
                 className="px-4 py-2 rounded-xl border border-border bg-card hover:bg-muted text-xs font-medium text-foreground transition-colors cursor-pointer"
               >

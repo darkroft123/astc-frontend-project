@@ -18,6 +18,7 @@ import {
 import { NotificationBell } from "@/components/layout/notification-bell";
 import {
   getAllProjects,
+  getMyProjects,
   deleteProject,
 } from "@/app/services/project.assistance.service";
 import ProjectDetailModal from "@/components/dashboard/projects/ProjectDetailModal";
@@ -51,14 +52,22 @@ export function ProjectsManagementView({
     if (!token) return;
     setIsLoading(true);
     try {
-      const data = await getAllProjects(token);
+      let data = await getAllProjects(token);
+      if (!Array.isArray(data) || data.length === 0) {
+        data = await getMyProjects(token);
+      }
       if (Array.isArray(data)) {
         setProjects(data);
       } else {
         setProjects([]);
       }
     } catch {
-      setProjects([]);
+      try {
+        const mine = await getMyProjects(token);
+        setProjects(Array.isArray(mine) ? mine : []);
+      } catch {
+        setProjects([]);
+      }
     } finally {
       setIsLoading(false);
     }

@@ -18,6 +18,7 @@ import { useAuth } from "@/app/jwt/auth/auth.provider";
 import {
   getAllUsers,
   getAllProjects,
+  getMyProjects,
   addProjectMember,
   getProjectMembers,
   listShiftTemplates,
@@ -109,7 +110,10 @@ export default function ScheduleForm({
   useEffect(() => {
     if (!hydrated) return;
     if (token) {
-      Promise.all([getAllUsers(token).catch(() => []), getAllProjects(token).catch(() => [])])
+      Promise.all([
+        getAllUsers(token).catch(() => []),
+        getAllProjects(token).catch(() => getMyProjects(token).catch(() => []))
+      ])
         .then(async ([userData, projData]) => {
           const nonAdminUsers = (userData || []).filter((u: any) => {
             const role = (u.roleCode || u.roleName || u.role || "").toUpperCase();
@@ -372,9 +376,18 @@ export default function ScheduleForm({
 
               {/* Proyecto */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">
-                  Proyecto
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-foreground">
+                    Proyecto
+                  </label>
+                  {selectedUserId && (
+                    <span className="text-[11px] text-muted-foreground font-mono">
+                      {userAssignedProjects.length > 0
+                        ? `${userAssignedProjects.length} ${userAssignedProjects.length === 1 ? "proyecto asignado" : "proyectos asignados"}`
+                        : "Todos los proyectos disponibles"}
+                    </span>
+                  )}
+                </div>
                 <div className="relative">
                   <Folder className="w-4 h-4 absolute left-3.5 top-3.5 text-muted-foreground pointer-events-none" />
                   <select
@@ -384,9 +397,9 @@ export default function ScheduleForm({
                     className="w-full h-11 pl-10 pr-9 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs sm:text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet appearance-none cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
                   >
                     <option value="">Seleccionar proyecto...</option>
-                    {projects.map((p) => (
+                    {(userAssignedProjects.length > 0 ? userAssignedProjects : projects).map((p) => (
                       <option key={p.id} value={p.id} className="bg-card text-foreground">
-                        {p.name}
+                        {p.name} {userAssignedProjects.some((up) => up.id === p.id) ? "(Asignado)" : ""}
                       </option>
                     ))}
                   </select>
