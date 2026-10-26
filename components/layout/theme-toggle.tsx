@@ -12,13 +12,25 @@ export function ThemeToggle({ className }: { className?: string }) {
 
   const isDark = mounted && resolvedTheme === "dark";
 
+  const handleToggle = () => {
+    const nextTheme = isDark ? "light" : "dark";
+    setTheme(nextTheme);
+    if (typeof document !== "undefined") {
+      const isJoyit = window.location.hostname.includes("joyit.io");
+      const domainAttr = isJoyit ? "; domain=.joyit.io" : "";
+      document.cookie = `theme=${nextTheme}; path=/${domainAttr}; max-age=31536000; SameSite=Lax`;
+      document.cookie = `theme=${nextTheme}; path=/; max-age=31536000; SameSite=Lax`;
+      localStorage.setItem("theme", nextTheme);
+    }
+  };
+
   return (
     <button
       type="button"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={handleToggle}
       aria-label={isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
       className={cn(
-        "w-full flex items-center gap-3 rounded-[var(--radius-nav)] px-3.5 py-2.5 text-[15px] font-normal text-text-3 hover:text-foreground hover:bg-raised transition-colors",
+        "w-full flex items-center gap-3 rounded-[var(--radius-nav)] px-3.5 py-2.5 text-[15px] font-normal text-text-3 hover:text-foreground hover:bg-raised transition-colors cursor-pointer",
         className
       )}
     >

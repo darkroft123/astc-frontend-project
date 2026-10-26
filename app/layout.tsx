@@ -73,15 +73,21 @@ export default function RootLayout({
                   return origError.apply(console, arguments);
                 };
                 if (typeof window !== "undefined") {
-                  if (window.location.search.indexOf("theme=light") !== -1) {
-                    document.documentElement.classList.remove("dark");
-                    document.documentElement.classList.add("light");
-                    try { localStorage.setItem("theme", "light"); } catch(e) {}
-                  } else if (window.location.search.indexOf("theme=dark") !== -1) {
-                    document.documentElement.classList.remove("light");
-                    document.documentElement.classList.add("dark");
-                    try { localStorage.setItem("theme", "dark"); } catch(e) {}
-                  }
+                  try {
+                    var match = document.cookie.match(/(^|;\s*)theme=([^;]*)/);
+                    var cookieTheme = match ? decodeURIComponent(match[2]) : null;
+                    var paramTheme = window.location.search.indexOf("theme=light") !== -1 ? "light" : window.location.search.indexOf("theme=dark") !== -1 ? "dark" : null;
+                    var activeTheme = paramTheme || cookieTheme || localStorage.getItem("theme") || "light";
+                    if (activeTheme === "dark") {
+                      document.documentElement.classList.add("dark");
+                      document.documentElement.classList.remove("light");
+                      localStorage.setItem("theme", "dark");
+                    } else {
+                      document.documentElement.classList.remove("dark");
+                      document.documentElement.classList.add("light");
+                      localStorage.setItem("theme", "light");
+                    }
+                  } catch(e) {}
                 }
               })();
             `,
@@ -89,7 +95,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} ${inter.variable} ${jetbrainsMono.variable} ${hankenGrotesk.variable} font-sans antialiased w-full min-h-screen`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <AuthProvider>{children}</AuthProvider>
           <Toaster />
         </ThemeProvider>
