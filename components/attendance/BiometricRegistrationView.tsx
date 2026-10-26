@@ -9,7 +9,7 @@ import { useLocation } from "@/hooks/useLocation";
 import { useCamera } from "@/hooks/useCamera";
 import { useFaceDetection } from "@/hooks/useFaceDetection";
 import { useAuthGuard } from "@/app/jwt/auth/useAuthGuard";
-import { useUserProject, DEFAULT_MOCK_PROJECT } from "@/features/attendance/hooks/useUserProject";
+import { useUserProject } from "@/features/attendance/hooks/useUserProject";
 import {
   getTodayAttendance,
   getEffectiveSchedule,
@@ -46,7 +46,7 @@ export default function BiometricRegistrationView({
 }: BiometricRegistrationViewProps) {
   const { token, hydrated, checkingAuth, user } = useAuthGuard(allowedRoles);
   const { project, projects = [], selectProject, loadingProject } = useUserProject();
-  const activeProject = project || DEFAULT_MOCK_PROJECT;
+  const activeProject = project;
   const projectTimezone = getEffectiveTimezone(activeProject?.timezone);
 
   const router = useRouter();

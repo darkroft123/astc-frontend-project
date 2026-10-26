@@ -864,6 +864,7 @@ export default function ProjectDetailModal({
                     </button>
                   </div>
                 </div>
+              )}
 
               {/* Members List matching SVG */}
               <div className="space-y-2.5">
