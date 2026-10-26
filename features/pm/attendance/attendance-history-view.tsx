@@ -84,6 +84,54 @@ const DEFAULT_SAMPLE_ATTENDANCE = [
   },
 ];
 
+const formatDateStr = (d: Date) => {
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+const parseToIso = (slashStr: string) => {
+  if (!slashStr) return "";
+  const parts = slashStr.split("/");
+  if (parts.length === 3) {
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  }
+  return slashStr;
+};
+
+const getPeriodDates = (p: Period): { from: string; to: string } => {
+  const now = new Date();
+  if (p === "today") {
+    const s = formatDateStr(now);
+    return { from: s, to: s };
+  }
+  if (p === "thisweek") {
+    const dayOfWeek = now.getDay();
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - ((dayOfWeek + 6) % 7));
+    return { from: formatDateStr(monday), to: formatDateStr(now) };
+  }
+  if (p === "month") {
+    const first = new Date(now.getFullYear(), now.getMonth(), 1);
+    const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    return { from: formatDateStr(first), to: formatDateStr(last) };
+  }
+  if (p === "3months") {
+    const start = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+    return { from: formatDateStr(start), to: formatDateStr(now) };
+  }
+  if (p === "6months") {
+    const start = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+    return { from: formatDateStr(start), to: formatDateStr(now) };
+  }
+  if (p === "9months") {
+    const start = new Date(now.getFullYear(), now.getMonth() - 8, 1);
+    return { from: formatDateStr(start), to: formatDateStr(now) };
+  }
+  return { from: "01/01/2024", to: formatDateStr(now) };
+};
+
 export function AttendanceHistoryView() {
   const { token } = useAuth();
   const [activePeriod, setActivePeriod] = useState<Period>("month");
@@ -93,10 +141,7 @@ export function AttendanceHistoryView() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: "01/09/2026",
-    to: "03/09/2026",
-  });
+  const [dateRange, setDateRange] = useState<DateRange>(() => getPeriodDates("month"));
 
   const [projects, setProjects] = useState<any[]>([
     { id: "all", name: "Todos los proyectos (3)" },
@@ -144,13 +189,15 @@ export function AttendanceHistoryView() {
     }
     setLoading(true);
     try {
+      const fromIso = parseToIso(dateRange.from);
+      const toIso = parseToIso(dateRange.to);
       const data = await listTeamAttendance(
         token,
         selectedProjectId === "all" ? undefined : selectedProjectId,
         selectedUserId === "all" ? undefined : selectedUserId,
         selectedStatus === "all" ? undefined : selectedStatus,
-        "2026-09-01",
-        "2026-09-03"
+        fromIso,
+        toIso
       );
       if (Array.isArray(data) && data.length > 0) {
         setRecords(data);
@@ -162,7 +209,7 @@ export function AttendanceHistoryView() {
     } finally {
       setLoading(false);
     }
-  }, [token, selectedProjectId, selectedUserId, selectedStatus]);
+  }, [token, selectedProjectId, selectedUserId, selectedStatus, dateRange]);
 
   useEffect(() => {
     loadData();
@@ -175,8 +222,8 @@ export function AttendanceHistoryView() {
         projectId: selectedProjectId === "all" ? undefined : selectedProjectId,
         userId: selectedUserId === "all" ? undefined : selectedUserId,
         status: selectedStatus === "all" ? undefined : selectedStatus,
-        fromDate: "2026-09-01",
-        toDate: "2026-09-03",
+        fromDate: parseToIso(dateRange.from),
+        toDate: parseToIso(dateRange.to),
       });
       if (result?.content) {
         const blob = new Blob([result.content], { type: "text/csv;charset=utf-8;" });
@@ -296,7 +343,7 @@ export function AttendanceHistoryView() {
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActivePeriod(tab.id)}
+                onClick={() => { setActivePeriod(tab.id); setDateRange(getPeriodDates(tab.id)); }}
                 className={`py-2 px-3.5 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   isActive
                     ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
@@ -338,7 +385,7 @@ export function AttendanceHistoryView() {
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => setActivePeriod(tab.id)}
+                  onClick={() => { setActivePeriod(tab.id); setDateRange(getPeriodDates(tab.id)); }}
                   className={`py-1.5 px-1 rounded-xl text-xs transition-all cursor-pointer truncate ${
                     isActive
                       ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"

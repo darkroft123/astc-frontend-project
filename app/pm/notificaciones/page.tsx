@@ -389,6 +389,14 @@ export default function NotificationsPage() {
                         {!n.read && (
                           <span className="w-2 h-2 rounded-full bg-blue shrink-0" />
                         )}
+                        <button
+                          type="button"
+                          onClick={(e) => handleDelete(n, e)}
+                          title="Eliminar notificación"
+                          className="p-1.5 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground dark:text-text-4 leading-relaxed mt-1 line-clamp-2">

@@ -89,9 +89,15 @@ export function AlertsListView() {
   const [page, setPage] = useState(1);
   const [totalAlerts, setTotalAlerts] = useState(0);
   const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: "01/09/2026",
-    to: "03/09/2026",
+  const [dateRange, setDateRange] = useState<DateRange>(() => {
+    const now = new Date();
+    const first = new Date(now.getFullYear(), now.getMonth(), 1);
+    const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return {
+      from: `01/${pad(now.getMonth() + 1)}/${now.getFullYear()}`,
+      to: `${pad(last.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()}`,
+    };
   });
 
   useEffect(() => {
@@ -616,7 +622,7 @@ export function AlertsListView() {
 
               {/* Message */}
               <p className="text-xs text-muted-foreground leading-relaxed">
-                {alert.message || "Análisis completado sin anomalías"}
+                {formatAlertMessage(alert.message, alert.type)}
               </p>
 
               {/* Project Tag & Date */}

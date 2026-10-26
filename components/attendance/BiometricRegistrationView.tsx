@@ -244,7 +244,13 @@ export default function BiometricRegistrationView({
       currentPosition ? String(currentPosition.lng) : "-77.0817"
     );
     sessionStorage.setItem("attendance_time", new Date().toISOString());
-    const targetProject = activeProject || (projects && projects.length > 0 ? projects[0] : null);
+    let targetProject = activeProject || (projects && projects.length > 0 ? projects[0] : null);
+    if (!targetProject && typeof window !== "undefined") {
+      const savedId = localStorage.getItem("selected_project_id");
+      if (savedId && savedId !== "all") {
+        targetProject = { id: savedId, name: localStorage.getItem("selected_project_name") || "Proyecto" } as any;
+      }
+    }
     if (!targetProject) {
       alert("Por favor selecciona un proyecto antes de registrar asistencia.");
       return;
@@ -266,7 +272,13 @@ export default function BiometricRegistrationView({
       currentPosition ? String(currentPosition.lng) : "-77.0817"
     );
     sessionStorage.setItem("attendance_time", new Date().toISOString());
-    const targetProject = activeProject || (projects && projects.length > 0 ? projects[0] : null);
+    let targetProject = activeProject || (projects && projects.length > 0 ? projects[0] : null);
+    if (!targetProject && typeof window !== "undefined") {
+      const savedId = localStorage.getItem("selected_project_id");
+      if (savedId && savedId !== "all") {
+        targetProject = { id: savedId, name: localStorage.getItem("selected_project_name") || "Proyecto" } as any;
+      }
+    }
     if (!targetProject) {
       alert("Por favor selecciona un proyecto antes de registrar asistencia.");
       return;

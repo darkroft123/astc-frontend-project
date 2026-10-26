@@ -231,7 +231,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2.5 flex-wrap">
               <h2 className="text-xl font-bold text-foreground tracking-tight">
-                Asistencia tarde
+                {formatAlertType(alert.type)}
               </h2>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-[#2A1D0B] text-amber-700 dark:text-[#FBBF24] border border-amber-300 dark:border-[#483713]">
                 ● {alert.status === "PENDING" ? "Pendiente" : alert.status === "APPROVED" ? "Aprobada" : "Cancelada"}
@@ -243,8 +243,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
             </p>
 
             <p className="font-hanken text-xs text-muted-foreground mt-2 leading-relaxed">
-              {alert.detailMessage ||
-                "Análisis completado sin anomalías. El marcaje de entrada se registró después de la hora de inicio del turno (08:00)."}
+              {formatAlertMessage(alert.detailMessage, alert.type)}
             </p>
           </div>
         </div>

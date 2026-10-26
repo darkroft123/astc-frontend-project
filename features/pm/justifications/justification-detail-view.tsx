@@ -264,31 +264,11 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-16">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
-      </div>
-    );
-  }
-
-  if (!justification) {
-    return (
-      <div className="w-full max-w-5xl mx-auto px-4 py-12 text-center space-y-4">
-        <h2 className="text-xl font-bold text-foreground">Justificación no encontrada</h2>
-        <p className="text-sm text-muted-foreground">La solicitud solicitada no existe o no se pudo cargar.</p>
-        <Link href="/pm/justificaciones" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 text-white text-xs font-semibold hover:bg-purple-700">
-          Volver a Justificaciones
-        </Link>
-      </div>
-    );
-  }
-
   const currentJustification = justification;
-  const isPending = currentJustification.status === "PENDING" || currentJustification.status === "SUBMITTED";
-  const isRejected = currentJustification.status === "REJECTED";
-  const isObservation = currentJustification.status === "OBSERVATION";
-  const isApproved = currentJustification.status === "APPROVED";
+  const isPending = currentJustification ? (currentJustification.status === "PENDING" || currentJustification.status === "SUBMITTED") : false;
+  const isRejected = currentJustification?.status === "REJECTED";
+  const isObservation = currentJustification?.status === "OBSERVATION";
+  const isApproved = currentJustification?.status === "APPROVED";
 
   const statusBadge = useMemo(() => {
     if (isApproved) {
@@ -318,6 +298,26 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
       dot: "bg-blue-400",
     };
   }, [isApproved, isRejected, isObservation]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-16">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+      </div>
+    );
+  }
+
+  if (!justification) {
+    return (
+      <div className="w-full max-w-5xl mx-auto px-4 py-12 text-center space-y-4">
+        <h2 className="text-xl font-bold text-foreground">Justificación no encontrada</h2>
+        <p className="text-sm text-muted-foreground">La solicitud solicitada no existe o no se pudo cargar.</p>
+        <Link href="/pm/justificaciones" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 text-white text-xs font-semibold hover:bg-purple-700">
+          Volver a Justificaciones
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-6 pb-12">

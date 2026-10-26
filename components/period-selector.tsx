@@ -56,8 +56,8 @@ export default function PeriodSelector({
   dateRange,
   onPeriodChange,
 }: PeriodSelectorProps) {
-  const [customFromStr, setCustomFromStr] = useState<string>(dateRange.fromDate || "2026-09-01");
-  const [customToStr, setCustomToStr] = useState<string>(dateRange.toDate || "2026-09-03");
+  const [customFromStr, setCustomFromStr] = useState<string>(dateRange.fromDate || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-01`);
+  const [customToStr, setCustomToStr] = useState<string>(dateRange.toDate || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`);
   const [customDialogOpen, setCustomDialogOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -169,8 +169,8 @@ export default function PeriodSelector({
   };
 
   const handleOpenCustomDialog = () => {
-    setCustomFromStr(dateRange.fromDate || "2026-09-01");
-    setCustomToStr(dateRange.toDate || "2026-09-03");
+    setCustomFromStr(dateRange.fromDate || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-01`);
+    setCustomToStr(dateRange.toDate || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`);
     setCustomDialogOpen(true);
   };
 

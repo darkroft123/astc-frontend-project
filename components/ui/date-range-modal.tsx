@@ -37,16 +37,31 @@ export function DateRangeModal({
     setMounted(true);
   }, []);
 
-  const initialFrom = initialRange?.from || fromDate || "01/09/2026";
-  const initialTo = initialRange?.to || toDate || "03/09/2026";
+  const formatDateStr = (d: Date) => {
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const getDefaultFrom = () => {
+    const now = new Date();
+    return formatDateStr(new Date(now.getFullYear(), now.getMonth(), 1));
+  };
+  const getDefaultTo = () => {
+    return formatDateStr(new Date());
+  };
+
+  const initialFrom = initialRange?.from || fromDate || getDefaultFrom();
+  const initialTo = initialRange?.to || toDate || getDefaultTo();
 
   const [tempFrom, setTempFrom] = useState(initialFrom);
   const [tempTo, setTempTo] = useState(initialTo);
 
   useEffect(() => {
     if (visible) {
-      setTempFrom(initialRange?.from || fromDate || "01/09/2026");
-      setTempTo(initialRange?.to || toDate || "03/09/2026");
+      setTempFrom(initialRange?.from || fromDate || getDefaultFrom());
+      setTempTo(initialRange?.to || toDate || getDefaultTo());
     }
   }, [visible, fromDate, toDate, initialRange]);
 
@@ -57,24 +72,20 @@ export function DateRangeModal({
     if (onClose) onClose();
   };
 
-  const formatDateStr = (d: Date) => {
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-
   const applyPreset = (days: number) => {
-    const end = new Date(2026, 8, 3);
-    const start = new Date(2026, 8, 3);
+    const end = new Date();
+    const start = new Date();
     start.setDate(end.getDate() - days);
     setTempFrom(formatDateStr(start));
     setTempTo(formatDateStr(end));
   };
 
   const applyThisMonth = () => {
-    setTempFrom("01/09/2026");
-    setTempTo("30/09/2026");
+    const now = new Date();
+    const first = new Date(now.getFullYear(), now.getMonth(), 1);
+    const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    setTempFrom(formatDateStr(first));
+    setTempTo(formatDateStr(last));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
