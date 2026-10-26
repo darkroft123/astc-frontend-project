@@ -30,7 +30,21 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setTokenState] = useState<string | null>(null);
+  const [token, setTokenState] = useState<string | null>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const tokenFromUrl = params.get("token");
+        if (tokenFromUrl && tokenFromUrl !== "undefined" && tokenFromUrl !== "null") {
+          return tokenFromUrl;
+        }
+        return tokenService.get();
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
