@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Resolves scheme (https/http) based on environment.
  */
 function getProtocol(): string {
@@ -31,7 +31,7 @@ export function getGraphQLUrl(): string {
     return process.env.NEXT_PUBLIC_GRAPHQL_URL;
   }
   const scheme = getProtocol();
-  return `${scheme}://astc.joyit.io/graphql`;
+  return `${scheme}://astc-api.joyit.io/graphql`;
 }
 
 /**
@@ -41,7 +41,7 @@ export function getAuthFrontendUrl(path: string = "/login"): string {
   const scheme = getProtocol();
   const authFrontendUrl =
     process.env.NEXT_PUBLIC_AUTH_FRONTEND_URL ||
-    `${scheme}://astc.joyit.io`;
+    `${scheme}://astc-joyit.io`;
   return `${authFrontendUrl}${path}`;
 }
 
@@ -65,6 +65,6 @@ export function getApiBaseUrl(port?: number | string, path: string = ""): string
 
   const apiHost =
     process.env.NEXT_PUBLIC_API_URL ||
-    `${scheme}://astc.joyit.io/graphql`;
+    `${scheme}://astc-joyit.io/graphql`;
   return `${apiHost}${path}`;
 }
