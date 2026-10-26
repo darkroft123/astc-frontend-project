@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
 import {
   FolderKanban,
@@ -36,7 +36,15 @@ export function ProjectsManagementView({
   const [search, setSearch] = useState("");
   const [estadoFilter, setEstadoFilter] = useState("all");
 
+  const searchParams = useSearchParams();
   const [selectedProjectForDetail, setSelectedProjectForDetail] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (searchParams?.get("modal") === "detail") {
+      const p = projects[0] || DEFAULT_SVG_PROJECTS[0];
+      setSelectedProjectForDetail(p);
+    }
+  }, [searchParams, projects]);
   const [projectToDelete, setProjectToDelete] = useState<any | null>(null);
 
   const fetchProjects = useCallback(async () => {
@@ -112,13 +120,7 @@ export function ProjectsManagementView({
 
   return (
     <div className="relative min-h-screen bg-transparent pb-16 font-sans">
-      {/* Top Ambient Glow */}
-      <div
-        className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-80 rounded-full opacity-30 blur-3xl z-0 hidden dark:block"
-        style={{
-          background: "radial-gradient(circle, #7C3AED 0%, transparent 70%)",
-        }}
-      />
+      
 
       <div className="relative w-full max-w-7xl mx-auto space-y-4 md:space-y-5 z-10 px-0 md:px-0">
         {/* 1. TOP HEADER & NEW PROJECT BUTTON */}
@@ -148,12 +150,14 @@ export function ProjectsManagementView({
           </div>
         </div>
 
+        {/* UNIFIED MAIN CONTAINER ("Un cuadro entero, no 3") */}
+        <div className="rounded-[22px] border border-border bg-card/60 dark:bg-[#0C0E18] p-4 sm:p-5 md:p-6 shadow-sm space-y-5 sm:space-y-6">
         {/* 2. 3 STAT CARDS (ROW OF 3 MATCHING EXACT SVG) */}
         <div className="grid grid-cols-3 gap-2.5 sm:gap-4 pt-1">
           {/* Card 1: Total */}
           <div className="rounded-2xl border border-border bg-card p-3.5 sm:p-5 flex flex-col justify-between h-[95px] sm:h-[110px] shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-card dark:bg-[#141829] flex items-center justify-center text-[#8F96AE]">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-muted dark:bg-[#141829] border border-border dark:border-white/10 flex items-center justify-center text-muted-foreground dark:text-[#8F96AE]">
                 <Folder className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
@@ -196,8 +200,11 @@ export function ProjectsManagementView({
           </div>
         </div>
 
-        {/* 3. FILTERS BAR */}
-        <div className="rounded-2xl border border-border bg-card p-4 shadow-xs">
+        {/* Divider Line */}
+          <div className="border-t border-border/60 -mx-4 sm:-mx-5 md:-mx-6" />
+
+          {/* 3. FILTERS BAR */}
+          <div className="pt-1">
           <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3.5">
             {/* Buscar */}
             <div className="space-y-1.5 flex-1">
@@ -268,7 +275,7 @@ export function ProjectsManagementView({
                   {/* Top row */}
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-50 dark:bg-[#1C1635] border border-purple-200 dark:border-[#312361] text-purple-600 dark:text-[#A855F7] flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-[#1C1635] border border-purple-200 dark:border-[#312361] text-purple-600 dark:text-[#A855F7] flex items-center justify-center shrink-0">
                         <Folder className="w-5 h-5" />
                       </div>
                       <div className="min-w-0">
@@ -384,7 +391,7 @@ export function ProjectsManagementView({
                         {/* PROYECTO */}
                         <td className="py-4 px-5">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-[#1C1635] border border-[#312361] flex items-center justify-center text-[#A855F7] shrink-0">
+                            <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-[#1C1635] border border-purple-200 dark:border-[#312361] text-purple-600 dark:text-[#A855F7] flex items-center justify-center shrink-0">
                               <Folder className="w-4 h-4" />
                             </div>
                             <div>
@@ -485,6 +492,7 @@ export function ProjectsManagementView({
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
+        </div>
         </div>
       </div>
 

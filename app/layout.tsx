@@ -28,9 +28,16 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Sistema de Gestión de Asistencias - Jefe de Proyecto",
+  title: "ASTC-PROJECT MANAGER",
   description:
-    "Sistema de gestión de asistencias, justificaciones y alertas para el Jefe de Proyecto",
+    "Sistema de gestión de asistencias, justificaciones y alertas para el Jefe de Proyecto - ASTC",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico" },
+    ],
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -65,13 +72,24 @@ export default function RootLayout({
                   }
                   return origError.apply(console, arguments);
                 };
+                if (typeof window !== "undefined") {
+                  if (window.location.search.indexOf("theme=light") !== -1) {
+                    document.documentElement.classList.remove("dark");
+                    document.documentElement.classList.add("light");
+                    try { localStorage.setItem("theme", "light"); } catch(e) {}
+                  } else if (window.location.search.indexOf("theme=dark") !== -1) {
+                    document.documentElement.classList.remove("light");
+                    document.documentElement.classList.add("dark");
+                    try { localStorage.setItem("theme", "dark"); } catch(e) {}
+                  }
+                }
               })();
             `,
           }}
         />
       </head>
       <body className={`${inter.className} ${inter.variable} ${jetbrainsMono.variable} ${hankenGrotesk.variable} font-sans antialiased w-full min-h-screen`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           <AuthProvider>{children}</AuthProvider>
           <Toaster />
         </ThemeProvider>

@@ -177,12 +177,13 @@ export function FaltasListView() {
       key: "justificada",
       header: "ESTADO",
       render: (r) => (
-        <span className={`text-xs px-2.5 py-1 rounded-full font-medium inline-block ${
-          r.justificada
-            ? "bg-green/10 text-green-ink"
-            : "bg-red/10 text-red-ink"
-        }`}>
-          {r.justificada ? "JUSTIFICADA" : "SIN JUSTIFICAR"}
+        <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-0.5 rounded-full font-semibold border ${r.justificada ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40" : "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800/40"}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${r.justificada ? "bg-emerald-500" : "bg-rose-500"}`} />
+
+
+
+
+          {r.justificada ? "Justificada" : "Sin justificar"}
         </span>
       ),
     },
@@ -203,7 +204,7 @@ export function FaltasListView() {
 
   return (
     <div className="min-h-screen bg-raised">
-      <div className="max-w-7xl mx-auto px-0 md:px-5 py-2 md:py-5">
+      <div className="max-w-7xl mx-auto px-0 md:px-5 ">
 
         {/* HEADER */}
         <PageHeader

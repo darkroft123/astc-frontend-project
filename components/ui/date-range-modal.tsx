@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Calendar as CalendarIcon, X, Check } from "lucide-react";
 
 export type DateRange = {
@@ -30,6 +31,11 @@ export function DateRangeModal({
   onApply,
 }: DateRangeModalProps) {
   const visible = open !== undefined ? open : (isOpen ?? false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const initialFrom = initialRange?.from || fromDate || "01/09/2026";
   const initialTo = initialRange?.to || toDate || "03/09/2026";
@@ -44,7 +50,7 @@ export function DateRangeModal({
     }
   }, [visible, fromDate, toDate, initialRange]);
 
-  if (!visible) return null;
+  if (!visible || !mounted) return null;
 
   const handleClose = () => {
     if (onOpenChange) onOpenChange(false);
@@ -85,10 +91,10 @@ export function DateRangeModal({
     handleClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div
-        className="w-full max-w-md bg-card border border-border/80 rounded-2xl shadow-2xl overflow-hidden p-6 space-y-5 text-foreground"
+        className="w-full max-w-md bg-card border border-border/80 rounded-2xl shadow-2xl overflow-hidden p-6 space-y-5 text-foreground relative z-[101]"
         role="dialog"
         aria-modal="true"
       >
@@ -147,45 +153,45 @@ export function DateRangeModal({
             </div>
           </div>
 
-          {/* Quick Presets */}
-          <div className="pt-1">
-            <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider block mb-2">
-              Accesos rápidos
-            </span>
-            <div className="flex flex-wrap gap-1.5">
+          {/* Quick presets row */}
+          <div className="space-y-1.5 pt-1">
+            <label className="font-mono text-[10px] uppercase font-semibold text-muted-foreground tracking-wider block">
+              ACCESOS RÁPIDOS
+            </label>
+            <div className="flex items-center gap-2 flex-wrap">
               <button
                 type="button"
                 onClick={() => applyPreset(7)}
-                className="px-2.5 py-1 rounded-lg text-xs font-medium border border-border bg-background/50 hover:bg-card text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-accent text-muted-foreground hover:text-foreground transition-all cursor-pointer"
               >
                 7 días
               </button>
               <button
                 type="button"
                 onClick={() => applyPreset(15)}
-                className="px-2.5 py-1 rounded-lg text-xs font-medium border border-border bg-background/50 hover:bg-card text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-accent text-muted-foreground hover:text-foreground transition-all cursor-pointer"
               >
                 15 días
               </button>
               <button
                 type="button"
                 onClick={() => applyPreset(30)}
-                className="px-2.5 py-1 rounded-lg text-xs font-medium border border-border bg-background/50 hover:bg-card text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-accent text-muted-foreground hover:text-foreground transition-all cursor-pointer"
               >
                 30 días
               </button>
               <button
                 type="button"
                 onClick={applyThisMonth}
-                className="px-2.5 py-1 rounded-lg text-xs font-medium border border-border bg-background/50 hover:bg-card text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-accent text-muted-foreground hover:text-foreground transition-all cursor-pointer"
               >
                 Este mes
               </button>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border">
+          {/* Action buttons */}
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border/60">
             <button
               type="button"
               onClick={handleClose}
@@ -205,4 +211,6 @@ export function DateRangeModal({
       </div>
     </div>
   );
+
+  return typeof document !== "undefined" ? createPortal(modalNode, document.body) : null;
 }

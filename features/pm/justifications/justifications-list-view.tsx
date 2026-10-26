@@ -225,7 +225,7 @@ export function JustificationsListView() {
   const porcentaje = total > 0 ? Math.round((aprobadas / total) * 100) : 0;
 
   return (
-    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-12 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
+    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-12 max-w-7xl mx-auto ">
       {/* 1. TOP HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -353,8 +353,10 @@ export function JustificationsListView() {
         </div>
       </div>
 
-      {/* 4. 4 KPI CARDS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+      {/* 4. UNIFIED MAIN CONTAINER ("Un cuadro entero, no 3") */}
+      <div className="rounded-[22px] border border-border bg-card/60 dark:bg-[#0C0E18] p-4 sm:p-5 md:p-6 shadow-sm space-y-5 sm:space-y-6">
+        {/* 4 KPI CARDS */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
         {/* Card 1: Total solicitudes */}
         <div className="rounded-2xl border border-border bg-card/60 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
           <div className="flex items-center justify-between">
@@ -408,8 +410,11 @@ export function JustificationsListView() {
         </div>
       </div>
 
-      {/* 5. FILTERS CONTAINER - Desktop View (1 Row) */}
-      <div className="hidden md:grid md:grid-cols-4 gap-4 items-end rounded-2xl border border-border bg-card/60 p-4 shadow-sm">
+        {/* Divider Line */}
+        <div className="border-t border-border/60 -mx-4 sm:-mx-5 md:-mx-6" />
+
+        {/* 5. FILTERS CONTAINER - Desktop View (1 Row) */}
+        <div className="hidden md:grid md:grid-cols-4 gap-4 items-end pt-1">
         {/* Proyecto */}
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-foreground">
@@ -485,8 +490,8 @@ export function JustificationsListView() {
         </div>
       </div>
 
-      {/* 5. FILTERS CONTAINER (Mobile only) */}
-      <div className="md:hidden rounded-2xl border border-border bg-card/60 p-4 space-y-3.5 shadow-sm">
+        {/* 5. FILTERS CONTAINER (Mobile only) */}
+        <div className="md:hidden space-y-3.5 pt-1">
         {/* Proyecto */}
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-foreground">
@@ -592,8 +597,8 @@ export function JustificationsListView() {
                       </p>
                     </div>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${row.estado === "APPROVED" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40" : row.estado === "REJECTED" ? "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40" : row.estado === "SUBMITTED" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40" : "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40"}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${row.estado === "APPROVED" ? "bg-emerald-500" : row.estado === "REJECTED" ? "bg-rose-500" : row.estado === "SUBMITTED" ? "bg-blue-500" : "bg-amber-500"}`} />
                     {row.estado === "SUBMITTED" ? "Enviada" : row.estado === "APPROVED" ? "Aprobada" : row.estado === "REJECTED" ? "Rechazada" : "Pendiente"}
                   </span>
                 </div>
@@ -668,8 +673,8 @@ export function JustificationsListView() {
         )}
       </div>
 
-      {/* 7. DESKTOP TABLE VIEW (hidden md:block) */}
-      <div className="hidden md:block rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+        {/* 7. DESKTOP TABLE VIEW (hidden md:block) */}
+        <div className="hidden md:block rounded-xl border border-border/80 dark:border-white/[0.08] bg-card/30 dark:bg-[#101322]/30 overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
@@ -726,8 +731,8 @@ export function JustificationsListView() {
                     </td>
                     <td className="py-4 px-4 font-mono text-xs text-foreground">{row.fecha}</td>
                     <td className="py-4 px-4">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-950/60 text-blue-400 border border-blue-800/40">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${row.estado === "APPROVED" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40" : row.estado === "REJECTED" ? "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40" : row.estado === "SUBMITTED" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40" : "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40"}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${row.estado === "APPROVED" ? "bg-emerald-500" : row.estado === "REJECTED" ? "bg-rose-500" : row.estado === "SUBMITTED" ? "bg-blue-500" : "bg-amber-500"}`} />
                         {row.estado === "SUBMITTED" ? "Enviada" : row.estado === "APPROVED" ? "Aprobada" : row.estado === "REJECTED" ? "Rechazada" : "Pendiente"}
                       </span>
                     </td>
@@ -769,31 +774,31 @@ export function JustificationsListView() {
         </div>
       </div>
 
-      {/* 8. PAGINATION FOOTER */}
-      <div className="flex items-center justify-between pt-1 px-1">
-        <span className="text-xs text-muted-foreground font-medium">
-          {total} solicitud{total === 1 ? "" : "es"}
-        </span>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <span className="text-xs text-muted-foreground font-medium px-1">
-            Página {page} de {totalPages}
+        {/* 8. PAGINATION FOOTER */}
+        <div className="flex items-center justify-between pt-1 px-1">
+          <span className="text-xs text-muted-foreground font-medium">
+            {total} solicitud{total === 1 ? "" : "es"}
           </span>
-          <button
-            type="button"
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-xs text-muted-foreground font-medium px-1">
+              Página 1 de 1
+            </span>
+            <button
+              type="button"
+              disabled
+              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -802,7 +807,7 @@ export function JustificationsListView() {
         open={dateRangeModalOpen}
         onOpenChange={setDateRangeModalOpen}
         initialRange={dateRange}
-        onApply={(newRange) => setDateRange(newRange)}
+        onApply={(newRange: { from: string; to: string }) => setDateRange(newRange)}
       />
     </div>
   );

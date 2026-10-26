@@ -134,7 +134,7 @@ export default function PMAsistenciasPage() {
   const porcentaje = total > 0 ? Math.round((presentes / total) * 100) : 0;
 
   return (
-    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-12 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
+    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-12 max-w-7xl mx-auto ">
       {/* 1. TOP HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -158,7 +158,7 @@ export default function PMAsistenciasPage() {
         <div className="hidden md:flex items-center gap-3 shrink-0">
           <button
             type="button"
-            onClick={() => router.push("/pm/asistencias/registrar")}
+            onClick={() => router.push("/pm/registrar")}
             className="h-10 px-4 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold flex items-center gap-2 shadow-md shadow-purple-500/20 cursor-pointer transition-all shrink-0"
           >
             <Clock className="w-4 h-4" />
@@ -171,7 +171,7 @@ export default function PMAsistenciasPage() {
       {/* 2. REGISTRAR ASISTENCIA BUTTON (Mobile only) */}
       <button
         type="button"
-        onClick={() => router.push("/pm/asistencias/registrar")}
+        onClick={() => router.push("/pm/registrar")}
         className="md:hidden w-full h-12 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 cursor-pointer transition-all"
       >
         <Clock className="w-4 h-4" />
@@ -281,8 +281,10 @@ export default function PMAsistenciasPage() {
         </div>
       </div>
 
-      {/* 5. 4 KPI CARDS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+      {/* 5. UNIFIED MAIN CONTAINER ("Un cuadro entero, no 3") */}
+      <div className="rounded-[22px] border border-border bg-card/60 dark:bg-[#0C0E18] p-4 sm:p-5 md:p-6 shadow-sm space-y-5 sm:space-y-6">
+        {/* 4 KPI CARDS */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
         {/* Card 1: Total registros */}
         <div className="rounded-2xl border border-border bg-card/60 p-4 sm:p-5 flex flex-col justify-between shadow-sm min-h-[96px] sm:min-h-[104px]">
           <div className="flex items-center justify-between">
@@ -336,8 +338,11 @@ export default function PMAsistenciasPage() {
         </div>
       </div>
 
-      {/* 6. FILTERS CONTAINER - Desktop View (1 Row) */}
-      <div className="hidden md:flex md:items-end md:justify-between gap-4 rounded-2xl border border-border bg-card/60 p-4 shadow-sm">
+        {/* Divider Line */}
+        <div className="border-t border-border/60 -mx-4 sm:-mx-5 md:-mx-6" />
+
+        {/* 6. FILTERS CONTAINER - Desktop View (1 Row) */}
+        <div className="hidden md:flex md:items-end md:justify-between gap-4 pt-1">
         <div className="flex items-end gap-3 flex-1">
           {/* Buscar fecha */}
           <div className="space-y-1.5 w-64">
@@ -390,8 +395,8 @@ export default function PMAsistenciasPage() {
         </button>
       </div>
 
-      {/* 6. FILTERS CONTAINER (Mobile only) */}
-      <div className="md:hidden rounded-2xl border border-border bg-card/60 p-4 space-y-3.5 shadow-sm">
+        {/* 6. FILTERS CONTAINER (Mobile only) */}
+        <div className="md:hidden space-y-3.5 pt-1">
         {/* Buscar fecha */}
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-foreground">
@@ -457,8 +462,8 @@ export default function PMAsistenciasPage() {
                   <Calendar className="w-4 h-4 text-muted-foreground" />
                   <span>{r.date}</span>
                 </div>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${r.status === "PRESENTE" || r.status === "ON_TIME" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40" : r.status === "FALTA" ? "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40" : r.status === "TARDE" ? "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40" : "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40"}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${r.status === "PRESENTE" || r.status === "ON_TIME" ? "bg-emerald-500" : r.status === "FALTA" ? "bg-rose-500" : r.status === "TARDE" ? "bg-amber-500" : "bg-blue-500"}`} />
                   {r.statusLabel}
                 </span>
               </div>
@@ -508,8 +513,8 @@ export default function PMAsistenciasPage() {
         )}
       </div>
 
-      {/* 8. DESKTOP TABLE VIEW (hidden md:block) */}
-      <div className="hidden md:block rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+        {/* 8. DESKTOP TABLE VIEW (hidden md:block) */}
+        <div className="hidden md:block rounded-xl border border-border/80 dark:border-white/[0.08] bg-card/30 dark:bg-[#101322]/30 overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
@@ -536,8 +541,8 @@ export default function PMAsistenciasPage() {
                   <td className="py-4 px-4 font-mono text-xs text-foreground font-medium">{row.checkIn}</td>
                   <td className="py-4 px-4 font-mono text-xs text-muted-foreground">{row.checkOut}</td>
                   <td className="py-4 px-4">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-400 border border-amber-800/40">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${row.status === "PRESENTE" || row.status === "ON_TIME" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40" : row.status === "FALTA" ? "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40" : row.status === "TARDE" ? "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40" : "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40"}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${row.status === "PRESENTE" || row.status === "ON_TIME" ? "bg-emerald-500" : row.status === "FALTA" ? "bg-rose-500" : row.status === "TARDE" ? "bg-amber-500" : "bg-blue-500"}`} />
                       {row.statusLabel}
                     </span>
                   </td>
@@ -565,31 +570,31 @@ export default function PMAsistenciasPage() {
         </div>
       </div>
 
-      {/* 9. PAGINATION FOOTER */}
-      <div className="flex items-center justify-between pt-1 px-1">
-        <span className="text-xs text-muted-foreground font-medium">
-          {totalRecords} registro{totalRecords === 1 ? "" : "s"} total{totalRecords === 1 ? "" : "es"}
-        </span>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <span className="text-xs text-muted-foreground font-medium px-1">
-            Página {page} de {totalPages}
+        {/* 9. PAGINATION FOOTER */}
+        <div className="flex items-center justify-between pt-1 px-1">
+          <span className="text-xs text-muted-foreground font-medium">
+            {total} registro{total === 1 ? "" : "s"} total{total === 1 ? "" : "es"}
           </span>
-          <button
-            type="button"
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-xs text-muted-foreground font-medium px-1">
+              Página {page} de 1
+            </span>
+            <button
+              type="button"
+              disabled
+              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -598,7 +603,7 @@ export default function PMAsistenciasPage() {
         open={dateRangeModalOpen}
         onOpenChange={setDateRangeModalOpen}
         initialRange={dateRange}
-        onApply={(newRange) => setDateRange(newRange)}
+        onApply={(newRange: { from: string; to: string }) => setDateRange(newRange)}
       />
     </div>
   );

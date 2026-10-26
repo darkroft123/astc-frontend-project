@@ -62,8 +62,9 @@ export default function PageHeader({
             <span className="font-mono text-[10.5px] leading-[15.8px] font-medium uppercase tracking-[0.05em] text-primary">
               {categoryTag.badge}
             </span>
-            <span className="font-sans text-[15px] leading-[22.5px] font-normal text-text-4">
-              • {categoryTag.text}
+            <span className="text-[10px] text-muted-foreground/60 select-none">·</span>
+            <span className="font-sans text-[13px] leading-[18px] font-normal text-muted-foreground">
+              {categoryTag.text}
             </span>
           </div>
         )}
