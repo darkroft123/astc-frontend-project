@@ -109,15 +109,20 @@ export function DashboardView() {
     if (hydrated && token) {
       getAllProjects(token)
         .then((res) => {
+          console.log("[DashboardView PM] getAllProjects returned:", res?.length);
           if (Array.isArray(res) && res.length > 0) {
             setActiveProjects(res);
           }
         })
-        .catch(() => {});
+        .catch((err) => {
+          console.error("[DashboardView PM] getAllProjects failed:", err);
+        });
 
       const targetProj = selectedProjectId === "all" ? undefined : selectedProjectId;
+      console.log("[DashboardView PM] Loading dashboard metrics for project:", targetProj);
       getDashboardPM(token, targetProj)
         .then((data) => {
+          console.log("[DashboardView PM] getDashboardPM returned:", data);
           if (data) {
             setMetrics({
               totalAttendances: data.totalAttendances ?? 0,
@@ -126,13 +131,22 @@ export function DashboardView() {
             });
           }
         })
-        .catch(() => {});
+        .catch((err) => {
+          console.error("[DashboardView PM] getDashboardPM failed:", err);
+        });
 
       Promise.all([
-        listTeamAttendance(token, { page: 1, size: 4, projectId: targetProj }).catch(() => null),
-        getAllUsers(token).catch(() => []),
+        listTeamAttendance(token, { page: 1, size: 4, projectId: targetProj }).catch((err) => {
+          console.error("[DashboardView PM] listTeamAttendance failed:", err);
+          return null;
+        }),
+        getAllUsers(token).catch((err) => {
+          console.error("[DashboardView PM] getAllUsers failed:", err);
+          return [];
+        }),
       ]).then(([attRes, usersList]) => {
         const items = attRes?.items || (Array.isArray(attRes) ? attRes : []);
+        console.log("[DashboardView PM] Recent attendances items:", items?.length, "users:", usersList?.length);
         if (Array.isArray(items) && items.length > 0) {
           const mapped = items.slice(0, 4).map((att: any) => {
             const usr = Array.isArray(usersList) ? usersList.find((u: any) => u.id === att.userId) : null;

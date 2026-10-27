@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
-import { getMyProjects } from "@/app/services/assistance.service";
+import { getMyProjects, getAllProjects } from "@/app/services/project.assistance.service";
 
 export interface Project {
   id: string;
@@ -58,13 +58,14 @@ export function useUserProject() {
     }
 
     if (cachedToken !== token) {
+      console.log("[useUserProject] Token changed, resetting cache.");
       cachedToken = token;
       cachedProjects = [];
       cachedPromise = null;
       hasFetched = false;
     }
 
-    if (hasFetched) {
+    if (hasFetched && cachedProjects.length > 0) {
       setProjects(cachedProjects);
       setLoadingProject(false);
       return;
@@ -72,22 +73,45 @@ export function useUserProject() {
 
     if (!cachedPromise) {
       setLoadingProject(true);
-      cachedPromise = getMyProjects(token)
-        .then((data) => {
-          cachedProjects = data || [];
+      console.log("[useUserProject] Fetching projects for PM/User, role:", role);
+      cachedPromise = (async () => {
+        try {
+          let list = await getMyProjects(token);
+          console.log("[useUserProject] getMyProjects returned:", list?.length, "projects");
+          if (!list || list.length === 0) {
+            console.log("[useUserProject] getMyProjects empty, falling back to getAllProjects...");
+            const all = await getAllProjects(token);
+            if (Array.isArray(all) && all.length > 0) {
+              console.log("[useUserProject] getAllProjects fallback returned:", all.length, "projects");
+              list = all;
+            }
+          }
+          cachedProjects = list || [];
           hasFetched = true;
           return cachedProjects;
-        })
-        .catch((err) => {
-          console.warn("Backend project fetch failed:", err);
+        } catch (err) {
+          console.error("[useUserProject] Project fetch failed:", err);
+          try {
+            console.log("[useUserProject] Attempting emergency fallback to getAllProjects...");
+            const fallback = await getAllProjects(token);
+            if (Array.isArray(fallback) && fallback.length > 0) {
+              cachedProjects = fallback;
+              hasFetched = true;
+              return cachedProjects;
+            }
+          } catch (e2) {
+            console.error("[useUserProject] Emergency fallback also failed:", e2);
+          }
           cachedProjects = [];
-          hasFetched = true;
+          hasFetched = false; // allow retry
           return [];
-        });
+        }
+      })();
     }
 
     cachedPromise.then((resolved) => {
       const list = resolved || [];
+      console.log("[useUserProject] Setting projects list, total:", list.length);
       setProjects(list);
       setLoadingProject(false);
       if (typeof window !== "undefined") {
@@ -97,7 +121,6 @@ export function useUserProject() {
           localStorage.setItem("selected_project_name", "Todos los proyectos");
           setSelectedProjectId("all");
         } else if (curr !== "all" && list.length > 0 && !list.some((p: any) => p.id === curr)) {
-          // If stored project no longer exists in user's projects, reset to "all"
           localStorage.setItem("selected_project_id", "all");
           localStorage.setItem("selected_project_name", "Todos los proyectos");
           setSelectedProjectId("all");

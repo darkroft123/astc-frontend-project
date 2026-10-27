@@ -188,7 +188,19 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
         <div className="flex items-center gap-1.5 mt-2.5 text-xs text-muted-foreground font-sans">
           <Clock className="w-3.5 h-3.5 text-cyan shrink-0" />
-          <span>08:00 – 17:00 · Turno A</span>
+          <span>
+            {(() => {
+              const projectList = projects && projects.length > 0 ? projects : [];
+              const curr = projectList.find((p) => p.id === selectedProjectId);
+              if (curr?.workStartTime && curr?.workEndTime) {
+                return `${curr.workStartTime.slice(0, 5)} – ${curr.workEndTime.slice(0, 5)} · Regular`;
+              }
+              if (projectList.length > 0 && projectList[0].workStartTime && projectList[0].workEndTime) {
+                return `${projectList[0].workStartTime.slice(0, 5)} – ${projectList[0].workEndTime.slice(0, 5)} · Regular`;
+              }
+              return "Horario según proyecto";
+            })()}
+          </span>
         </div>
       </div>
 

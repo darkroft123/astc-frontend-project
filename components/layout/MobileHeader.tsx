@@ -33,12 +33,12 @@ export function MobileHeader({ customSubtitle }: MobileHeaderProps) {
   const defaultSubtitle = useMemo(() => {
     if (customSubtitle) return customSubtitle;
     if (role === "PROJECT_MANAGER") {
-      return "Jefe de Proyecto · Turno A 08:00–17:00";
+      return "Jefe de Proyecto · Gestión y Asistencia";
     }
     if (role === "ADMIN") {
       return "Admin · Control Global";
     }
-    return "Jefe de Proyecto · Turno A 08:00–17:00";
+    return "Jefe de Proyecto · Gestión y Asistencia";
   }, [role, customSubtitle]);
 
   return (
