@@ -18,6 +18,7 @@ import {
   ChevronRight,
   Folder,
   User,
+  Loader2,
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { getGraphQLUrl } from "@/lib/api-host";
@@ -174,7 +175,9 @@ export function AlertsListView() {
       });
       const json = await res.json();
       const items = json?.data?.listAttendanceAlerts?.items;
-      setTotalAlerts(Number(json?.data?.listAttendanceAlerts?.total) || items?.length || 0);
+      const totalAlertsCount = Number(json?.data?.listAttendanceAlerts?.total) || items?.length || 0;
+      console.log("[AlertsList PM] fetchAlerts received items:", items?.length, "total:", totalAlertsCount);
+      setTotalAlerts(totalAlertsCount);
       if (Array.isArray(items) && items.length > 0) {
         setAlerts(
           items.map((i: any) => {
@@ -618,7 +621,12 @@ export function AlertsListView() {
 
       {/* 7. MOBILE CARDS VIEW (md:hidden) Matching SVG dark-alertas.svg */}
       <div className="space-y-3 md:hidden">
-        {alerts.length === 0 ? (
+        {isLoading ? (
+          <div className="text-center p-8 text-muted-foreground bg-card rounded-2xl border border-border flex items-center justify-center gap-2 text-xs">
+            <Loader2 className="w-5 h-5 animate-spin text-[#A855F7]" />
+            <span>Cargando alertas...</span>
+          </div>
+        ) : alerts.length === 0 ? (
           <div className="text-center p-8 text-muted-foreground bg-card rounded-2xl border border-border">
             No hay alertas disponibles
           </div>
@@ -714,7 +722,16 @@ export function AlertsListView() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {alerts.length === 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-muted-foreground text-sm font-medium">
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin text-[#A855F7]" />
+                      <span>Cargando alertas...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : alerts.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-muted-foreground text-sm font-medium">
                     No hay alertas disponibles

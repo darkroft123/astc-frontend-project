@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Folder,
+  Loader2,
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import {
@@ -51,21 +52,27 @@ export function ProjectsManagementView({
   const fetchProjects = useCallback(async () => {
     if (!token) return;
     setIsLoading(true);
+    console.log("[Projects-View PM] Fetching projects with token:", !!token);
     try {
       let data = await getAllProjects(token);
+      console.log("[Projects-View PM] getAllProjects returned:", Array.isArray(data) ? data.length : data);
       if (!Array.isArray(data) || data.length === 0) {
         data = await getMyProjects(token);
+        console.log("[Projects-View PM] getMyProjects fallback returned:", Array.isArray(data) ? data.length : data);
       }
       if (Array.isArray(data)) {
         setProjects(data);
       } else {
         setProjects([]);
       }
-    } catch {
+    } catch (err) {
+      console.warn("[Projects-View PM] Error in getAllProjects, fallback to getMyProjects:", err);
       try {
         const mine = await getMyProjects(token);
+        console.log("[Projects-View PM] getMyProjects fallback error path returned:", Array.isArray(mine) ? mine.length : mine);
         setProjects(Array.isArray(mine) ? mine : []);
-      } catch {
+      } catch (e2) {
+        console.error("[Projects-View PM] Error fetching my projects:", e2);
         setProjects([]);
       }
     } finally {
@@ -293,7 +300,12 @@ export function ProjectsManagementView({
 
         {/* 4. RESPONSIVE VIEW: MOBILE PROJECT CARDS (md:hidden) */}
         <div className="md:hidden space-y-3.5">
-          {paginatedProjects.length === 0 ? (
+          {isLoading ? (
+            <div className="py-12 text-center text-muted-foreground text-xs bg-card rounded-2xl border border-border flex items-center justify-center gap-2">
+              <Loader2 className="w-5 h-5 animate-spin text-[#A855F7]" />
+              <span>Cargando proyectos...</span>
+            </div>
+          ) : paginatedProjects.length === 0 ? (
             <div className="py-12 text-center text-[#8F96AE] text-xs bg-card rounded-2xl border border-border">
               No hay proyectos disponibles
             </div>
@@ -406,7 +418,16 @@ export function ProjectsManagementView({
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {paginatedProjects.length === 0 ? (
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={6} className="py-12 text-center">
+                      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                        <Loader2 className="w-5 h-5 animate-spin text-[#A855F7]" />
+                        <span>Cargando proyectos...</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : paginatedProjects.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center text-[#8F96AE]">
                       No hay proyectos disponibles

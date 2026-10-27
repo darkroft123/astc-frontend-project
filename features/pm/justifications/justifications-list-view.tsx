@@ -18,6 +18,7 @@ import {
   Folder,
   User,
   FileText,
+  Loader2,
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
@@ -172,12 +173,15 @@ export function JustificationsListView() {
       const json = await res.json();
       const items = json?.data?.listJustificationsPM?.items || [];
       const total = json?.data?.listJustificationsPM?.total ?? items.length;
+      console.log("[JustificationsList PM] fetchData received items:", items.length, "total:", total);
 
       if (items.length > 0) {
         setData({
           items: items.map((i: any) => {
             const usr = userOptions.find((u) => u.id === i.userId);
             const userName = usr
+              ? usr.name
+              : (i.user ? `${i.user.firstName || ""} ${i.user.lastName || ""}`.trim() || i.user.username : "Colaborador");
               ? `${usr.firstName || ""} ${usr.lastName || ""}`.trim() || usr.username
               : i.userName || "Trabajador";
             const userEmail = usr?.email || i.userEmail || "";
@@ -599,7 +603,12 @@ export function JustificationsListView() {
 
       {/* 6. MOBILE CARDS VIEW (md:hidden) Matching SVG dark-justificacionjes.svg */}
       <div className="space-y-3 md:hidden">
-        {data.items.length === 0 ? (
+        {isLoading ? (
+          <div className="text-center p-8 text-muted-foreground bg-card rounded-2xl border border-border flex items-center justify-center gap-2 text-xs">
+            <Loader2 className="w-5 h-5 animate-spin text-[#A855F7]" />
+            <span>Cargando justificaciones...</span>
+          </div>
+        ) : data.items.length === 0 ? (
           <div className="text-center p-8 text-muted-foreground bg-card rounded-2xl border border-border">
             No hay justificaciones disponibles
           </div>
@@ -720,7 +729,16 @@ export function JustificationsListView() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {data.items.length === 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-muted-foreground text-sm font-medium">
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin text-[#A855F7]" />
+                      <span>Cargando justificaciones...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : data.items.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-muted-foreground text-sm font-medium">
                     No hay justificaciones disponibles

@@ -33,6 +33,7 @@ import {
   Check,
   Search,
   Folder,
+  Loader2,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { NotificationBell } from "@/components/layout/notification-bell";
@@ -113,37 +114,41 @@ export function HolidayPMListView() {
   // Load Projects
   useEffect(() => {
     if (!token) return;
+    console.log("[HolidayPMListView] Fetching projects with token:", !!token);
     getAllProjects(token)
       .then((data) => {
+        console.log("[HolidayPMListView] getAllProjects received:", Array.isArray(data) ? data.length : 0);
         if (Array.isArray(data) && data.length > 0) {
           setProjects(data);
-          if (!selectedProjectId || !data.some((p: any) => p.id === selectedProjectId)) {
-            setSelectedProjectId(data[0].id);
-          }
+          setSelectedProjectId((prev) => (prev && data.some((p: any) => p.id === prev) ? prev : data[0].id));
         } else {
           return getMyProjects(token).then((mine) => {
             const list = Array.isArray(mine) ? mine : [];
+            console.log("[HolidayPMListView] getMyProjects fallback received:", list.length);
             setProjects(list);
-            if (list.length > 0 && (!selectedProjectId || !list.some((p: any) => p.id === selectedProjectId))) {
-              setSelectedProjectId(list[0].id);
+            if (list.length > 0) {
+              setSelectedProjectId((prev) => (prev && list.some((p: any) => p.id === prev) ? prev : list[0].id));
             }
           });
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.warn("[HolidayPMListView] getAllProjects error, trying getMyProjects:", err);
         getMyProjects(token)
           .then((mine) => {
             const list = Array.isArray(mine) ? mine : [];
+            console.log("[HolidayPMListView] getMyProjects received:", list.length);
             setProjects(list);
-            if (list.length > 0 && (!selectedProjectId || !list.some((p: any) => p.id === selectedProjectId))) {
-              setSelectedProjectId(list[0].id);
+            if (list.length > 0) {
+              setSelectedProjectId((prev) => (prev && list.some((p: any) => p.id === prev) ? prev : list[0].id));
             }
           })
-          .catch(() => {
+          .catch((e) => {
+            console.error("[HolidayPMListView] Error loading projects:", e);
             setProjects([]);
           });
       });
-  }, [token, selectedProjectId]);
+  }, [token]);
 
   // Load Global Collections
   useEffect(() => {
@@ -580,7 +585,17 @@ export function HolidayPMListView() {
             {/* TAB 1: Colecciones del proyecto */}
             {activeTab === "project" && (
               <div className="space-y-3.5">
-                {paginatedCollections.map((col) => {
+                {loading ? (
+                  <div className="p-12 text-center text-muted-foreground bg-card dark:bg-[#0C0E18] border border-border dark:border-[#1E2335] rounded-2xl text-xs flex items-center justify-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin text-[#A855F7]" />
+                    <span>Cargando colecciones del proyecto...</span>
+                  </div>
+                ) : paginatedCollections.length === 0 ? (
+                  <div className="p-8 text-center text-muted-foreground bg-card dark:bg-[#0C0E18] border border-dashed border-border dark:border-[#1E2335] rounded-2xl text-xs">
+                    No hay colecciones asociadas a este proyecto.
+                  </div>
+                ) : (
+                  paginatedCollections.map((col) => {
                   const isAssigned = col.id === assignedCollectionId;
                   const isExpanded = expandedId === col.id;
 

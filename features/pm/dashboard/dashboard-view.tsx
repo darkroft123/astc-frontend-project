@@ -167,12 +167,17 @@ export function DashboardView() {
   const C = 2 * Math.PI * R;
   const GAP = 6; // Separation between slices, cut like admin
   const totalRecords = totalAttendances + totalAbsences + pendingJustifications;
-  const totalAvailable = C - 3 * GAP;
-  const attendancePercentage = totalRecords > 0 ? Math.round((totalAttendances / totalRecords) * 100) : 50;
+  const totalAvailable = C - (totalRecords > 0 ? 3 * GAP : 0);
+  const attendancePercentage = totalRecords > 0 ? Math.round((totalAttendances / totalRecords) * 100) : 0;
 
-  const attArc = totalRecords > 0 ? (totalAttendances / totalRecords) * totalAvailable : 0.4 * totalAvailable;
-  const absArc = totalRecords > 0 ? (totalAbsences / totalRecords) * totalAvailable : 0.4 * totalAvailable;
-  const pendArc = totalRecords > 0 ? (pendingJustifications / totalRecords) * totalAvailable : 0.2 * totalAvailable;
+  const attArc = totalRecords > 0 ? (totalAttendances / totalRecords) * totalAvailable : 0;
+  const absArc = totalRecords > 0 ? (totalAbsences / totalRecords) * totalAvailable : 0;
+  const pendArc = totalRecords > 0 ? (pendingJustifications / totalRecords) * totalAvailable : 0;
+
+  const maxBarValue = Math.max(totalAttendances, totalAbsences, pendingJustifications, 1);
+  const attBarHeight = totalRecords > 0 ? Math.max(Math.round((totalAttendances / maxBarValue) * 124), 8) : 8;
+  const absBarHeight = totalRecords > 0 ? Math.max(Math.round((totalAbsences / maxBarValue) * 124), 8) : 8;
+  const pendBarHeight = totalRecords > 0 ? Math.max(Math.round((pendingJustifications / maxBarValue) * 124), 8) : 8;
 
   return (
     <div className="relative min-h-screen bg-transparent pb-16 font-sans">
@@ -187,14 +192,14 @@ export function DashboardView() {
                 PANEL DE GESTIÓN
               </span>
               <span className="text-xs text-muted-foreground">
-                · {activeProjects.length || 3} proyectos
+                · {activeProjects.length} {activeProjects.length === 1 ? "proyecto" : "proyectos"}
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
               Hola, {displayName}
             </h1>
             <p className="font-hanken text-xs text-muted-foreground leading-relaxed max-w-xl">
-              Visión general del rendimiento y la actividad del equipo. Hay 1 justificación esperando tu revisión.
+              Visión general del rendimiento y la actividad del equipo. {pendingJustifications === 1 ? "Hay 1 justificación esperando tu revisión." : `Hay ${pendingJustifications} justificaciones esperando tu revisión.`}
             </p>
           </div>
 
@@ -391,14 +396,15 @@ export function DashboardView() {
             <div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-                  50%
+                  {attendancePercentage}%
                 </span>
                 <span className="text-[11px] text-muted-foreground">cumplimiento</span>
               </div>
               <div className="w-full bg-muted rounded-full h-1.5 mt-2.5 overflow-hidden">
                 <div
-                  className="h-1.5 rounded-full w-[50%]"
+                  className="h-1.5 rounded-full transition-all duration-500"
                   style={{
+                    width: `${attendancePercentage}%`,
                     background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 100%)",
                   }}
                 />
@@ -417,11 +423,13 @@ export function DashboardView() {
                   Resumen general
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  5 registros del equipo en el periodo
+                  {totalRecords} {totalRecords === 1 ? "registro" : "registros"} del equipo en el periodo
                 </p>
               </div>
               <span className="text-[10.5px] font-semibold bg-violet/10 text-violet border border-violet/20 px-2.5 py-0.5 rounded-full">
-                Todos los proyectos
+                {selectedProjectId && selectedProjectId !== "all"
+                  ? (activeProjects.find((p) => p.id === selectedProjectId)?.name || "Proyecto seleccionado")
+                  : "Todos los proyectos"}
               </span>
             </div>
 
@@ -490,8 +498,10 @@ export function DashboardView() {
                     <span className="text-foreground font-medium">Asistencias</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="font-bold text-foreground">2</span>
-                    <span className="text-muted-foreground w-8 text-right">40%</span>
+                    <span className="font-bold text-foreground">{totalAttendances}</span>
+                    <span className="text-muted-foreground w-8 text-right">
+                      {totalRecords > 0 ? Math.round((totalAttendances / totalRecords) * 100) : 0}%
+                    </span>
                   </div>
                 </div>
 
@@ -501,8 +511,10 @@ export function DashboardView() {
                     <span className="text-foreground font-medium">Faltas</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="font-bold text-foreground">2</span>
-                    <span className="text-muted-foreground w-8 text-right">40%</span>
+                    <span className="font-bold text-foreground">{totalAbsences}</span>
+                    <span className="text-muted-foreground w-8 text-right">
+                      {totalRecords > 0 ? Math.round((totalAbsences / totalRecords) * 100) : 0}%
+                    </span>
                   </div>
                 </div>
 
@@ -512,8 +524,10 @@ export function DashboardView() {
                     <span className="text-foreground font-medium">Pendientes</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="font-bold text-foreground">1</span>
-                    <span className="text-muted-foreground w-8 text-right">20%</span>
+                    <span className="font-bold text-foreground">{pendingJustifications}</span>
+                    <span className="text-muted-foreground w-8 text-right">
+                      {totalRecords > 0 ? Math.round((pendingJustifications / totalRecords) * 100) : 0}%
+                    </span>
                   </div>
                 </div>
               </div>
@@ -604,36 +618,39 @@ export function DashboardView() {
 
             <div className="pt-4 pb-2">
               <div className="grid grid-cols-3 gap-6 items-end h-[160px] pb-2 border-b border-border">
-                {/* Bar 1: Asistencias (Height 124px, Exact Green Gradient) */}
+                {/* Bar 1: Asistencias */}
                 <div className="flex flex-col items-center">
-                  <span className="text-xs font-bold text-foreground mb-2">2</span>
+                  <span className="text-xs font-bold text-foreground mb-2">{totalAttendances}</span>
                   <div
-                    className="w-16 h-[124px] rounded-t-xl transition-all hover:brightness-110"
+                    className="w-16 rounded-t-xl transition-all hover:brightness-110"
                     style={{
+                      height: `${attBarHeight}px`,
                       background:
                         "linear-gradient(180deg, #34D399 0%, rgba(52, 211, 153, 0.33) 100%)",
                     }}
                   />
                 </div>
 
-                {/* Bar 2: Faltas (Height 124px, Exact Red Gradient) */}
+                {/* Bar 2: Faltas */}
                 <div className="flex flex-col items-center">
-                  <span className="text-xs font-bold text-foreground mb-2">2</span>
+                  <span className="text-xs font-bold text-foreground mb-2">{totalAbsences}</span>
                   <div
-                    className="w-16 h-[124px] rounded-t-xl transition-all hover:brightness-110"
+                    className="w-16 rounded-t-xl transition-all hover:brightness-110"
                     style={{
+                      height: `${absBarHeight}px`,
                       background:
                         "linear-gradient(180deg, #F87171 0%, rgba(248, 113, 113, 0.33) 100%)",
                     }}
                   />
                 </div>
 
-                {/* Bar 3: Pendientes (Height 62px, Exact Amber Gradient) */}
+                {/* Bar 3: Pendientes */}
                 <div className="flex flex-col items-center">
-                  <span className="text-xs font-bold text-foreground mb-2">1</span>
+                  <span className="text-xs font-bold text-foreground mb-2">{pendingJustifications}</span>
                   <div
-                    className="w-16 h-[62px] rounded-t-xl transition-all hover:brightness-110"
+                    className="w-16 rounded-t-xl transition-all hover:brightness-110"
                     style={{
+                      height: `${pendBarHeight}px`,
                       background:
                         "linear-gradient(180deg, #FBBF24 0%, rgba(251, 191, 36, 0.33) 100%)",
                     }}

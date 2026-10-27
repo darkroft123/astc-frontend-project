@@ -144,6 +144,7 @@ export function AttendanceManagementView() {
                 page: $page size: $size projectId: $projectId userId: $userId
                 fromDate: $fromDate toDate: $toDate status: $status
               ) {
+                total
                 items { id userId projectId date checkIn checkOut status photoUrl latitude longitude }
               }
             }
@@ -160,7 +161,9 @@ export function AttendanceManagementView() {
       const json = await res.json();
       const items: RawAttendanceItem[] = json.data?.listTeamAttendance?.items ?? [];
 
-      setAttendance({ rawItems: items, total: items.length });
+      const totalCount = Number(json.data?.listTeamAttendance?.total) || items.length;
+      console.log("[AttendanceManagement PM] fetchAttendance received items:", items.length, "total:", totalCount);
+      setAttendance({ rawItems: items, total: totalCount });
     } finally {
       setIsLoading(false);
     }

@@ -83,6 +83,7 @@ export function VacationApprovalView() {
       return;
     }
     setLoading(true);
+    console.log("[VacationApproval PM] Fetching vacations, statusFilter:", statusFilter);
     try {
       const [data, usersList, projectsList] = await Promise.all([
         listVacations(token, undefined, statusFilter === "ALL" ? undefined : statusFilter),
@@ -90,6 +91,7 @@ export function VacationApprovalView() {
         getAllProjects(token).catch(() => []),
       ]);
       const list = Array.isArray(data) ? data : [];
+      console.log("[VacationApproval PM] listVacations returned items:", list.length);
       setVacations(list);
       setProjects(Array.isArray(projectsList) ? projectsList : []);
 
@@ -498,7 +500,12 @@ export function VacationApprovalView() {
 
       {/* 5. MOBILE CARDS VIEW (md:hidden) Matching SVG vacaciones -dark.svg */}
       <div className="space-y-3 md:hidden">
-        {filteredVacations.length === 0 ? (
+        {loading ? (
+          <div className="text-center p-8 text-muted-foreground bg-card rounded-2xl border border-border flex items-center justify-center gap-2 text-xs">
+            <Loader2 className="w-5 h-5 animate-spin text-[#A855F7]" />
+            <span>Cargando solicitudes de vacaciones...</span>
+          </div>
+        ) : filteredVacations.length === 0 ? (
           <div className="text-center p-8 text-muted-foreground bg-card rounded-2xl border border-border">
             No se encontraron solicitudes de vacaciones.
           </div>
@@ -615,7 +622,12 @@ export function VacationApprovalView() {
 
       {/* 6. DESKTOP TABLE VIEW (hidden md:block) */}
       <div className="hidden md:block rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
-        <DataTable columns={columns} data={paginatedVacations} />
+        <DataTable
+          columns={columns}
+          data={paginatedVacations}
+          loading={loading}
+          emptyText="No se encontraron solicitudes de vacaciones."
+        />
       </div>
 
       {/* 7. PAGINATION FOOTER */}
