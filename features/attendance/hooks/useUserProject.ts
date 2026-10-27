@@ -100,7 +100,7 @@ export function useUserProject() {
       setLoadingProject(false);
       if (list.length > 0 && typeof window !== "undefined") {
         const curr = localStorage.getItem("selected_project_id");
-        if (!curr || curr === "all" || !list.some((p: any) => p.id === curr)) {
+        if (!curr || (curr !== "all" && !list.some((p: any) => p.id === curr))) {
           setSelectedProjectId(list[0].id);
           localStorage.setItem("selected_project_id", list[0].id);
           localStorage.setItem("selected_project_name", list[0].name || "Proyecto");

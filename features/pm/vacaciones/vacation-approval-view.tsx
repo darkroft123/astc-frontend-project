@@ -46,6 +46,28 @@ export function VacationApprovalView() {
   const [rejectDialog, setRejectDialog] = useState<{ open: boolean; id: string }>({ open: false, id: "" });
   const [rejectComment, setRejectComment] = useState("");
   const [page, setPage] = useState(1);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("selected_project_id");
+      if (saved) setSelectedProjectId(saved);
+
+      const handleProj = (e: Event) => {
+        const customEvent = e as CustomEvent<string>;
+        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
+        setSelectedProjectId(newId);
+      };
+
+      window.addEventListener("astc-project-changed", handleProj);
+      window.addEventListener("storage", handleProj);
+      return () => {
+        window.removeEventListener("astc-project-changed", handleProj);
+        window.removeEventListener("storage", handleProj);
+      };
+    }
+  }, []);
+
 
   const fetchData = useCallback(async () => {
     if (!token) {
@@ -165,9 +187,15 @@ export function VacationApprovalView() {
   const approvedCount = useMemo(() => vacations.filter((v) => v.status === "APPROVED").length, [vacations]);
 
   const filteredVacations = useMemo(() => {
-    if (statusFilter === "ALL") return vacations;
-    return vacations.filter((v) => v.status === statusFilter);
-  }, [vacations, statusFilter]);
+    let list = vacations;
+    if (statusFilter !== "ALL") {
+      list = list.filter((v) => v.status === statusFilter);
+    }
+    if (selectedProjectId && selectedProjectId !== "all") {
+      list = list.filter((v) => v.projectId === selectedProjectId);
+    }
+    return list;
+  }, [vacations, statusFilter, selectedProjectId]);
 
   const PAGE_SIZE = 5;
   const totalPages = Math.max(1, Math.ceil(filteredVacations.length / PAGE_SIZE));

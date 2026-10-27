@@ -396,7 +396,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
                     PROYECTO
                   </p>
                   <span className="inline-block px-2.5 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 text-xs font-semibold mt-0.5">
-                    {currentJustification.projectName || "testo6"}
+                    {currentJustification.projectName || "Proyecto"}
                   </span>
                 </div>
               </div>

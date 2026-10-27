@@ -25,7 +25,7 @@ interface AlertDetailViewProps {
 }
 
 const GET_ALERT_DETAIL = `
-  query getAlertDetail($id: ID!) {
+  query getAlertDetail($id: String!) {
     getAlertDetail(id: $id) {
       id
       type

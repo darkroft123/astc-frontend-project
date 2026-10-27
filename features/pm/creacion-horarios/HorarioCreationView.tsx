@@ -18,56 +18,7 @@ import { ShiftTimeConfigCard, Preset, DAYS } from "./components/ShiftTimeConfigC
 import { ShiftGeneralRulesCard } from "./components/ShiftGeneralRulesCard";
 import { ScheduleCreationActionBar } from "./components/ScheduleCreationActionBar";
 
-const DEFAULT_MOCK_PROJECTS = [
-  { id: "p-testeo", name: "proyecto testeo" },
-  { id: "p1", name: "Gestión de Asistencia" },
-  { id: "p2", name: "proyecto testeo" },
-  { id: "p3", name: "testo6" },
-];
 
-const DEFAULT_MOCK_TEMPLATES = [
-  {
-    id: "tpl-tessttt",
-    name: "tessttt",
-    shiftType: "ROTATING_4X4",
-    projectId: "p-testeo",
-    rotationWorkDays: 4,
-    rotationRestDays: 4,
-    rotationShiftStartTime: "08:00:00",
-    rotationShiftEndTime: "17:00:00",
-    graceMinutes: 10,
-    absenceCutoffTime: "08:30:00",
-    timezone: "America/Lima",
-    validFrom: "2026-01-01",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "tpl-1",
-    name: "Horario Regular Administrativo",
-    shiftType: "REGULAR",
-    projectId: "p1",
-    workStartTime: "09:00:00",
-    workEndTime: "18:00:00",
-    graceMinutes: 10,
-    absenceCutoffTime: "10:30:00",
-    timezone: "America/Lima",
-    validFrom: "2026-01-01",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "tpl-flex",
-    name: "Horario Flexible de Verano",
-    shiftType: "FLEXIBLE",
-    projectId: "p3",
-    graceMinutes: 15,
-    absenceCutoffTime: "10:00:00",
-    timezone: "America/Lima",
-    validFrom: "2026-01-01",
-    flexibleHours: 8,
-    fridayEnd: "14:00:00",
-    createdAt: new Date().toISOString(),
-  },
-];
 
 export function HorarioCreationView() {
   const router = useRouter();
@@ -78,7 +29,7 @@ export function HorarioCreationView() {
   const { token, hydrated } = useAuth();
   const { toast } = useToast();
 
-  const [projects, setProjects] = useState<any[]>(DEFAULT_MOCK_PROJECTS);
+  const [projects, setProjects] = useState<any[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [templateName, setTemplateName] = useState<string>("");
   const [shiftType, setShiftType] = useState<ShiftType>("REGULAR");
@@ -134,7 +85,7 @@ export function HorarioCreationView() {
       } catch {}
     }
     if (!t) {
-      t = DEFAULT_MOCK_TEMPLATES.find((item) => item.id === id);
+      t = null;
     }
 
     if (t) {

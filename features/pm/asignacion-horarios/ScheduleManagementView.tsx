@@ -32,72 +32,10 @@ type UserSchedule = {
   shiftType?: string;
 };
 
-const DEFAULT_MOCK_SCHEDULES: UserSchedule[] = [
-  {
-    userId: "usr-01",
-    userName: "Carlos Mamani",
-    userEmail: "cmamani@empresa.com",
-    projectId: "p1",
-    projectName: "Gestión de Asistencia",
-    projectStartHour: "09:00",
-    projectEndHour: "18:00",
-    projectGraceMinutes: 10,
-    effectiveStartHour: "09:00",
-    effectiveEndHour: "18:00",
-    hasOverride: false,
-    overrideId: null,
-    shiftType: "REGULAR",
-  },
-  {
-    userId: "usr-02",
-    userName: "Ana Silva Morales",
-    userEmail: "asilva@empresa.com",
-    projectId: "p1",
-    projectName: "Gestión de Asistencia",
-    projectStartHour: "09:00",
-    projectEndHour: "18:00",
-    projectGraceMinutes: 15,
-    effectiveStartHour: "08:30",
-    effectiveEndHour: "17:30",
-    hasOverride: true,
-    overrideId: "ov-01",
-    shiftType: "ROTATING_4X4",
-  },
-  {
-    userId: "usr-03",
-    userName: "Diego Torres Ramos",
-    userEmail: "dtorres@empresa.com",
-    projectId: "p2",
-    projectName: "Proyecto Testeo",
-    projectStartHour: "08:00",
-    projectEndHour: "17:00",
-    projectGraceMinutes: 10,
-    effectiveStartHour: "08:00",
-    effectiveEndHour: "17:00",
-    hasOverride: false,
-    overrideId: null,
-    shiftType: "REGULAR",
-  },
-  {
-    userId: "usr-04",
-    userName: "Lucía Fernández Cruz",
-    userEmail: "lfernandez@empresa.com",
-    projectId: "p3",
-    projectName: "Testo6",
-    projectStartHour: "10:00",
-    projectEndHour: "19:00",
-    projectGraceMinutes: 10,
-    effectiveStartHour: "10:00",
-    effectiveEndHour: "19:00",
-    hasOverride: false,
-    overrideId: null,
-    shiftType: "FLEXIBLE",
-  },
-];
 
 export function ScheduleManagementView() {
   const { token, hydrated } = useAuth();
-  const [schedules, setSchedules] = useState<UserSchedule[]>(DEFAULT_MOCK_SCHEDULES);
+  const [schedules, setSchedules] = useState<UserSchedule[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [projectFilter, setProjectFilter] = useState("all");
@@ -105,6 +43,66 @@ export function ScheduleManagementView() {
   const [isLoading, setIsLoading] = useState(false);
   const [resettingId, setResettingId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+
+  // Sync with PM global sidebar project selection
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedId = localStorage.getItem("selected_project_id");
+      if (savedId) setProjectFilter(savedId);
+
+      const handleProjectChange = (e: Event) => {
+        const customEvent = e as CustomEvent<string>;
+        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
+        setProjectFilter(newId);
+        setPage(1);
+      };
+
+      window.addEventListener("astc-project-changed", handleProjectChange);
+      return () => {
+        window.removeEventListener("astc-project-changed", handleProjectChange);
+      };
+    }
+  }, []);
+
+  // Sync with PM global sidebar project selection
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedId = localStorage.getItem("selected_project_id");
+      if (savedId) setProjectFilter(savedId);
+
+      const handleProjectChange = (e: Event) => {
+        const customEvent = e as CustomEvent<string>;
+        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
+        setProjectFilter(newId);
+        setPage(1);
+      };
+
+      window.addEventListener("astc-project-changed", handleProjectChange);
+      return () => {
+        window.removeEventListener("astc-project-changed", handleProjectChange);
+      };
+    }
+  }, []);
+
+  // Sync with PM global sidebar project selection
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedId = localStorage.getItem("selected_project_id");
+      if (savedId) setProjectFilter(savedId);
+
+      const handleProjectChange = (e: Event) => {
+        const customEvent = e as CustomEvent<string>;
+        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
+        setProjectFilter(newId);
+        setPage(1);
+      };
+
+      window.addEventListener("astc-project-changed", handleProjectChange);
+      return () => {
+        window.removeEventListener("astc-project-changed", handleProjectChange);
+      };
+    }
+  }, []);
 
   const loadData = useCallback(async () => {
     if (!token) return;
@@ -144,9 +142,7 @@ export function ScheduleManagementView() {
           );
           uProjects = memberOf.length > 0 ? memberOf : [projectList[0]];
         }
-        if (uProjects.length === 0) {
-          uProjects = [{ id: "p1", name: "Gestión de Asistencia" }];
-        }
+        if (uProjects.length === 0) continue;
 
         for (const p of uProjects) {
           const ov = overrideMap.get(`${u.id}:${p.id}`);
@@ -178,9 +174,9 @@ export function ScheduleManagementView() {
         }
       }
 
-      setSchedules(list.length > 0 ? list : DEFAULT_MOCK_SCHEDULES);
+      setSchedules(list);
     } catch {
-      setSchedules(DEFAULT_MOCK_SCHEDULES);
+      setSchedules([]);
     } finally {
       setIsLoading(false);
     }

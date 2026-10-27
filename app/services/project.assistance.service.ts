@@ -138,6 +138,7 @@ export async function getDashboardPM(
   toDate?: string,
   userId?: string
 ): Promise<Dashboard> {
+  const safeProjectId = !projectId || projectId === "all" ? null : projectId;
   const data = await graphqlRequest<GetDashboardPMResponse>(
     `
     query getDashboardPM(
@@ -158,7 +159,7 @@ export async function getDashboardPM(
       }
     }
     `,
-    { projectId, fromDate, toDate, userId },
+    { projectId: safeProjectId, fromDate, toDate, userId },
     token
   );
 
@@ -236,7 +237,7 @@ export async function listTeamAttendance(
     {
       page,
       size,
-      projectId: projectId || undefined,
+      projectId: (!projectId || projectId === "all") ? undefined : projectId,
       userId: userId || undefined,
       fromDate: fromDate || undefined,
       toDate: toDate || undefined,
@@ -382,6 +383,10 @@ export async function listTeamAbsences(
     justified?: boolean | null;
   }
 ) {
+  const safeParams = {
+    ...params,
+    projectId: (!params?.projectId || params.projectId === "all") ? undefined : params.projectId,
+  };
   const data = await graphqlRequest<ListTeamAbsencesResponse>(
     `
     query listTeamAbsences(
@@ -418,7 +423,7 @@ export async function listTeamAbsences(
       }
     }
     `,
-    params as Record<string, unknown>,
+    safeParams as Record<string, unknown>,
     token
   );
 
@@ -973,7 +978,7 @@ export async function listScheduleOverrides(
       }
     }
     `,
-    { projectId: projectId || null, userId: userId || null },
+    { projectId: (!projectId || projectId === "all") ? null : projectId, userId: userId || null },
     token
   );
 
@@ -1011,7 +1016,7 @@ export async function getProjectMembers(
       }
     }
     `,
-    { projectId },
+    { projectId: (!projectId || projectId === "all") ? null : projectId },
     token
   );
 
@@ -1045,9 +1050,15 @@ export async function getAllUsers(token: string): Promise<User[]> {
     );
 
     const raw = data?.listUsers ?? data?.getAllUsers ?? [];
-    if (Array.isArray(raw)) return raw;
-    if (Array.isArray(raw?.items)) return raw.items;
-    return [];
+    const list = Array.isArray(raw) ? raw : (Array.isArray(raw?.items) ? raw.items : []);
+    return list.map((u: any) => {
+      const fullName = [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || u.email || "Usuario";
+      return {
+        ...u,
+        name: fullName,
+        fullName,
+      };
+    });
   } catch {
     return [];
   }

@@ -23,7 +23,7 @@ interface AttendanceHeaderProps {
 }
 
 export function AttendanceHeader({
-  projectName = "testo6",
+  projectName = "Proyecto",
   schedule,
   projects = [],
   selectedProjectId = "",

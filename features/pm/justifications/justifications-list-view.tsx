@@ -87,6 +87,26 @@ export function JustificationsListView() {
   const [userOptions, setUserOptions] = useState<any[]>([]);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("selected_project_id");
+      if (saved) setFilters((f) => ({ ...f, project: saved }));
+
+      const handleProj = (e: Event) => {
+        const customEvent = e as CustomEvent<string>;
+        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
+        setFilters((f) => ({ ...f, project: newId }));
+      };
+
+      window.addEventListener("astc-project-changed", handleProj);
+      window.addEventListener("storage", handleProj);
+      return () => {
+        window.removeEventListener("astc-project-changed", handleProj);
+        window.removeEventListener("storage", handleProj);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
     if (!token) return;
     Promise.all([
       getAllProjects(token).catch(() => []),
@@ -96,7 +116,11 @@ export function JustificationsListView() {
         setProjects([{ id: "all", name: `Todos los proyectos (${projData.length})` }, ...projData]);
       }
       if (Array.isArray(userData) && userData.length > 0) {
-        setUserOptions([{ id: "all", name: `Todos los trabajadores (${userData.length})` }, ...userData]);
+        const mappedUsers = userData.map((u: any) => ({
+          ...u,
+          name: u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario",
+        }));
+        setUserOptions([{ id: "all", name: `Todos los trabajadores (${mappedUsers.length})` }, ...mappedUsers]);
       }
     });
   }, [token]);
@@ -448,7 +472,7 @@ export function JustificationsListView() {
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {userOptions.map((u) => (
-                <option key={u.id} value={u.id} className="bg-card text-foreground">{u.name}</option>
+                <option key={u.id} value={u.id} className="bg-card text-foreground">{u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario"}</option>
               ))}
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />

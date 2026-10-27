@@ -189,6 +189,28 @@ export function HolidayPMListView() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("selected_project_id");
+      if (saved && saved !== "all") setSelectedProjectId(saved);
+
+      const handleProj = (e: Event) => {
+        const customEvent = e as CustomEvent<string>;
+        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id");
+        if (newId && newId !== "all") {
+          setSelectedProjectId(newId);
+        }
+      };
+
+      window.addEventListener("astc-project-changed", handleProj);
+      window.addEventListener("storage", handleProj);
+      return () => {
+        window.removeEventListener("astc-project-changed", handleProj);
+        window.removeEventListener("storage", handleProj);
+      };
+    }
+  }, []);
+
   // Load Projects
   useEffect(() => {
     if (!token) return;

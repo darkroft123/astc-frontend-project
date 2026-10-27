@@ -194,7 +194,7 @@ export default function AttendancePreviewPage() {
     );
   }
 
-  const projectName = project?.name || "testo6";
+  const projectName = project?.name || "Proyecto";
   const displayLat = lat ?? -12.0184;
   const displayLng = lng ?? -77.0817;
 

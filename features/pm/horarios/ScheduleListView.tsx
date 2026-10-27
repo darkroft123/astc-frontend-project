@@ -71,65 +71,13 @@ function getScheduleTimeDisplay(t: any): string {
   return `${start} - ${end}`;
 }
 
-const DEFAULT_MOCK_PROJECTS = [
-  { id: "p-testeo", name: "proyecto testeo" },
-  { id: "p1", name: "Gestión de Asistencia" },
-  { id: "p2", name: "proyecto testeo" },
-  { id: "p3", name: "Testo6" },
-];
 
-const DEFAULT_MOCK_TEMPLATES = [
-  {
-    id: "tpl-tessttt",
-    name: "tessttt",
-    shiftType: "ROTATING_4X4",
-    projectId: "p-testeo",
-    rotationWorkDays: 4,
-    rotationRestDays: 4,
-    rotationShiftStartTime: "08:00:00",
-    rotationShiftEndTime: "17:00:00",
-    graceMinutes: 10,
-    absenceCutoffTime: "08:30:00",
-    timezone: "America/Lima",
-    validFrom: "2026-01-01",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "tpl-1",
-    name: "Horario Regular Administrativo",
-    shiftType: "REGULAR",
-    projectId: "p1",
-    workStartTime: "09:00:00",
-    workEndTime: "18:00:00",
-    graceMinutes: 10,
-    absenceCutoffTime: "10:30:00",
-    timezone: "America/Lima",
-    validFrom: "2026-01-01",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "tpl-flex",
-    name: "Horario Flexible de Verano",
-    shiftType: "FLEXIBLE",
-    projectId: "p3",
-    graceMinutes: 15,
-    absenceCutoffTime: "10:00:00",
-    timezone: "America/Lima",
-    validFrom: "2026-01-01",
-    flexibleHours: 8,
-    fridayEnd: "14:00:00",
-    createdAt: new Date().toISOString(),
-  },
-];
 
 function getProjectName(projectId: string, projectsList: any[] = []): string {
   if (!projectId) return projectsList[0]?.name || "Proyecto";
   const found = projectsList.find((p) => p.id === projectId);
   if (found?.name) return found.name;
-  if (projectId === "p-testeo" || projectId === "p2") return "proyecto testeo";
-  if (projectId === "p1") return "Gestión de Asistencia";
-  if (projectId === "p3") return "Testo6";
-  if (projectsList.length === 1 && projectsList[0]?.name) return projectsList[0].name;
+    if (projectsList.length === 1 && projectsList[0]?.name) return projectsList[0].name;
   return found?.name || "Proyecto";
 }
 
@@ -178,10 +126,10 @@ export function ScheduleListView() {
       if (data && data.length > 0) {
         setTemplates(data);
       } else {
-        setTemplates(DEFAULT_MOCK_TEMPLATES);
+        setTemplates([]);
       }
     } catch {
-      setTemplates(DEFAULT_MOCK_TEMPLATES);
+      setTemplates([]);
     } finally {
       setLoading(false);
     }

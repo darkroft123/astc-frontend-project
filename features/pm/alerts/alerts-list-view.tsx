@@ -82,6 +82,26 @@ export function AlertsListView() {
   const [alerts, setAlerts] = useState<AlertRow[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("selected_project_id");
+      if (saved) setSelectedProject(saved);
+
+      const handleProj = (e: Event) => {
+        const customEvent = e as CustomEvent<string>;
+        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
+        setSelectedProject(newId);
+      };
+
+      window.addEventListener("astc-project-changed", handleProj);
+      window.addEventListener("storage", handleProj);
+      return () => {
+        window.removeEventListener("astc-project-changed", handleProj);
+        window.removeEventListener("storage", handleProj);
+      };
+    }
+  }, []);
+
   const [activePeriod, setActivePeriod] = useState<PeriodTab>("Este mes");
   const [selectedProject, setSelectedProject] = useState("all");
   const [selectedUser, setSelectedUser] = useState("all");
@@ -110,7 +130,11 @@ export function AlertsListView() {
         setProjects([{ id: "all", name: `Todos los proyectos (${projData.length})` }, ...projData]);
       }
       if (Array.isArray(userData) && userData.length > 0) {
-        setUsers([{ id: "all", name: `Todos los usuarios (${userData.length})` }, ...userData]);
+        const mapped = userData.map((u: any) => ({
+          ...u,
+          name: u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario",
+        }));
+        setUsers([{ id: "all", name: `Todos los usuarios (${mapped.length})` }, ...mapped]);
       }
     });
   }, [token]);
@@ -628,7 +652,7 @@ export function AlertsListView() {
               {/* Project Tag & Date */}
               <div className="flex items-center justify-between">
                 <span className="inline-block bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
-                  {alert.projectName || "testo6"}
+                  {alert.projectName || "Proyecto"}
                 </span>
                 <span className="text-sm font-medium text-foreground">{alert.dateStr || "02/09/2026"}</span>
               </div>

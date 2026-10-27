@@ -21,6 +21,8 @@ import { DateRangeModal } from "@/components/ui/date-range-modal";
 import {
   getDashboardPM,
   getAllProjects,
+  listTeamAttendance,
+  getAllUsers,
 } from "@/app/services/project.assistance.service";
 
 type Period =
@@ -68,6 +70,7 @@ export function DashboardView() {
     to: "2026-09-03",
   });
   const [activeProjects, setActiveProjects] = useState<any[]>([]);
+  const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
   const [metrics, setMetrics] = useState({
     totalAttendances: 0,
@@ -112,10 +115,8 @@ export function DashboardView() {
         })
         .catch(() => {});
 
-      getDashboardPM(
-        token,
-        selectedProjectId === "all" ? undefined : selectedProjectId
-      )
+      const targetProj = selectedProjectId === "all" ? undefined : selectedProjectId;
+      getDashboardPM(token, targetProj)
         .then((data) => {
           if (data) {
             setMetrics({
@@ -126,6 +127,34 @@ export function DashboardView() {
           }
         })
         .catch(() => {});
+
+      Promise.all([
+        listTeamAttendance(token, { page: 1, size: 4, projectId: targetProj }).catch(() => null),
+        getAllUsers(token).catch(() => []),
+      ]).then(([attRes, usersList]) => {
+        const items = attRes?.items || (Array.isArray(attRes) ? attRes : []);
+        if (Array.isArray(items) && items.length > 0) {
+          const mapped = items.slice(0, 4).map((att: any) => {
+            const usr = Array.isArray(usersList) ? usersList.find((u: any) => u.id === att.userId) : null;
+            const name = usr?.name || (usr ? `${usr.firstName || ""} ${usr.lastName || ""}`.trim() : "") || usr?.username || "Trabajador";
+            const initials = name.split(" ").filter(Boolean).map((n: string) => n[0]).join("").slice(0, 2).toUpperCase() || "T";
+            const time = att.checkIn ? att.checkIn.slice(0, 5) : (att.date || "Hoy");
+            const isLate = att.status === "LATE";
+            return {
+              id: att.id,
+              name,
+              initials,
+              time,
+              action: isLate ? "Marcó ingreso con tardanza" : att.checkOut ? "Marcó salida de turno" : "Registró asistencia puntual",
+              status: isLate ? "Tardanza" : "Presente",
+              badgeColor: isLate ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+            };
+          });
+          setRecentActivities(mapped);
+        } else {
+          setRecentActivities([]);
+        }
+      }).catch(() => setRecentActivities([]));
     }
   }, [hydrated, token, selectedProjectId]);
 
@@ -508,25 +537,46 @@ export function DashboardView() {
               </span>
             </div>
 
-            {/* Dashed Empty State Box */}
-            <div className="my-auto py-7 px-4 rounded-xl border border-dashed border-border bg-muted flex flex-col items-center justify-center text-center">
-              <div className="w-10 h-10 rounded-xl bg-raised border border-border flex items-center justify-center text-muted-foreground mb-2.5">
-                <Activity className="w-5 h-5" />
+            {/* Dynamic Activity List or Empty Box */}
+            {recentActivities.length > 0 ? (
+              <div className="space-y-2.5 my-auto py-1">
+                {recentActivities.map((act) => (
+                  <div key={act.id} className="flex items-center justify-between p-2.5 rounded-xl border border-border bg-muted/40 hover:bg-muted/70 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center shrink-0 border border-primary/20">
+                        {act.initials}
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-foreground leading-tight">{act.name}</p>
+                        <p className="text-[10.5px] text-muted-foreground mt-0.5">{act.action} · {act.time}</p>
+                      </div>
+                    </div>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${act.badgeColor}`}>
+                      {act.status}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <h4 className="font-bold text-xs text-foreground">
-                Aún no hay actividad en tu equipo
-              </h4>
-              <p className="text-[11px] text-muted-foreground max-w-xs mt-1 mb-3.5 leading-relaxed">
-                Asigna trabajadores a tus proyectos para ver sus marcajes aquí en tiempo real.
-              </p>
-              <button
-                type="button"
-                onClick={() => router.push("/pm/proyectos")}
-                className="px-4 py-2 rounded-xl border border-border bg-raised hover:bg-muted text-foreground text-xs font-semibold transition-colors cursor-pointer shadow-xs"
-              >
-                Gestionar proyectos
-              </button>
-            </div>
+            ) : (
+              <div className="my-auto py-7 px-4 rounded-xl border border-dashed border-border bg-muted flex flex-col items-center justify-center text-center">
+                <div className="w-10 h-10 rounded-xl bg-raised border border-border flex items-center justify-center text-muted-foreground mb-2.5">
+                  <Activity className="w-5 h-5" />
+                </div>
+                <h4 className="font-bold text-xs text-foreground">
+                  Aún no hay actividad en tu equipo
+                </h4>
+                <p className="text-[11px] text-muted-foreground max-w-xs mt-1 mb-3.5 leading-relaxed">
+                  Asigna trabajadores a tus proyectos para ver sus marcajes aquí en tiempo real.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => router.push("/pm/proyectos")}
+                  className="px-4 py-2 rounded-xl border border-border bg-raised hover:bg-muted text-foreground text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+                >
+                  Gestionar proyectos
+                </button>
+              </div>
+            )}
 
             <div className="pt-2 text-center">
               <Link

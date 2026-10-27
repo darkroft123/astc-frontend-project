@@ -153,11 +153,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         {/* Selector de proyectos */}
         <div className="mt-2.5">
           {(() => {
-            const projectList = projects && projects.length > 0 ? projects : [
-              { id: "p1", name: "gestion de asistencia" },
-              { id: "p2", name: "proyecto testeo" },
-              { id: "p3", name: "testo6" },
-            ];
+            const projectList = projects && projects.length > 0 ? projects : [];
             const currentProject = projectList.find((p) => p.id === selectedProjectId);
             const displayLabel = currentProject ? currentProject.name : `Todos los proyectos (${projectList.length})`;
 
@@ -165,7 +161,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
               <Select
                 value={selectedProjectId || "all"}
                 onValueChange={(val) => {
-                  selectProject(val === "all" ? "" : val);
+                  selectProject(val);
                   if (typeof window !== "undefined") {
                     localStorage.setItem("selected_project_id", val);
                     window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: val }));

@@ -48,7 +48,7 @@ export function AttendanceSummaryCard({
         </div>
 
         <h3 className="font-sans text-2xl font-bold text-foreground mt-1">
-          {project?.name || "testo6"}
+          {project?.name || "Proyecto"}
         </h3>
 
         {/* Inset Schedule Box */}

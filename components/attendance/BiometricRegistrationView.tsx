@@ -46,7 +46,7 @@ export default function BiometricRegistrationView({
 }: BiometricRegistrationViewProps) {
   const { token, hydrated, checkingAuth, user } = useAuthGuard(allowedRoles);
   const { project, projects = [], selectProject, loadingProject } = useUserProject();
-  const activeProject = project;
+  const activeProject = project || (projects && projects.length > 0 ? projects[0] : null);
   const projectTimezone = getEffectiveTimezone(activeProject?.timezone);
 
   const router = useRouter();
@@ -131,22 +131,22 @@ export default function BiometricRegistrationView({
     if (!token || !user?.id) return;
 
     if (!isOnline()) {
-      const cached = getCachedTodayAttendance(project?.id || null);
+      const cached = getCachedTodayAttendance(activeProject?.id || null);
       if (cached) setTodayAtt(cached);
     } else {
-      getTodayAttendance(token, project?.id || null)
+      getTodayAttendance(token, activeProject?.id || null)
         .then((res) => {
           setTodayAtt(res);
-          cacheTodayAttendance(project?.id || null, res);
+          cacheTodayAttendance(activeProject?.id || null, res);
         })
         .catch(() => {
-          const cached = getCachedTodayAttendance(project?.id || null);
+          const cached = getCachedTodayAttendance(activeProject?.id || null);
           if (cached) setTodayAtt(cached);
         });
     }
 
-    if (project?.id) {
-      getEffectiveSchedule(token, user.id, project.id, todayLocal)
+    if (activeProject?.id) {
+      getEffectiveSchedule(token, user.id, activeProject.id, todayLocal)
         .then(setSchedule)
         .catch(() => {});
     }
@@ -158,7 +158,7 @@ export default function BiometricRegistrationView({
         );
       })
       .catch(() => {});
-  }, [token, project?.id, user?.id, todayLocal]);
+  }, [token, activeProject?.id, user?.id, todayLocal]);
 
   // Current position
   const currentPosition = coords ? { lat: coords.lat, lng: coords.lng } : null;
@@ -303,10 +303,10 @@ export default function BiometricRegistrationView({
     <div className="w-full space-y-6 text-foreground font-sans bg-transparent">
       {/* 1. TOP HEADER & OFFLINE BANNER */}
       <AttendanceHeader
-        projectName={project?.name || "testo6"}
+        projectName={activeProject?.name || "Proyecto"}
         schedule={schedule}
         projects={projects}
-        selectedProjectId={project?.id || ""}
+        selectedProjectId={activeProject?.id || ""}
         onSelectProject={selectProject}
         day={day}
         date={date}

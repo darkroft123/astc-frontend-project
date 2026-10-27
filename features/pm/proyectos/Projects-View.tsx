@@ -80,6 +80,30 @@ export function ProjectsManagementView({
     }
   }, [hydrated, token, fetchProjects]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const handleProj = (e: Event) => {
+        const customEvent = e as CustomEvent<string>;
+        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id");
+        if (newId === "all" || !newId) {
+          setSearch("");
+        } else {
+          const match = projects.find((p) => p.id === newId);
+          if (match?.name) {
+            setSearch(match.name);
+          }
+        }
+      };
+
+      window.addEventListener("astc-project-changed", handleProj);
+      window.addEventListener("storage", handleProj);
+      return () => {
+        window.removeEventListener("astc-project-changed", handleProj);
+        window.removeEventListener("storage", handleProj);
+      };
+    }
+  }, [projects]);
+
   const handleDeleteConfirm = async () => {
     if (!token || !projectToDelete) return;
     try {

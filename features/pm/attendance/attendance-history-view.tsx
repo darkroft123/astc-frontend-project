@@ -55,7 +55,7 @@ const DEFAULT_SAMPLE_ATTENDANCE = [
     userId: "usr-carlos",
     userName: "carlos mamani",
     userEmail: "mamanigutierrezcarlos123@gmail.com",
-    projectName: "testo6",
+    projectName: "Proyecto",
     date: "02/09/2026",
     checkIn: "08:52",
     checkOut: "09:07",
@@ -71,7 +71,7 @@ const DEFAULT_SAMPLE_ATTENDANCE = [
     userId: "usr-carlos",
     userName: "carlos mamani",
     userEmail: "mamanigutierrezcarlos123@gmail.com",
-    projectName: "testo6",
+    projectName: "Proyecto",
     date: "01/09/2026",
     checkIn: "11:28",
     checkOut: "13:59",
@@ -143,20 +143,30 @@ export function AttendanceHistoryView() {
   const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>(() => getPeriodDates("month"));
 
-  const [projects, setProjects] = useState<any[]>([
-    { id: "all", name: "Todos los proyectos (3)" },
-    { id: "p1", name: "gestion de asistencia" },
-    { id: "p2", name: "proyecto testeo" },
-    { id: "p3", name: "testo6" },
-  ]);
-
-  const [users, setUsers] = useState<any[]>([
-    { id: "all", name: "Todos los trabajadores (5)" },
-    { id: "u1", name: "carlos mamani" },
-  ]);
-
-  const [records, setRecords] = useState<any[]>(DEFAULT_SAMPLE_ATTENDANCE);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [records, setRecords] = useState<any[]>([]);
   const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("selected_project_id");
+      if (saved) setSelectedProjectId(saved);
+
+      const handleProj = (e: Event) => {
+        const customEvent = e as CustomEvent<string>;
+        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
+        setSelectedProjectId(newId);
+      };
+
+      window.addEventListener("astc-project-changed", handleProj);
+      window.addEventListener("storage", handleProj);
+      return () => {
+        window.removeEventListener("astc-project-changed", handleProj);
+        window.removeEventListener("storage", handleProj);
+      };
+    }
+  }, []);
 
   useEffect(() => {
     if (!token) return;
@@ -176,7 +186,11 @@ export function AttendanceHistoryView() {
           setProjects([{ id: "all", name: `Todos los proyectos (${pRes.length})` }, ...pRes]);
         }
         if (Array.isArray(uRes) && uRes.length > 0) {
-          setUsers([{ id: "all", name: `Todos los trabajadores (${uRes.length})` }, ...uRes]);
+          const mapped = uRes.map((u: any) => ({
+            ...u,
+            name: u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario",
+          }));
+          setUsers([{ id: "all", name: `Todos los trabajadores (${mapped.length})` }, ...mapped]);
         }
       })
       .catch((err) => console.error("Error loading filters data:", err));
@@ -532,7 +546,7 @@ export function AttendanceHistoryView() {
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {users.map((u) => (
-                <option key={u.id} value={u.id} className="bg-card text-foreground">{u.name || u.username}</option>
+                <option key={u.id} value={u.id} className="bg-card text-foreground">{u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario"}</option>
               ))}
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
@@ -688,7 +702,7 @@ export function AttendanceHistoryView() {
                 {/* Project Tag & Date */}
                 <div className="flex items-center justify-between">
                   <span className="inline-block bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 text-xs px-2.5 py-0.5 rounded-full font-medium">
-                    {r.projectName || "testo6"}
+                    {r.projectName || "Proyecto"}
                   </span>
                   <span className="text-sm font-medium text-foreground">{r.date}</span>
                 </div>
