@@ -79,8 +79,8 @@ export default function PMAsistenciasPage() {
     setIsLoading(true);
     try {
       const res = await listAttendance(token, {
-        page,
-        size: 5,
+        page: 0,
+        size: 100,
         status: statusFilter === "all" ? undefined : statusFilter,
       });
       const items = res?.items || [];
@@ -130,6 +130,10 @@ export default function PMAsistenciasPage() {
       return matchesDate && matchesStatus;
     });
   }, [records, searchDate, statusFilter]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchDate, statusFilter, activePeriod]);
 
   const total = filteredRecords.length;
   const PAGE_SIZE = 5;
@@ -464,7 +468,12 @@ export default function PMAsistenciasPage() {
             No hay registros de asistencia disponibles
           </div>
         ) : (
-          filteredRecords.map((r, idx) => (
+          paginatedRecords.map((r, idx) => {
+            const photos = (r.photoUrl || "").split(",").map((p: string) => p.trim()).filter(Boolean);
+            const checkInPhoto = photos.find((p: string) => !p.toLowerCase().includes("_checkout") && !p.toLowerCase().includes("checkout")) || null;
+            const checkOutPhoto = photos.find((p: string) => p.toLowerCase().includes("_checkout") || p.toLowerCase().includes("checkout")) || null;
+
+            return (
             <div key={r.id || idx} className="bg-card border border-border rounded-2xl p-4 space-y-3">
               {/* Top Row: Date & Status Badge */}
               <div className="flex items-center justify-between">
@@ -484,13 +493,37 @@ export default function PMAsistenciasPage() {
                   <span className="text-[10px] font-mono tracking-wider uppercase text-muted-foreground block mb-1">
                     ENTRADA
                   </span>
-                  <span className="text-xs font-mono font-medium text-foreground">{r.checkIn}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-medium text-foreground">{r.checkIn}</span>
+                    {r.checkIn && r.checkIn !== "-" && checkInPhoto && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkInPhoto))}
+                        className="p-1 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                        title="Ver foto de entrada"
+                      >
+                        <Camera className="w-3.5 h-3.5 text-primary" />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div className="bg-background/60 border border-border/60 rounded-xl p-3">
                   <span className="text-[10px] font-mono tracking-wider uppercase text-muted-foreground block mb-1">
                     SALIDA
                   </span>
-                  <span className="text-xs font-mono font-medium text-muted-foreground">{r.checkOut}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-medium text-muted-foreground">{r.checkOut}</span>
+                    {r.checkOut && r.checkOut !== "-" && checkOutPhoto && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkOutPhoto))}
+                        className="p-1 text-muted-foreground hover:text-amber-500 transition-colors cursor-pointer"
+                        title="Ver foto de salida"
+                      >
+                        <Camera className="w-3.5 h-3.5 text-amber-500" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -498,17 +531,19 @@ export default function PMAsistenciasPage() {
               <div className="flex items-center gap-2 pt-0.5">
                 <div
                   className={`h-10 px-3 rounded-xl bg-background/50 border border-border/60 flex items-center gap-1.5 text-xs shrink-0 ${
-                    r.photoUrl ? "cursor-pointer hover:border-primary text-foreground" : "text-muted-foreground"
+                    checkInPhoto || checkOutPhoto ? "cursor-pointer hover:border-primary text-foreground" : "text-muted-foreground"
                   }`}
                   onClick={() => {
-                    const src = formatAvatarUrl(r.photoUrl);
+                    const src = formatAvatarUrl(checkInPhoto || checkOutPhoto);
                     if (src) setSelectedPhotoUrl(src);
                   }}
                 >
-                  {r.photoUrl ? (
+                  {checkInPhoto || checkOutPhoto ? (
                     <>
                       <Camera className="w-3.5 h-3.5 text-purple-400" />
-                      <span className="text-foreground">Con foto</span>
+                      <span className="text-foreground">
+                        {checkInPhoto && checkOutPhoto ? "Fotos (2)" : checkInPhoto ? "Foto entrada" : "Foto salida"}
+                      </span>
                     </>
                   ) : (
                     <>
@@ -527,7 +562,8 @@ export default function PMAsistenciasPage() {
                 </div>
               </div>
             </div>
-          ))
+          );
+          })
         )}
       </div>
 
@@ -597,20 +633,34 @@ export default function PMAsistenciasPage() {
                     </span>
                   </td>
                   <td className="py-4 px-4">
-                    {row.photoUrl ? (
-                      <div
-                        className="w-9 h-9 rounded-lg overflow-hidden border border-border cursor-pointer hover:ring-2 hover:ring-primary transition-all shadow-sm"
-                        onClick={() => setSelectedPhotoUrl(formatAvatarUrl(row.photoUrl) || row.photoUrl)}
-                        title="Clic para ver foto"
-                      >
-                        <img
-                          src={formatAvatarUrl(row.photoUrl) || row.photoUrl}
-                          alt="Foto asistencia"
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.currentTarget.parentElement).innerHTML = '<div class="w-full h-full flex flex-col items-center justify-center text-muted-foreground bg-muted"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>';
-                          }}
-                        />
+                    {checkInPhoto || checkOutPhoto ? (
+                      <div className="flex items-center gap-1.5">
+                        {checkInPhoto && (
+                          <div
+                            className="w-9 h-9 rounded-lg overflow-hidden border border-border cursor-pointer hover:ring-2 hover:ring-primary transition-all shadow-sm"
+                            onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkInPhoto))}
+                            title="Foto de entrada"
+                          >
+                            <img
+                              src={formatAvatarUrl(checkInPhoto)!}
+                              alt="Foto entrada"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        {checkOutPhoto && (
+                          <div
+                            className="w-9 h-9 rounded-lg overflow-hidden border border-amber-500/50 cursor-pointer hover:ring-2 hover:ring-amber-500 transition-all shadow-sm"
+                            onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkOutPhoto))}
+                            title="Foto de salida"
+                          >
+                            <img
+                              src={formatAvatarUrl(checkOutPhoto)!}
+                              alt="Foto salida"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div className="w-9 h-9 rounded-lg bg-background border border-border flex items-center justify-center text-muted-foreground">

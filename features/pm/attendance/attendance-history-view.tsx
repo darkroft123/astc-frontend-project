@@ -204,7 +204,7 @@ export function AttendanceHistoryView() {
       const handleProj = (e: Event) => {
         const customEvent = e as CustomEvent<string>;
         const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
-        setSelectedProjectId(newId);
+        handleProjectSelect(newId);
       };
 
       window.addEventListener("astc-project-changed", handleProj);
@@ -346,6 +346,15 @@ export function AttendanceHistoryView() {
       };
     });
   }, [records, projectMap, userMap]);
+
+  const PAGE_SIZE = 5;
+  const totalRecords = enrichedRecords.length;
+  const totalPages = Math.max(1, Math.ceil(totalRecords / PAGE_SIZE));
+  const currentPage = Math.min(Math.max(1, page), totalPages);
+  const paginatedRecords = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return enrichedRecords.slice(start, start + PAGE_SIZE);
+  }, [enrichedRecords, currentPage]);
 
   const total = records.length || 2;
   const presentes = records.filter((r) => r.status === "PRESENTE").length;
@@ -721,13 +730,17 @@ export function AttendanceHistoryView() {
             No hay registros de asistencias disponibles
           </div>
         ) : (
-          enrichedRecords.map((r, idx) => {
+          paginatedRecords.map((r, idx) => {
             const initials = (r.userName || "Carlos Mamani")
               .split(" ")
               .map((n: string) => n[0])
               .join("")
               .slice(0, 2)
               .toUpperCase();
+
+            const photos = (r.photoUrl || "").split(",").map((p: string) => p.trim()).filter(Boolean);
+            const checkInPhoto = photos.find((p: string) => !p.toLowerCase().includes("_checkout") && !p.toLowerCase().includes("checkout")) || null;
+            const checkOutPhoto = photos.find((p: string) => p.toLowerCase().includes("_checkout") || p.toLowerCase().includes("checkout")) || null;
 
             return (
               <div key={r.id || idx} className="bg-card border border-border rounded-2xl p-4 space-y-3">
@@ -771,11 +784,11 @@ export function AttendanceHistoryView() {
                     </span>
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-mono font-bold text-emerald-400">{r.checkIn}</span>
-                      {r.photoUrl && (
+                      {checkInPhoto && (
                         <button
                           type="button"
-                          onClick={() => setSelectedPhotoUrl(r.photoUrl)}
-                          className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                          onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkInPhoto))}
+                          className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                         >
                           <Camera className="w-3.5 h-3.5" />
                           <span>Ver foto</span>
@@ -790,15 +803,16 @@ export function AttendanceHistoryView() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-mono font-medium text-amber-400">{r.checkOut || "—"}</span>
                       {r.checkOut && r.checkOut !== "—" && checkOutPhoto && (
-                    <button
-                      type="button"
-                      onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkOutPhoto))}
-                      className="p-1 text-muted-foreground hover:text-foreground"
-                      title="Ver foto de salida"
-                    >
-                      <Camera className="w-3.5 h-3.5 text-amber-500" />
-                    </button>
-                  )}
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkOutPhoto))}
+                          className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                          title="Ver foto de salida"
+                        >
+                          <Camera className="w-3.5 h-3.5 text-amber-500" />
+                          <span>Ver foto</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -843,13 +857,17 @@ export function AttendanceHistoryView() {
                   </td>
                 </tr>
               ) : (
-                enrichedRecords.map((row, idx) => {
+                paginatedRecords.map((row, idx) => {
                 const initials = (row.userName || "Carlos Mamani")
                   .split(" ")
                   .map((n: string) => n[0])
                   .join("")
                   .slice(0, 2)
                   .toUpperCase();
+
+                const photos = (row.photoUrl || "").split(",").map((p: string) => p.trim()).filter(Boolean);
+                const checkInPhoto = photos.find((p: string) => !p.toLowerCase().includes("_checkout") && !p.toLowerCase().includes("checkout")) || null;
+                const checkOutPhoto = photos.find((p: string) => p.toLowerCase().includes("_checkout") || p.toLowerCase().includes("checkout")) || null;
 
                 return (
                   <tr key={row.id || idx} className="hover:bg-muted/30 transition-colors">
@@ -878,12 +896,12 @@ export function AttendanceHistoryView() {
                     <td className="py-3 px-4 font-mono text-emerald-400 font-medium">
                       <div className="flex items-center gap-1.5">
                         <span>{row.checkIn}</span>
-                        {row.photoUrl && (
+                        {checkInPhoto && (
                           <button
                             type="button"
-                            onClick={() => setSelectedPhotoUrl(row.photoUrl)}
-                            className="p-1 text-muted-foreground hover:text-foreground"
-                            title="Ver foto"
+                            onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkInPhoto))}
+                            className="p-1 text-muted-foreground hover:text-foreground cursor-pointer"
+                            title="Ver foto de entrada"
                           >
                             <Camera className="w-3.5 h-3.5" />
                           </button>
@@ -897,7 +915,7 @@ export function AttendanceHistoryView() {
                           <button
                             type="button"
                             onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkOutPhoto))}
-                            className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                            className="p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                             title="Ver foto de salida"
                           >
                             <Camera className="w-3.5 h-3.5 text-amber-500" />

@@ -165,7 +165,7 @@ export function FaltasListView() {
   const justificadas = data.items.filter(r => r.justificada).length;
   const porJustificar = total - justificadas;
 
-  const totalPages = Math.ceil(total / size);
+  const totalPages = Math.max(1, Math.ceil(total / size));
 
   const columns: Column<AbsenceRow>[] = [
     { key: "usuario", header: "USUARIO", render: (r) => <span className="font-medium">{r.usuario}</span> },
@@ -252,7 +252,7 @@ export function FaltasListView() {
           />
 
           {/* PAGINACIÓN */}
-          {totalPages > 1 && (
+          
             <div className="flex items-center justify-between px-5 py-3 border-t border-line">
               <p className="text-xs text-text-4">
                 Página {page} de {totalPages}
@@ -278,7 +278,7 @@ export function FaltasListView() {
                 </Button>
               </div>
             </div>
-          )}
+
         </div>
 
       </div>

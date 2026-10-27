@@ -4,7 +4,7 @@ import { useAuth } from "@/app/jwt/auth/auth.provider";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/atoms/status-badge";
 import { SubMetricCard } from "@/components/dashboard/SubMetricCard";
-import { RefreshCw, ChevronLeft, ChevronRight, Clock, CheckCircle2, XCircle, TrendingUp, X as XIcon } from "lucide-react";
+import { RefreshCw, ChevronLeft, ChevronRight, Clock, CheckCircle2, XCircle, TrendingUp, X as XIcon, Camera } from "lucide-react";
 import { Dialog, DialogContent, DialogClose, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import PeriodSelector from "@/components/period-selector";
 import PageHeader from "@/components/layout/page-header";
@@ -120,6 +120,42 @@ export function AttendanceManagementView() {
   const [page, setPage] = useState(1);
 
   const totalPages = attendance ? Math.max(1, Math.ceil(attendance.total / 5)) : 1;
+
+  const filteredUserList = useMemo(() => {
+    if (selectedProject === "all") return users;
+    const proj = projects.find((p) => p.id === selectedProject);
+    if (!proj) return users;
+    const memberIds = new Set<string>();
+    if (proj.responsibleId) memberIds.add(String(proj.responsibleId).toLowerCase());
+    if (Array.isArray(proj.members)) {
+      proj.members.forEach((m: any) => {
+        const uid = m.userId || m.id;
+        if (uid) memberIds.add(String(uid).toLowerCase());
+      });
+    }
+    return users.filter((u) => memberIds.has(String(u.id).toLowerCase()));
+  }, [selectedProject, projects, users]);
+
+  const handleProjectSelect = (projId: string) => {
+    setSelectedProject(projId);
+    setPage(1);
+    if (projId !== "all") {
+      const proj = projects.find((p) => p.id === projId);
+      if (proj) {
+        const memberIds = new Set<string>();
+        if (proj.responsibleId) memberIds.add(String(proj.responsibleId).toLowerCase());
+        if (Array.isArray(proj.members)) {
+          proj.members.forEach((m: any) => {
+            const uid = m.userId || m.id;
+            if (uid) memberIds.add(String(uid).toLowerCase());
+          });
+        }
+        if (selectedUser !== "all" && !memberIds.has(String(selectedUser).toLowerCase())) {
+          setSelectedUser("all");
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     if (!token) return;
@@ -262,23 +298,90 @@ export function AttendanceManagementView() {
       key: "photoUrl",
       header: "FOTO",
       render: (r) => {
-        const photoSrc = formatAvatarUrl(r.photoUrl);
-        return photoSrc ? (
-          <img
-            src={photoSrc}
-            alt="Foto de asistencia" className="w-16 h-16 rounded-lg object-cover border border-border cursor-pointer hover:ring-2 hover:ring-primary transition-all shadow-sm" onError={(e) => { (e.currentTarget.parentElement as HTMLElement).innerHTML = '<div class="w-full h-full flex flex-col items-center justify-center text-muted-foreground"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span class="text-[9px]">Sin foto</span></div>'; }}
-            onClick={() => setSelectedPhotoUrl(photoSrc)}
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-          />
-        ) : (
-          <div className="w-16 h-16 rounded-lg bg-muted border border-border flex items-center justify-center">
-            <span className="text-text-4 text-[10px]">Sin foto</span>
+        const photos = (r.photoUrl || "").split(",").map((p) => p.trim()).filter(Boolean);
+        const checkInPhoto = photos.find((p) => !p.toLowerCase().includes("_checkout") && !p.toLowerCase().includes("checkout")) || null;
+        const checkOutPhoto = photos.find((p) => p.toLowerCase().includes("_checkout") || p.toLowerCase().includes("checkout")) || null;
+
+        if (!checkInPhoto && !checkOutPhoto) {
+          return (
+            <div className="w-14 h-14 rounded-lg bg-muted border border-border flex items-center justify-center">
+              <span className="text-muted-foreground text-[10px]">Sin foto</span>
+            </div>
+          );
+        }
+
+        return (
+          <div className="flex items-center gap-1.5">
+            {checkInPhoto && (
+              <img
+                src={formatAvatarUrl(checkInPhoto)!}
+                alt="Foto entrada"
+                title="Foto de entrada"
+                className="w-12 h-12 rounded-lg object-cover border border-primary/50 cursor-pointer hover:ring-2 hover:ring-primary transition-all shadow-sm"
+                onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkInPhoto))}
+              />
+            )}
+            {checkOutPhoto && (
+              <img
+                src={formatAvatarUrl(checkOutPhoto)!}
+                alt="Foto salida"
+                title="Foto de salida"
+                className="w-12 h-12 rounded-lg object-cover border border-amber-500/50 cursor-pointer hover:ring-2 hover:ring-amber-500 transition-all shadow-sm"
+                onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkOutPhoto))}
+              />
+            )}
           </div>
         );
       },
     },
-    { key: "registrado", header: "REGISTRO", hideOnMobile: true, render: (r) => <span className="font-mono text-text-2 text-sm">{r.registrado}</span> },
-    { key: "salida", header: "SALIDA", hideOnMobile: true, render: (r) => <span className="font-mono text-text-2 text-sm">{r.salida}</span> },
+    {
+      key: "registrado",
+      header: "REGISTRO",
+      hideOnMobile: true,
+      render: (r) => {
+        const photos = (r.photoUrl || "").split(",").map((p) => p.trim()).filter(Boolean);
+        const checkInPhoto = photos.find((p) => !p.toLowerCase().includes("_checkout") && !p.toLowerCase().includes("checkout")) || null;
+        return (
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono text-text-2 text-sm">{r.registrado}</span>
+            {r.registrado && r.registrado !== "-" && checkInPhoto && (
+              <button
+                type="button"
+                onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkInPhoto))}
+                className="p-1 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                title="Ver foto de entrada"
+              >
+                <Camera className="w-3.5 h-3.5 text-primary" />
+              </button>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      key: "salida",
+      header: "SALIDA",
+      hideOnMobile: true,
+      render: (r) => {
+        const photos = (r.photoUrl || "").split(",").map((p) => p.trim()).filter(Boolean);
+        const checkOutPhoto = photos.find((p) => p.toLowerCase().includes("_checkout") || p.toLowerCase().includes("checkout")) || null;
+        return (
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono text-text-2 text-sm">{r.salida}</span>
+            {r.salida && r.salida !== "-" && checkOutPhoto && (
+              <button
+                type="button"
+                onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkOutPhoto))}
+                className="p-1 text-muted-foreground hover:text-amber-500 transition-colors cursor-pointer"
+                title="Ver foto de salida"
+              >
+                <Camera className="w-3.5 h-3.5 text-amber-500" />
+              </button>
+            )}
+          </div>
+        );
+      },
+    },
     {
       key: "location",
       header: "UBICACIÓN",
@@ -329,7 +432,7 @@ export function AttendanceManagementView() {
 
             <div className="flex flex-col min-w-[170px]">
               <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">USUARIO</label>
-              <Select value={selectedUser} onValueChange={(val) => setSelectedUser(val)}>
+              <Select value={selectedUser} onValueChange={(val) => { setSelectedUser(val); setPage(1); }}>
                 <SelectTrigger className="w-full h-10 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121626] text-xs">
                   <SelectValue placeholder="Todos los usuarios" />
                 </SelectTrigger>
