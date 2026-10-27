@@ -132,7 +132,13 @@ export default function PMAsistenciasPage() {
   }, [records, searchDate, statusFilter]);
 
   const total = filteredRecords.length;
-  const totalPages = Math.max(1, Math.ceil(totalRecords / 5));
+  const PAGE_SIZE = 5;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedRecords = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredRecords.slice(start, start + PAGE_SIZE);
+  }, [filteredRecords, currentPage]);
   const presentes = filteredRecords.filter((r) => r.status === "PRESENTE").length;
   const faltas = filteredRecords.filter((r) => r.status === "FALTA").length;
   const porcentaje = total > 0 ? Math.round((presentes / total) * 100) : 0;
@@ -547,11 +553,43 @@ export default function PMAsistenciasPage() {
                   </td>
                 </tr>
               ) : (
-                filteredRecords.map((row) => (
+                paginatedRecords.map((row) => {
+                const photos = (row.photoUrl || "").split(",").map((p: string) => p.trim()).filter(Boolean);
+                const checkInPhoto = photos.find((p: string) => !p.includes("_checkout") && !p.includes("checkout")) || null;
+                const checkOutPhoto = photos.find((p: string) => p.includes("_checkout") || p.includes("checkout")) || null;
+                return (
                 <tr key={row.id} className="hover:bg-muted/30 transition-colors">
                   <td className="py-4 px-4 font-mono text-xs text-foreground">{row.date}</td>
-                  <td className="py-4 px-4 font-mono text-xs text-foreground font-medium">{row.checkIn}</td>
-                  <td className="py-4 px-4 font-mono text-xs text-muted-foreground">{row.checkOut}</td>
+                  <td className="py-4 px-4 font-mono text-xs text-foreground font-medium">
+                    <div className="flex items-center gap-1.5">
+                      <span>{row.checkIn}</span>
+                      {row.checkIn && row.checkIn !== "-" && checkInPhoto && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkInPhoto))}
+                          className="p-1 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                          title="Ver foto de entrada"
+                        >
+                          <Camera className="w-3.5 h-3.5 text-primary" />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-4 px-4 font-mono text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1.5">
+                      <span>{row.checkOut}</span>
+                      {row.checkOut && row.checkOut !== "-" && checkOutPhoto && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkOutPhoto))}
+                          className="p-1 text-muted-foreground hover:text-amber-500 transition-colors cursor-pointer"
+                          title="Ver foto de salida"
+                        >
+                          <Camera className="w-3.5 h-3.5 text-amber-500" />
+                        </button>
+                      )}
+                    </div>
+                  </td>
                   <td className="py-4 px-4">
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${row.status === "PRESENTE" || row.status === "ON_TIME" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40" : row.status === "FALTA" ? "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40" : row.status === "TARDE" ? "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40" : "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40"}`}>
                       <span className={`w-1.5 h-1.5 rounded-full ${row.status === "PRESENTE" || row.status === "ON_TIME" ? "bg-emerald-500" : row.status === "FALTA" ? "bg-rose-500" : row.status === "TARDE" ? "bg-amber-500" : "bg-blue-500"}`} />
@@ -587,7 +625,8 @@ export default function PMAsistenciasPage() {
                     </span>
                   </td>
                 </tr>
-              )))}
+              );
+            }))}
             </tbody>
           </table>
         </div>
@@ -608,12 +647,13 @@ export default function PMAsistenciasPage() {
               <ChevronLeft className="w-4 h-4" />
             </button>
             <span className="text-xs text-muted-foreground font-medium px-1">
-              Página {page} de 1
+              Página {currentPage} de {totalPages}
             </span>
             <button
               type="button"
-              disabled
-              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer"
+              disabled={currentPage >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer hover:bg-muted/50 transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

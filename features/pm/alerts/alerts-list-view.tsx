@@ -83,6 +83,52 @@ export function AlertsListView() {
   const [alerts, setAlerts] = useState<AlertRow[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
+
+  const filteredUserOptions = useMemo(() => {
+    if (selectedProject === "all") {
+      return [{ id: "all", name: `Todos los usuarios (${allUsers.length})` }, ...allUsers];
+    }
+    const proj = projects.find((p) => p.id === selectedProject);
+    if (!proj) {
+      return [{ id: "all", name: `Todos los usuarios (${allUsers.length})` }, ...allUsers];
+    }
+    const memberIds = new Set<string>();
+    if (proj.responsibleId) memberIds.add(String(proj.responsibleId).toLowerCase());
+    if (Array.isArray(proj.members)) {
+      proj.members.forEach((m: any) => {
+        const uid = m.userId || m.id;
+        if (uid) memberIds.add(String(uid).toLowerCase());
+      });
+    }
+    const matched = allUsers.filter((u) => memberIds.has(String(u.id).toLowerCase()));
+    return [{ id: "all", name: `Todos los usuarios (${matched.length})` }, ...matched];
+  }, [selectedProject, projects, allUsers]);
+
+  const handleProjectSelect = (projId: string) => {
+    setSelectedProject(projId);
+    setPage(1);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selected_project_id", projId);
+      window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: projId }));
+    }
+    if (projId !== "all") {
+      const proj = projects.find((p) => p.id === projId);
+      if (proj) {
+        const memberIds = new Set<string>();
+        if (proj.responsibleId) memberIds.add(String(proj.responsibleId).toLowerCase());
+        if (Array.isArray(proj.members)) {
+          proj.members.forEach((m: any) => {
+            const uid = m.userId || m.id;
+            if (uid) memberIds.add(String(uid).toLowerCase());
+          });
+        }
+        if (selectedUser !== "all" && !memberIds.has(String(selectedUser).toLowerCase())) {
+          setSelectedUser("all");
+        }
+      }
+    }
+  };
   useEffect(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("selected_project_id");
@@ -145,6 +191,7 @@ export function AlertsListView() {
           name: u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario",
         }));
         setUsers([{ id: "all", name: `Todos los usuarios (${mapped.length})` }, ...mapped]);
+        setAllUsers(mapped);
       }
     });
   }, [token]);
@@ -492,7 +539,7 @@ export function AlertsListView() {
               }}
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
-              {users.map((u) => (
+              {filteredUserOptions.map((u) => (
                 <option key={u.id} value={u.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{u.name || u.username}</option>
               ))}
             </select>
@@ -575,7 +622,7 @@ export function AlertsListView() {
               }}
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
-              {users.map((u) => (
+              {filteredUserOptions.map((u) => (
                 <option key={u.id} value={u.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{u.name || u.username}</option>
               ))}
             </select>
@@ -798,23 +845,25 @@ export function AlertsListView() {
         {/* 9. PAGINATION FOOTER */}
         <div className="flex items-center justify-between pt-1 px-1">
           <span className="text-xs text-muted-foreground font-medium">
-            {total} alerta{total === 1 ? "" : "s"}
+            {totalAlerts} {totalAlerts === 1 ? "alerta total" : "alertas totales"}
           </span>
           <div className="flex items-center gap-2">
             <button
               type="button"
-              disabled
-              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer hover:bg-muted/50 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <span className="text-xs text-muted-foreground font-medium px-1">
-              Página 1 de 1
+              Página {page} de {totalPages}
             </span>
             <button
               type="button"
-              disabled
-              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer hover:bg-muted/50 transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

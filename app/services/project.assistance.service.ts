@@ -687,6 +687,11 @@ export async function getMyProjects(token: string): Promise<Project[]> {
           latitude
           longitude
           createdAt
+          members {
+            id
+            userId
+            role
+          }
         }
       }
       `,

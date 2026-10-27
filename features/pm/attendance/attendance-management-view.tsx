@@ -314,7 +314,7 @@ export function AttendanceManagementView() {
           <div className="flex flex-wrap gap-3 items-end">
             <div className="flex flex-col min-w-[170px]">
               <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">PROYECTO</label>
-              <Select value={selectedProject} onValueChange={(val) => setSelectedProject(val)}>
+              <Select value={selectedProject} onValueChange={(val) => handleProjectSelect(val)}>
                 <SelectTrigger className="w-full h-10 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121626] text-xs">
                   <SelectValue placeholder="Todos los proyectos" />
                 </SelectTrigger>
@@ -335,7 +335,7 @@ export function AttendanceManagementView() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos los usuarios</SelectItem>
-                  {users.map((u: any) => (
+                  {filteredUserList.map((u: any) => (
                     <SelectItem key={u.id} value={u.id}>{u.firstName} {u.lastName}</SelectItem>
                   ))}
                 </SelectContent>

@@ -147,6 +147,52 @@ export function AttendanceHistoryView() {
 
   const [projects, setProjects] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
+
+  const filteredUserOptions = useMemo(() => {
+    if (selectedProjectId === "all") {
+      return [{ id: "all", name: `Todos los trabajadores (${allUsers.length})` }, ...allUsers];
+    }
+    const proj = projects.find((p) => p.id === selectedProjectId);
+    if (!proj) {
+      return [{ id: "all", name: `Todos los trabajadores (${allUsers.length})` }, ...allUsers];
+    }
+    const memberIds = new Set<string>();
+    if (proj.responsibleId) memberIds.add(String(proj.responsibleId).toLowerCase());
+    if (Array.isArray(proj.members)) {
+      proj.members.forEach((m: any) => {
+        const uid = m.userId || m.id;
+        if (uid) memberIds.add(String(uid).toLowerCase());
+      });
+    }
+    const matched = allUsers.filter((u) => memberIds.has(String(u.id).toLowerCase()));
+    return [{ id: "all", name: `Todos los trabajadores (${matched.length})` }, ...matched];
+  }, [selectedProjectId, projects, allUsers]);
+
+  const handleProjectSelect = (projId: string) => {
+    setSelectedProjectId(projId);
+    setPage(1);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selected_project_id", projId);
+      window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: projId }));
+    }
+    if (projId !== "all") {
+      const proj = projects.find((p) => p.id === projId);
+      if (proj) {
+        const memberIds = new Set<string>();
+        if (proj.responsibleId) memberIds.add(String(proj.responsibleId).toLowerCase());
+        if (Array.isArray(proj.members)) {
+          proj.members.forEach((m: any) => {
+            const uid = m.userId || m.id;
+            if (uid) memberIds.add(String(uid).toLowerCase());
+          });
+        }
+        if (selectedUserId !== "all" && !memberIds.has(String(selectedUserId).toLowerCase())) {
+          setSelectedUserId("all");
+        }
+      }
+    }
+  };
   const [records, setRecords] = useState<any[]>([]);
   const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string | null>(null);
 
@@ -193,6 +239,7 @@ export function AttendanceHistoryView() {
             name: u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario",
           }));
           setUsers([{ id: "all", name: `Todos los trabajadores (${mapped.length})` }, ...mapped]);
+          setAllUsers(mapped);
         }
       })
       .catch((err) => console.error("Error loading filters data:", err));
@@ -526,7 +573,7 @@ export function AttendanceHistoryView() {
             <Folder className="w-4 h-4 absolute left-3 top-3 text-muted-foreground pointer-events-none" />
             <select
               value={selectedProjectId}
-              onChange={(e) => setSelectedProjectId(e.target.value)}
+              onChange={(e) => handleProjectSelect(e.target.value)}
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {projects.map((p) => (
@@ -546,10 +593,10 @@ export function AttendanceHistoryView() {
             <User className="w-4 h-4 absolute left-3 top-3 text-muted-foreground pointer-events-none" />
             <select
               value={selectedUserId}
-              onChange={(e) => setSelectedUserId(e.target.value)}
+              onChange={(e) => { setSelectedUserId(e.target.value); setPage(1); }}
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
-              {users.map((u) => (
+              {filteredUserOptions.map((u) => (
                 <option key={u.id} value={u.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario"}</option>
               ))}
             </select>
@@ -565,7 +612,7 @@ export function AttendanceHistoryView() {
           <div className="relative">
             <select
               value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
+              onChange={(e) => { setSelectedStatus(e.target.value); setPage(1); }}
               className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               <option value="all" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Todos los estados</option>
@@ -603,7 +650,7 @@ export function AttendanceHistoryView() {
             <Folder className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
             <select
               value={selectedProjectId}
-              onChange={(e) => setSelectedProjectId(e.target.value)}
+              onChange={(e) => handleProjectSelect(e.target.value)}
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {projects.map((p) => (
@@ -623,10 +670,10 @@ export function AttendanceHistoryView() {
             <User className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
             <select
               value={selectedUserId}
-              onChange={(e) => setSelectedUserId(e.target.value)}
+              onChange={(e) => { setSelectedUserId(e.target.value); setPage(1); }}
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
-              {users.map((u) => (
+              {filteredUserOptions.map((u) => (
                 <option key={u.id} value={u.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{u.name || u.username}</option>
               ))}
             </select>
@@ -643,7 +690,7 @@ export function AttendanceHistoryView() {
             <div className="relative flex-1">
               <select
                 value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
+                onChange={(e) => { setSelectedStatus(e.target.value); setPage(1); }}
                 className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
               >
                 <option value="all" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Todos los estados</option>
@@ -742,16 +789,16 @@ export function AttendanceHistoryView() {
                     </span>
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-mono font-medium text-amber-400">{r.checkOut || "—"}</span>
-                      {r.checkOut && r.photoUrl && (
-                        <button
-                          type="button"
-                          onClick={() => setSelectedPhotoUrl(r.photoUrl)}
-                          className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          <Camera className="w-3.5 h-3.5" />
-                          <span>Ver foto</span>
-                        </button>
-                      )}
+                      {r.checkOut && r.checkOut !== "—" && checkOutPhoto && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkOutPhoto))}
+                      className="p-1 text-muted-foreground hover:text-foreground"
+                      title="Ver foto de salida"
+                    >
+                      <Camera className="w-3.5 h-3.5 text-amber-500" />
+                    </button>
+                  )}
                     </div>
                   </div>
                 </div>
@@ -846,14 +893,14 @@ export function AttendanceHistoryView() {
                     <td className="py-3 px-4 font-mono text-amber-400">
                       <div className="flex items-center gap-1.5">
                         <span>{row.checkOut || "—"}</span>
-                        {row.checkOut && row.photoUrl && (
+                        {row.checkOut && row.checkOut !== "—" && checkOutPhoto && (
                           <button
                             type="button"
-                            onClick={() => setSelectedPhotoUrl(row.photoUrl)}
+                            onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkOutPhoto))}
                             className="p-1 text-muted-foreground hover:text-foreground transition-colors"
-                            title="Ver foto"
+                            title="Ver foto de salida"
                           >
-                            <Camera className="w-3.5 h-3.5" />
+                            <Camera className="w-3.5 h-3.5 text-amber-500" />
                           </button>
                         )}
                       </div>
@@ -881,23 +928,25 @@ export function AttendanceHistoryView() {
         {/* 9. PAGINATION FOOTER */}
         <div className="flex items-center justify-between pt-1 px-1">
           <span className="text-xs text-muted-foreground font-medium">
-            {records.length} registros totales
+            {enrichedRecords.length} {enrichedRecords.length === 1 ? "registro total" : "registros totales"}
           </span>
           <div className="flex items-center gap-2">
             <button
               type="button"
-              disabled
-              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer"
+              disabled={currentPage <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer hover:bg-muted/50 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <span className="text-xs text-muted-foreground font-medium px-1">
-              Página 1 de 1
+              Página {currentPage} de {totalPages}
             </span>
             <button
               type="button"
-              disabled
-              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer"
+              disabled={currentPage >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="w-9 h-9 rounded-xl border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer hover:bg-muted/50 transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

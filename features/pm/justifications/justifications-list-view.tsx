@@ -129,6 +129,27 @@ export function JustificationsListView() {
 
   const [projects, setProjects] = useState<any[]>([]);
   const [userOptions, setUserOptions] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
+
+  const filteredUserOptions = useMemo(() => {
+    if (filters.project === "all") {
+      return [{ id: "all", name: `Todos los trabajadores (${allUsers.length})` }, ...allUsers];
+    }
+    const proj = projects.find((p) => p.id === filters.project);
+    if (!proj) {
+      return [{ id: "all", name: `Todos los trabajadores (${allUsers.length})` }, ...allUsers];
+    }
+    const memberIds = new Set<string>();
+    if (proj.responsibleId) memberIds.add(String(proj.responsibleId).toLowerCase());
+    if (Array.isArray(proj.members)) {
+      proj.members.forEach((m: any) => {
+        const uid = m.userId || m.id;
+        if (uid) memberIds.add(String(uid).toLowerCase());
+      });
+    }
+    const matched = allUsers.filter((u) => memberIds.has(String(u.id).toLowerCase()));
+    return [{ id: "all", name: `Todos los trabajadores (${matched.length})` }, ...matched];
+  }, [filters.project, projects, allUsers]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -151,7 +172,25 @@ export function JustificationsListView() {
   }, []);
 
   const handleProjectChange = (id: string) => {
-    setFilters((p) => ({ ...p, project: id }));
+    setPage(1);
+    let resetUser = false;
+    if (id !== "all") {
+      const proj = projects.find((p) => p.id === id);
+      if (proj) {
+        const memberIds = new Set<string>();
+        if (proj.responsibleId) memberIds.add(String(proj.responsibleId).toLowerCase());
+        if (Array.isArray(proj.members)) {
+          proj.members.forEach((m: any) => {
+            const uid = m.userId || m.id;
+            if (uid) memberIds.add(String(uid).toLowerCase());
+          });
+        }
+        if (filters.user !== "all" && !memberIds.has(String(filters.user).toLowerCase())) {
+          resetUser = true;
+        }
+      }
+    }
+    setFilters((p) => ({ ...p, project: id, ...(resetUser ? { user: "all" } : {}) }));
     if (typeof window !== "undefined") {
       localStorage.setItem("selected_project_id", id);
       window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: id }));
@@ -173,6 +212,7 @@ export function JustificationsListView() {
           name: u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario",
         }));
         setUserOptions([{ id: "all", name: `Todos los trabajadores (${mappedUsers.length})` }, ...mappedUsers]);
+        setAllUsers(mappedUsers);
       }
     });
   }, [token]);
@@ -528,7 +568,7 @@ export function JustificationsListView() {
               onChange={(e) => setFilters((p) => ({ ...p, user: e.target.value }))}
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
-              {userOptions.map((u) => (
+              {filteredUserOptions.map((u) => (
                 <option key={u.id} value={u.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario"}</option>
               ))}
             </select>
@@ -605,7 +645,7 @@ export function JustificationsListView() {
               onChange={(e) => setFilters((p) => ({ ...p, user: e.target.value }))}
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
-              {userOptions.map((u) => (
+              {filteredUserOptions.map((u) => (
                 <option key={u.id} value={u.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{u.name}</option>
               ))}
             </select>
