@@ -19,7 +19,7 @@ import {
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { getGraphQLUrl } from "@/lib/api-host";
 import { getAllProjects, getAllUsers } from "@/app/services/project.assistance.service";
-import { formatAlertType } from "@/lib/formatters";
+import { formatAlertType, formatAlertMessage } from "@/lib/formatters";
 
 interface AlertDetailViewProps {
   alertId: string;
