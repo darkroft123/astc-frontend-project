@@ -47,7 +47,14 @@ export async function graphqlRequest<T>(
   variables: Record<string, unknown>,
   token: string
 ): Promise<T> {
-  if (!token) throw new Error("Token de autenticación no encontrado");
+  const opMatch = query.match(/(query|mutation)\s+([A-Za-z0-9_]+)/);
+  const opName = opMatch ? opMatch[2] : "GraphQL_Project";
+  console.log(`📡 [FRONTEND-PROJECT] ${opName} -> Request`, { variables, hasToken: !!token });
+
+  if (!token) {
+    console.error(`❌ [FRONTEND-PROJECT] ${opName}: Token de autenticación no encontrado`);
+    throw new Error("Token de autenticación no encontrado");
+  }
 
   const res = await fetch(getGraphQLUrl(), {
     method: "POST",
@@ -61,9 +68,11 @@ export async function graphqlRequest<T>(
   const json: GraphQLResponse<T> = await safeJson(res);
 
   if (!res.ok || json?.errors) {
+    console.error(`❌ [FRONTEND-PROJECT] ${opName} FAILED (HTTP ${res.status}):`, json?.errors || json);
     throw new Error(json?.errors?.[0]?.message || "Error de GraphQL");
   }
 
+  console.log(`✅ [FRONTEND-PROJECT] ${opName} SUCCESS:`, json.data);
   return json.data;
 }
 

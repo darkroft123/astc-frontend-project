@@ -13,8 +13,15 @@ import { getGraphQLUrl } from "@/lib/api-host";
 async function safeJson(res: Response) {
   const text = await res.text();
   try {
-    return text ? JSON.parse(text) : null;
+    const json = text ? JSON.parse(text) : null;
+    if (!res.ok || json?.errors) {
+      console.error(`❌ [FRONTEND-PROJECT / assistance.service] HTTP ${res.status}:`, json?.errors || json || text);
+    } else {
+      console.log(`✅ [FRONTEND-PROJECT / assistance.service] HTTP ${res.status} OK`);
+    }
+    return json;
   } catch {
+    console.error(`❌ [FRONTEND-PROJECT / assistance.service] Non-JSON Response (HTTP ${res.status}):`, text.slice(0, 300));
     throw new Error("Respuesta JSON inválida del servidor");
   }
 }
