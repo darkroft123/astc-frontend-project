@@ -209,7 +209,7 @@ export default function AttendancePreviewPage() {
         <div>
           <h4 className="text-xs font-bold text-foreground">Asistencia sin foto</h4>
           <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-            No se capturó una foto biométrica. El sistema notificará una alerta de revisión al project manager.
+            No se capturó una foto biométrica. El sistema notificará una alerta de revisión al jefe de proyecto.
           </p>
         </div>
       </div>

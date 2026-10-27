@@ -414,7 +414,7 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
               <div className="space-y-4 pt-1">
                 {/* Project Manager selector */}
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium text-foreground">Project manager responsable</Label>
+                  <Label className="text-xs font-medium text-foreground">Jefe de proyecto responsable</Label>
                   <Select value={responsibleId} onValueChange={(val) => setResponsibleId(val)}>
                     <SelectTrigger className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-foreground text-xs shadow-xs">
                       <SelectValue placeholder="Selecciona un responsable" />

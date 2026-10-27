@@ -457,16 +457,7 @@ export async function getProjectById(
         timezone
         responsibleId
         createdAt
-        members {
-          userId
-          role
-          user {
-            username
-            firstName
-            lastName
-          }
-        }
-      }
+              }
     }
     `,
     { id },
@@ -642,16 +633,6 @@ export async function getAllProjects(
         latitude
         longitude
         createdAt
-        members {
-          userId
-          role
-          user {
-            username
-            firstName
-            lastName
-            email
-          }
-        }
       }
     }
     `,

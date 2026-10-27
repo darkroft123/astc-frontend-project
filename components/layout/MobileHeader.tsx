@@ -36,7 +36,7 @@ export function MobileHeader({ customSubtitle }: MobileHeaderProps) {
       return "Jefe de Proyecto · Turno A 08:00–17:00";
     }
     if (role === "ADMIN") {
-      return "Administrador · Control Global";
+      return "Admin · Control Global";
     }
     return "Jefe de Proyecto · Turno A 08:00–17:00";
   }, [role, customSubtitle]);
