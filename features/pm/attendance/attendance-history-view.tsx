@@ -731,7 +731,19 @@ export function AttendanceHistoryView() {
                     <span className="text-[10px] font-mono tracking-wider uppercase text-muted-foreground block mb-1">
                       SALIDA
                     </span>
-                    <span className="text-xs font-mono font-medium text-amber-400">{r.checkOut || "—"}</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono font-medium text-amber-400">{r.checkOut || "—"}</span>
+                      {r.checkOut && r.photoUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPhotoUrl(r.photoUrl)}
+                          className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <Camera className="w-3.5 h-3.5" />
+                          <span>Ver foto</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -817,7 +829,21 @@ export function AttendanceHistoryView() {
                         )}
                       </div>
                     </td>
-                    <td className="py-3 px-4 font-mono text-amber-400">{row.checkOut}</td>
+                    <td className="py-3 px-4 font-mono text-amber-400">
+                      <div className="flex items-center gap-1.5">
+                        <span>{row.checkOut || "—"}</span>
+                        {row.checkOut && row.photoUrl && (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedPhotoUrl(row.photoUrl)}
+                            className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                            title="Ver foto"
+                          >
+                            <Camera className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
                     <td className="py-3 px-4">
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
