@@ -778,7 +778,7 @@ export function HolidayPMListView() {
                       )}
                     </div>
                   );
-                })}
+                }))}
 
                 {/* PAGINACIÓN DE COLECCIONES DEL PROYECTO */}
                 {filteredCollections.length > 0 && (

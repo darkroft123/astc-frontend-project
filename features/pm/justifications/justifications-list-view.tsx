@@ -181,9 +181,7 @@ export function JustificationsListView() {
             const usr = userOptions.find((u) => u.id === i.userId);
             const userName = usr
               ? usr.name
-              : (i.user ? `${i.user.firstName || ""} ${i.user.lastName || ""}`.trim() || i.user.username : "Colaborador");
-              ? `${usr.firstName || ""} ${usr.lastName || ""}`.trim() || usr.username
-              : i.userName || "Trabajador";
+              : (i.user ? `${i.user.firstName || ""} ${i.user.lastName || ""}`.trim() || i.user.username : (i.userName || "Colaborador"));
             const userEmail = usr?.email || i.userEmail || "";
             return {
               id: i.id,
