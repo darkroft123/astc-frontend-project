@@ -39,8 +39,8 @@ const navigation = [
   { name: "Historial del equipo", href: "/pm/historial-asistencias", icon: ClipboardList },
   { name: "Mis asistencias", href: "/pm/mis-asistencias", icon: Clock },
   { name: "Alertas", href: "/pm/alertas", icon: AlertTriangle },
-  { name: "Justificaciones", href: "/pm/justificaciones", icon: FileText, badge: "1", badgeColor: "bg-amber text-white font-bold" },
-  { name: "Notificaciones", href: "/pm/notificaciones", icon: Bell, badge: "9+", badgeColor: "bg-red text-white font-bold" },
+  { name: "Justificaciones", href: "/pm/justificaciones", icon: FileText, badgeColor: "bg-amber text-white font-bold" },
+  { name: "Notificaciones", href: "/pm/notificaciones", icon: Bell, badgeColor: "bg-red text-white font-bold" },
   { name: "Proyectos", href: "/pm/proyectos", icon: FolderKanban },
   { name: "Asignación de horarios", href: "/pm/asignacion-horarios", icon: CalendarClock },
   { name: "Gestión de horarios", href: "/pm/horarios", icon: Timer },
@@ -53,6 +53,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const { user, role, token, logout, hydrated } = useAuth();
   const { projects, selectProject, selectedProjectId } = useUserProject();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [pendingJustifications, setPendingJustifications] = useState(0);
   const [attendanceLabel, setAttendanceLabel] = useState("Registrar asistencia");
 
   useEffect(() => {
@@ -87,21 +88,47 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   useEffect(() => {
     if (hydrated && user?.id && token) {
       notificationService.setToken(token);
-      notificationService
-        .getUnreadCount(user.id)
-        .then(setUnreadCount)
-        .catch((err) => console.error("Failed to fetch unread count", err));
-
-      const interval = setInterval(() => {
+      const refreshUnread = () => {
         notificationService
           .getUnreadCount(user.id)
-          .then(setUnreadCount)
+          .then((count) => setUnreadCount(count || 0))
           .catch((err) => console.error("Failed to fetch unread count", err));
-      }, 60000);
+      };
 
-      return () => clearInterval(interval);
+      refreshUnread();
+      window.addEventListener("astc-notification-updated", refreshUnread);
+
+      const interval = setInterval(refreshUnread, 30000);
+
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener("astc-notification-updated", refreshUnread);
+      };
     }
   }, [hydrated, user?.id, token]);
+
+  useEffect(() => {
+    if (!hydrated || !token) return;
+    const fetchPendingJustifications = () => {
+      fetch(getGraphQLUrl(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          query: `query { listJustificationsPM(page: 1, size: 1, status: "PENDING") { total } }`,
+        }),
+      })
+        .then((r) => r.json())
+        .then((j) => {
+          const t = j?.data?.listJustificationsPM?.total ?? 0;
+          setPendingJustifications(t);
+        })
+        .catch(() => {});
+    };
+
+    fetchPendingJustifications();
+    window.addEventListener("astc-justification-updated", fetchPendingJustifications);
+    return () => window.removeEventListener("astc-justification-updated", fetchPendingJustifications);
+  }, [hydrated, token]);
 
   const getInitials = (name: string) => {
     if (!name) return "JP";
@@ -214,7 +241,23 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
             display: none;
           }
         `}</style>
-        {navigation.map((item) => {
+        {(() => {
+          const navItems = navigation.map((item) => {
+            if (item.name === "Notificaciones") {
+              return {
+                ...item,
+                badge: unreadCount > 0 ? (unreadCount > 9 ? "9+" : String(unreadCount)) : undefined,
+              };
+            }
+            if (item.name === "Justificaciones") {
+              return {
+                ...item,
+                badge: pendingJustifications > 0 ? String(pendingJustifications) : undefined,
+              };
+            }
+            return item;
+          });
+          return navItems.map((item) => {
           const displayNameItem =
             item.name === "Registrar asistencia" ? attendanceLabel : item.name;
           const isActive =
@@ -250,7 +293,8 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
               )}
             </Link>
           );
-        })}
+        });
+        })()}
       </nav>
 
       {/* 4. Footer */}

@@ -62,6 +62,48 @@ type JustificationRow = {
   estado: "SUBMITTED" | "PENDING" | "APPROVED" | "REJECTED";
 };
 
+const formatDateStr = (d: Date) => {
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+const getPeriodDates = (p: Period): { from: string; to: string } => {
+  const now = new Date();
+  if (p === "today") {
+    const s = formatDateStr(now);
+    return { from: s, to: s };
+  }
+  if (p === "thisweek") {
+    const dayOfWeek = now.getDay();
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - ((dayOfWeek + 6) % 7));
+    return { from: formatDateStr(monday), to: formatDateStr(now) };
+  }
+  if (p === "month") {
+    const first = new Date(now.getFullYear(), now.getMonth(), 1);
+    const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    return { from: formatDateStr(first), to: formatDateStr(last) };
+  }
+  if (p === "3months") {
+    const d = new Date(now);
+    d.setMonth(now.getMonth() - 3);
+    return { from: formatDateStr(d), to: formatDateStr(now) };
+  }
+  if (p === "6months") {
+    const d = new Date(now);
+    d.setMonth(now.getMonth() - 6);
+    return { from: formatDateStr(d), to: formatDateStr(now) };
+  }
+  if (p === "9months") {
+    const d = new Date(now);
+    d.setMonth(now.getMonth() - 9);
+    return { from: formatDateStr(d), to: formatDateStr(now) };
+  }
+  return { from: "01/01/2026", to: formatDateStr(now) };
+};
+
 export function JustificationsListView() {
   const { token } = useAuth();
   const [activePeriod, setActivePeriod] = useState<Period>("month");
@@ -73,10 +115,11 @@ export function JustificationsListView() {
   const [page, setPage] = useState(1);
   const size = 5;
   const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: "01/09/2026",
-    to: "03/09/2026",
-  });
+  const [dateRange, setDateRange] = useState<DateRange>(() => getPeriodDates("month"));
+
+  useEffect(() => {
+    setDateRange(getPeriodDates(activePeriod));
+  }, [activePeriod]);
 
   const [filters, setFilters] = useState({
     project: "all",
@@ -222,6 +265,7 @@ export function JustificationsListView() {
     try {
       await approveJustification(token, id);
       await fetchData();
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("astc-justification-updated"));
     } catch {
       setData((prev) => ({
         ...prev,
@@ -242,6 +286,7 @@ export function JustificationsListView() {
     try {
       await rejectJustification(token, id, reason);
       await fetchData();
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("astc-justification-updated"));
     } catch {
       setData((prev) => ({
         ...prev,
