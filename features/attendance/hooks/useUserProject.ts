@@ -13,16 +13,6 @@ export interface Project {
   holidays?: string[];
 }
 
-export interface Project {
-  id: string;
-  name: string;
-  workStartTime?: string;
-  workEndTime?: string;
-  graceMinutes?: number;
-  timezone?: string | null;
-  holidays?: string[];
-}
-
 let cachedProjects: Project[] = [];
 let cachedPromise: Promise<Project[]> | null = null;
 let hasFetched = false;
@@ -31,20 +21,22 @@ let cachedToken: string | null = null;
 export function useUserProject() {
   const { token, role, hydrated } = useAuth();
   const [projects, setProjects] = useState<Project[]>(cachedProjects);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
   const [loadingProject, setLoadingProject] = useState<boolean>(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedId = localStorage.getItem("selected_project_id");
-      if (savedId) setSelectedProjectId(savedId);
+      if (savedId) {
+        setSelectedProjectId(savedId);
+      } else {
+        setSelectedProjectId("all");
+      }
 
       const handleProjectChange = (e: Event) => {
         const customEvent = e as CustomEvent<string>;
-        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id");
-        if (newId !== undefined) {
-          setSelectedProjectId(newId);
-        }
+        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
+        setSelectedProjectId(newId);
       };
 
       window.addEventListener("astc-project-changed", handleProjectChange);
@@ -98,13 +90,17 @@ export function useUserProject() {
       const list = resolved || [];
       setProjects(list);
       setLoadingProject(false);
-      if (list.length > 0 && typeof window !== "undefined") {
+      if (typeof window !== "undefined") {
         const curr = localStorage.getItem("selected_project_id");
-        if (!curr || (curr !== "all" && !list.some((p: any) => p.id === curr))) {
-          setSelectedProjectId(list[0].id);
-          localStorage.setItem("selected_project_id", list[0].id);
-          localStorage.setItem("selected_project_name", list[0].name || "Proyecto");
-          window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: list[0].id }));
+        if (!curr) {
+          localStorage.setItem("selected_project_id", "all");
+          localStorage.setItem("selected_project_name", "Todos los proyectos");
+          setSelectedProjectId("all");
+        } else if (curr !== "all" && list.length > 0 && !list.some((p: any) => p.id === curr)) {
+          // If stored project no longer exists in user's projects, reset to "all"
+          localStorage.setItem("selected_project_id", "all");
+          localStorage.setItem("selected_project_name", "Todos los proyectos");
+          setSelectedProjectId("all");
         }
       }
     });
@@ -119,16 +115,15 @@ export function useUserProject() {
   }, []);
 
   const project =
-    selectedProjectId === "all"
+    selectedProjectId === "all" || !selectedProjectId
       ? null
-      : projects.find((p) => p.id === selectedProjectId) ||
-        (projects.length > 0 ? projects[0] : null);
+      : projects.find((p) => p.id === selectedProjectId) || null;
 
   return {
     project,
     projects,
     selectProject,
-    selectedProjectId: selectedProjectId ?? project?.id ?? null,
+    selectedProjectId: selectedProjectId || "all",
     loadingProject,
   };
 }
