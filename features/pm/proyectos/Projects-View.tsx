@@ -42,7 +42,7 @@ export function ProjectsManagementView({
 
   useEffect(() => {
     if (searchParams?.get("modal") === "detail") {
-      const p = projects[0] || DEFAULT_SVG_PROJECTS[0];
+      const p = projects[0] || null;
       setSelectedProjectForDetail(p);
     }
   }, [searchParams, projects]);

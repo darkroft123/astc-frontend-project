@@ -68,6 +68,14 @@ export function VacationApprovalView() {
     }
   }, []);
 
+  const handleProjectChange = (id: string) => {
+    setSelectedProjectId(id);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selected_project_id", id);
+      window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: id }));
+    }
+  };
+
 
   const fetchData = useCallback(async () => {
     if (!token) {
@@ -192,7 +200,7 @@ export function VacationApprovalView() {
       list = list.filter((v) => v.status === statusFilter);
     }
     if (selectedProjectId && selectedProjectId !== "all") {
-      list = list.filter((v) => v.projectId === selectedProjectId);
+      list = list.filter((v) => !v.projectId || v.projectId === selectedProjectId);
     }
     return list;
   }, [vacations, statusFilter, selectedProjectId]);
@@ -389,16 +397,35 @@ export function VacationApprovalView() {
         </h3>
 
         <div className="flex items-center gap-3">
+          {/* Proyecto */}
+          <div className="relative w-56">
+            <select
+              value={selectedProjectId}
+              onChange={(e) => handleProjectChange(e.target.value)}
+              className="w-full h-10 px-3.5 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+            >
+              <option value="all" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">
+                Todos los proyectos {projects.length > 0 ? `(${projects.length})` : ""}
+              </option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">
+                  {p.name}
+                </option>
+              ))}
+            </select>
+            <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+          </div>
+
           <div className="relative w-56">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="w-full h-10 px-3.5 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
-              <option value="ALL" className="bg-card text-foreground">Todas las solicitudes</option>
-              <option value="PENDING" className="bg-card text-foreground">Pendientes</option>
-              <option value="APPROVED" className="bg-card text-foreground">Aprobadas</option>
-              <option value="REJECTED" className="bg-card text-foreground">Rechazadas</option>
+              <option value="ALL" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Todas las solicitudes</option>
+              <option value="PENDING" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Pendientes</option>
+              <option value="APPROVED" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Aprobadas</option>
+              <option value="REJECTED" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Rechazadas</option>
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
           </div>
@@ -424,17 +451,35 @@ export function VacationApprovalView() {
           <Sun className="w-4 h-4 text-amber-400" />
           Solicitudes de vacaciones
         </h3>
-        <div className="flex items-center gap-2">
+        <div className="space-y-2">
+          <div className="relative w-full">
+            <select
+              value={selectedProjectId}
+              onChange={(e) => handleProjectChange(e.target.value)}
+              className="w-full h-10 px-3.5 pr-8 rounded-xl border border-border bg-card/60 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+            >
+              <option value="all" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">
+                Todos los proyectos {projects.length > 0 ? `(${projects.length})` : ""}
+              </option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">
+                  {p.name}
+                </option>
+              ))}
+            </select>
+            <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
+          </div>
+          <div className="flex items-center gap-2">
           <div className="relative flex-1">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="w-full h-10 px-3.5 pr-8 rounded-xl border border-border bg-card/60 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
-              <option value="ALL" className="bg-card text-foreground">Todas las solicitudes</option>
-              <option value="PENDING" className="bg-card text-foreground">Pendientes</option>
-              <option value="APPROVED" className="bg-card text-foreground">Aprobadas</option>
-              <option value="REJECTED" className="bg-card text-foreground">Rechazadas</option>
+              <option value="ALL" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Todas las solicitudes</option>
+              <option value="PENDING" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Pendientes</option>
+              <option value="APPROVED" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Aprobadas</option>
+              <option value="REJECTED" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Rechazadas</option>
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
           </div>
@@ -447,6 +492,7 @@ export function VacationApprovalView() {
           >
             <RotateCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </button>
+        </div>
         </div>
       </div>
 

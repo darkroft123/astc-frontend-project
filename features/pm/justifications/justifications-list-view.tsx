@@ -106,6 +106,14 @@ export function JustificationsListView() {
     }
   }, []);
 
+  const handleProjectChange = (id: string) => {
+    setFilters((p) => ({ ...p, project: id }));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selected_project_id", id);
+      window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: id }));
+    }
+  };
+
   useEffect(() => {
     if (!token) return;
     Promise.all([
@@ -448,11 +456,11 @@ export function JustificationsListView() {
             <Folder className="w-4 h-4 absolute left-3 top-3 text-muted-foreground pointer-events-none" />
             <select
               value={filters.project}
-              onChange={(e) => setFilters((p) => ({ ...p, project: e.target.value }))}
+              onChange={(e) => handleProjectChange(e.target.value)}
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {projects.map((p) => (
-                <option key={p.id} value={p.id} className="bg-card text-foreground">{p.name}</option>
+                <option key={p.id} value={p.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{p.name}</option>
               ))}
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
@@ -472,7 +480,7 @@ export function JustificationsListView() {
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {userOptions.map((u) => (
-                <option key={u.id} value={u.id} className="bg-card text-foreground">{u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario"}</option>
+                <option key={u.id} value={u.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario"}</option>
               ))}
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
@@ -490,11 +498,11 @@ export function JustificationsListView() {
               onChange={(e) => setFilters((p) => ({ ...p, status: e.target.value }))}
               className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
-              <option value="TODOS" className="bg-card text-foreground">Todos los estados</option>
-              <option value="SUBMITTED" className="bg-card text-foreground">Enviada</option>
-              <option value="PENDING" className="bg-card text-foreground">Pendiente</option>
-              <option value="APPROVED" className="bg-card text-foreground">Aprobada</option>
-              <option value="REJECTED" className="bg-card text-foreground">Rechazada</option>
+              <option value="TODOS" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Todos los estados</option>
+              <option value="SUBMITTED" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Enviada</option>
+              <option value="PENDING" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Pendiente</option>
+              <option value="APPROVED" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Aprobada</option>
+              <option value="REJECTED" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Rechazada</option>
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
           </div>
@@ -525,11 +533,11 @@ export function JustificationsListView() {
             <Folder className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
             <select
               value={filters.project}
-              onChange={(e) => setFilters((p) => ({ ...p, project: e.target.value }))}
+              onChange={(e) => handleProjectChange(e.target.value)}
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {projects.map((p) => (
-                <option key={p.id} value={p.id} className="bg-card text-foreground">{p.name}</option>
+                <option key={p.id} value={p.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{p.name}</option>
               ))}
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
@@ -549,7 +557,7 @@ export function JustificationsListView() {
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {userOptions.map((u) => (
-                <option key={u.id} value={u.id} className="bg-card text-foreground">{u.name}</option>
+                <option key={u.id} value={u.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{u.name}</option>
               ))}
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
@@ -568,11 +576,11 @@ export function JustificationsListView() {
                 onChange={(e) => setFilters((p) => ({ ...p, status: e.target.value }))}
                 className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
               >
-                <option value="TODOS" className="bg-card text-foreground">Todos los estados</option>
-                <option value="SUBMITTED" className="bg-card text-foreground">Enviada</option>
-                <option value="PENDING" className="bg-card text-foreground">Pendiente</option>
-                <option value="APPROVED" className="bg-card text-foreground">Aprobada</option>
-                <option value="REJECTED" className="bg-card text-foreground">Rechazada</option>
+                <option value="TODOS" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Todos los estados</option>
+                <option value="SUBMITTED" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Enviada</option>
+                <option value="PENDING" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Pendiente</option>
+                <option value="APPROVED" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Aprobada</option>
+                <option value="REJECTED" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Rechazada</option>
               </select>
               <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
             </div>

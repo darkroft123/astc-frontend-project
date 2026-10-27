@@ -45,117 +45,6 @@ import { MemberExceptionModal } from "./components/MemberExceptionModal";
 import { ImportHolidaysModal } from "./components/ImportHolidaysModal";
 import { LinkGlobalCollectionModal } from "./components/LinkGlobalCollectionModal";
 
-// DEFAULT MOCK COLLECTIONS MATCHING SVG
-const DEFAULT_SVG_COLLECTIONS: CollectionOutput[] = [
-  {
-    id: "col-reretesteo",
-    name: "reretesteo",
-    scope: "GLOBAL",
-    createdAt: "2026-09-01T00:00:00Z",
-    items: [
-      { id: "item-1", collectionId: "col-reretesteo", date: "2026-09-12", name: "reretesteo" },
-      { id: "item-2", collectionId: "col-reretesteo", date: "2026-09-17", name: "reretesteo" },
-      { id: "item-3", collectionId: "col-reretesteo", date: "2026-09-23", name: "reretesteo" },
-    ],
-  },
-  {
-    id: "col-feriados",
-    name: "feriados",
-    scope: "GLOBAL",
-    createdAt: "2026-09-01T00:00:00Z",
-    items: [
-      { id: "item-4", collectionId: "col-feriados", date: "2026-05-01", name: "Día del Trabajo" },
-      { id: "item-5", collectionId: "col-feriados", date: "2026-07-28", name: "Fiestas Patrias" },
-      { id: "item-6", collectionId: "col-feriados", date: "2026-12-25", name: "Navidad" },
-    ],
-  },
-  {
-    id: "col-feriados2",
-    name: "feriados2",
-    scope: "GLOBAL",
-    createdAt: "2026-09-01T00:00:00Z",
-    items: [
-      { id: "item-7", collectionId: "col-feriados2", date: "2026-01-01", name: "Año Nuevo" },
-      { id: "item-8", collectionId: "col-feriados2", date: "2026-04-02", name: "Jueves Santo" },
-      { id: "item-9", collectionId: "col-feriados2", date: "2026-04-03", name: "Viernes Santo" },
-      { id: "item-10", collectionId: "col-feriados2", date: "2026-10-08", name: "Combate de Angamos" },
-    ],
-  },
-  {
-    id: "col-nacional-2026",
-    name: "Calendario Anual Completo 2026",
-    scope: "GLOBAL",
-    createdAt: "2026-08-20T09:00:00Z",
-    items: [
-      { id: "item-11", collectionId: "col-nacional-2026", date: "2026-01-01", name: "Año Nuevo" },
-      { id: "item-12", collectionId: "col-nacional-2026", date: "2026-04-02", name: "Jueves Santo" },
-      { id: "item-13", collectionId: "col-nacional-2026", date: "2026-04-03", name: "Viernes Santo" },
-      { id: "item-14", collectionId: "col-nacional-2026", date: "2026-05-01", name: "Día del Trabajo" },
-      { id: "item-15", collectionId: "col-nacional-2026", date: "2026-06-07", name: "Batalla de Arica y Día de la Bandera" },
-      { id: "item-16", collectionId: "col-nacional-2026", date: "2026-06-29", name: "San Pedro y San Pablo" },
-      { id: "item-17", collectionId: "col-nacional-2026", date: "2026-07-23", name: "Día de la FAP" },
-      { id: "item-18", collectionId: "col-nacional-2026", date: "2026-07-28", name: "Fiestas Patrias Día 1" },
-      { id: "item-19", collectionId: "col-nacional-2026", date: "2026-07-29", name: "Fiestas Patrias Día 2" },
-      { id: "item-20", collectionId: "col-nacional-2026", date: "2026-08-06", name: "Batalla de Junín" },
-      { id: "item-21", collectionId: "col-nacional-2026", date: "2026-08-30", name: "Santa Rosa de Lima" },
-      { id: "item-22", collectionId: "col-nacional-2026", date: "2026-10-08", name: "Combate de Angamos" },
-      { id: "item-23", collectionId: "col-nacional-2026", date: "2026-11-01", name: "Día de Todos los Santos" },
-      { id: "item-24", collectionId: "col-nacional-2026", date: "2026-12-08", name: "Inmaculada Concepción" },
-      { id: "item-25", collectionId: "col-nacional-2026", date: "2026-12-09", name: "Batalla de Ayacucho" },
-      { id: "item-26", collectionId: "col-nacional-2026", date: "2026-12-25", name: "Navidad" },
-    ],
-  },
-  {
-    id: "col-5",
-    name: "Días No Laborables Compensables",
-    scope: "PROJECT",
-    createdAt: "2026-08-15T14:00:00Z",
-    items: [
-      { id: "item-27", collectionId: "col-5", date: "2026-01-02", name: "Puente Año Nuevo" },
-      { id: "item-28", collectionId: "col-5", date: "2026-07-27", name: "Puente Fiestas Patrias" },
-    ],
-  },
-  {
-    id: "col-6",
-    name: "Sede Regional Arequipa",
-    scope: "PROJECT",
-    createdAt: "2026-08-10T16:00:00Z",
-    items: [
-      { id: "item-29", collectionId: "col-6", date: "2026-08-15", name: "Aniversario de Arequipa" },
-    ],
-  },
-  {
-    id: "col-7",
-    name: "Sede Regional Cusco",
-    scope: "PROJECT",
-    createdAt: "2026-08-05T12:00:00Z",
-    items: [
-      { id: "item-30", collectionId: "col-7", date: "2026-06-24", name: "Inti Raymi - Día del Cusco" },
-    ],
-  },
-];
-
-const DEFAULT_SVG_MEMBERS = [
-  {
-    userId: "user-1",
-    displayName: "Sin nombre registrado",
-    email: "user@astc.com",
-    initials: null,
-  },
-  {
-    userId: "user-2",
-    displayName: "carlos mamani",
-    email: "mamanigutierrezcarlos123@gmail.com",
-    initials: "CM",
-  },
-  {
-    userId: "user-3",
-    displayName: "Sin nombre registrado",
-    email: "pm@astc.com",
-    initials: null,
-  },
-];
-
 export function HolidayPMListView() {
   const { token } = useAuth();
   const { toast } = useToast();
@@ -185,7 +74,7 @@ export function HolidayPMListView() {
 
   useEffect(() => {
     if (searchParams?.get("modal") === "exception") {
-      setSelectedMemberForException(DEFAULT_SVG_MEMBERS[0]);
+      setSelectedMemberForException(null);
     }
   }, [searchParams]);
 
@@ -199,6 +88,8 @@ export function HolidayPMListView() {
         const newId = customEvent.detail ?? localStorage.getItem("selected_project_id");
         if (newId && newId !== "all") {
           setSelectedProjectId(newId);
+        } else if (newId === "all" && projects.length > 0) {
+          setSelectedProjectId(projects[0].id);
         }
       };
 
@@ -209,7 +100,15 @@ export function HolidayPMListView() {
         window.removeEventListener("storage", handleProj);
       };
     }
-  }, []);
+  }, [projects]);
+
+  const handleProjectChange = (id: string) => {
+    setSelectedProjectId(id);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selected_project_id", id);
+      window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: id }));
+    }
+  };
 
   // Load Projects
   useEffect(() => {
@@ -258,7 +157,7 @@ export function HolidayPMListView() {
         }
       })
       .catch(() => {
-        setGlobalCollections(DEFAULT_SVG_COLLECTIONS);
+        setGlobalCollections([]);
       });
   }, [token]);
 
@@ -597,11 +496,11 @@ export function HolidayPMListView() {
                     <Folder className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <select
                       value={selectedProjectId}
-                      onChange={(e) => setSelectedProjectId(e.target.value)}
+                      onChange={(e) => handleProjectChange(e.target.value)}
                       className="w-full h-11 pl-10 pr-8 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] text-xs font-medium text-foreground focus:outline-none focus:border-[#A855F7] appearance-none"
                     >
                       {projects.map((p) => (
-                        <option key={p.id} value={p.id}>
+                        <option key={p.id} value={p.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">
                           {p.name}
                         </option>
                       ))}

@@ -526,7 +526,7 @@ export function AttendanceHistoryView() {
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {projects.map((p) => (
-                <option key={p.id} value={p.id} className="bg-card text-foreground">{p.name}</option>
+                <option key={p.id} value={p.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{p.name}</option>
               ))}
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
@@ -546,7 +546,7 @@ export function AttendanceHistoryView() {
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {users.map((u) => (
-                <option key={u.id} value={u.id} className="bg-card text-foreground">{u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario"}</option>
+                <option key={u.id} value={u.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{u.name || [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || "Usuario"}</option>
               ))}
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
@@ -564,11 +564,11 @@ export function AttendanceHistoryView() {
               onChange={(e) => setSelectedStatus(e.target.value)}
               className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
-              <option value="all" className="bg-card text-foreground">Todos los estados</option>
-              <option value="PRESENTE" className="bg-card text-foreground">Presente</option>
-              <option value="FALTA" className="bg-card text-foreground">Falta</option>
-              <option value="TARDE" className="bg-card text-foreground">Tardanza</option>
-              <option value="SALIDA_TEMPRANA" className="bg-card text-foreground">Salida temprana</option>
+              <option value="all" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Todos los estados</option>
+              <option value="PRESENTE" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Presente</option>
+              <option value="FALTA" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Falta</option>
+              <option value="TARDE" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Tardanza</option>
+              <option value="SALIDA_TEMPRANA" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Salida temprana</option>
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
           </div>
@@ -603,7 +603,7 @@ export function AttendanceHistoryView() {
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {projects.map((p) => (
-                <option key={p.id} value={p.id} className="bg-card text-foreground">{p.name}</option>
+                <option key={p.id} value={p.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{p.name}</option>
               ))}
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
@@ -623,7 +623,7 @@ export function AttendanceHistoryView() {
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {users.map((u) => (
-                <option key={u.id} value={u.id} className="bg-card text-foreground">{u.name || u.username}</option>
+                <option key={u.id} value={u.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">{u.name || u.username}</option>
               ))}
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
@@ -642,11 +642,11 @@ export function AttendanceHistoryView() {
                 onChange={(e) => setSelectedStatus(e.target.value)}
                 className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
               >
-                <option value="all" className="bg-card text-foreground">Todos los estados</option>
-                <option value="PRESENTE" className="bg-card text-foreground">Presente</option>
-                <option value="FALTA" className="bg-card text-foreground">Falta</option>
-                <option value="TARDE" className="bg-card text-foreground">Tardanza</option>
-                <option value="SALIDA_TEMPRANA" className="bg-card text-foreground">Salida temprana</option>
+                <option value="all" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Todos los estados</option>
+                <option value="PRESENTE" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Presente</option>
+                <option value="FALTA" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Falta</option>
+                <option value="TARDE" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Tardanza</option>
+                <option value="SALIDA_TEMPRANA" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Salida temprana</option>
               </select>
               <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
             </div>

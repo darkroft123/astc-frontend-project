@@ -365,7 +365,7 @@ export default function ScheduleForm({
                     className="w-full h-11 pl-10 pr-9 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs sm:text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-violet appearance-none cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
                   >
                     {users.map((u) => (
-                      <option key={u.id} value={u.id} className="bg-card text-foreground">
+                      <option key={u.id} value={u.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">
                         {u.firstName || ""} {u.lastName || ""} (@{u.username || "usuario"})
                       </option>
                     ))}
@@ -398,7 +398,7 @@ export default function ScheduleForm({
                   >
                     <option value="">Seleccionar proyecto...</option>
                     {(userAssignedProjects.length > 0 ? userAssignedProjects : projects).map((p) => (
-                      <option key={p.id} value={p.id} className="bg-card text-foreground">
+                      <option key={p.id} value={p.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">
                         {p.name} {userAssignedProjects.some((up) => up.id === p.id) ? "(Asignado)" : ""}
                       </option>
                     ))}

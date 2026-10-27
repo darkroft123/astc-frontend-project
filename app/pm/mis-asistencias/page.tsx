@@ -372,11 +372,11 @@ export default function PMAsistenciasPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
               >
-                <option value="all" className="bg-card text-foreground">Todos los estados</option>
-                <option value="PRESENTE" className="bg-card text-foreground">Presente</option>
-                <option value="FALTA" className="bg-card text-foreground">Falta</option>
-                <option value="TARDE" className="bg-card text-foreground">Tarde</option>
-                <option value="FUERA_DE_HORARIO" className="bg-card text-foreground">Fuera de horario</option>
+                <option value="all" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Todos los estados</option>
+                <option value="PRESENTE" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Presente</option>
+                <option value="FALTA" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Falta</option>
+                <option value="TARDE" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Tarde</option>
+                <option value="FUERA_DE_HORARIO" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Fuera de horario</option>
               </select>
               <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
             </div>
@@ -426,11 +426,11 @@ export default function PMAsistenciasPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
               >
-                <option value="all" className="bg-card text-foreground">Todos los estados</option>
-                <option value="PRESENTE" className="bg-card text-foreground">Presente</option>
-                <option value="FALTA" className="bg-card text-foreground">Falta</option>
-                <option value="TARDE" className="bg-card text-foreground">Tarde</option>
-                <option value="FUERA_DE_HORARIO" className="bg-card text-foreground">Fuera de horario</option>
+                <option value="all" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Todos los estados</option>
+                <option value="PRESENTE" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Presente</option>
+                <option value="FALTA" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Falta</option>
+                <option value="TARDE" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Tarde</option>
+                <option value="FUERA_DE_HORARIO" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Fuera de horario</option>
               </select>
               <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
             </div>

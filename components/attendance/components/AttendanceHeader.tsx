@@ -68,7 +68,7 @@ export function AttendanceHeader({
                 className="bg-transparent text-xs text-foreground focus:outline-none cursor-pointer"
               >
                 {projects.map((p) => (
-                  <option key={p.id} value={p.id} className="bg-card text-foreground">
+                  <option key={p.id} value={p.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">
                     {p.name}
                   </option>
                 ))}

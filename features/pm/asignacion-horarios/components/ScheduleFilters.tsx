@@ -42,7 +42,7 @@ export function ScheduleFilters({
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {projectOptions.map((p) => (
-                <option key={p.id} value={p.id} className="bg-card text-foreground">
+                <option key={p.id} value={p.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">
                   {p.name}
                 </option>
               ))}
@@ -79,10 +79,10 @@ export function ScheduleFilters({
               onChange={(e) => setStatusFilter(e.target.value)}
               className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
-              <option value="ALL" className="bg-card text-foreground">Todos</option>
-              <option value="WITH_OVERRIDE" className="bg-card text-foreground">Personalizados</option>
-              <option value="WITHOUT_OVERRIDE" className="bg-card text-foreground">Del proyecto</option>
-              <option value="NO_PROJECT" className="bg-card text-foreground">Sin proyecto</option>
+              <option value="ALL" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Todos</option>
+              <option value="WITH_OVERRIDE" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Personalizados</option>
+              <option value="WITHOUT_OVERRIDE" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Del proyecto</option>
+              <option value="NO_PROJECT" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Sin proyecto</option>
             </select>
             <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
           </div>
@@ -117,7 +117,7 @@ export function ScheduleFilters({
               className="w-full h-10 pl-9 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
             >
               {projectOptions.map((p) => (
-                <option key={p.id} value={p.id} className="bg-card text-foreground">
+                <option key={p.id} value={p.id} className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">
                   {p.name}
                 </option>
               ))}
@@ -155,10 +155,10 @@ export function ScheduleFilters({
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="w-full h-10 px-3 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
               >
-                <option value="ALL" className="bg-card text-foreground">Todos</option>
-                <option value="WITH_OVERRIDE" className="bg-card text-foreground">Personalizados</option>
-                <option value="WITHOUT_OVERRIDE" className="bg-card text-foreground">Del proyecto</option>
-                <option value="NO_PROJECT" className="bg-card text-foreground">Sin proyecto</option>
+                <option value="ALL" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Todos</option>
+                <option value="WITH_OVERRIDE" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Personalizados</option>
+                <option value="WITHOUT_OVERRIDE" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Del proyecto</option>
+                <option value="NO_PROJECT" className="bg-white dark:bg-[#12141F] text-neutral-900 dark:text-neutral-100">Sin proyecto</option>
               </select>
               <ChevronRight className="w-4 h-4 rotate-90 absolute right-3 top-3 text-muted-foreground pointer-events-none" />
             </div>
