@@ -56,6 +56,7 @@ export function HolidayPMListView() {
   const [members, setMembers] = useState<any[]>([]);
   const [userNames, setUserNames] = useState<Record<string, string>>({});
   const [userEmails, setUserEmails] = useState<Record<string, string>>({});
+  const [userAvatars, setUserAvatars] = useState<Record<string, string>>({});
   const [projectCollections, setProjectCollections] = useState<CollectionOutput[]>([]);
   const [globalCollections, setGlobalCollections] = useState<CollectionOutput[]>([]);
   const [assignedCollectionId, setAssignedCollectionId] = useState<string | null>(null);
@@ -175,17 +176,20 @@ export function HolidayPMListView() {
           setMembers(data);
           const names: Record<string, string> = {};
           const emails: Record<string, string> = {};
+          const avatars: Record<string, string> = {};
           for (const m of data) {
             if (m.userId) {
               const u = await getUserById(token, m.userId).catch(() => null);
               if (u) {
                 names[m.userId] = `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username;
                 emails[m.userId] = u.email || "";
+                if (u.avatarUrl) avatars[m.userId] = u.avatarUrl;
               }
             }
           }
           setUserNames(names);
           setUserEmails(emails);
+          setUserAvatars(avatars);
         } else {
           setMembers([]);
         }
@@ -843,21 +847,23 @@ export function HolidayPMListView() {
                         className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 space-y-3 shadow-2xs"
                       >
                         <div className="flex items-center gap-3">
-                          {initials ? (
-                            <div
-                              className="w-10 h-10 rounded-2xl text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs"
+                          <Avatar className="w-10 h-10 rounded-2xl shrink-0 shadow-xs">
+                            {formatAvatarUrl(userAvatars[m.userId] || m.avatarUrl) && (
+                              <AvatarImage
+                                src={formatAvatarUrl(userAvatars[m.userId] || m.avatarUrl)!}
+                                alt={displayName}
+                                className="object-cover rounded-2xl"
+                              />
+                            )}
+                            <AvatarFallback
+                              className="w-10 h-10 rounded-2xl text-white font-bold text-xs flex items-center justify-center"
                               style={{
-                                background:
-                                  "linear-gradient(135deg, #5B8CFF 0%, #A855F7 55%, #22C3E6 100%)",
+                                background: "linear-gradient(135deg, #5B8CFF 0%, #A855F7 55%, #22C3E6 100%)",
                               }}
                             >
-                              {initials}
-                            </div>
-                          ) : (
-                            <div className="w-10 h-10 rounded-2xl bg-background dark:bg-[#141829] border border-border dark:border-[#1E2335] text-muted-foreground flex items-center justify-center shrink-0">
-                              <UserIcon className="w-5 h-5" />
-                            </div>
-                          )}
+                              {initials || <UserIcon className="w-5 h-5" />}
+                            </AvatarFallback>
+                          </Avatar>
 
                           <div className="min-w-0 flex-1">
                             <p className="font-bold text-xs text-foreground truncate">

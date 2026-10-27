@@ -155,9 +155,14 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
     <div className="flex flex-col h-full">
       {/* 1. Perfil del usuario */}
       <div className="flex items-center gap-3 px-1 mb-3">
-        <div className="h-11 w-11 rounded-[var(--radius-kpi)] bg-avatar-gradient flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm">
-          {getInitials(displayName)}
-        </div>
+        <Avatar className="h-11 w-11 rounded-[var(--radius-kpi)] shrink-0 shadow-sm">
+          {avatarSrc && (
+            <AvatarImage src={avatarSrc} alt={displayName} className="object-cover rounded-[var(--radius-kpi)]" />
+          )}
+          <AvatarFallback className="rounded-[var(--radius-kpi)] bg-avatar-gradient text-white font-bold text-sm">
+            {getInitials(displayName)}
+          </AvatarFallback>
+        </Avatar>
 
         <div className="min-w-0 flex-1">
           <p className="font-semibold text-[15px] leading-[22.5px] text-foreground truncate capitalize">

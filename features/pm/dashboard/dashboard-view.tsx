@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { DateRangeModal } from "@/components/ui/date-range-modal";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatAvatarUrl } from "@/lib/avatar-url";
 import {
   getDashboardPM,
   getAllProjects,
@@ -152,12 +154,14 @@ export function DashboardView() {
             const usr = Array.isArray(usersList) ? usersList.find((u: any) => u.id === att.userId) : null;
             const name = usr?.name || (usr ? `${usr.firstName || ""} ${usr.lastName || ""}`.trim() : "") || usr?.username || "Trabajador";
             const initials = name.split(" ").filter(Boolean).map((n: string) => n[0]).join("").slice(0, 2).toUpperCase() || "T";
+            const avatarUrl = usr?.avatarUrl || null;
             const time = att.checkIn ? att.checkIn.slice(0, 5) : (att.date || "Hoy");
             const isLate = att.status === "LATE";
             return {
               id: att.id,
               name,
               initials,
+              avatarUrl,
               time,
               action: isLate ? "Marcó ingreso con tardanza" : att.checkOut ? "Marcó salida de turno" : "Registró asistencia puntual",
               status: isLate ? "Tardanza" : "Presente",
@@ -571,9 +575,14 @@ export function DashboardView() {
                 {recentActivities.map((act) => (
                   <div key={act.id} className="flex items-center justify-between p-2.5 rounded-xl border border-border bg-muted/40 hover:bg-muted/70 transition-colors">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center shrink-0 border border-primary/20">
-                        {act.initials}
-                      </div>
+                      <Avatar className="w-8 h-8 rounded-full shrink-0">
+                        {formatAvatarUrl(act.avatarUrl) && (
+                          <AvatarImage src={formatAvatarUrl(act.avatarUrl)!} alt={act.name} className="object-cover" />
+                        )}
+                        <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs flex items-center justify-center border border-primary/20">
+                          {act.initials}
+                        </AvatarFallback>
+                      </Avatar>
                       <div>
                         <p className="text-xs font-semibold text-foreground leading-tight">{act.name}</p>
                         <p className="text-[10.5px] text-muted-foreground mt-0.5">{act.action} · {act.time}</p>

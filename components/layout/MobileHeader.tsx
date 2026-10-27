@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useMemo } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatAvatarUrl } from "@/lib/avatar-url";
 import { Menu } from "lucide-react";
 import { useMobileSidebar } from "./MobileSidebar";
 import { NotificationBell } from "./notification-bell";
@@ -58,15 +60,24 @@ export function MobileHeader({ customSubtitle }: MobileHeaderProps) {
         </button>
 
         {/* User Avatar Squircle matching exact image */}
-        <div
-          className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white text-sm shadow-md shrink-0"
-          style={{
-            background: "linear-gradient(135deg, #5B8CFF 0%, #A855F7 55%, #22C3E6 100%)",
-            boxShadow: "0 4px 14px rgba(168, 85, 247, 0.3)",
-          }}
-        >
-          {initials || "CM"}
-        </div>
+        <Avatar className="w-11 h-11 rounded-2xl shrink-0 shadow-md">
+          {formatAvatarUrl(user?.avatarUrl) && (
+            <AvatarImage
+              src={formatAvatarUrl(user?.avatarUrl)!}
+              alt={displayName}
+              className="object-cover rounded-2xl"
+            />
+          )}
+          <AvatarFallback
+            className="rounded-2xl flex items-center justify-center font-bold text-white text-sm"
+            style={{
+              background: "linear-gradient(135deg, #5B8CFF 0%, #A855F7 55%, #22C3E6 100%)",
+              boxShadow: "0 4px 14px rgba(168, 85, 247, 0.3)",
+            }}
+          >
+            {initials || "CM"}
+          </AvatarFallback>
+        </Avatar>
 
         {/* Name and Turno */}
         <div className="min-w-0 flex-1 overflow-hidden">

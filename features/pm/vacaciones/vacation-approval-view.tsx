@@ -4,6 +4,8 @@ import { useAuth } from "@/app/jwt/auth/auth.provider";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatAvatarUrl } from "@/lib/avatar-url";
 import { DataTable, Column } from "@/components/DataTable";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -40,6 +42,7 @@ export function VacationApprovalView() {
 
   const [vacations, setVacations] = useState<any[]>([]);
   const [userNames, setUserNames] = useState<Record<string, string>>({});
+  const [userAvatars, setUserAvatars] = useState<Record<string, string>>({});
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -102,13 +105,16 @@ export function VacationApprovalView() {
         : [];
 
       const namesMap: Record<string, string> = {};
+      const avatarsMap: Record<string, string> = {};
       for (const u of safeUsers) {
         if (u && u.id) {
           const name = `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || u.email;
           namesMap[u.id] = name;
+          if (u.avatarUrl) avatarsMap[u.id] = u.avatarUrl;
         }
       }
       setUserNames(namesMap);
+      setUserAvatars(avatarsMap);
     } catch (e) {
       setVacations([]);
     } finally {
@@ -241,9 +247,14 @@ export function VacationApprovalView() {
 
         return (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-[#5B36F5] text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
+            <Avatar className="w-8 h-8 rounded-full shrink-0 shadow-sm">
+            {formatAvatarUrl(r.avatarUrl || userAvatars[r.userId]) && (
+              <AvatarImage src={formatAvatarUrl(r.avatarUrl || userAvatars[r.userId])!} alt={name} className="object-cover" />
+            )}
+            <AvatarFallback className="bg-[#5B36F5] text-white font-bold text-xs">
               {initials}
-            </div>
+            </AvatarFallback>
+          </Avatar>
             <div>
               <p className="font-semibold text-foreground text-xs">{name}</p>
               <p className="text-[10px] font-mono text-muted-foreground mt-0.5">
@@ -527,9 +538,14 @@ export function VacationApprovalView() {
                 {/* Header: Avatar, Name, Code, Status Badge */}
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#5B36F5] text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-sm mt-0.5">
-                      {initials}
-                    </div>
+                    <Avatar className="w-10 h-10 rounded-full shrink-0 shadow-sm mt-0.5">
+                      {formatAvatarUrl(v.avatarUrl || userAvatars[v.userId]) && (
+                        <AvatarImage src={formatAvatarUrl(v.avatarUrl || userAvatars[v.userId])!} alt={v.userName || "carlos mamani"} className="object-cover" />
+                      )}
+                      <AvatarFallback className="bg-[#5B36F5] text-white font-bold text-sm">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <h4 className="font-bold text-base text-foreground leading-tight">{v.userName || "carlos mamani"}</h4>
                       <p className="text-[11px] font-mono text-muted-foreground mt-0.5">

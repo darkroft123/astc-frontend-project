@@ -1,5 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatAvatarUrl } from "@/lib/avatar-url";
 import { createPortal } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -853,14 +855,19 @@ export default function ProjectDetailModal({
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         {/* Circular Avatar with gradient matching SVG paint2/paint3_linear */}
-                        <div
-                          className="w-11 h-11 rounded-full text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs"
-                          style={{
-                            background: "linear-gradient(135deg, #5B8CFF 0%, #A855F7 100%)",
-                          }}
-                        >
-                          {initials}
-                        </div>
+                        <Avatar className="w-11 h-11 rounded-full shrink-0 shadow-xs">
+                          {formatAvatarUrl(u.avatarUrl) && (
+                            <AvatarImage src={formatAvatarUrl(u.avatarUrl)!} alt={displayName} className="object-cover" />
+                          )}
+                          <AvatarFallback
+                            className="w-11 h-11 rounded-full text-white font-bold text-xs flex items-center justify-center"
+                            style={{
+                              background: "linear-gradient(135deg, #5B8CFF 0%, #A855F7 100%)",
+                            }}
+                          >
+                            {initials}
+                          </AvatarFallback>
+                        </Avatar>
 
                         <div className="min-w-0">
                           <p className="font-bold text-xs text-foreground dark:text-[#EEF0F6] truncate">

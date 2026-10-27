@@ -642,6 +642,11 @@ export async function getAllProjects(
         latitude
         longitude
         createdAt
+        members {
+          id
+          userId
+          role
+        }
       }
     }
     `,

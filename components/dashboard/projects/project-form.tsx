@@ -18,6 +18,8 @@ import {
   Globe,
   Check,
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatAvatarUrl } from "@/lib/avatar-url";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -473,9 +475,14 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
                                 onChange={() => toggleMember(u.id)}
                                 className="w-4 h-4 rounded text-primary border-border focus:ring-primary cursor-pointer"
                               />
-                              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-2xs">
-                                {initials}
-                              </div>
+                              <Avatar className="w-7 h-7 rounded-full shrink-0 shadow-2xs">
+                                {formatAvatarUrl(u.avatarUrl) && (
+                                  <AvatarImage src={formatAvatarUrl(u.avatarUrl)!} alt={u.firstName || u.username} className="object-cover" />
+                                )}
+                                <AvatarFallback className="bg-gradient-to-tr from-purple-500 to-indigo-500 text-white font-bold text-[10px]">
+                                  {initials}
+                                </AvatarFallback>
+                              </Avatar>
                               <span className="font-medium text-foreground truncate">{u.firstName} {u.lastName}</span>
                             </div>
                             <span className="text-[10px] text-muted-foreground font-mono shrink-0 ml-2">@{u.username}</span>

@@ -20,6 +20,8 @@ import {
   X as XIcon,
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatAvatarUrl } from "@/lib/avatar-url";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
 import {
@@ -283,6 +285,7 @@ export function AttendanceHistoryView() {
           ? `Usuario (${r.userId.slice(0, 8)})`
           : "Colaborador");
       const userEmail = r.userEmail || u?.email || "";
+      const avatarUrl = u?.avatarUrl || r.avatarUrl || null;
       const projectName =
         r.projectName ||
         projectMap.get(r.projectId) ||
@@ -292,6 +295,7 @@ export function AttendanceHistoryView() {
         userName,
         userEmail,
         projectName,
+        avatarUrl,
       };
     });
   }, [records, projectMap, userMap]);
@@ -683,9 +687,14 @@ export function AttendanceHistoryView() {
                 {/* Header: Avatar, Name, Status Badge */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-brand-gradient text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-sm">
-                      {initials}
-                    </div>
+                    <Avatar className="w-10 h-10 rounded-xl shrink-0 shadow-sm">
+                      {formatAvatarUrl(r.avatarUrl) && (
+                        <AvatarImage src={formatAvatarUrl(r.avatarUrl)!} alt={r.userName} className="object-cover rounded-xl" />
+                      )}
+                      <AvatarFallback className="w-10 h-10 rounded-xl bg-brand-gradient text-white font-bold text-sm flex items-center justify-center">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <h4 className="font-bold text-base text-foreground leading-tight">{r.userName}</h4>
                     </div>
@@ -799,9 +808,14 @@ export function AttendanceHistoryView() {
                   <tr key={row.id || idx} className="hover:bg-muted/30 transition-colors">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-brand-gradient text-white flex items-center justify-center font-bold text-xs shrink-0">
-                          {initials}
-                        </div>
+                        <Avatar className="w-8 h-8 rounded-lg shrink-0">
+                          {formatAvatarUrl(row.avatarUrl) && (
+                            <AvatarImage src={formatAvatarUrl(row.avatarUrl)!} alt={row.userName} className="object-cover rounded-lg" />
+                          )}
+                          <AvatarFallback className="w-8 h-8 rounded-lg bg-brand-gradient text-white flex items-center justify-center font-bold text-xs">
+                            {initials}
+                          </AvatarFallback>
+                        </Avatar>
                         <div className="min-w-0">
                           <p className="font-semibold text-foreground text-sm truncate">{row.userName}</p>
                           <p className="text-xs text-muted-foreground truncate">{row.userEmail}</p>

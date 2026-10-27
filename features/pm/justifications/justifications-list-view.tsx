@@ -226,12 +226,14 @@ export function JustificationsListView() {
               ? usr.name
               : (i.user ? `${i.user.firstName || ""} ${i.user.lastName || ""}`.trim() || i.user.username : (i.userName || "Colaborador"));
             const userEmail = usr?.email || i.userEmail || "";
+            const avatarUrl = usr?.avatarUrl || i.avatarUrl || null;
             return {
               id: i.id,
               userId: i.userId,
               userName,
               userRoleBadge: "Trabajador",
               userEmail,
+              avatarUrl,
               motivo: i.description || "Sin descripción",
               documentUrl: i.documentUrl || null,
               fecha: i.absenceDate || (i.submittedAt ? new Date(i.submittedAt).toLocaleDateString("es-PE") : "-"),
@@ -671,9 +673,14 @@ export function JustificationsListView() {
                 {/* Header: Avatar, Name, Email, Status Badge */}
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-brand-gradient text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-sm mt-0.5">
-                      {initials}
-                    </div>
+                    <Avatar className="w-10 h-10 rounded-xl shrink-0 shadow-sm mt-0.5">
+                      {formatAvatarUrl(row.avatarUrl) && (
+                        <AvatarImage src={formatAvatarUrl(row.avatarUrl)!} alt={row.userName} className="object-cover rounded-xl" />
+                      )}
+                      <AvatarFallback className="rounded-xl bg-brand-gradient text-white font-bold text-sm">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <h4 className="font-bold text-base text-foreground leading-tight">{row.userName}</h4>
                       <p className="text-xs text-muted-foreground truncate max-w-[180px] mt-0.5">
@@ -802,9 +809,14 @@ export function JustificationsListView() {
                   <tr key={row.id} className="hover:bg-muted/30 transition-colors">
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-brand-gradient text-white flex items-center justify-center font-bold text-xs shrink-0">
-                          {initials}
-                        </div>
+                        <Avatar className="w-8 h-8 rounded-lg shrink-0">
+                          {formatAvatarUrl(row.avatarUrl) && (
+                            <AvatarImage src={formatAvatarUrl(row.avatarUrl)!} alt={row.userName} className="object-cover rounded-lg" />
+                          )}
+                          <AvatarFallback className="rounded-lg bg-brand-gradient text-white font-bold text-xs">
+                            {initials}
+                          </AvatarFallback>
+                        </Avatar>
                         <div className="min-w-0">
                           <p className="font-semibold text-foreground text-sm truncate">{row.userName}</p>
                           <p className="text-xs text-muted-foreground truncate">{row.userEmail}</p>

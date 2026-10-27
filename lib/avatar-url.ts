@@ -24,6 +24,7 @@ export function formatAvatarUrl(url: string | null | undefined): string | null {
     formatted = formatted.replace(/https?:\/\/minio:9000/, "https://minio-s3.astc.joyit.io");
     formatted = formatted.replace(/https?:\/\/localhost:9010/, "https://minio-s3.astc.joyit.io");
     formatted = formatted.replace(/https?:\/\/[^/]+:9010/, "https://minio-s3.astc.joyit.io");
+    formatted = formatted.replace(/https?:\/\/astc-minio\.joyit\.io/, "https://minio-s3.astc.joyit.io");
 
     return formatted;
   }
