@@ -53,8 +53,8 @@ type JustificationDetail = {
 };
 
 const GET_JUSTIFICATION_DETAIL = `
-  query getJustificationDetail($id: String!) {
-    getJustificationDetail(id: $id) {
+  query getJustificationDetailPM($id: String!) {
+    getJustificationDetailPM(id: $id) {
       id
       description
       documentUrl
@@ -169,7 +169,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
         });
 
         const json = await res.json();
-        const data = json?.data?.getJustificationDetail;
+        const data = json?.data?.getJustificationDetailPM || json?.data?.getJustificationDetail;
         if (data) {
           setJustification(data);
         } else {

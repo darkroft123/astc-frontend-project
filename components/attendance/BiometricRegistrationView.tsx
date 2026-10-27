@@ -124,7 +124,7 @@ export default function BiometricRegistrationView({
     return () => {
       stopCamera();
     };
-  }, [startCamera, stopCamera]);
+  }, []);
 
   // Fetch today attendance & schedule & vacations
   useEffect(() => {

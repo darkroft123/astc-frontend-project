@@ -77,6 +77,15 @@ export default function ScheduleForm({
   const [selectedUserId, setSelectedUserId] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState("");
 
+  const userAssignedProjects = useMemo(() => {
+    if (!selectedUserId || !Array.isArray(projects)) return [];
+    return projects.filter((p: any) =>
+      p.responsibleId === selectedUserId ||
+      (Array.isArray(p.members) &&
+        p.members.some((m: any) => (m.userId || m.id) === selectedUserId))
+    );
+  }, [selectedUserId, projects]);
+
   const [shiftType, setShiftType] = useState<ShiftType>("REGULAR");
 
   const [startHour, setStartHour] = useState("08:00");

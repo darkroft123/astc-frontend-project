@@ -558,40 +558,7 @@ export default function ProjectDetailModal({
                   </div>
                 </div>
 
-                {/* Amber Warning Card */}
-                <div className="rounded-xl border border-amber-500/30 dark:border-[#483713] bg-amber-500/10 dark:bg-[#17140B] p-3.5 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <MapPin className="w-4 h-4 text-[#FBBF24] shrink-0" />
-                    <div>
-                      <p className="font-semibold text-xs text-foreground dark:text-[#EEF0F6]">
-                        {project?.latitude && project?.longitude
-                          ? `Ubicación GPS: ${project.latitude}, ${project.longitude}`
-                          : "Ubicación GPS sin configurar"}
-                      </p>
-                      <p className="text-[11px] text-[#8F96AE] mt-0.5">
-                        {project?.latitude && project?.longitude
-                          ? `Geocerca activa (${project?.geofenceRadiusMeters || 100}m)`
-                          : "Sin coordenadas, la geocerca no valida los marcajes."}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (project?.latitude && project?.longitude) {
-                        window.open(
-                          `https://www.google.com/maps?q=${project.latitude},${project.longitude}`,
-                          "_blank"
-                        );
-                      } else {
-                        alert("Para configurar la geocerca, edita la configuración del proyecto.");
-                      }
-                    }}
-                    className="px-4 py-1.5 rounded-lg border border-amber-500/30 bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 dark:text-[#FBBF24] text-xs font-semibold transition-colors cursor-pointer shrink-0"
-                  >
-                    Configurar
-                  </button>
-                </div>
+
               </div>
             </div>
           )}

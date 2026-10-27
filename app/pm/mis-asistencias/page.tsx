@@ -14,11 +14,14 @@ import {
   ChevronLeft,
   ChevronRight,
   EyeOff,
+  X as XIcon,
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
 import { listAttendance } from "@/app/services/assistance.service";
 import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
+import { formatAvatarUrl } from "@/lib/avatar-url";
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 
 type Period =
   | "today"
@@ -59,6 +62,7 @@ export default function PMAsistenciasPage() {
   const [searchDate, setSearchDate] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
@@ -486,7 +490,15 @@ export default function PMAsistenciasPage() {
 
               {/* Bottom Row: Photo Status & Location */}
               <div className="flex items-center gap-2 pt-0.5">
-                <div className="h-10 px-3 rounded-xl bg-background/50 border border-border/60 flex items-center gap-1.5 text-xs text-muted-foreground shrink-0">
+                <div
+                  className={`h-10 px-3 rounded-xl bg-background/50 border border-border/60 flex items-center gap-1.5 text-xs shrink-0 ${
+                    r.photoUrl ? "cursor-pointer hover:border-primary text-foreground" : "text-muted-foreground"
+                  }`}
+                  onClick={() => {
+                    const src = formatAvatarUrl(r.photoUrl);
+                    if (src) setSelectedPhotoUrl(src);
+                  }}
+                >
                   {r.photoUrl ? (
                     <>
                       <Camera className="w-3.5 h-3.5 text-purple-400" />
@@ -548,11 +560,22 @@ export default function PMAsistenciasPage() {
                   </td>
                   <td className="py-4 px-4">
                     {row.photoUrl ? (
-                      <div className="w-8 h-8 rounded-lg overflow-hidden border border-border">
-                        <img src={row.photoUrl} alt="Foto asistencia" className="w-full h-full object-cover" />
+                      <div
+                        className="w-9 h-9 rounded-lg overflow-hidden border border-border cursor-pointer hover:ring-2 hover:ring-primary transition-all shadow-sm"
+                        onClick={() => setSelectedPhotoUrl(formatAvatarUrl(row.photoUrl) || row.photoUrl)}
+                        title="Clic para ver foto"
+                      >
+                        <img
+                          src={formatAvatarUrl(row.photoUrl) || row.photoUrl}
+                          alt="Foto asistencia"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.currentTarget.parentElement).innerHTML = '<div class="w-full h-full flex flex-col items-center justify-center text-muted-foreground bg-muted"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>';
+                          }}
+                        />
                       </div>
                     ) : (
-                      <div className="w-8 h-8 rounded-lg bg-background border border-border flex items-center justify-center text-muted-foreground">
+                      <div className="w-9 h-9 rounded-lg bg-background border border-border flex items-center justify-center text-muted-foreground">
                         <Camera className="w-4 h-4" />
                       </div>
                     )}
@@ -605,6 +628,32 @@ export default function PMAsistenciasPage() {
         initialRange={dateRange}
         onApply={(newRange: { from: string; to: string }) => setDateRange(newRange)}
       />
+
+      {/* PHOTO PREVIEW DIALOG */}
+      <Dialog open={!!selectedPhotoUrl} onOpenChange={(open) => { if (!open) setSelectedPhotoUrl(null); }}>
+        <DialogContent className="sm:max-w-md p-4 bg-card dark:bg-[#101322] border border-border dark:border-[#1E2335] rounded-2xl">
+          <div className="flex items-center justify-between pb-3 border-b border-border dark:border-[#1E2335]">
+            <DialogTitle className="font-semibold text-base text-foreground dark:text-white">
+              Foto de marcación
+            </DialogTitle>
+            <DialogClose className="rounded-lg p-1 text-muted-foreground hover:bg-muted dark:hover:bg-[#181B2A] transition-colors cursor-pointer">
+              <XIcon className="w-4 h-4" />
+            </DialogClose>
+          </div>
+          <DialogDescription className="sr-only">
+            Vista previa ampliada de la foto de marcación
+          </DialogDescription>
+          <div className="mt-3 flex items-center justify-center bg-black/40 rounded-xl overflow-hidden min-h-[300px] max-h-[550px]">
+            {selectedPhotoUrl && (
+              <img
+                src={selectedPhotoUrl}
+                alt="Foto de asistencia"
+                className="max-w-full max-h-[500px] object-contain rounded-lg shadow-md"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

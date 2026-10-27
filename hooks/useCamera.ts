@@ -28,6 +28,7 @@ export function useCamera() {
   const streamRef = useRef<MediaStream | null>(null);
   const isMountedRef = useRef<boolean>(true);
   const isStartingRef = useRef<boolean>(false);
+  const hasPermissionErrorRef = useRef<boolean>(false);
 
   const [cameraOn, setCameraOn] = useState(false);
   const [photo, setPhoto] = useState<string | null>(null);
@@ -86,6 +87,7 @@ export function useCamera() {
         return;
       }
 
+      if (hasPermissionErrorRef.current) return;
       // Prevent concurrent startCamera calls
       if (isStartingRef.current) return;
       isStartingRef.current = true;
@@ -190,6 +192,9 @@ export function useCamera() {
       setCameraOn(true);
       console.log("[CAMERA] Initialized successfully");
     } catch (err: any) {
+      if (err?.name === "NotAllowedError" || err?.name === "PermissionDeniedError") {
+        hasPermissionErrorRef.current = true;
+      }
       console.warn("[CAMERA] Init failed:", err?.name || err);
       if (isMountedRef.current) setCameraOn(false);
     } finally {
