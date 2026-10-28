@@ -84,6 +84,12 @@ export function AlertsListView() {
   const [projects, setProjects] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [activePeriod, setActivePeriod] = useState<PeriodTab>("Este mes");
+  const [selectedProject, setSelectedProject] = useState("all");
+  const [selectedUser, setSelectedUser] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [page, setPage] = useState(1);
+  const [totalAlerts, setTotalAlerts] = useState(0);
 
   const filteredUserOptions = useMemo(() => {
     if (selectedProject === "all") {
@@ -105,10 +111,10 @@ export function AlertsListView() {
     return [{ id: "all", name: `Todos los usuarios (${matched.length})` }, ...matched];
   }, [selectedProject, projects, allUsers]);
 
-  const handleProjectSelect = (projId: string) => {
+  const handleProjectSelect = (projId: string, broadcast = true) => {
     setSelectedProject(projId);
     setPage(1);
-    if (typeof window !== "undefined") {
+    if (broadcast && typeof window !== "undefined") {
       localStorage.setItem("selected_project_id", projId);
       window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: projId }));
     }
@@ -129,6 +135,9 @@ export function AlertsListView() {
       }
     }
   };
+
+  const handleProjectChange = handleProjectSelect;
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("selected_project_id");
@@ -137,7 +146,13 @@ export function AlertsListView() {
       const handleProj = (e: Event) => {
         const customEvent = e as CustomEvent<string>;
         const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
-        setSelectedProject(newId);
+        setSelectedProject((current) => {
+          if (current !== newId) {
+            handleProjectSelect(newId, false);
+            return newId;
+          }
+          return current;
+        });
       };
 
       window.addEventListener("astc-project-changed", handleProj);
@@ -147,23 +162,7 @@ export function AlertsListView() {
         window.removeEventListener("storage", handleProj);
       };
     }
-  }, []);
-
-  const [activePeriod, setActivePeriod] = useState<PeriodTab>("Este mes");
-  const [selectedProject, setSelectedProject] = useState("all");
-
-  const handleProjectChange = (id: string) => {
-    setSelectedProject(id);
-    setPage(1);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("selected_project_id", id);
-      window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: id }));
-    }
-  };
-  const [selectedUser, setSelectedUser] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("all");
-  const [page, setPage] = useState(1);
-  const [totalAlerts, setTotalAlerts] = useState(0);
+  }, [projects]);
   const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>(() => {
     const now = new Date();

@@ -169,10 +169,10 @@ export function AttendanceHistoryView() {
     return [{ id: "all", name: `Todos los trabajadores (${matched.length})` }, ...matched];
   }, [selectedProjectId, projects, allUsers]);
 
-  const handleProjectSelect = (projId: string) => {
+  const handleProjectSelect = (projId: string, broadcast = true) => {
     setSelectedProjectId(projId);
     setPage(1);
-    if (typeof window !== "undefined") {
+    if (broadcast && typeof window !== "undefined") {
       localStorage.setItem("selected_project_id", projId);
       window.dispatchEvent(new CustomEvent("astc-project-changed", { detail: projId }));
     }
@@ -204,7 +204,13 @@ export function AttendanceHistoryView() {
       const handleProj = (e: Event) => {
         const customEvent = e as CustomEvent<string>;
         const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
-        handleProjectSelect(newId);
+        setSelectedProjectId((current) => {
+          if (current !== newId) {
+            handleProjectSelect(newId, false);
+            return newId;
+          }
+          return current;
+        });
       };
 
       window.addEventListener("astc-project-changed", handleProj);
@@ -214,7 +220,7 @@ export function AttendanceHistoryView() {
         window.removeEventListener("storage", handleProj);
       };
     }
-  }, []);
+  }, [projects]);
 
   useEffect(() => {
     if (!token) return;

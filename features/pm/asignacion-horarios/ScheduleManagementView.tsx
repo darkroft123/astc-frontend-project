@@ -64,45 +64,7 @@ export function ScheduleManagementView() {
     }
   }, []);
 
-  // Sync with PM global sidebar project selection
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedId = localStorage.getItem("selected_project_id");
-      if (savedId) setProjectFilter(savedId);
 
-      const handleProjectChange = (e: Event) => {
-        const customEvent = e as CustomEvent<string>;
-        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
-        setProjectFilter(newId);
-        setPage(1);
-      };
-
-      window.addEventListener("astc-project-changed", handleProjectChange);
-      return () => {
-        window.removeEventListener("astc-project-changed", handleProjectChange);
-      };
-    }
-  }, []);
-
-  // Sync with PM global sidebar project selection
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedId = localStorage.getItem("selected_project_id");
-      if (savedId) setProjectFilter(savedId);
-
-      const handleProjectChange = (e: Event) => {
-        const customEvent = e as CustomEvent<string>;
-        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
-        setProjectFilter(newId);
-        setPage(1);
-      };
-
-      window.addEventListener("astc-project-changed", handleProjectChange);
-      return () => {
-        window.removeEventListener("astc-project-changed", handleProjectChange);
-      };
-    }
-  }, []);
 
   const loadData = useCallback(async () => {
     if (!token) return;

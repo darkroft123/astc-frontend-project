@@ -163,6 +163,32 @@ export function AttendanceManagementView() {
     getAllUsers(token).then(setUsers).catch((e) => console.error("[AttendanceManagement] Error loading users:", e));
   }, [token]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("selected_project_id");
+      if (saved && saved !== "all") {
+        handleProjectSelect(saved);
+      }
+      const handleProj = (e: Event) => {
+        const customEvent = e as CustomEvent<string>;
+        const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
+        setSelectedProject((current) => {
+          if (current !== newId) {
+            handleProjectSelect(newId);
+            return newId;
+          }
+          return current;
+        });
+      };
+      window.addEventListener("astc-project-changed", handleProj);
+      window.addEventListener("storage", handleProj);
+      return () => {
+        window.removeEventListener("astc-project-changed", handleProj);
+        window.removeEventListener("storage", handleProj);
+      };
+    }
+  }, [projects]);
+
   async function fetchAttendance() {
     if (!token) return;
     setIsLoading(true);
