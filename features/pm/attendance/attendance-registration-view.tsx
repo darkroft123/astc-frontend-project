@@ -77,6 +77,8 @@ type TeamMember = {
 };
 
 const SHIFT_LABELS: Record<string, string> = {
+  FIXED: "Fijo",
+  REGULAR: "Regular",
   PERMANENT: "Permanente",
   ROTATING_4X4: "Rotativo 4x4",
   ROTATING_7X7: "Rotativo 7x7",

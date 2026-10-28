@@ -68,6 +68,7 @@ export default function BiometricRegistrationView({
   const [isSyncing, setIsSyncing] = useState(false);
 
   const isEntryDone = !!todayAtt?.checkIn && !todayAtt?.checkOut;
+  const isBothDone = !!todayAtt?.checkOut;
 
   const todayLocal = new Intl.DateTimeFormat("en-CA", {
     timeZone: projectTimezone,
@@ -340,6 +341,7 @@ export default function BiometricRegistrationView({
           photo={photo}
           faceInside={faceInside}
           isEntryDone={isEntryDone}
+          isBothDone={isBothDone}
           onStartCamera={startCamera}
           onRetakePhoto={retakePhoto}
           onActionClick={handleActionClick}

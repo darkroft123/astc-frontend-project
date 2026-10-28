@@ -167,13 +167,27 @@ export default function PMAsistenciasPage() {
     }
   }, [hydrated, token, fetchRecords]);
 
+  const parseComparable = (str?: string) => {
+    if (!str) return "";
+    if (str.includes("/")) {
+      const p = str.split("/");
+      if (p.length === 3) return `${p[2]}-${p[1].padStart(2, "0")}-${p[0].padStart(2, "0")}`;
+    }
+    return str.slice(0, 10);
+  };
+
   const filteredRecords = useMemo(() => {
+    const fromComp = parseComparable(dateRange.from);
+    const toComp = parseComparable(dateRange.to);
+
     return records.filter((r) => {
+      const rComp = parseComparable(r.date);
+      const inRange = (!fromComp || rComp >= fromComp) && (!toComp || rComp <= toComp);
       const matchesDate = !searchDate || r.date.includes(searchDate);
       const matchesStatus = statusFilter === "all" || r.status === statusFilter;
-      return matchesDate && matchesStatus;
+      return inRange && matchesDate && matchesStatus;
     });
-  }, [records, searchDate, statusFilter]);
+  }, [records, searchDate, statusFilter, dateRange]);
 
   useEffect(() => {
     setPage(1);

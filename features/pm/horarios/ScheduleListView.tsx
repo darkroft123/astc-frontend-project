@@ -28,6 +28,8 @@ import { ScheduleMobileCards } from "./components/ScheduleMobileCards";
 
 const SHIFT_CONFIG: Record<string, { label: string; icon: any }> = {
   REGULAR: { label: "Regular", icon: Clock },
+  FIXED: { label: "Fijo", icon: Clock },
+  ROTATING: { label: "Rotativo", icon: Repeat },
   ROTATING_4X4: { label: "Rotativo 4×4", icon: Repeat },
   ROTATING_7X7: { label: "Rotativo 7×7", icon: Repeat },
   FLEXIBLE: { label: "Flexible", icon: CalendarDays },
@@ -36,21 +38,37 @@ const SHIFT_CONFIG: Record<string, { label: string; icon: any }> = {
 
 function getShiftConfig(shiftType?: string) {
   if (!shiftType) return { label: "Regular", icon: Clock };
+  const upper = shiftType.toUpperCase();
   if (
-    shiftType === "ROTATING_4X4" ||
-    shiftType.includes("4X4") ||
-    shiftType.includes("4x4")
+    upper === "ROTATING_4X4" ||
+    upper.includes("4X4") ||
+    upper.includes("4×4")
   ) {
     return { label: "Rotativo 4×4", icon: Repeat };
   }
   if (
-    shiftType === "ROTATING_7X7" ||
-    shiftType.includes("7X7") ||
-    shiftType.includes("7x7")
+    upper === "ROTATING_7X7" ||
+    upper.includes("7X7") ||
+    upper.includes("7×7")
   ) {
     return { label: "Rotativo 7×7", icon: Repeat };
   }
-  return SHIFT_CONFIG[shiftType] || { label: shiftType, icon: Clock };
+  if (upper === "FIXED" || upper === "FIJO") {
+    return { label: "Fijo", icon: Clock };
+  }
+  if (upper === "REGULAR") {
+    return { label: "Regular", icon: Clock };
+  }
+  if (upper === "FLEXIBLE") {
+    return { label: "Flexible", icon: CalendarDays };
+  }
+  if (upper === "TRANSITORY" || upper === "TRANSITORIO") {
+    return { label: "Transitorio", icon: CalendarRange };
+  }
+  if (upper.startsWith("ROTAT")) {
+    return { label: "Rotativo", icon: Repeat };
+  }
+  return SHIFT_CONFIG[upper] || { label: shiftType, icon: Clock };
 }
 
 function getScheduleTimeDisplay(t: any): string {

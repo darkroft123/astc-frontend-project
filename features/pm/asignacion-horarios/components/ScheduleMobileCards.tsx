@@ -39,8 +39,8 @@ export function ScheduleMobileCards({
               ? "7×7"
               : r.shiftType === "FLEXIBLE"
               ? "Flexible"
-              : r.shiftType === "TRANSITORY"
-              ? "Transitorio"
+              : (r.shiftType === "TRANSITORY" || r.shiftType === "FIXED")
+              ? (r.shiftType === "FIXED" ? "Fijo" : "Transitorio")
               : null;
 
           return (

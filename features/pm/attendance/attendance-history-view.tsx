@@ -271,10 +271,10 @@ export function AttendanceHistoryView() {
       if (Array.isArray(data) && data.length > 0) {
         setRecords(data);
       } else {
-        setRecords(DEFAULT_SAMPLE_ATTENDANCE);
+        setRecords([]);
       }
     } catch {
-      setRecords(DEFAULT_SAMPLE_ATTENDANCE);
+      setRecords([]);
     } finally {
       setLoading(false);
     }
@@ -493,7 +493,7 @@ export function AttendanceHistoryView() {
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => setActivePeriod(tab.id)}
+                  onClick={() => { setActivePeriod(tab.id); setDateRange(getPeriodDates(tab.id)); }}
                   className={`py-1.5 px-1 rounded-xl text-xs transition-all cursor-pointer truncate ${
                     isActive
                       ? "bg-white dark:bg-accent text-foreground border border-border font-semibold shadow-xs"
@@ -1007,7 +1007,10 @@ export function AttendanceHistoryView() {
         open={dateRangeModalOpen}
         onOpenChange={setDateRangeModalOpen}
         initialRange={dateRange}
-        onApply={(newRange: { from: string; to: string }) => setDateRange(newRange)}
+        onApply={(newRange: { from: string; to: string }) => {
+          setDateRange(newRange);
+          setActivePeriod("custom" as any);
+        }}
       />
     </div>
   );

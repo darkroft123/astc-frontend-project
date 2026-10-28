@@ -13,6 +13,7 @@ interface AttendanceCameraCardProps {
   photo: string | null;
   faceInside: boolean;
   isEntryDone: boolean;
+  isBothDone?: boolean;
   onStartCamera: () => void;
   onRetakePhoto: () => void;
   onActionClick: (action: "PHOTO" | "NO_PHOTO") => void;
@@ -24,6 +25,7 @@ export function AttendanceCameraCard({
   photo,
   faceInside,
   isEntryDone,
+  isBothDone,
   onStartCamera,
   onRetakePhoto,
   onActionClick,
@@ -123,8 +125,19 @@ export function AttendanceCameraCard({
         </div>
 
         {/* Action buttons bar */}
-        <div className="flex items-center justify-between w-full pt-2 gap-4">
-          {!photo ? (
+        <div className="flex flex-col items-center justify-center w-full pt-2 gap-3">
+          {isBothDone ? (
+            <div className="w-full p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col items-center text-center">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500 mb-1" />
+              <p className="font-sans font-bold text-xs sm:text-sm text-foreground">
+                ¡Jornada de hoy completada!
+              </p>
+              <p className="font-sans text-[11px] text-muted-foreground mt-0.5">
+                Ya registraste tu entrada y salida correspondientes a hoy.
+              </p>
+            </div>
+          ) : !photo ? (
+            <div className="flex items-center justify-between w-full gap-4">
             <>
               <button
                 onClick={() => onActionClick("NO_PHOTO")}
@@ -146,7 +159,7 @@ export function AttendanceCameraCard({
                     : "Marcar entrada"
                   : "Esperando rostro"}
               </button>
-            </>
+            </div>
           ) : (
             <div className="flex items-center justify-between w-full">
               <button

@@ -20,7 +20,7 @@ import { formatLocalTime, getEffectiveTimezone } from "@/lib/timezone";
 import { isOnline, flushAttendanceQueue, getCachedTodayAttendance, cacheTodayAttendance, enqueueAttendance } from "@/lib/offline-queue";
 
 function formatAttendanceTime(dateStr?: string | null) {
-  if (!dateStr) return "-";
+  if (!dateStr) return "Pendiente";
   try {
     const d = new Date(dateStr.endsWith("Z") || dateStr.includes("+") ? dateStr : `${dateStr}Z`);
     if (isNaN(d.getTime())) {
@@ -198,18 +198,37 @@ export default function AttendancePreviewPage() {
   const displayLat = lat ?? -12.0184;
   const displayLng = lng ?? -77.0817;
 
-  const entryTimeFormatted = todayAtt?.checkIn ? formatAttendanceTime(todayAtt.checkIn) : "08:52 a. m.";
-  const exitTimeFormatted = todayAtt?.checkOut ? formatAttendanceTime(todayAtt.checkOut) : "09:07 a. m.";
-  const timestampText = "2/9/2026, 10:55:21 p. m.";
+  const entryTimeFormatted = todayAtt?.checkIn ? formatAttendanceTime(todayAtt.checkIn) : "Pendiente";
+  const exitTimeFormatted = todayAtt?.checkOut ? formatAttendanceTime(todayAtt.checkOut) : "Pendiente";
+  const timestampText = new Date().toLocaleString("es-PE", {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+
+  const now = new Date();
+  const currentHHmm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  const startTime = project?.workStartTime ? project.workStartTime.slice(0, 5) : "08:00";
+  const endTime = project?.workEndTime ? project.workEndTime.slice(0, 5) : "17:00";
+
+  const isAfterHours = currentHHmm > endTime;
+  const isEarlyExit = currentHHmm < endTime;
+  const isLateEntry = currentHHmm > startTime;
 
   const warningCard = (
     !base64 ? (
       <div className="rounded-2xl border border-amber/30 bg-amber/10 dark:bg-amber/10 p-4 flex items-start gap-3 shadow-sm">
         <AlertTriangle className="w-5 h-5 text-amber shrink-0 mt-0.5" />
         <div>
-          <h4 className="text-xs font-bold text-foreground">Asistencia sin foto</h4>
+          <h4 className="text-xs font-bold text-foreground">
+            {isEntryDone ? "Marcando salida sin foto" : "Marcando entrada sin foto"}
+          </h4>
           <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-            No se capturó una foto biométrica. El sistema notificará una alerta de revisión al jefe de proyecto.
+            No se capturó una foto biométrica para este marcaje. El sistema registrará la marca con observación de revisión.
           </p>
         </div>
       </div>
@@ -217,7 +236,9 @@ export default function AttendancePreviewPage() {
       <div className="rounded-2xl border border-green/30 bg-green/10 dark:bg-green/10 p-4 flex items-start gap-3 shadow-sm">
         <CheckCircle2 className="w-5 h-5 text-green shrink-0 mt-0.5" />
         <div>
-          <h4 className="text-xs font-bold text-foreground">Foto biométrica capturada</h4>
+          <h4 className="text-xs font-bold text-foreground">
+            Foto biométrica capturada para {isEntryDone ? "salida" : "entrada"}
+          </h4>
           <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
             Captura biométrica facial procesada y verificada contra el perfil registrado.
           </p>
@@ -262,12 +283,60 @@ export default function AttendancePreviewPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-green font-semibold text-sm">
                 <CheckCircle2 className="w-4 h-4 stroke-[2.2]" />
-                <span>Salida registrada</span>
+                <span>
+                  {isBothDone
+                    ? "Jornada completada"
+                    : isEntryDone
+                    ? "Registro de salida"
+                    : "Registro de entrada"}
+                </span>
               </div>
-              <span className="bg-amber/15 text-amber border border-amber/40 rounded-full px-3 py-0.5 text-xs font-semibold">
-                Salida temprana
-              </span>
+              {isBothDone ? (
+                <span className="bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 rounded-full px-3 py-0.5 text-xs font-semibold">
+                  Jornada completa
+                </span>
+              ) : isEntryDone ? (
+                isAfterHours ? (
+                  <span className="bg-rose-500/15 text-rose-500 border border-rose-500/30 rounded-full px-3 py-0.5 text-xs font-semibold">
+                    Salida fuera de horario
+                  </span>
+                ) : isEarlyExit ? (
+                  <span className="bg-amber/15 text-amber border border-amber/40 rounded-full px-3 py-0.5 text-xs font-semibold">
+                    Salida anticipada
+                  </span>
+                ) : (
+                  <span className="bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 rounded-full px-3 py-0.5 text-xs font-semibold">
+                    En horario
+                  </span>
+                )
+              ) : isLateEntry ? (
+                <span className="bg-amber/15 text-amber border border-amber/40 rounded-full px-3 py-0.5 text-xs font-semibold">
+                  Tardanza
+                </span>
+              ) : (
+                <span className="bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 rounded-full px-3 py-0.5 text-xs font-semibold">
+                  Puntual
+                </span>
+              )}
             </div>
+
+            {/* Alert for exit schedule warnings */}
+            {isEntryDone && isAfterHours && (
+              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 flex items-start gap-2.5 text-xs text-rose-600 dark:text-rose-400">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
+                <span>
+                  Atención: Estás marcando salida después del fin de jornada asignado ({endTime}). Se registrará con aviso de salida fuera de horario.
+                </span>
+              </div>
+            )}
+            {isEntryDone && isEarlyExit && (
+              <div className="rounded-xl border border-amber/30 bg-amber/10 p-3 flex items-start gap-2.5 text-xs text-amber-600 dark:text-amber-400">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-500" />
+                <span>
+                  Aviso: Estás marcando salida antes del fin de jornada asignado ({endTime}).
+                </span>
+              </div>
+            )}
 
             {/* Schedule Boxes */}
             <div className="grid grid-cols-2 gap-3">
@@ -307,12 +376,19 @@ export default function AttendancePreviewPage() {
 
             {/* Summary or Action Button */}
             {isBothDone || todayAtt?.checkOut ? (
-              <div className="rounded-xl border border-green/30 bg-green/15 dark:bg-green/15 p-4 flex flex-col items-center justify-center text-center mt-2">
-                <CheckCircle2 className="w-5 h-5 text-green mx-auto mb-1.5" />
-                <p className="text-sm font-bold text-foreground">¡Jornada de hoy completada!</p>
-                <p className="text-xs text-green mt-1">
-                  Entrada {entryTimeFormatted} · Salida {exitTimeFormatted}
+              <div className="rounded-xl border border-green/30 bg-green/15 dark:bg-green/15 p-4 flex flex-col items-center justify-center text-center mt-2 space-y-1">
+                <CheckCircle2 className="w-6 h-6 text-green mx-auto mb-1" />
+                <p className="text-sm font-bold text-foreground">¡Ya registraste tu asistencia hoy!</p>
+                <p className="text-xs text-muted-foreground">
+                  Jornada completada: Entrada {entryTimeFormatted} · Salida {exitTimeFormatted}
                 </p>
+                <button
+                  type="button"
+                  onClick={() => router.push("/pm")}
+                  className="mt-3 px-4 py-2 rounded-xl bg-surface border border-border/80 text-foreground text-xs font-semibold hover:bg-accent transition-colors cursor-pointer"
+                >
+                  Volver al panel principal
+                </button>
               </div>
             ) : isEntryDone ? (
               <button
@@ -396,42 +472,15 @@ export default function AttendancePreviewPage() {
             </span>
 
             {/* Map Canvas */}
-            <div className="h-[210px] rounded-xl border border-border/50 bg-sidebar dark:bg-sidebar relative overflow-hidden flex items-center justify-center">
-              {/* Decorative Grid */}
-              <div
-                className="absolute inset-0 opacity-[0.25]"
-                style={{
-                  backgroundImage: `
-                    linear-gradient(to right, var(--line-3) 1px, transparent 1px),
-                    linear-gradient(to bottom, var(--line-3) 1px, transparent 1px)
-                  `,
-                  backgroundSize: "28px 28px",
-                }}
+            <div className="h-[210px] w-full rounded-xl border border-border/50 bg-sidebar dark:bg-sidebar relative overflow-hidden flex items-center justify-center shadow-inner">
+              <iframe
+                title="Ubicación GPS Satelital"
+                width="100%"
+                height="100%"
+                className="w-full h-full border-0"
+                loading="lazy"
+                src={`https://www.openstreetmap.org/export/embed.html?bbox=${displayLng - 0.006}%2C${displayLat - 0.004}%2C${displayLng + 0.006}%2C${displayLat + 0.004}&layer=mapnik&marker=${displayLat}%2C${displayLng}`}
               />
-
-              {/* Zoom Controls */}
-              <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
-                <button
-                  type="button"
-                  className="w-6 h-6 rounded-md bg-surface border border-white/10 text-muted-foreground hover:text-foreground text-xs flex items-center justify-center font-bold"
-                >
-                  +
-                </button>
-                <button
-                  type="button"
-                  className="w-6 h-6 rounded-md bg-surface border border-white/10 text-muted-foreground hover:text-foreground text-xs flex items-center justify-center font-bold"
-                >
-                  −
-                </button>
-              </div>
-
-              {/* Center Marker & Text */}
-              <div className="relative flex flex-col items-center justify-center gap-1.5 z-10">
-                <div className="w-7 h-7 rounded-full bg-blue/20 border border-blue/40 flex items-center justify-center text-blue">
-                  <MapPin className="w-4 h-4 fill-blue/30 text-blue" />
-                </div>
-                <span className="text-[11px] text-muted-foreground">Vista de mapa no disponible</span>
-              </div>
             </div>
 
             {/* Coordinates line */}

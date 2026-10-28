@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatAvatarUrl } from "@/lib/avatar-url";
 import { createPortal } from "react-dom";
@@ -17,6 +17,8 @@ import {
   MapPin,
   Loader2,
   Plus,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   getCollectionsForProject,
@@ -81,10 +83,13 @@ export default function ProjectDetailModal({
   // Members state
   const [membersList, setMembersList] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<any[]>([]);
-  const [showAddMember, setShowAddMember] = useState(false);
-  const [selectedNewUserId, setSelectedNewUserId] = useState("");
-  const [selectedNewUserRole, setSelectedNewUserRole] = useState("TEAM_MEMBER");
-  const [isAddingMember, setIsAddingMember] = useState(false);
+  const [membersPage, setMembersPage] = useState(1);
+  const MEMBERS_PER_PAGE = 5;
+  const totalMemberPages = Math.max(1, Math.ceil(membersList.length / MEMBERS_PER_PAGE));
+  const paginatedMembers = useMemo(() => {
+    const start = (membersPage - 1) * MEMBERS_PER_PAGE;
+    return membersList.slice(start, start + MEMBERS_PER_PAGE);
+  }, [membersList, membersPage]);
 
   useEffect(() => {
     if (!project) return;
@@ -723,7 +728,7 @@ export default function ProjectDetailModal({
                       <div className="flex items-center justify-between">
                         <h4 className="font-bold text-xs text-foreground dark:text-[#EEF0F6]">{shift.name}</h4>
                         <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-purple-900/40 text-purple-300 border border-purple-500/25 font-semibold">
-                          {shift.shiftType || "REGULAR"}
+                          {shift.shiftType === "FIXED" ? "Fijo" : shift.shiftType === "REGULAR" ? "Regular" : shift.shiftType === "FLEXIBLE" ? "Flexible" : shift.shiftType === "TRANSITORY" ? "Transitorio" : shift.shiftType?.startsWith("ROTATING") ? "Rotativo" : (shift.shiftType || "Fijo")}
                         </span>
                       </div>
                       <p className="text-xs text-[#8F96AE] font-mono">
@@ -763,82 +768,16 @@ export default function ProjectDetailModal({
                     Miembros del proyecto
                   </h3>
                   <p className="text-[11px] text-muted-foreground dark:text-[#8F96AE]">
-                    {membersList.length} personas asignadas
+                    {membersList.length} {membersList.length === 1 ? "persona asignada" : "personas asignadas"}
                   </p>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => setShowAddMember(!showAddMember)}
-                  className="px-3.5 py-1.5 rounded-xl border border-border dark:border-white/10 bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1c2238] text-xs font-semibold text-foreground dark:text-white flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>{showAddMember ? "Cerrar" : "Asignar"}</span>
-                </button>
               </div>
-
-              {/* Form to add member */}
-              {showAddMember && (
-                <div className="p-4 rounded-2xl border border-border dark:border-white/10 bg-muted/40 dark:bg-[#101322] space-y-3">
-                  <h4 className="text-xs font-bold text-foreground dark:text-white">Asignar nuevo miembro</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[11px] font-semibold text-muted-foreground block mb-1">
-                        Usuario
-                      </label>
-                      <select
-                        value={selectedNewUserId}
-                        onChange={(e) => setSelectedNewUserId(e.target.value)}
-                        className="w-full h-9 px-3 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs text-foreground dark:text-white"
-                      >
-                        <option value="">Selecciona usuario...</option>
-                        {allUsers
-                          .filter((u) => !membersList.some((m) => (m.userId || m.id) === u.id))
-                          .map((u) => (
-                            <option key={u.id} value={u.id}>
-                              {u.firstName} {u.lastName} (@{u.username})
-                            </option>
-                          ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-[11px] font-semibold text-muted-foreground block mb-1">
-                        Rol en el proyecto
-                      </label>
-                      <select
-                        value={selectedNewUserRole}
-                        onChange={(e) => setSelectedNewUserRole(e.target.value)}
-                        className="w-full h-9 px-3 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs text-foreground dark:text-white"
-                      >
-                        <option value="TEAM_MEMBER">Colaborador</option>
-                        <option value="PROJECT_MANAGER">Jefe de proyecto</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => setShowAddMember(false)}
-                      className="px-3 py-1.5 rounded-xl border border-border dark:border-[#1E2335] text-xs font-medium cursor-pointer"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      type="button"
-                      disabled={!selectedNewUserId || isAddingMember}
-                      onClick={handleAddMemberSubmit}
-                      className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-[#5B8CFF] to-[#A855F7] text-white text-xs font-semibold disabled:opacity-50 cursor-pointer shadow-xs"
-                    >
-                      {isAddingMember ? "Asignando..." : "Asignar"}
-                    </button>
-                  </div>
-                </div>
-              )}
 
               {/* Members List matching SVG */}
               <div className="space-y-2.5">
-                {membersList.map((mem, idx) => {
-                  const u = mem.user || {};
+                {paginatedMembers.map((mem, idx) => {
+                  const fullUser = allUsers.find((au) => au.id === (mem.userId || mem.id)) || mem.user || {};
+                  const u = fullUser;
                   const isPM = mem.role === "PROJECT_MANAGER";
                   const username = u.username ? `@${u.username}` : (isPM ? "@jefeproyecto-x" : `@usuario-${idx + 1}`);
                   const email = u.email || (isPM ? "pm@astc.com" : `${u.username || "usuario"}@astc.com`);
@@ -846,7 +785,11 @@ export default function ProjectDetailModal({
                     ? `${u.firstName} ${u.lastName || ""}`.trim()
                     : (isPM ? username : username);
 
-                  const initials = isPM ? "JP" : (idx === 1 ? "CM" : (u.firstName?.[0] || "U") + (u.lastName?.[0] || "S"));
+                  const initials = (u.firstName && u.lastName)
+                    ? `${u.firstName[0]}${u.lastName[0]}`.toUpperCase()
+                    : (u.firstName ? u.firstName.slice(0, 2).toUpperCase() : (u.username ? u.username.slice(0, 2).toUpperCase() : (isPM ? "JP" : "U")));
+
+                  const avatarSrc = formatAvatarUrl(u.avatarUrl);
 
                   return (
                     <div
@@ -856,8 +799,8 @@ export default function ProjectDetailModal({
                       <div className="flex items-center gap-3 min-w-0">
                         {/* Circular Avatar with gradient matching SVG paint2/paint3_linear */}
                         <Avatar className="w-11 h-11 rounded-full shrink-0 shadow-xs">
-                          {formatAvatarUrl(u.avatarUrl) && (
-                            <AvatarImage src={formatAvatarUrl(u.avatarUrl)!} alt={displayName} className="object-cover" />
+                          {avatarSrc && (
+                            <AvatarImage src={avatarSrc} alt={displayName} className="object-cover" />
                           )}
                           <AvatarFallback
                             className="w-11 h-11 rounded-full text-white font-bold text-xs flex items-center justify-center"
@@ -897,6 +840,45 @@ export default function ProjectDetailModal({
                   );
                 })}
               </div>
+
+              {/* PAGINACIÓN DE MIEMBROS DE 5 EN 5 */}
+              {membersList.length > 0 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 px-1 text-xs text-muted-foreground border-t border-border dark:border-white/[0.08]">
+                  <div>
+                    <span>
+                      Mostrando <strong className="text-foreground">{Math.min((membersPage - 1) * MEMBERS_PER_PAGE + 1, membersList.length)}</strong> - <strong className="text-foreground">{Math.min(membersPage * MEMBERS_PER_PAGE, membersList.length)}</strong> de <strong className="text-foreground">{membersList.length}</strong> miembros
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span>
+                      Página <strong className="text-foreground">{membersPage}</strong> de <strong className="text-foreground">{totalMemberPages}</strong>
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        disabled={membersPage <= 1}
+                        onClick={() => setMembersPage((p) => Math.max(1, p - 1))}
+                        className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
+                        title="Página anterior"
+                      >
+                        <ChevronLeft className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline text-xs">Anterior</span>
+                      </button>
+                      <button
+                        type="button"
+                        disabled={membersPage >= totalMemberPages}
+                        onClick={() => setMembersPage((p) => Math.min(totalMemberPages, p + 1))}
+                        className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
+                        title="Página siguiente"
+                      >
+                        <span className="hidden sm:inline text-xs">Siguiente</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

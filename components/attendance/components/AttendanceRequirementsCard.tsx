@@ -112,6 +112,18 @@ export function AttendanceRequirementsCard({
         <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">
           Precisión ±12 m. La ubicación se adjunta al marcaje.
         </p>
+
+        {/* Live Mini GPS Map */}
+        <div className="h-[125px] w-full rounded-xl border border-border/60 overflow-hidden relative shadow-inner mt-2">
+          <iframe
+            title="Mapa GPS"
+            width="100%"
+            height="100%"
+            className="w-full h-full border-0"
+            loading="lazy"
+            src={`https://www.openstreetmap.org/export/embed.html?bbox=${(effectiveCoords?.lng ?? -77.0818) - 0.005}%2C${(effectiveCoords?.lat ?? -12.0184) - 0.003}%2C${(effectiveCoords?.lng ?? -77.0818) + 0.005}%2C${(effectiveCoords?.lat ?? -12.0184) + 0.003}&layer=mapnik&marker=${effectiveCoords?.lat ?? -12.0184}%2C${effectiveCoords?.lng ?? -77.0818}`}
+          />
+        </div>
       </div>
     </div>
   );
