@@ -296,12 +296,9 @@ export function AttendanceHistoryView() {
         toDate: parseToIso(dateRange.to),
       });
       if (result?.content) {
-        let content = result.content;
+        let content = result.content.replace(/^(\uFEFF)?sep=;[\r\n]+/, "");
         if (!content.startsWith("\uFEFF")) {
           content = "\uFEFF" + content;
-        }
-        if (!content.includes("sep=")) {
-          content = "\uFEFFsep=;\r\n" + content.replace(/^\uFEFF/, "");
         }
         const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
@@ -797,7 +794,7 @@ export function AttendanceHistoryView() {
                       ENTRADA
                     </span>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono font-bold text-emerald-400">{formatAttendanceTime(r.checkIn, r.date)}</span>
+                      <span className="text-xs font-mono font-bold text-emerald-400 whitespace-nowrap">{formatAttendanceTime(r.checkIn, r.date)}</span>
                       {checkInPhoto && (
                         <button
                           type="button"
@@ -815,7 +812,7 @@ export function AttendanceHistoryView() {
                       SALIDA
                     </span>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono font-medium text-amber-400">{formatAttendanceTime(r.checkOut, r.date)}</span>
+                      <span className="text-xs font-mono font-medium text-amber-400 whitespace-nowrap">{formatAttendanceTime(r.checkOut, r.date)}</span>
                       {r.checkOut && r.checkOut !== "—" && checkOutPhoto && (
                         <button
                           type="button"
@@ -907,9 +904,9 @@ export function AttendanceHistoryView() {
                       </span>
                     </td>
                     <td className="py-3 px-4 font-mono text-foreground">{row.date}</td>
-                    <td className="py-3 px-4 font-mono text-emerald-400 font-medium">
+                    <td className="py-3 px-4 font-mono text-emerald-400 font-medium whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
-                        <span>{formatAttendanceTime(row.checkIn, row.date)}</span>
+                        <span className="whitespace-nowrap">{formatAttendanceTime(row.checkIn, row.date)}</span>
                         {checkInPhoto && (
                           <button
                             type="button"
@@ -922,9 +919,9 @@ export function AttendanceHistoryView() {
                         )}
                       </div>
                     </td>
-                    <td className="py-3 px-4 font-mono text-amber-400">
+                    <td className="py-3 px-4 font-mono text-amber-400 whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
-                        <span>{formatAttendanceTime(row.checkOut, row.date)}</span>
+                        <span className="whitespace-nowrap">{formatAttendanceTime(row.checkOut, row.date)}</span>
                         {row.checkOut && row.checkOut !== "—" && checkOutPhoto && (
                           <button
                             type="button"

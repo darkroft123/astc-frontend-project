@@ -553,7 +553,7 @@ export default function PMAsistenciasPage() {
                     ENTRADA
                   </span>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono font-medium text-foreground">{formatAttendanceTime(r.checkIn, r.date)}</span>
+                    <span className="text-xs font-mono font-medium text-foreground whitespace-nowrap">{formatAttendanceTime(r.checkIn, r.date)}</span>
                     {r.checkIn && r.checkIn !== "-" && checkInPhoto && (
                       <button
                         type="button"
@@ -571,7 +571,7 @@ export default function PMAsistenciasPage() {
                     SALIDA
                   </span>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono font-medium text-muted-foreground">{formatAttendanceTime(r.checkOut, r.date)}</span>
+                    <span className="text-xs font-mono font-medium text-muted-foreground whitespace-nowrap">{formatAttendanceTime(r.checkOut, r.date)}</span>
                     {r.checkOut && r.checkOut !== "-" && checkOutPhoto && (
                       <button
                         type="button"
@@ -655,9 +655,9 @@ export default function PMAsistenciasPage() {
                 return (
                 <tr key={row.id} className="hover:bg-muted/30 transition-colors">
                   <td className="py-4 px-4 font-mono text-xs text-foreground">{row.date}</td>
-                  <td className="py-4 px-4 font-mono text-xs text-foreground font-medium">
+                  <td className="py-4 px-4 font-mono text-xs text-foreground font-medium whitespace-nowrap">
                     <div className="flex items-center gap-1.5">
-                      <span>{formatAttendanceTime(row.checkIn, row.date)}</span>
+                      <span className="whitespace-nowrap">{formatAttendanceTime(row.checkIn, row.date)}</span>
                       {row.checkIn && row.checkIn !== "-" && checkInPhoto && (
                         <button
                           type="button"
@@ -670,9 +670,9 @@ export default function PMAsistenciasPage() {
                       )}
                     </div>
                   </td>
-                  <td className="py-4 px-4 font-mono text-xs text-muted-foreground">
+                  <td className="py-4 px-4 font-mono text-xs text-muted-foreground whitespace-nowrap">
                     <div className="flex items-center gap-1.5">
-                      <span>{formatAttendanceTime(row.checkOut, row.date)}</span>
+                      <span className="whitespace-nowrap">{formatAttendanceTime(row.checkOut, row.date)}</span>
                       {row.checkOut && row.checkOut !== "-" && checkOutPhoto && (
                         <button
                           type="button"

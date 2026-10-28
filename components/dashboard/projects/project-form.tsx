@@ -89,8 +89,8 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
       setName(initialData.name || "");
       setDescription(initialData.description || "");
       setStatus(initialData.status || "ACTIVE");
-      setStartDate(initialData.startDate || "");
-      setEndDate(initialData.endDate || "");
+      setStartDate(initialData.startDate ? initialData.startDate.split("T")[0] : "");
+      setEndDate(initialData.endDate ? initialData.endDate.split("T")[0] : "");
 
       if (initialData.timezone) setTimezone(initialData.timezone);
       if (initialData.vacationEligibilityDays != null) setVacationEligibilityDays(initialData.vacationEligibilityDays);

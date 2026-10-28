@@ -1,12 +1,12 @@
-const DEFAULT_TIMEZONE = "America/Lima";
+export const DEFAULT_TIMEZONE = "America/Lima";
 
 export function getEffectiveTimezone(projectTimezone?: string | null): string {
-  if (projectTimezone && projectTimezone.length > 0) {
+  if (projectTimezone && projectTimezone.trim() !== "") {
     try {
       Intl.DateTimeFormat(undefined, { timeZone: projectTimezone });
       return projectTimezone;
     } catch {
-      // Invalid timezone, fall back to default
+      // Fallback si la zona guardada no es válida en el navegador
     }
   }
   return DEFAULT_TIMEZONE;
@@ -20,15 +20,22 @@ export function formatAttendanceTime(
   if (!timeStr || timeStr === "-" || timeStr === "—") return "—";
   const tz = getEffectiveTimezone(timezone);
 
+  const cleanNoBreak = (str: string): string => {
+    return str
+      .replace(/\s+/g, "\u00A0")
+      .replace(/([ap]\.)\s*(m\.)/gi, "$1\u00A0$2");
+  };
+
   if (timeStr.includes("T")) {
     const d = new Date(timeStr);
     if (!isNaN(d.getTime())) {
-      return d.toLocaleTimeString("es-PE", {
+      const formatted = d.toLocaleTimeString("es-PE", {
         hour: "2-digit",
         minute: "2-digit",
         hour12: true,
         timeZone: tz,
       });
+      return cleanNoBreak(formatted);
     }
   }
 
@@ -43,17 +50,18 @@ export function formatAttendanceTime(
         const iso = `${dStr}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00-05:00`;
         const d = new Date(iso);
         if (!isNaN(d.getTime())) {
-          return d.toLocaleTimeString("es-PE", {
+          const formatted = d.toLocaleTimeString("es-PE", {
             hour: "2-digit",
             minute: "2-digit",
             hour12: true,
             timeZone: tz,
           });
+          return cleanNoBreak(formatted);
         }
       }
-      const ampm = hour >= 12 ? "p. m." : "a. m.";
+      const ampm = hour >= 12 ? "p.\u00A0m." : "a.\u00A0m.";
       const h12 = hour % 12 || 12;
-      return `${String(h12).padStart(2, "0")}:${String(minute).padStart(2, "0")} ${ampm}`;
+      return `${String(h12).padStart(2, "0")}:${String(minute).padStart(2, "0")}\u00A0${ampm}`;
     }
   }
   return timeStr;
@@ -68,17 +76,18 @@ export function formatDateTime(value: string | null | undefined, timezone?: stri
   const tz = getEffectiveTimezone(timezone);
 
   try {
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return value;
-    return date.toLocaleString("es-PE", {
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return value;
+
+    return d.toLocaleString("es-PE", {
       timeZone: tz,
-      year: "2-digit",
+      year: "numeric",
       month: "2-digit",
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
-    });
+    }).replace(/([ap]\.)\s*(m\.)/gi, "$1\u00A0$2");
   } catch {
     return value;
   }
@@ -89,7 +98,7 @@ export function getClockParts(timezone?: string | null) {
   const now = new Date();
 
   return {
-    time: now.toLocaleTimeString("es-PE", { timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: true }),
+    time: now.toLocaleTimeString("es-PE", { timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: true }).replace(/([ap]\.)\s*(m\.)/gi, "$1\u00A0$2"),
     date: now.toLocaleDateString("es-PE", { timeZone: tz }),
     day: now.toLocaleDateString("es-PE", { weekday: "long", timeZone: tz }),
   };
