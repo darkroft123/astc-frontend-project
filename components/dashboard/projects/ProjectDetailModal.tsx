@@ -27,7 +27,6 @@ import {
   listHolidays,
   listShiftTemplates,
   getAllUsers,
-  addProjectMember,
 } from "@/app/services/project.assistance.service";
 
 interface ProjectDetailModalProps {
@@ -110,7 +109,7 @@ export default function ProjectDetailModal({
   }, [onClose]);
 
   useEffect(() => {
-    if (!token || !showAddMember) return;
+    if (!token) return;
     getAllUsers(token)
       .then((users) => {
         const nonAdmin = (users || []).filter((u: any) => {
@@ -120,7 +119,7 @@ export default function ProjectDetailModal({
         setAllUsers(nonAdmin);
       })
       .catch((err) => console.error("Error loading users:", err));
-  }, [token, showAddMember]);
+  }, [token]);
 
   const fetchHolidays = useCallback(async (yr: number) => {
     if (!token || !project?.id) return;
@@ -215,29 +214,7 @@ export default function ProjectDetailModal({
     }
   };
 
-  const handleAddMemberSubmit = async () => {
-    if (!token || !project?.id || !selectedNewUserId) return;
-    setIsAddingMember(true);
-    try {
-      await addProjectMember(token, project.id, selectedNewUserId, selectedNewUserRole);
-      const newUser = allUsers.find((u) => u.id === selectedNewUserId);
-      const newMember = {
-        id: `mem-${Date.now()}`,
-        userId: selectedNewUserId,
-        role: selectedNewUserRole,
-        user: newUser,
-      };
-      setMembersList((prev) => [...prev, newMember]);
-      setShowAddMember(false);
-      setSelectedNewUserId("");
-      if (onRefresh) onRefresh();
-    } catch (err) {
-      console.error("Error adding project member:", err);
-      alert("Error al agregar miembro al proyecto.");
-    } finally {
-      setIsAddingMember(false);
-    }
-  };
+
 
   const responsibleMember =
     membersList.find((m: any) => m.role === "PROJECT_MANAGER") || membersList[0];
