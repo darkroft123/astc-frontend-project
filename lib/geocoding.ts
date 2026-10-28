@@ -16,18 +16,23 @@ export async function getDistrictFromCoords(lat: number, lng: number): Promise<s
     const data = await res.json();
     const addr = data.address || {};
     const district =
+      addr.city ||
+      addr.town ||
       addr.city_district ||
       addr.suburb ||
+      addr.municipality ||
+      addr.county ||
       addr.neighbourhood ||
       addr.quarter ||
-      addr.town ||
-      addr.village ||
-      addr.city ||
-      addr.county ||
       `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
 
-    cache[key] = district;
-    return district;
+    const state = addr.state || addr.region;
+    const result = state && district && !district.includes(state) && district !== state
+      ? `${district}, ${state}`
+      : district;
+
+    cache[key] = result;
+    return result;
   } catch (err) {
     const fallback = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
     cache[key] = fallback;

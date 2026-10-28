@@ -21,6 +21,7 @@ import { useAuth } from "@/app/jwt/auth/auth.provider";
 import { listAttendance } from "@/app/services/assistance.service";
 import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
 import { formatAvatarUrl } from "@/lib/avatar-url";
+import { formatAttendanceTime } from "@/lib/timezone";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 
 type Period =
@@ -552,7 +553,7 @@ export default function PMAsistenciasPage() {
                     ENTRADA
                   </span>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono font-medium text-foreground">{r.checkIn}</span>
+                    <span className="text-xs font-mono font-medium text-foreground">{formatAttendanceTime(r.checkIn, r.date)}</span>
                     {r.checkIn && r.checkIn !== "-" && checkInPhoto && (
                       <button
                         type="button"
@@ -570,7 +571,7 @@ export default function PMAsistenciasPage() {
                     SALIDA
                   </span>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono font-medium text-muted-foreground">{r.checkOut}</span>
+                    <span className="text-xs font-mono font-medium text-muted-foreground">{formatAttendanceTime(r.checkOut, r.date)}</span>
                     {r.checkOut && r.checkOut !== "-" && checkOutPhoto && (
                       <button
                         type="button"
@@ -656,7 +657,7 @@ export default function PMAsistenciasPage() {
                   <td className="py-4 px-4 font-mono text-xs text-foreground">{row.date}</td>
                   <td className="py-4 px-4 font-mono text-xs text-foreground font-medium">
                     <div className="flex items-center gap-1.5">
-                      <span>{row.checkIn}</span>
+                      <span>{formatAttendanceTime(row.checkIn, row.date)}</span>
                       {row.checkIn && row.checkIn !== "-" && checkInPhoto && (
                         <button
                           type="button"
@@ -671,7 +672,7 @@ export default function PMAsistenciasPage() {
                   </td>
                   <td className="py-4 px-4 font-mono text-xs text-muted-foreground">
                     <div className="flex items-center gap-1.5">
-                      <span>{row.checkOut}</span>
+                      <span>{formatAttendanceTime(row.checkOut, row.date)}</span>
                       {row.checkOut && row.checkOut !== "-" && checkOutPhoto && (
                         <button
                           type="button"

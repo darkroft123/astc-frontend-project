@@ -769,7 +769,7 @@ export function AlertsListView() {
               >
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-blue-400 shrink-0" />
-                  <span className="text-foreground">{alert.locationName || "Condevilla Señor"}</span>
+                  <span className="text-foreground">{alert.locationName || "Ubicación registrada"}</span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </button>

@@ -13,6 +13,7 @@ import { getAllProjects, getAllUsers } from "@/app/services/project.assistance.s
 import { getGraphQLUrl } from "@/lib/api-host";
 import { LocationCell } from "@/components/atoms/LocationCell";
 import { formatAvatarUrl } from "@/lib/avatar-url";
+import { formatAttendanceTime } from "@/lib/timezone";
 import {
   Select,
   SelectTrigger,
@@ -279,17 +280,8 @@ export function AttendanceManagementView() {
 
       const fecha = formatLocalDateString(item.date);
 
-      const checkIn = item.checkIn
-        ? item.checkIn.includes("T")
-          ? new Date(item.checkIn).toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" })
-          : item.checkIn
-        : "-";
-
-      const checkOut = item.checkOut
-        ? item.checkOut.includes("T")
-          ? new Date(item.checkOut).toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" })
-          : item.checkOut
-        : "-";
+      const checkIn = formatAttendanceTime(item.checkIn, item.date);
+      const checkOut = formatAttendanceTime(item.checkOut, item.date);
 
       return {
         id: item.id,

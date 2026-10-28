@@ -22,6 +22,7 @@ import {
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatAvatarUrl } from "@/lib/avatar-url";
+import { formatAttendanceTime } from "@/lib/timezone";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
 import {
@@ -63,7 +64,7 @@ const DEFAULT_SAMPLE_ATTENDANCE = [
     checkOut: "09:07",
     status: "PRESENTE",
     statusLabel: "Asistencia",
-    locationName: "Condevilla Señor",
+    locationName: "Ubicación registrada",
     latitude: -12.0184,
     longitude: -77.0817,
     photoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300",
@@ -79,7 +80,7 @@ const DEFAULT_SAMPLE_ATTENDANCE = [
     checkOut: "13:59",
     status: "PRESENTE",
     statusLabel: "Asistencia",
-    locationName: "Condevilla Señor",
+    locationName: "Ubicación registrada",
     latitude: -12.0184,
     longitude: -77.0817,
     photoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300",
@@ -796,7 +797,7 @@ export function AttendanceHistoryView() {
                       ENTRADA
                     </span>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono font-bold text-emerald-400">{r.checkIn}</span>
+                      <span className="text-xs font-mono font-bold text-emerald-400">{formatAttendanceTime(r.checkIn, r.date)}</span>
                       {checkInPhoto && (
                         <button
                           type="button"
@@ -814,7 +815,7 @@ export function AttendanceHistoryView() {
                       SALIDA
                     </span>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono font-medium text-amber-400">{r.checkOut || "—"}</span>
+                      <span className="text-xs font-mono font-medium text-amber-400">{formatAttendanceTime(r.checkOut, r.date)}</span>
                       {r.checkOut && r.checkOut !== "—" && checkOutPhoto && (
                         <button
                           type="button"
@@ -837,7 +838,7 @@ export function AttendanceHistoryView() {
                 >
                   <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span className="text-foreground">{r.locationName || "Condevilla Señor"}</span>
+                    <span className="text-foreground">{r.locationName || "Ubicación registrada"}</span>
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </button>
@@ -908,7 +909,7 @@ export function AttendanceHistoryView() {
                     <td className="py-3 px-4 font-mono text-foreground">{row.date}</td>
                     <td className="py-3 px-4 font-mono text-emerald-400 font-medium">
                       <div className="flex items-center gap-1.5">
-                        <span>{row.checkIn}</span>
+                        <span>{formatAttendanceTime(row.checkIn, row.date)}</span>
                         {checkInPhoto && (
                           <button
                             type="button"
@@ -923,7 +924,7 @@ export function AttendanceHistoryView() {
                     </td>
                     <td className="py-3 px-4 font-mono text-amber-400">
                       <div className="flex items-center gap-1.5">
-                        <span>{row.checkOut || "—"}</span>
+                        <span>{formatAttendanceTime(row.checkOut, row.date)}</span>
                         {row.checkOut && row.checkOut !== "—" && checkOutPhoto && (
                           <button
                             type="button"
