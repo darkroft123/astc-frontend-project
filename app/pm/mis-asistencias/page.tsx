@@ -54,6 +54,47 @@ type AttendanceItem = {
   locationName: string;
 };
 
+function getDatesForPeriod(period: Period): { from: string; to: string } {
+  const today = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const fmt = (d: Date) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+  const to = fmt(today);
+
+  switch (period) {
+    case "today":
+      return { from: to, to };
+    case "thisweek": {
+      const d = new Date(today);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      d.setDate(diff);
+      return { from: fmt(d), to };
+    }
+    case "month": {
+      const first = new Date(today.getFullYear(), today.getMonth(), 1);
+      return { from: fmt(first), to };
+    }
+    case "3months": {
+      const d = new Date(today);
+      d.setMonth(d.getMonth() - 3);
+      return { from: fmt(d), to };
+    }
+    case "6months": {
+      const d = new Date(today);
+      d.setMonth(d.getMonth() - 6);
+      return { from: fmt(d), to };
+    }
+    case "9months": {
+      const d = new Date(today);
+      d.setMonth(d.getMonth() - 9);
+      return { from: fmt(d), to };
+    }
+    case "total":
+    default:
+      return { from: "01/01/2024", to };
+  }
+}
+
 export default function PMAsistenciasPage() {
   const router = useRouter();
   const { token, hydrated, user } = useAuth();
@@ -66,10 +107,13 @@ export default function PMAsistenciasPage() {
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: "01/09/2026",
-    to: "03/09/2026",
-  });
+  const [dateRange, setDateRange] = useState<DateRange>(() => getDatesForPeriod("month"));
+
+  useEffect(() => {
+    if (activePeriod !== "custom") {
+      setDateRange(getDatesForPeriod(activePeriod));
+    }
+  }, [activePeriod]);
 
   const fetchRecords = useCallback(async () => {
     if (!token) {

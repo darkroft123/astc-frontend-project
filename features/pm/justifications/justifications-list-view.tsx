@@ -21,6 +21,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatAvatarUrl } from "@/lib/avatar-url";
 import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
 import {
   getAllUsers,

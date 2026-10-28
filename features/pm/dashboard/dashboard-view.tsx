@@ -61,16 +61,60 @@ const PERIOD_TABS_ALL = [
   { id: "total" as Period, label: "Total" },
 ];
 
+function getDatesForPeriod(period: Period): { from: string; to: string } {
+  const today = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const fmt = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const to = fmt(today);
+
+  switch (period) {
+    case "today":
+      return { from: to, to };
+    case "thisweek": {
+      const d = new Date(today);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      d.setDate(diff);
+      return { from: fmt(d), to };
+    }
+    case "month": {
+      const first = new Date(today.getFullYear(), today.getMonth(), 1);
+      return { from: fmt(first), to };
+    }
+    case "3months": {
+      const d = new Date(today);
+      d.setMonth(d.getMonth() - 3);
+      return { from: fmt(d), to };
+    }
+    case "6months": {
+      const d = new Date(today);
+      d.setMonth(d.getMonth() - 6);
+      return { from: fmt(d), to };
+    }
+    case "9months": {
+      const d = new Date(today);
+      d.setMonth(d.getMonth() - 9);
+      return { from: fmt(d), to };
+    }
+    case "total":
+    default:
+      return { from: "2024-01-01", to };
+  }
+}
+
 export function DashboardView() {
   const router = useRouter();
   const { user, token, hydrated } = useAuth();
 
   const [activePeriod, setActivePeriod] = useState<Period>("month");
   const [customModalOpen, setCustomModalOpen] = useState(false);
-  const [customRange, setCustomRange] = useState({
-    from: "2026-09-01",
-    to: "2026-09-03",
-  });
+  const [customRange, setCustomRange] = useState(() => getDatesForPeriod("month"));
+
+  useEffect(() => {
+    if (activePeriod !== "custom") {
+      setCustomRange(getDatesForPeriod(activePeriod));
+    }
+  }, [activePeriod]);
   const [activeProjects, setActiveProjects] = useState<any[]>([]);
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>("all");

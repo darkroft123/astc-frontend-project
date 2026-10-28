@@ -295,7 +295,14 @@ export function AttendanceHistoryView() {
         toDate: parseToIso(dateRange.to),
       });
       if (result?.content) {
-        const blob = new Blob([result.content], { type: "text/csv;charset=utf-8;" });
+        let content = result.content;
+        if (!content.startsWith("\uFEFF")) {
+          content = "\uFEFF" + content;
+        }
+        if (!content.includes("sep=")) {
+          content = "\uFEFFsep=;\r\n" + content.replace(/^\uFEFF/, "");
+        }
+        const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;

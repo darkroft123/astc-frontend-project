@@ -176,6 +176,54 @@ export function AlertsListView() {
   });
 
   useEffect(() => {
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const fmt = (d: Date) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+    const to = fmt(now);
+
+    switch (activePeriod) {
+      case "Hoy":
+        setDateRange({ from: to, to });
+        break;
+      case "Esta semana": {
+        const d = new Date(now);
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+        d.setDate(diff);
+        setDateRange({ from: fmt(d), to });
+        break;
+      }
+      case "Este mes": {
+        const first = new Date(now.getFullYear(), now.getMonth(), 1);
+        setDateRange({ from: fmt(first), to });
+        break;
+      }
+      case "3 meses": {
+        const d = new Date(now);
+        d.setMonth(d.getMonth() - 3);
+        setDateRange({ from: fmt(d), to });
+        break;
+      }
+      case "6 meses": {
+        const d = new Date(now);
+        d.setMonth(d.getMonth() - 6);
+        setDateRange({ from: fmt(d), to });
+        break;
+      }
+      case "9 meses": {
+        const d = new Date(now);
+        d.setMonth(d.getMonth() - 9);
+        setDateRange({ from: fmt(d), to });
+        break;
+      }
+      case "Total":
+      default:
+        setDateRange({ from: "01/01/2024", to });
+        break;
+    }
+  }, [activePeriod]);
+
+  useEffect(() => {
     if (!token) return;
     Promise.all([
       getAllProjects(token).catch(() => []),

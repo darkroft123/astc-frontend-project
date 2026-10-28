@@ -36,6 +36,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatAvatarUrl } from "@/lib/avatar-url";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import {
   MONTH_NAMES_ES,
