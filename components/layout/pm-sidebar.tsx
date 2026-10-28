@@ -63,26 +63,36 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
     }
     const updateLabel = () => {
       const url = getGraphQLUrl();
-      const projId = !selectedProjectId || selectedProjectId === "all" ? null : selectedProjectId;
+      let targetProj = !selectedProjectId || selectedProjectId === "all" ? null : selectedProjectId;
+      if (!targetProj && typeof window !== "undefined") {
+        const saved = localStorage.getItem("selected_project_id");
+        if (saved && saved !== "all") targetProj = saved;
+      }
       fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          query: `query($p:String){getTodayAttendance(projectId:$p){checkIn checkOut}}`,
-          variables: { p: projId },
+          query: "query($p:String){ byProj: getTodayAttendance(projectId:$p){checkIn checkOut} anyProj: getTodayAttendance{checkIn checkOut} }",
+          variables: { p: targetProj },
         }),
       })
         .then((r) => r.json())
         .then((j) => {
-          const a = j?.data?.getTodayAttendance;
-          setAttendanceLabel(a?.checkIn && !a?.checkOut ? "Marcar Salida" : "Registrar asistencia");
+          const a = j?.data?.byProj || j?.data?.anyProj;
+          setAttendanceLabel(a?.checkIn && !a?.checkOut ? "Marcar salida" : "Registrar asistencia");
         })
         .catch(() => setAttendanceLabel("Registrar asistencia"));
     };
 
     updateLabel();
     window.addEventListener("astc-attendance-updated", updateLabel);
-    return () => window.removeEventListener("astc-attendance-updated", updateLabel);
+    window.addEventListener("focus", updateLabel);
+    window.addEventListener("storage", updateLabel);
+    return () => {
+      window.removeEventListener("astc-attendance-updated", updateLabel);
+      window.removeEventListener("focus", updateLabel);
+      window.removeEventListener("storage", updateLabel);
+    };
   }, [hydrated, token, selectedProjectId]);
 
   useEffect(() => {
