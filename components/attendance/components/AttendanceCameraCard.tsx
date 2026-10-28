@@ -138,7 +138,6 @@ export function AttendanceCameraCard({
             </div>
           ) : !photo ? (
             <div className="flex items-center justify-between w-full gap-4">
-            <>
               <button
                 onClick={() => onActionClick("NO_PHOTO")}
                 className="font-sans text-xs text-muted-foreground hover:text-foreground transition-colors py-2 px-3 underline-offset-4 hover:underline font-medium cursor-pointer"
