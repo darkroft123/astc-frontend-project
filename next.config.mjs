@@ -6,8 +6,8 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL: "https://astc-api.joyit.io/graphql",
     NEXT_PUBLIC_PROJECT_GRAPHQL_URL: "https://astc-api.joyit.io/graphql",
     NEXT_PUBLIC_BACKOFFICE_GRAPHQL_URL: "https://astc-api.joyit.io/graphql",
-    NEXT_PUBLIC_AUTH_FRONTEND_URL: "https://astc-joyit.io",
-    NEXT_PUBLIC_AUTH_API_URL: "https://auth-api.astc.joyit.io",
+    NEXT_PUBLIC_AUTH_FRONTEND_URL: "https://astc-auth.joyit.io",
+    NEXT_PUBLIC_AUTH_API_URL: "https://astc-auth.joyit.io",
   },
   typescript: {
     ignoreBuildErrors: true,

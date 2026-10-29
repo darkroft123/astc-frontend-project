@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Resolves scheme (https/http) based on environment.
  */
 function getProtocol(): string {
@@ -59,7 +59,7 @@ export function getApiBaseUrl(port?: number | string, path: string = ""): string
   if (p === 3010) {
     const authHost =
       process.env.NEXT_PUBLIC_AUTH_API_URL ||
-      `${scheme}://auth-api.astc.joyit.io`;
+      `${scheme}://astc-auth.joyit.io`;
     return `${authHost}${path}`;
   }
 
