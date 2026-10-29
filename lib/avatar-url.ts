@@ -21,10 +21,10 @@ export function formatAvatarUrl(url: string | null | undefined): string | null {
     let formatted = clean;
 
     // Replace any internal Docker or localhost MinIO references
-    formatted = formatted.replace(/https?:\/\/minio:9000/, "https://minio-s3.astc.joyit.io");
-    formatted = formatted.replace(/https?:\/\/localhost:9010/, "https://minio-s3.astc.joyit.io");
-    formatted = formatted.replace(/https?:\/\/[^/]+:9010/, "https://minio-s3.astc.joyit.io");
-    formatted = formatted.replace(/https?:\/\/astc-minio\.joyit\.io/, "https://minio-s3.astc.joyit.io");
+    formatted = formatted.replace(/https?:\/\/minio:9000/, "https://astc-minio.joyit.io");
+    formatted = formatted.replace(/https?:\/\/localhost:9010/, "https://astc-minio.joyit.io");
+    formatted = formatted.replace(/https?:\/\/[^/]+:9010/, "https://astc-minio.joyit.io");
+    formatted = formatted.replace(/https?:\/\/minio-s3\.astc\.joyit.io/, "https://astc-minio.joyit.io");
 
     return formatted;
   }
@@ -36,10 +36,10 @@ export function formatAvatarUrl(url: string | null | undefined): string | null {
 
   // 4. Relative MinIO S3 Key (e.g. avatars/... or document/...)
   if (clean.startsWith("avatars/") || clean.startsWith("document/")) {
-    return `https://minio-s3.astc.joyit.io/backoffice/${clean}`;
+    return `https://astc-minio.joyit.io/backoffice/${clean}`;
   }
   if (clean.startsWith("smms-assistance/")) {
-    return `https://minio-s3.astc.joyit.io/${clean}`;
+    return `https://astc-minio.joyit.io/${clean}`;
   }
 
   // 5. Raw Base64 string
