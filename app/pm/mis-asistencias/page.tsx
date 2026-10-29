@@ -23,6 +23,7 @@ import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
 import { formatAvatarUrl } from "@/lib/avatar-url";
 import { formatAttendanceTime } from "@/lib/timezone";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
+import { LocationCell } from "@/components/atoms/LocationCell";
 
 type Period =
   | "today"
@@ -52,6 +53,8 @@ type AttendanceItem = {
   status: string;
   statusLabel: string;
   photoUrl?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   locationName: string;
 };
 
@@ -147,7 +150,9 @@ export default function PMAsistenciasPage() {
                 ? "Tarde"
                 : "Fuera de horario",
             photoUrl: i.photoUrl || null,
-            locationName: "Ubicación registrada",
+            latitude: i.latitude != null ? Number(i.latitude) : null,
+            longitude: i.longitude != null ? Number(i.longitude) : null,
+            locationName: i.locationName || "Ubicación registrada",
           }))
         );
       } else {
@@ -612,12 +617,8 @@ export default function PMAsistenciasPage() {
                   )}
                 </div>
 
-                <div className="flex-1 h-10 px-3 rounded-xl bg-background/50 border border-border/60 flex items-center justify-between text-xs font-medium text-blue-400">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-                    <span className="text-foreground">{r.locationName}</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                <div className="flex-1 h-10 px-3 rounded-xl bg-background/50 border border-border/60 flex items-center justify-between text-xs font-medium">
+                  <LocationCell lat={r.latitude} lng={r.longitude} />
                 </div>
               </div>
             </div>
@@ -728,10 +729,9 @@ export default function PMAsistenciasPage() {
                     )}
                   </td>
                   <td className="py-4 px-4 text-right">
-                    <span className="inline-flex items-center gap-1.5 text-xs text-blue-400 font-medium">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {row.locationName}
-                    </span>
+                    <div className="flex justify-end">
+                      <LocationCell lat={row.latitude} lng={row.longitude} />
+                    </div>
                   </td>
                 </tr>
               );

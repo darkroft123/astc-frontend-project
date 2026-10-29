@@ -25,6 +25,7 @@ import { formatAvatarUrl } from "@/lib/avatar-url";
 import { formatAttendanceTime } from "@/lib/timezone";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
+import { LocationCell } from "@/components/atoms/LocationCell";
 import {
   getAllProjects,
   getMyProjects,
@@ -941,10 +942,7 @@ export function AttendanceHistoryView() {
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="flex items-center gap-1.5 text-blue-400 text-xs font-medium">
-                        <MapPin className="w-3.5 h-3.5 shrink-0" />
-                        <span className="text-foreground">{row.locationName}</span>
-                      </div>
+                      <LocationCell lat={row.latitude} lng={row.longitude} />
                     </td>
                   </tr>
                 );

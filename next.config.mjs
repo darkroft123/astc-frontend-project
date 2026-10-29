@@ -12,6 +12,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error'] } : false,
+  },
   experimental: {
     cpus: 2,
   },
@@ -35,3 +38,4 @@ const nextConfig = {
 };
 
 export default nextConfig;
+
