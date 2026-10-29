@@ -256,31 +256,45 @@ export default function NotificationsPage() {
   /* ================= LIST VIEW (MATCHES OFFICIAL FIGMA) ================= */
   return (
     <div className="relative min-h-screen bg-transparent pb-12">
-      <div className="max-w-4xl mx-auto px-0 md:px-8 py-2 md:py-8 space-y-5 relative z-10">
+      <div className="w-full max-w-5xl mx-auto py-1 md:py-4 space-y-3.5 relative z-10">
         {/* 1. HEADER */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-avatar-gradient flex items-center justify-center text-white shrink-0 shadow-md">
-              <Bell className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-2xl bg-avatar-gradient flex items-center justify-center text-white shrink-0 shadow-md">
+              <Bell className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-2xl font-extrabold text-foreground tracking-tight leading-tight">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight leading-tight">
                 Notificaciones
               </h1>
-              <p className="text-sm font-semibold text-[#818cf8] mt-0.5">
+              <p className="text-xs sm:text-sm font-semibold text-[#818cf8] mt-0.5">
                 {unreadCount > 0 ? `${unreadCount} sin leer` : "Al día"}
               </p>
             </div>
           </div>
 
           {unreadCount > 0 && (
-            <button
-              onClick={markAllRead}
-              className="w-full sm:w-auto h-11 px-5 rounded-xl border border-border/80 bg-raised hover:bg-surface text-foreground font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
-            >
-              <Check className="w-4 h-4 text-primary" />
-              <span>Marcar todo como leído</span>
-            </button>
+            <>
+              {/* Desktop: pure text with Navigo font */}
+              <button
+                type="button"
+                onClick={markAllRead}
+                className="hidden sm:inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 hover:underline cursor-pointer transition-colors"
+                style={{ fontFamily: "'Navigo', var(--font-inter), sans-serif" }}
+              >
+                Marcar todo como leído
+              </button>
+
+              {/* Mobile: button with icon and checkmark */}
+              <button
+                type="button"
+                onClick={markAllRead}
+                className="sm:hidden w-full h-10 px-4 rounded-xl border border-border/80 bg-raised hover:bg-surface text-foreground font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
+              >
+                <Check className="w-4 h-4 text-primary" />
+                <span>Marcar todo como leído</span>
+              </button>
+            </>
           )}
         </div>
 
@@ -292,12 +306,12 @@ export default function NotificationsPage() {
             placeholder="Buscar por título, contenido o código..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-11 pl-10 pr-4 rounded-xl border border-border bg-card dark:bg-sidebar dark:border-raised text-foreground placeholder:text-muted-foreground dark:placeholder-[#5a607f] text-sm outline-none focus:border-primary/50 transition-all shadow-xs"
+            className="w-full h-10 pl-10 pr-4 rounded-xl border border-border bg-card dark:bg-sidebar dark:border-raised text-foreground placeholder:text-muted-foreground dark:placeholder-[#5a607f] text-sm outline-none focus:border-primary/50 transition-all shadow-xs"
           />
         </div>
 
         {/* 3. FILTER TABS */}
-        <div className="flex flex-wrap items-center gap-2 pt-1">
+        <div className="flex flex-wrap items-center gap-2">
           {([
             { key: "all" as FilterType, label: "Todas" },
             {
@@ -315,7 +329,7 @@ export default function NotificationsPage() {
                 key={key}
                 onClick={() => setFilter(key)}
                 className={cn(
-                  "inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer",
+                  "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer",
                   isActive
                     ? "bg-blue text-white shadow-sm font-semibold"
                     : "bg-card dark:bg-surface text-muted-foreground dark:text-text-4 border border-border dark:border-raised hover:bg-muted dark:hover:bg-raised"
@@ -341,11 +355,11 @@ export default function NotificationsPage() {
 
         {/* 4. NOTIFICATIONS LIST */}
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 rounded-full bg-muted/60 dark:bg-surface flex items-center justify-center mb-3 text-muted-foreground">
-              <Bell className="w-8 h-8 opacity-40" />
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-14 h-14 rounded-full bg-muted/60 dark:bg-surface flex items-center justify-center mb-3 text-muted-foreground">
+              <Bell className="w-7 h-7 opacity-40" />
             </div>
-            <p className="text-foreground font-semibold text-base">
+            <p className="text-foreground font-semibold text-sm">
               No hay notificaciones
             </p>
             <p className="text-xs text-muted-foreground mt-1 max-w-sm">
@@ -355,7 +369,7 @@ export default function NotificationsPage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-3 pt-2">
+          <div className="space-y-2">
             {paginated.map((n) => {
               const isAttendance =
                 n.notificationCode?.startsWith("AST00009") ||
@@ -365,7 +379,7 @@ export default function NotificationsPage() {
                 <div
                   key={n.id}
                   onClick={() => handleClick(n)}
-                  className="w-full text-left rounded-2xl border border-border dark:bg-sidebar dark:border-raised border-l-2 border-l-amber dark:border-l-amber p-4 relative overflow-hidden transition-all duration-200 hover:border-amber/50 hover:shadow-sm cursor-pointer flex items-start gap-3.5 group"
+                  className="w-full text-left rounded-2xl border border-border dark:bg-sidebar dark:border-raised border-l-[3px] border-l-amber dark:border-l-amber px-4 py-3 relative overflow-hidden transition-all duration-200 hover:border-amber/50 hover:shadow-sm cursor-pointer flex items-center gap-4 group"
                 >
                   {/* ICON BOX */}
                   <div className="w-10 h-10 rounded-xl bg-amber/10 border border-amber/20 dark:bg-amber/15 dark:border-amber/25 flex items-center justify-center shrink-0">
@@ -377,9 +391,9 @@ export default function NotificationsPage() {
                   </div>
 
                   {/* CENTER CONTENT */}
-                  <div className="flex-1 min-w-0 pt-0.5">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-bold text-foreground dark:text-white leading-tight truncate">
+                      <p className="text-sm font-bold text-foreground dark:text-white leading-snug truncate">
                         {n.title}
                       </p>
                       <div className="flex items-center gap-2 shrink-0">
@@ -399,7 +413,7 @@ export default function NotificationsPage() {
                         </button>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground dark:text-text-4 leading-relaxed mt-1 line-clamp-2">
+                    <p className="text-xs text-muted-foreground dark:text-text-4 leading-snug mt-0.5 line-clamp-1 sm:line-clamp-2">
                       {n.body}
                     </p>
                   </div>
