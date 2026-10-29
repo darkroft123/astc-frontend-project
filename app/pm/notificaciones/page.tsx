@@ -191,7 +191,7 @@ export default function NotificationsPage() {
 
     return (
       <div className="relative min-h-screen bg-transparent pb-12">
-        <div className="max-w-3xl mx-auto px-4 py-8 relative z-10 animate-in slide-in-from-bottom-3 duration-200">
+        <div className="w-full py-1 md:py-2 relative z-10 animate-in slide-in-from-bottom-3 duration-200">
           <div className="flex items-center gap-3 mb-6">
             <button
               onClick={() => setSelected(null)}
@@ -256,7 +256,7 @@ export default function NotificationsPage() {
   /* ================= LIST VIEW (MATCHES OFFICIAL FIGMA) ================= */
   return (
     <div className="relative min-h-screen bg-transparent pb-12">
-      <div className="w-full max-w-5xl mx-auto py-1 md:py-4 space-y-3.5 relative z-10">
+      <div className="w-full py-1 md:py-2 space-y-3.5 relative z-10">
         {/* 1. HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-3.5">
