@@ -1,7 +1,8 @@
 /**
  * Helper to normalize and format any avatarUrl representation:
  * - Raw Base64 string -> Data URI
- * - MinIO / S3 URL -> https://minio-s3.astc.joyit.io/...
+ * - Cloudflare R2 / S3 Presigned URL -> returns as-is
+ * - Old dead MinIO URLs (astc-minio, minio-s3, localhost:9010) -> null (shows clean fallback)
  * - Empty / null / mock -> null
  */
 export function formatAvatarUrl(url: string | null | undefined): string | null {
@@ -16,17 +17,20 @@ export function formatAvatarUrl(url: string | null | undefined): string | null {
     return clean;
   }
 
-  // 2. HTTP / HTTPS (MinIO / S3 / External)
+  // 2. HTTP / HTTPS (Cloudflare R2 / S3 / External)
   if (clean.startsWith("http://") || clean.startsWith("https://")) {
-    let formatted = clean;
+    // If it's an old dead MinIO reference that no longer exists in DNS, discard it so UI shows fallback
+    if (
+      clean.includes("astc-minio.joyit.io") ||
+      clean.includes("minio-s3.astc.joyit.io") ||
+      clean.includes("minio-s3.astc.local") ||
+      clean.includes("minio:9000") ||
+      clean.includes(":9010")
+    ) {
+      return null;
+    }
 
-    // Replace any internal Docker or localhost MinIO references
-    formatted = formatted.replace(/https?:\/\/minio:9000/, "https://astc-minio.joyit.io");
-    formatted = formatted.replace(/https?:\/\/localhost:9010/, "https://astc-minio.joyit.io");
-    formatted = formatted.replace(/https?:\/\/[^/]+:9010/, "https://astc-minio.joyit.io");
-    formatted = formatted.replace(/https?:\/\/minio-s3\.astc\.joyit.io/, "https://astc-minio.joyit.io");
-
-    return formatted;
+    return clean;
   }
 
   // 3. Relative path starting with '/'
@@ -34,12 +38,10 @@ export function formatAvatarUrl(url: string | null | undefined): string | null {
     return clean;
   }
 
-  // 4. Relative MinIO S3 Key (e.g. avatars/... or document/...)
-  if (clean.startsWith("avatars/") || clean.startsWith("document/")) {
-    return `https://astc-minio.joyit.io/backoffice/${clean}`;
-  }
-  if (clean.startsWith("smms-assistance/")) {
-    return `https://astc-minio.joyit.io/${clean}`;
+  // 4. Relative S3 Key without domain (e.g. avatars/... or document/...)
+  // In private R2, unsigned relative paths cannot be loaded directly without a backend presigned URL
+  if (clean.startsWith("avatars/") || clean.startsWith("document/") || clean.startsWith("smms-assistance/")) {
+    return null;
   }
 
   // 5. Raw Base64 string
