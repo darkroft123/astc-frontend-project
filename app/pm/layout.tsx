@@ -2,19 +2,17 @@
 import { useMemo } from "react";
 import { useAuthGuard } from "@/app/jwt/auth/useAuthGuard";
 import { PMSidebar, SidebarNav } from "@/components/layout/pm-sidebar";
-import { NotificationBell } from "@/components/layout/notification-bell";
-import { MobileSidebarProvider, MobileSidebar, HamburgerButton } from "@/components/layout/MobileSidebar";
-
+import { MobileSidebarProvider, MobileSidebar } from "@/components/layout/MobileSidebar";
 import { usePathname } from "next/navigation";
-
-const PM_ROLES = ["PROJECT_MANAGER"];
-
 import { MobileHeader } from "@/components/layout/MobileHeader";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
+const PM_ROLES = ["PROJECT_MANAGER"];
+
 export default function PmLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { hydrated, checkingAuth } = useAuthGuard(PM_ROLES);
+  useAuthGuard(PM_ROLES);
+
   const isSubPage = useMemo(() => {
     if (!pathname) return false;
     return (
@@ -27,10 +25,6 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
       pathname.startsWith("/pm/registrar/prev")
     );
   }, [pathname]);
-
-  if (!hydrated || checkingAuth) {
-    return (<div className="min-h-screen flex items-center justify-center">Cargando...</div>);
-  }
 
   return (
     <div className="flex min-h-screen w-full">

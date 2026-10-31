@@ -76,9 +76,36 @@ let projectsInFlight: { token: string; promise: Promise<Project[]> } | null = nu
 let usersCache: { token: string; ts: number; data: User[] } | null = null;
 let usersInFlight: { token: string; promise: Promise<User[]> } | null = null;
 
+function loadFromSession<T>(key: string, token: string): { token: string; ts: number; data: T } | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.token === token && Array.isArray(parsed.data)) {
+      return parsed;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function saveToSession<T>(key: string, val: { token: string; ts: number; data: T }) {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(key, JSON.stringify(val));
+  } catch {}
+}
+
 export function invalidateProjectsCache() {
   projectsCache = null;
   projectsInFlight = null;
+  if (typeof window !== "undefined") {
+    try {
+      sessionStorage.removeItem("astc_projects_cache_v2");
+    } catch {}
+  }
 }
 
 /* ================= UTILS ================= */
@@ -692,8 +719,13 @@ export async function getAllProjects(
 ): Promise<Project[]> {
   if (!token) return [];
   const now = Date.now();
-  if (!forceRefresh && projectsCache && projectsCache.token === token && now - projectsCache.ts < CACHE_TTL_MS) {
-    return projectsCache.data;
+  if (!forceRefresh) {
+    if (!projectsCache) {
+      projectsCache = loadFromSession("astc_projects_cache_v2", token);
+    }
+    if (projectsCache && projectsCache.token === token && now - projectsCache.ts < CACHE_TTL_MS) {
+      return projectsCache.data;
+    }
   }
   if (!forceRefresh && projectsInFlight && projectsInFlight.token === token) {
     return projectsInFlight.promise;
@@ -739,6 +771,7 @@ export async function getAllProjects(
 
       const cleaned = sanitizeProjectMembers(data?.getAllProjects || []);
       projectsCache = { token, ts: Date.now(), data: cleaned };
+      saveToSession("astc_projects_cache_v2", projectsCache);
       return cleaned;
     } finally {
       if (projectsInFlight?.promise === promise) {
@@ -1131,8 +1164,13 @@ type GetAllUsersResponse = {
 export async function getAllUsers(token: string, forceRefresh = false): Promise<User[]> {
   if (!token) return [];
   const now = Date.now();
-  if (!forceRefresh && usersCache && usersCache.token === token && now - usersCache.ts < CACHE_TTL_MS) {
-    return usersCache.data;
+  if (!forceRefresh) {
+    if (!usersCache) {
+      usersCache = loadFromSession("astc_users_cache_v2", token);
+    }
+    if (usersCache && usersCache.token === token && now - usersCache.ts < CACHE_TTL_MS) {
+      return usersCache.data;
+    }
   }
   if (!forceRefresh && usersInFlight && usersInFlight.token === token) {
     return usersInFlight.promise;
@@ -1173,6 +1211,7 @@ export async function getAllUsers(token: string, forceRefresh = false): Promise<
           };
         });
       usersCache = { token, ts: Date.now(), data: filtered };
+      saveToSession("astc_users_cache_v2", usersCache);
       return filtered;
     } catch {
       return [];

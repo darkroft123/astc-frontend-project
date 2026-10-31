@@ -56,7 +56,12 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const { projects, selectProject, selectedProjectId } = useUserProject();
   const [unreadCount, setUnreadCount] = useState(0);
   const [pendingJustifications, setPendingJustifications] = useState(0);
-  const [attendanceLabel, setAttendanceLabel] = useState("Registrar asistencia");
+  const [attendanceLabel, setAttendanceLabel] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("astc_pm_attendance_label") || "Registrar asistencia";
+    }
+    return "Registrar asistencia";
+  });
 
   useEffect(() => {
     if (!hydrated || !token) {
@@ -81,7 +86,11 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         .then((r) => r.json())
         .then((j) => {
           const a = j?.data?.byProj || j?.data?.anyProj;
-          setAttendanceLabel(a?.checkIn && !a?.checkOut ? "Marcar salida" : "Registrar asistencia");
+          const label = a?.checkIn && !a?.checkOut ? "Marcar salida" : "Registrar asistencia";
+          setAttendanceLabel(label);
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem("astc_pm_attendance_label", label);
+          }
         })
         .catch(() => setAttendanceLabel("Registrar asistencia"));
     };

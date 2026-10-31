@@ -14,6 +14,17 @@ export interface Project {
 }
 
 let cachedProjects: Project[] = [];
+if (typeof window !== "undefined") {
+  try {
+    const raw = sessionStorage.getItem("astc_cached_projects");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        cachedProjects = parsed;
+      }
+    }
+  } catch {}
+}
 let cachedPromise: Promise<Project[]> | null = null;
 let hasFetched = false;
 let cachedToken: string | null = null;
@@ -88,6 +99,11 @@ export function useUserProject() {
           }
           cachedProjects = list || [];
           hasFetched = true;
+          if (typeof window !== "undefined") {
+            try {
+              sessionStorage.setItem("astc_cached_projects", JSON.stringify(cachedProjects));
+            } catch {}
+          }
           return cachedProjects;
         } catch (_) {
           try {
@@ -95,6 +111,11 @@ export function useUserProject() {
             if (Array.isArray(fallback) && fallback.length > 0) {
               cachedProjects = fallback;
               hasFetched = true;
+              if (typeof window !== "undefined") {
+                try {
+                  sessionStorage.setItem("astc_cached_projects", JSON.stringify(cachedProjects));
+                } catch {}
+              }
               return cachedProjects;
             }
           } catch (_) {}

@@ -24,6 +24,7 @@ import { formatAvatarUrl } from "@/lib/avatar-url";
 import { formatAttendanceTime } from "@/lib/timezone";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { LocationCell } from "@/components/atoms/LocationCell";
+import { getGraphQLUrl } from "@/lib/api-host";
 
 type Period =
   | "today"
@@ -112,6 +113,55 @@ export default function PMAsistenciasPage() {
   const [totalRecords, setTotalRecords] = useState(0);
   const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>(() => getDatesForPeriod("month"));
+  const [attendanceLabel, setAttendanceLabel] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("astc_pm_attendance_label") || "Registrar asistencia";
+    }
+    return "Registrar asistencia";
+  });
+
+  useEffect(() => {
+    if (!hydrated || !token) {
+      setAttendanceLabel("Registrar asistencia");
+      return;
+    }
+    const updateLabel = () => {
+      const url = getGraphQLUrl();
+      let targetProj: string | null = null;
+      if (typeof window !== "undefined") {
+        const saved = localStorage.getItem("selected_project_id");
+        if (saved && saved !== "all") targetProj = saved;
+      }
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          query: "query($p:String){ byProj: getTodayAttendance(projectId:$p){checkIn checkOut} anyProj: getTodayAttendance{checkIn checkOut} }",
+          variables: { p: targetProj },
+        }),
+      })
+        .then((r) => r.json())
+        .then((j) => {
+          const a = j?.data?.byProj || j?.data?.anyProj;
+          const label = a?.checkIn && !a?.checkOut ? "Marcar salida" : "Registrar asistencia";
+          setAttendanceLabel(label);
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem("astc_pm_attendance_label", label);
+          }
+        })
+        .catch(() => setAttendanceLabel("Registrar asistencia"));
+    };
+
+    updateLabel();
+    window.addEventListener("astc-attendance-updated", updateLabel);
+    window.addEventListener("astc-project-changed", updateLabel);
+    window.addEventListener("storage", updateLabel);
+    return () => {
+      window.removeEventListener("astc-attendance-updated", updateLabel);
+      window.removeEventListener("astc-project-changed", updateLabel);
+      window.removeEventListener("storage", updateLabel);
+    };
+  }, [hydrated, token]);
 
   useEffect(() => {
     if (activePeriod !== "custom") {
@@ -240,7 +290,7 @@ export default function PMAsistenciasPage() {
             className="h-10 px-4 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold flex items-center gap-2 shadow-md shadow-purple-500/20 cursor-pointer transition-all shrink-0"
           >
             <Clock className="w-4 h-4" />
-            <span>Registrar asistencia</span>
+            <span>{attendanceLabel}</span>
           </button>
           <NotificationBell />
         </div>
@@ -253,7 +303,7 @@ export default function PMAsistenciasPage() {
         className="md:hidden w-full h-12 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 cursor-pointer transition-all"
       >
         <Clock className="w-4 h-4" />
-        Registrar asistencia
+        {attendanceLabel}
       </button>
 
       {/* 3. PERIOD SELECTOR - Desktop View (Compact inline tabs + button + badge) */}
