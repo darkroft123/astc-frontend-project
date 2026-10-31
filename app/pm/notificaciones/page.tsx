@@ -43,6 +43,17 @@ export default function NotificationsPage() {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("astc-hide-mobile-header", { detail: { hide: !!selected } }));
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("astc-hide-mobile-header", { detail: { hide: false } }));
+      }
+    };
+  }, [selected]);
+
+  useEffect(() => {
     if (token) {
       notificationService.setToken(token);
     }
@@ -240,7 +251,7 @@ export default function NotificationsPage() {
               </div>
             </div>
 
-            <div className="bg-muted/40 dark:bg-surface border border-border dark:border-raised rounded-xl p-4 text-xs text-foreground/90 dark:text-text-2 leading-relaxed">
+            <div className="bg-muted/40 dark:bg-surface border border-border dark:border-raised rounded-xl p-4 text-xs text-foreground/90 dark:text-text-2 leading-relaxed whitespace-pre-line">
               {selected.body}
             </div>
 

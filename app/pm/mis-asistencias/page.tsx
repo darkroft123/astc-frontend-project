@@ -643,31 +643,51 @@ export default function PMAsistenciasPage() {
 
               {/* Bottom Row: Photo Status & Location */}
               <div className="flex items-center gap-2 pt-0.5">
-                <div
-                  className={`h-10 px-3 rounded-xl bg-background/50 border border-border/60 flex items-center gap-1.5 text-xs shrink-0 ${
-                    checkInPhoto || checkOutPhoto ? "cursor-pointer hover:border-primary text-foreground" : "text-muted-foreground"
-                  }`}
-                  onClick={() => {
-                    const src = formatAvatarUrl(checkInPhoto || checkOutPhoto);
-                    if (src) setSelectedPhotoUrl(src);
-                  }}
-                >
-                  {checkInPhoto || checkOutPhoto ? (
-                    <>
-                      <Camera className="w-3.5 h-3.5 text-purple-400" />
-                      <span className="text-foreground">
-                        {checkInPhoto && checkOutPhoto ? "Fotos (2)" : checkInPhoto ? "Foto entrada" : "Foto salida"}
-                      </span>
-                    </>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {checkInPhoto ? (
+                    <div
+                      className="w-9 h-9 rounded-lg overflow-hidden border border-border cursor-pointer hover:ring-2 hover:ring-primary transition-all shadow-sm"
+                      onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkInPhoto))}
+                      title="Entrada: Foto"
+                    >
+                      <img
+                        src={formatAvatarUrl(checkInPhoto)!}
+                        alt="Foto entrada"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   ) : (
-                    <>
-                      <EyeOff className="w-3.5 h-3.5" />
-                      <span>Sin foto</span>
-                    </>
+                    <div
+                      className="w-9 h-9 rounded-lg bg-background/50 border border-border/80 border-dashed flex items-center justify-center text-muted-foreground/50 transition-colors"
+                      title="Entrada: Sin foto"
+                    >
+                      <Camera className="w-4 h-4 text-muted-foreground/40" />
+                    </div>
+                  )}
+
+                  {checkOutPhoto ? (
+                    <div
+                      className="w-9 h-9 rounded-lg overflow-hidden border border-amber-500/50 cursor-pointer hover:ring-2 hover:ring-amber-500 transition-all shadow-sm"
+                      onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkOutPhoto))}
+                      title="Salida: Foto"
+                    >
+                      <img
+                        src={formatAvatarUrl(checkOutPhoto)!}
+                        alt="Foto salida"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className="w-9 h-9 rounded-lg bg-background/50 border border-border/80 border-dashed flex items-center justify-center text-muted-foreground/50 transition-colors"
+                      title="Salida: Sin foto"
+                    >
+                      <Camera className="w-4 h-4 text-muted-foreground/40" />
+                    </div>
                   )}
                 </div>
 
-                <div className="flex-1 h-10 px-3 rounded-xl bg-background/50 border border-border/60 flex items-center justify-between text-xs font-medium">
+                <div className="flex-1 h-9 px-3 rounded-lg bg-background/50 border border-border/60 flex items-center justify-between text-xs font-medium">
                   <LocationCell lat={r.latitude} lng={r.longitude} />
                 </div>
               </div>
@@ -743,40 +763,49 @@ export default function PMAsistenciasPage() {
                     </span>
                   </td>
                   <td className="py-4 px-4">
-                    {checkInPhoto || checkOutPhoto ? (
-                      <div className="flex items-center gap-1.5">
-                        {checkInPhoto && (
-                          <div
-                            className="w-9 h-9 rounded-lg overflow-hidden border border-border cursor-pointer hover:ring-2 hover:ring-primary transition-all shadow-sm"
-                            onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkInPhoto))}
-                            title="Foto de entrada"
-                          >
-                            <img
-                              src={formatAvatarUrl(checkInPhoto)!}
-                              alt="Foto entrada"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        )}
-                        {checkOutPhoto && (
-                          <div
-                            className="w-9 h-9 rounded-lg overflow-hidden border border-amber-500/50 cursor-pointer hover:ring-2 hover:ring-amber-500 transition-all shadow-sm"
-                            onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkOutPhoto))}
-                            title="Foto de salida"
-                          >
-                            <img
-                              src={formatAvatarUrl(checkOutPhoto)!}
-                              alt="Foto salida"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="w-9 h-9 rounded-lg bg-background border border-border flex items-center justify-center text-muted-foreground">
-                        <Camera className="w-4 h-4" />
-                      </div>
-                    )}
+                    <div className="flex items-center gap-1.5">
+                      {checkInPhoto ? (
+                        <div
+                          className="w-9 h-9 rounded-lg overflow-hidden border border-border cursor-pointer hover:ring-2 hover:ring-primary transition-all shadow-sm"
+                          onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkInPhoto))}
+                          title="Entrada: Foto"
+                        >
+                          <img
+                            src={formatAvatarUrl(checkInPhoto)!}
+                            alt="Foto entrada"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className="w-9 h-9 rounded-lg bg-background/50 border border-border/80 border-dashed flex items-center justify-center text-muted-foreground/50 transition-colors hover:border-muted-foreground/40 cursor-default"
+                          title="Entrada: Sin foto"
+                        >
+                          <Camera className="w-4 h-4 text-muted-foreground/40" />
+                        </div>
+                      )}
+
+                      {checkOutPhoto ? (
+                        <div
+                          className="w-9 h-9 rounded-lg overflow-hidden border border-amber-500/50 cursor-pointer hover:ring-2 hover:ring-amber-500 transition-all shadow-sm"
+                          onClick={() => setSelectedPhotoUrl(formatAvatarUrl(checkOutPhoto))}
+                          title="Salida: Foto"
+                        >
+                          <img
+                            src={formatAvatarUrl(checkOutPhoto)!}
+                            alt="Foto salida"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className="w-9 h-9 rounded-lg bg-background/50 border border-border/80 border-dashed flex items-center justify-center text-muted-foreground/50 transition-colors hover:border-muted-foreground/40 cursor-default"
+                          title="Salida: Sin foto"
+                        >
+                          <Camera className="w-4 h-4 text-muted-foreground/40" />
+                        </div>
+                      )}
+                    </div>
                   </td>
                   <td className="py-4 px-4 text-right">
                     <div className="flex justify-end">
@@ -825,7 +854,10 @@ export default function PMAsistenciasPage() {
         open={dateRangeModalOpen}
         onOpenChange={setDateRangeModalOpen}
         initialRange={dateRange}
-        onApply={(newRange: { from: string; to: string }) => setDateRange(newRange)}
+        onApply={(newRange: { from: string; to: string }) => {
+          setDateRange(newRange);
+          setActivePeriod("custom");
+        }}
       />
 
       {/* PHOTO PREVIEW DIALOG */}

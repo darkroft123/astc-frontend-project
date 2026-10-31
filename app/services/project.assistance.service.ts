@@ -82,7 +82,7 @@ function loadFromSession<T>(key: string, token: string): { token: string; ts: nu
     const raw = sessionStorage.getItem(key);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (parsed && parsed.token === token && Array.isArray(parsed.data)) {
+    if (parsed && parsed.token === token && Array.isArray(parsed.data) && parsed.data.length > 0) {
       return parsed;
     }
     return null;
@@ -94,6 +94,9 @@ function loadFromSession<T>(key: string, token: string): { token: string; ts: nu
 function saveToSession<T>(key: string, val: { token: string; ts: number; data: T }) {
   if (typeof window === "undefined") return;
   try {
+    if (Array.isArray(val?.data) && val.data.length === 0) {
+      return;
+    }
     sessionStorage.setItem(key, JSON.stringify(val));
   } catch {}
 }
@@ -141,11 +144,13 @@ export async function graphqlRequest<T>(
     throw new Error("Token de autenticación no encontrado");
   }
 
+  const cleanToken = token.startsWith("Bearer ") ? token.slice(7).trim() : token.trim();
+
   const res = await fetch(getGraphQLUrl(), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${cleanToken}`,
     },
     body: JSON.stringify({ query, variables }),
   });
