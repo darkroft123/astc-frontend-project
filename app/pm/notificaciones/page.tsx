@@ -1,4 +1,5 @@
 "use client";
+import { NotificationBell } from "@/components/layout/notification-bell";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -290,6 +291,7 @@ export default function NotificationsPage() {
               {unreadCount > 0 ? `${unreadCount} sin leer` : "Al día"}
             </p>
           </div>
+          <div className="flex items-center gap-3 self-end sm:self-auto"><NotificationBell /></div>
 
           {unreadCount > 0 && (
             <>

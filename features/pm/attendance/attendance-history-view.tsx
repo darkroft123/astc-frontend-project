@@ -353,7 +353,7 @@ export function AttendanceHistoryView() {
           (u
             ? `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || u.name
             : r.userId
-            ? `Usuario (${r.userId.slice(0, 8)})`
+            ? "Usuario"
             : "Colaborador");
         const userEmail = r.userEmail || u?.email || "";
         const avatarUrl = u?.avatarUrl || r.avatarUrl || null;
