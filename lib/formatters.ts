@@ -19,69 +19,120 @@ export function formatUserName(userId: string | null | undefined, userMap?: Map<
 }
 
 export function formatAlertType(type: string | null | undefined): string {
-  if (!type) return "Tardanza";
+  if (!type) return "Aviso de asistencia";
   const map: Record<string, string> = {
-    LATE_ARRIVAL: "Tardanza",
-    ASISTENCIA_TARDE: "Tardanza",
-    NO_PHOTO: "Sin foto",
-    PHOTO_DOWNLOAD_FAILED: "Error de descarga de foto",
-    ANALYSIS_ERROR: "Error de análisis biométrico",
-    FACE_FRAUD: "Alerta biométrica",
-    FRAUDE_FACIAL: "Alerta biométrica",
-    ROSTRO_NO_DETECTADO: "Rostro no detectado",
-    SUPLANTACION_IDENTIDAD: "Suplantación de identidad",
-    FACE_MISMATCH: "Rostro no coincide",
-    NO_MATCH: "Rostro no coincide",
-    OUT_OF_AREA: "Fuera de rango",
-    OUT_OF_RANGE: "Fuera de rango",
-    OUTSIDE_SCHEDULE: "Fuera de horario",
+    LATE_ARRIVAL: "Tardanza registrada",
+    ASISTENCIA_TARDE: "Tardanza registrada",
+    NO_PHOTO: "Registro sin fotografía",
+    PHOTO_DOWNLOAD_FAILED: "Revisión de fotografía pendiente",
+    ANALYSIS_ERROR: "Revisión manual de asistencia",
+    FACE_FRAUD: "Observación en validación facial",
+    FRAUDE_FACIAL: "Observación en validación facial",
+    ROSTRO_NO_DETECTADO: "Verificación facial incompleta",
+    SUPLANTACION_IDENTIDAD: "Verificación de identidad pendiente",
+    FACE_MISMATCH: "Verificación de identidad pendiente",
+    NO_MATCH: "Verificación de identidad pendiente",
+    OUT_OF_AREA: "Ubicación fuera del área asignada",
+    OUT_OF_RANGE: "Ubicación fuera del área asignada",
+    LOCATION_MISMATCH: "Ubicación fuera del área asignada",
+    OUTSIDE_SCHEDULE: "Marcaje fuera de horario",
     EARLY_CHECKIN: "Entrada anticipada",
-    INTERNAL_ERROR: "Error del sistema",
+    INTERNAL_ERROR: "Revisión manual requerida",
     ABSENCE: "Inasistencia",
     UNJUSTIFIED_ABSENCE: "Inasistencia injustificada",
     DEVICE_MISMATCH: "Dispositivo no reconocido",
+    UNKNOWN_DEVICE: "Dispositivo no reconocido",
     LOCATION_DISABLED: "Ubicación desactivada",
   };
   const key = type.trim().toUpperCase();
-  return map[key] || key.replace(/_/g, " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  return map[key] || "Aviso de validación de asistencia";
 }
 
 export function formatAlertMessage(msg: string | null | undefined, type?: string | null): string {
   const cleanMsg = msg ? msg.trim() : "";
   const t = type ? type.trim().toUpperCase() : "";
-
-  // English backend messages translation
   const lowerMsg = cleanMsg.toLowerCase();
-  if (lowerMsg === "no photo provided" || lowerMsg.includes("no photo")) {
-    return "Asistencia registrada sin fotografía adjunta.";
-  }
-  if (lowerMsg.includes("ai validation flagged anomaly")) {
-    return "Anomalía detectada en la validación biométrica del sistema.";
-  }
-  if (lowerMsg.includes("outside schedule")) {
-    return "Marcaje de asistencia registrado fuera del horario programado.";
-  }
-  if (lowerMsg.includes("out of range") || lowerMsg.includes("out of area")) {
-    return "Marcaje registrado fuera del perímetro geográfico del proyecto.";
-  }
-  if (lowerMsg.includes("face mismatch") || lowerMsg.includes("no match")) {
-    return "El rostro capturado en la fotografía no coincide con el trabajador registrado.";
-  }
-  if (lowerMsg.includes("fraud") || lowerMsg.includes("spoof")) {
-    return "Posible anomalía o inconsistencia biométrica en la fotografía.";
+
+  // Intelligent natural messages by type or technical substring
+  if (
+    t === "ROSTRO_NO_DETECTADO" ||
+    lowerMsg.includes("no se detectó ninguna cara") ||
+    lowerMsg.includes("no se detectó ningún rostro") ||
+    lowerMsg.includes("rostro_no_detectado")
+  ) {
+    return "No se logró identificar un rostro visible en la fotografía registrada. Se recomienda revisar la marcación del colaborador.";
   }
 
-  if (!cleanMsg || cleanMsg === "-" || lowerMsg === "test alert" || lowerMsg === "no_photo") {
-    if (t === "LATE_ARRIVAL" || t === "ASISTENCIA_TARDE") return "Registro de asistencia con tardanza respecto al horario programado.";
-    if (t === "NO_PHOTO") return "Asistencia registrada sin fotografía adjunta.";
-    if (t === "ROSTRO_NO_DETECTADO") return "No se detectó ningún rostro humano en la fotografía.";
-    if (t === "NO_MATCH" || t === "FACE_MISMATCH" || t === "SUPLANTACION_IDENTIDAD") return "El rostro de la foto no coincide con el trabajador.";
-    if (t === "OUT_OF_RANGE" || t === "OUT_OF_AREA") return "Registro de asistencia fuera del rango geográfico permitido.";
-    if (t === "OUTSIDE_SCHEDULE") return "Registro de asistencia fuera del horario laboral establecido.";
-    if (t === "EARLY_CHECKIN") return "Registro de entrada anticipada antes de la hora fijada.";
-    if (t === "FACE_FRAUD" || t === "FRAUDE_FACIAL") return "Fotografía con inconsistencia biométrica detectada.";
-    if (t === "PHOTO_DOWNLOAD_FAILED") return "No se pudo cargar la imagen para la validación.";
-    return "Incidencia registrada en el proceso de asistencia.";
+  if (
+    t === "FACE_MISMATCH" ||
+    t === "NO_MATCH" ||
+    t === "SUPLANTACION_IDENTIDAD" ||
+    lowerMsg.includes("face mismatch") ||
+    lowerMsg.includes("no match") ||
+    lowerMsg.includes("cara no coincide") ||
+    lowerMsg.includes("similaridad")
+  ) {
+    return "La imagen registrada presenta diferencias respecto al perfil del colaborador. Se sugiere revisión por el responsable.";
+  }
+
+  if (
+    t === "FACE_FRAUD" ||
+    t === "FRAUDE_FACIAL" ||
+    lowerMsg.includes("posible fraude") ||
+    lowerMsg.includes("score real") ||
+    lowerMsg.includes("confianza:") ||
+    lowerMsg.includes("fraud") ||
+    lowerMsg.includes("spoof")
+  ) {
+    return "La fotografía capturada requiere validación manual por baja nitidez o inconsistencia en la captura facial.";
+  }
+
+  if (
+    t === "NO_PHOTO" ||
+    lowerMsg === "no photo provided" ||
+    lowerMsg.includes("no photo") ||
+    lowerMsg.includes("asistencia sin foto")
+  ) {
+    return "La asistencia fue registrada sin adjuntar fotografía de respaldo.";
+  }
+
+  if (
+    t === "ANALYSIS_ERROR" ||
+    t === "INTERNAL_ERROR" ||
+    t === "PHOTO_DOWNLOAD_FAILED" ||
+    lowerMsg.includes("modelos de ia") ||
+    lowerMsg.includes("error interno") ||
+    lowerMsg.includes("cannot download") ||
+    lowerMsg.includes("no se pudo descargar") ||
+    lowerMsg.includes("ai validation flagged anomaly")
+  ) {
+    return "No fue posible completar la verificación automática de la imagen en este registro. Por favor valide la asistencia manualmente.";
+  }
+
+  if (t === "OUTSIDE_SCHEDULE" || lowerMsg.includes("outside schedule") || lowerMsg.includes("fuera de horario")) {
+    return "Marcaje de asistencia registrado fuera del horario laboral programado.";
+  }
+
+  if (
+    t === "OUT_OF_RANGE" ||
+    t === "OUT_OF_AREA" ||
+    t === "LOCATION_MISMATCH" ||
+    lowerMsg.includes("out of range") ||
+    lowerMsg.includes("out of area")
+  ) {
+    return "El registro de asistencia se realizó fuera del perímetro geográfico establecido para el proyecto.";
+  }
+
+  if (t === "LATE_ARRIVAL" || t === "ASISTENCIA_TARDE") {
+    return "Registro de asistencia realizado después del horario de ingreso establecido.";
+  }
+
+  if (t === "EARLY_CHECKIN") {
+    return "Registro de entrada realizado antes del horario habitual de inicio.";
+  }
+
+  if (!cleanMsg || cleanMsg === "-" || lowerMsg === "test alert") {
+    return "Se detectó una observación en el registro de asistencia que requiere revisión del responsable.";
   }
 
   return cleanMsg;

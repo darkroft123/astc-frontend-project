@@ -19,6 +19,52 @@ export interface NotificationsResponse {
   size: number;
 }
 
+const ALERT_CODE_REPLACEMENTS: Record<string, string> = {
+  ROSTRO_NO_DETECTADO: "Verificación facial incompleta",
+  FACE_FRAUD: "Observación en validación facial",
+  FRAUDE_FACIAL: "Observación en validación facial",
+  SUPLANTACION_IDENTIDAD: "Verificación de identidad pendiente",
+  FACE_MISMATCH: "Verificación de identidad pendiente",
+  NO_MATCH: "Verificación de identidad pendiente",
+  ANALYSIS_ERROR: "Revisión manual de asistencia",
+  PHOTO_DOWNLOAD_FAILED: "Revisión de fotografía pendiente",
+  INTERNAL_ERROR: "Revisión manual requerida",
+  NO_PHOTO: "Registro sin fotografía",
+  OUT_OF_AREA: "Ubicación fuera del área asignada",
+  OUT_OF_RANGE: "Ubicación fuera del área asignada",
+  LOCATION_MISMATCH: "Ubicación fuera del área asignada",
+  OUTSIDE_SCHEDULE: "Marcaje fuera de horario",
+  LATE_ARRIVAL: "Tardanza registrada",
+  ASISTENCIA_TARDE: "Tardanza registrada",
+  UNKNOWN_DEVICE: "Dispositivo no reconocido",
+  DEVICE_MISMATCH: "Dispositivo no reconocido",
+};
+
+function sanitizeNotificationText(text: string | null | undefined): string {
+  if (!text) return "";
+  let out = text;
+  for (const [code, label] of Object.entries(ALERT_CODE_REPLACEMENTS)) {
+    if (out.includes(code)) {
+      out = out.split(code).join(label);
+    }
+  }
+  return out;
+}
+
+function normalizeNotificationPage(res: NotificationsResponse | null | undefined, page: number, size: number): NotificationsResponse {
+  if (!res || !Array.isArray(res.items)) {
+    return { items: [], total: 0, page, size };
+  }
+  return {
+    ...res,
+    items: res.items.map((item) => ({
+      ...item,
+      title: sanitizeNotificationText(item.title),
+      body: sanitizeNotificationText(item.body),
+    })),
+  };
+}
+
 export class ASTCNotificationSDK {
   private port: number;
   private category: string;
@@ -92,7 +138,7 @@ export class ASTCNotificationSDK {
         }
       `;
       const data = await this.graphqlRequest<any>(query, { userId, page, size });
-      return data.getallnotifications || { items: [], total: 0, page, size };
+      return normalizeNotificationPage(data.getallnotifications, page, size);
     }
 
     const query = `
@@ -116,8 +162,7 @@ export class ASTCNotificationSDK {
       }
     `;
     const data = await this.graphqlRequest<any>(query, { userId, category: cat, page, size });
-    const notifications = data.getNotificationsByCategory || { items: [], total: 0, page, size };
-    return notifications;
+    return normalizeNotificationPage(data.getNotificationsByCategory, page, size);
   }
 
   async getUnreadCount(userId: string, category?: string): Promise<number> {
