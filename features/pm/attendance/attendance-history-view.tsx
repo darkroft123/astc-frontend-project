@@ -860,16 +860,11 @@ export function AttendanceHistoryView() {
                 </div>
 
                 {/* Location Row */}
-                <button
-                  type="button"
-                  className="w-full flex items-center justify-between p-3 rounded-xl bg-background/50 border border-border/60 hover:bg-background text-xs font-medium text-blue-400 transition-colors"
-                >
+                <div className="w-full flex items-center justify-between p-3 rounded-xl bg-background/50 border border-border/60 text-xs font-medium text-blue-400">
                   <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span className="text-foreground">{r.locationName || "Ubicación registrada"}</span>
+                    <LocationCell lat={r.latitude} lng={r.longitude} />
                   </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                </button>
+                </div>
               </div>
             );
           })
