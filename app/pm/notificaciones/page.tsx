@@ -110,6 +110,21 @@ export default function NotificationsPage() {
       window.removeEventListener("astc-notification-updated", handleNotificationUpdate);
   }, [effectiveUserId, fetchNotifications]);
 
+  const handleMarkOneRead = async (n: InAppNotification) => {
+    if (n.read || !effectiveUserId) return;
+    try {
+      await notificationService.markAsRead(effectiveUserId, n.id);
+    } catch {}
+    setNotifications((prev) =>
+      prev.map((item) => (item.id === n.id ? { ...item, read: true } : item))
+    );
+    if (selected && selected.id === n.id) {
+      setSelected((prev) => (prev ? { ...prev, read: true } : null));
+    }
+    setUnreadCount((prev) => Math.max(0, prev - 1));
+    notifyUnreadCountChanged();
+  };
+
   const markAllRead = async () => {
     if (!effectiveUserId) return;
     const unread = notifications.filter((n) => !n.read);
@@ -296,29 +311,20 @@ export default function NotificationsPage() {
             </div>
           </div>
           
-          {unreadCount > 0 && (
-            <>
-              {/* Desktop: pure text with Navigo font */}
-              <button
-                type="button"
-                onClick={markAllRead}
-                className="hidden sm:inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 hover:underline cursor-pointer transition-colors"
-                style={{ fontFamily: "'Navigo', var(--font-inter), sans-serif" }}
-              >
-                Marcar todo como leído
-              </button>
-
-              {/* Mobile: button with icon and checkmark */}
-              <button
-                type="button"
-                onClick={markAllRead}
-                className="sm:hidden w-full h-10 px-4 rounded-xl border border-border/80 bg-raised hover:bg-surface text-foreground font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
-              >
-                <Check className="w-4 h-4 text-primary" />
-                <span>Marcar todo como leído</span>
-              </button>
-            </>
-          )}
+          <button
+            type="button"
+            onClick={markAllRead}
+            disabled={unreadCount === 0 && !notifications.some((n) => !n.read)}
+            className={cn(
+              "w-full sm:w-auto h-10 px-4 rounded-xl border font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-xs shrink-0",
+              unreadCount > 0 || notifications.some((n) => !n.read)
+                ? "border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary cursor-pointer"
+                : "border-border/60 bg-muted/40 text-muted-foreground/60 cursor-not-allowed"
+            )}
+          >
+            <Check className="w-4 h-4 text-primary" />
+            <span>Marcar todo como leído</span>
+          </button>
         </div>
 
         {/* 2. SEARCH INPUT */}
@@ -430,6 +436,19 @@ export default function NotificationsPage() {
                         <span className="text-xs text-muted-foreground dark:text-text-5">
                           {new Date(n.createdAt).toLocaleDateString()}
                         </span>
+                        {!n.read && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMarkOneRead(n);
+                            }}
+                            title="Marcar como leída"
+                            className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                         {!n.read && (
                           <span className="w-2 h-2 rounded-full bg-blue shrink-0" />
                         )}
