@@ -44,12 +44,14 @@ export function VacationApprovalView() {
   const [userNames, setUserNames] = useState<Record<string, string>>({});
   const [userAvatars, setUserAvatars] = useState<Record<string, string>>({});
   const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [rejectDialog, setRejectDialog] = useState<{ open: boolean; id: string }>({ open: false, id: "" });
   const [rejectComment, setRejectComment] = useState("");
   const [page, setPage] = useState(1);
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
+  const [selectedProjectId, setSelectedProjectId] = useState<string>(() =>
+    typeof window !== "undefined" ? localStorage.getItem("selected_project_id") || "all" : "all"
+  );
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -123,8 +125,10 @@ export function VacationApprovalView() {
   }, [token, statusFilter]);
 
   useEffect(() => {
-    if (hydrated) fetchData();
-  }, [hydrated, fetchData]);
+    if (!hydrated) return;
+    if (token) fetchData();
+    else setLoading(false);
+  }, [hydrated, token, fetchData]);
 
   const [approveDialog, setApproveDialog] = useState<{ open: boolean; request: any | null; loadingAbsences: boolean; absencesCount: number; discountDays: number }>({ 
     open: false, 

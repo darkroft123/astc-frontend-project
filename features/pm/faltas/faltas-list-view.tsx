@@ -12,7 +12,7 @@ function getInitialMonthRange(): DateRange {
 }
 
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
 import { Button } from "@/components/ui/button";
@@ -84,9 +84,9 @@ type AbsenceRow = {
 };
 
 export function FaltasListView() {
-  const { token } = useAuth();
-  const [data, setData] = useState({ items: [] as AbsenceRow[], total: 0 });
-  const [isLoading, setIsLoading] = useState(false);
+  const { token, hydrated } = useAuth();
+  const [rawData, setRawData] = useState({ items: [] as any[], total: 0 });
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const size = 5;
 
@@ -123,24 +123,31 @@ export function FaltasListView() {
       const json = await res.json();
       const result = json.data?.listTeamAbsences ?? { items: [], total: 0 };
 
-      const mapped = result.items.map((i: any) => ({
-        id: i.id,
-        usuario: formatUserName(i.userId, userMap),
-        fecha: i.date ?? "-",
-        tipo: i.type ?? "-",
-        justificada: i.justified ?? false,
-      }));
-
-      setData({ items: mapped, total: result.total });
+      setRawData({ items: result.items || [], total: result.total || 0 });
     } catch {
-      setData({ items: [], total: 0 });
+      setRawData({ items: [], total: 0 });
     } finally {
       setIsLoading(false);
     }
   }, [page, justifiedFilter, dateRange, token]);
 
+  const data = useMemo(() => {
+    const mapped: AbsenceRow[] = rawData.items.map((i: any) => ({
+      id: i.id,
+      usuario: formatUserName(i.userId, userMap),
+      fecha: i.date ?? "-",
+      tipo: i.type ?? "-",
+      justificada: i.justified ?? false,
+    }));
+    return { items: mapped, total: rawData.total };
+  }, [rawData, userMap]);
+
   useEffect(() => { setPage(1); }, [justifiedFilter, dateRange]);
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    if (!hydrated) return;
+    if (token) fetchData();
+    else setIsLoading(false);
+  }, [hydrated, token, fetchData]);
 
   useEffect(() => {
     if (!token) return;

@@ -149,6 +149,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
 
   useEffect(() => {
     async function fetchJustification() {
+      if (!hydrated) return;
       if (!token) {
         setJustification(null);
         setIsLoading(false);
@@ -184,7 +185,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
     }
 
     fetchJustification();
-  }, [justificationId, token]);
+  }, [justificationId, token, hydrated]);
 
   useEffect(() => {
     if (!token || !justification?.userId) return;

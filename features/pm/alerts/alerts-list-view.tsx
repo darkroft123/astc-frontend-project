@@ -78,14 +78,16 @@ type AlertRow = {
 type PeriodTab = "Hoy" | "Esta semana" | "Este mes" | "3 meses" | "6 meses" | "9 meses" | "Total";
 
 export function AlertsListView() {
-  const { token } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [alerts, setAlerts] = useState<AlertRow[]>([]);
+  const { token, hydrated } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const [rawAlerts, setRawAlerts] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [activePeriod, setActivePeriod] = useState<PeriodTab>("Este mes");
-  const [selectedProject, setSelectedProject] = useState("all");
+  const [selectedProject, setSelectedProject] = useState(() =>
+    typeof window !== "undefined" ? localStorage.getItem("selected_project_id") || "all" : "all"
+  );
   const [selectedUser, setSelectedUser] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [page, setPage] = useState(1);
@@ -245,7 +247,7 @@ export function AlertsListView() {
 
   const fetchAlerts = useCallback(async () => {
     if (!token) {
-      setAlerts([]);
+      setRawAlerts([]);
       return;
     }
     setIsLoading(true);
@@ -273,42 +275,46 @@ export function AlertsListView() {
       console.log("[AlertsList PM] fetchAlerts received items:", items?.length, "total:", totalAlertsCount);
       setTotalAlerts(totalAlertsCount);
       if (Array.isArray(items) && items.length > 0) {
-        setAlerts(
-          items.map((i: any) => {
-            const proj = projects.find((p) => p.id === i.projectId);
-            const usr = users.find((u) => u.id === i.userId);
-            const userName = usr
-              ? `${usr.firstName || ""} ${usr.lastName || ""}`.trim() || usr.username
-              : "Trabajador";
-            return {
-              id: i.id,
-              type: i.type || "ASISTENCIA_TARDE",
-              rawType: i.type || "ASISTENCIA_TARDE",
-              status: i.status || "PENDING",
-              message: i.message || "Análisis completado sin anomalías",
-              projectId: i.projectId,
-              projectName: proj?.name || "Proyecto",
-              userId: i.userId,
-              userName,
-              dateStr: i.createdAt ? new Date(i.createdAt).toLocaleDateString("es-PE") : "-",
-              locationName: "Ubicación registrada",
-            };
-          })
-        );
+        setRawAlerts(items);
       } else {
-        setAlerts([]);
+        setRawAlerts([]);
       }
     } catch {
-      setAlerts([]);
+      setRawAlerts([]);
       setTotalAlerts(0);
     } finally {
       setIsLoading(false);
     }
-  }, [token, page, selectedStatus, selectedProject, selectedUser, projects, users]);
+  }, [token, page, selectedStatus, selectedProject, selectedUser]);
+
+  const alerts: AlertRow[] = useMemo(() => {
+    return rawAlerts.map((i: any) => {
+      const proj = projects.find((p) => p.id === i.projectId);
+      const usr = users.find((u) => u.id === i.userId);
+      const userName = usr
+        ? `${usr.firstName || ""} ${usr.lastName || ""}`.trim() || usr.username
+        : "Trabajador";
+      return {
+        id: i.id,
+        type: i.type || "ASISTENCIA_TARDE",
+        rawType: i.type || "ASISTENCIA_TARDE",
+        status: i.status || "PENDING",
+        message: i.message || "Análisis completado sin anomalías",
+        projectId: i.projectId,
+        projectName: proj?.name || "Proyecto",
+        userId: i.userId,
+        userName,
+        dateStr: i.createdAt ? new Date(i.createdAt).toLocaleDateString("es-PE") : "-",
+        locationName: "Ubicación registrada",
+      };
+    });
+  }, [rawAlerts, projects, users]);
 
   useEffect(() => {
-    fetchAlerts();
-  }, [fetchAlerts]);
+    if (!hydrated) return;
+    if (token) fetchAlerts();
+    else setIsLoading(false);
+  }, [hydrated, token, fetchAlerts]);
 
   const handleMarkAllReviewed = async () => {
     if (!token) return;
@@ -324,14 +330,14 @@ export function AlertsListView() {
 
   const handleDismissAlert = async (id: string) => {
     if (!token) {
-      setAlerts((prev) => prev.filter((a) => a.id !== id));
+      setRawAlerts((prev) => prev.filter((a) => a.id !== id));
       return;
     }
     try {
       await cancelAlert(token, id);
       await fetchAlerts();
     } catch {
-      setAlerts((prev) => prev.filter((a) => a.id !== id));
+      setRawAlerts((prev) => prev.filter((a) => a.id !== id));
     }
   };
 

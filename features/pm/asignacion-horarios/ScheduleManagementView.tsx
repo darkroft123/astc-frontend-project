@@ -38,9 +38,11 @@ export function ScheduleManagementView() {
   const [schedules, setSchedules] = useState<UserSchedule[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [projectFilter, setProjectFilter] = useState("all");
+  const [projectFilter, setProjectFilter] = useState(() =>
+    typeof window !== "undefined" ? localStorage.getItem("selected_project_id") || "all" : "all"
+  );
   const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [resettingId, setResettingId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
 
@@ -145,8 +147,11 @@ export function ScheduleManagementView() {
   }, [token]);
 
   useEffect(() => {
-    if (hydrated && token) {
+    if (!hydrated) return;
+    if (token) {
       loadData();
+    } else {
+      setIsLoading(false);
     }
   }, [hydrated, token, loadData]);
 

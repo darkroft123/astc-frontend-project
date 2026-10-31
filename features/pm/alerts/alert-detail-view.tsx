@@ -81,13 +81,14 @@ type AlertDetail = {
 
 export function AlertDetailView({ alertId }: AlertDetailViewProps) {
   const router = useRouter();
-  const { token } = useAuth();
+  const { token, hydrated } = useAuth();
   const [alert, setAlert] = useState<AlertDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    if (!hydrated) return;
     if (!token) {
       setAlert(null);
       setIsLoading(false);
@@ -145,7 +146,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
         setAlert(null);
       })
       .finally(() => setIsLoading(false));
-  }, [alertId, token]);
+  }, [alertId, token, hydrated]);
 
   const handleCopyId = () => {
     if (!alert?.id) return;

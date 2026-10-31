@@ -107,7 +107,7 @@ export function ScheduleListView() {
   const [projects, setProjects] = useState<any[]>([]);
   const [templates, setTemplates] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 5;
   const [previewTemplate, setPreviewTemplate] = useState<any | null>(null);
@@ -154,8 +154,11 @@ export function ScheduleListView() {
   }, [token]);
 
   useEffect(() => {
-    if (hydrated && token) {
+    if (!hydrated) return;
+    if (token) {
       loadTemplates();
+    } else {
+      setLoading(false);
     }
   }, [hydrated, token, loadTemplates]);
 

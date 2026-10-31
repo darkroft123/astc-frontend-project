@@ -36,7 +36,7 @@ export function NotificationBell() {
   const effectiveUserId = user?.id || "";
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
 
   const handleNotificationClick = async (n: InAppNotification) => {
@@ -71,9 +71,9 @@ export function NotificationBell() {
     }
   }, [effectiveUserId]);
 
-  const fetchNotifications = useCallback(async () => {
+  const fetchNotifications = useCallback(async (silent = false) => {
     if (!effectiveUserId) return;
-    setLoading(true);
+    if (!silent) setLoading(true);
     try {
       const res = await notificationService.getNotifications(effectiveUserId, 1, 10);
       if (res && res.items) {
@@ -96,7 +96,7 @@ export function NotificationBell() {
     const handleNotificationUpdate = () => {
       notificationService.invalidateUnreadCache();
       fetchUnreadCount();
-      if (open) fetchNotifications();
+      if (open) fetchNotifications(true);
     };
 
     window.addEventListener("astc-notification-updated", handleNotificationUpdate);
@@ -110,7 +110,7 @@ export function NotificationBell() {
   useEffect(() => {
     if (open) {
       notificationService.invalidateUnreadCache();
-      fetchNotifications();
+      fetchNotifications(notifications.length > 0);
       fetchUnreadCount();
     }
   }, [open, fetchNotifications, fetchUnreadCount]);
@@ -151,9 +151,11 @@ export function NotificationBell() {
           aria-label="Notificaciones"
         >
           <Bell className="w-5 h-5 text-muted-foreground dark:text-[#8F96AE]" strokeWidth={1.8} />
-          <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[20px] px-1.5 items-center justify-center rounded-full bg-[#EF4444] text-[10px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-[#0C0E18]">
-            {unreadCount > 9 ? "9+" : unreadCount > 0 ? unreadCount : "9+"}
-          </span>
+          {unreadCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[20px] px-1.5 items-center justify-center rounded-full bg-[#EF4444] text-[10px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-[#0C0E18]">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          )}
         </button>
       </DropdownMenuTrigger>
 

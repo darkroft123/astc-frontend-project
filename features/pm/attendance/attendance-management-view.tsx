@@ -108,15 +108,17 @@ function getInitialRange(p: Period): DateRange {
 }
 
 export function AttendanceManagementView() {
-  const { token } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const { token, hydrated } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
   const [attendance, setAttendance] = useState<AttendanceState | null>(null);
   const [projects, setProjects] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string | null>(null);
 
   const [dateRange, setDateRange] = useState<DateRange>(getInitialRange("month"));
-  const [selectedProject, setSelectedProject] = useState("all");
+  const [selectedProject, setSelectedProject] = useState(() =>
+    typeof window !== "undefined" ? localStorage.getItem("selected_project_id") || "all" : "all"
+  );
   const [selectedUser, setSelectedUser] = useState("all");
   const [page, setPage] = useState(1);
 
@@ -304,8 +306,10 @@ export function AttendanceManagementView() {
   const porcentajeAsistencia = total ? Math.round((asistencias / total) * 100) : 0;
 
   useEffect(() => {
-    fetchAttendance();
-  }, [dateRange, selectedProject, selectedUser, page, token]);
+    if (!hydrated) return;
+    if (token) fetchAttendance();
+    else setIsLoading(false);
+  }, [hydrated, dateRange, selectedProject, selectedUser, page, token]);
 
   const columns: Column<AttendanceRow>[] = [
     { key: "fecha", header: "FECHA", render: (r) => r.fecha },

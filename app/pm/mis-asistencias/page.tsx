@@ -106,7 +106,7 @@ export default function PMAsistenciasPage() {
   const [records, setRecords] = useState<AttendanceItem[]>([]);
   const [searchDate, setSearchDate] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);

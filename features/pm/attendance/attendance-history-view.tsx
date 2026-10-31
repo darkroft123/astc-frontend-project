@@ -137,13 +137,15 @@ const getPeriodDates = (p: Period): { from: string; to: string } => {
 };
 
 export function AttendanceHistoryView() {
-  const { token } = useAuth();
+  const { token, hydrated } = useAuth();
   const [activePeriod, setActivePeriod] = useState<Period>("month");
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
+  const [selectedProjectId, setSelectedProjectId] = useState<string>(() =>
+    typeof window !== "undefined" ? localStorage.getItem("selected_project_id") || "all" : "all"
+  );
   const [selectedUserId, setSelectedUserId] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>(() => getPeriodDates("month"));
 
@@ -255,7 +257,7 @@ export function AttendanceHistoryView() {
 
   const loadData = useCallback(async () => {
     if (!token) {
-      setRecords(DEFAULT_SAMPLE_ATTENDANCE);
+      setRecords([]);
       return;
     }
     setLoading(true);
@@ -283,8 +285,10 @@ export function AttendanceHistoryView() {
   }, [token, selectedProjectId, selectedUserId, selectedStatus, dateRange]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    if (!hydrated) return;
+    if (token) loadData();
+    else setLoading(false);
+  }, [hydrated, token, loadData]);
 
   const handleExport = async () => {
     if (!token) return;
@@ -368,7 +372,7 @@ export function AttendanceHistoryView() {
     return enrichedRecords.slice(start, start + PAGE_SIZE);
   }, [enrichedRecords, currentPage]);
 
-  const total = records.length || 2;
+  const total = records.length;
   const presentes = records.filter((r) => r.status === "PRESENTE").length;
   const faltas = records.filter(
     (r) => r.status === "FALTA" || r.status === "TARDE" || r.status === "SALIDA_TEMPRANA"

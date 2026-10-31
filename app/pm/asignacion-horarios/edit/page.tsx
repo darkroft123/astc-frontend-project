@@ -25,11 +25,12 @@ export default function EditSchedulePage() {
   };
 
   const [schedule, setSchedule] = useState<any>(fallbackSchedule);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadSchedule() {
-      if (!hydrated || !token || !projectId || !userId) {
+      if (!hydrated) return;
+      if (!token || !projectId || !userId) {
         setSchedule(fallbackSchedule);
         setLoading(false);
         return;

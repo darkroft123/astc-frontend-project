@@ -49,12 +49,18 @@ import { ImportHolidaysModal } from "./components/ImportHolidaysModal";
 import { LinkGlobalCollectionModal } from "./components/LinkGlobalCollectionModal";
 
 export function HolidayPMListView() {
-  const { token } = useAuth();
+  const { token, hydrated } = useAuth();
   const { toast } = useToast();
 
   // Data States
   const [projects, setProjects] = useState<any[]>([]);
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+  const [selectedProjectId, setSelectedProjectId] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("selected_project_id");
+      if (saved && saved !== "all") return saved;
+    }
+    return "";
+  });
   const [members, setMembers] = useState<any[]>([]);
   const [userNames, setUserNames] = useState<Record<string, string>>({});
   const [userEmails, setUserEmails] = useState<Record<string, string>>({});
@@ -64,7 +70,7 @@ export function HolidayPMListView() {
   const [assignedCollectionId, setAssignedCollectionId] = useState<string | null>(null);
 
   // UI States
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<"project" | "members">("project");
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -116,7 +122,11 @@ export function HolidayPMListView() {
 
   // Load Projects
   useEffect(() => {
-    if (!token) return;
+    if (!hydrated) return;
+    if (!token) {
+      setLoading(false);
+      return;
+    }
     console.log("[HolidayPMListView] Fetching projects with token:", !!token);
     getAllProjects(token)
       .then((data) => {
@@ -131,6 +141,8 @@ export function HolidayPMListView() {
             setProjects(list);
             if (list.length > 0) {
               setSelectedProjectId((prev) => (prev && list.some((p: any) => p.id === prev) ? prev : list[0].id));
+            } else {
+              setLoading(false);
             }
           });
         }
@@ -144,14 +156,17 @@ export function HolidayPMListView() {
             setProjects(list);
             if (list.length > 0) {
               setSelectedProjectId((prev) => (prev && list.some((p: any) => p.id === prev) ? prev : list[0].id));
+            } else {
+              setLoading(false);
             }
           })
           .catch((e) => {
             console.error("[HolidayPMListView] Error loading projects:", e);
             setProjects([]);
+            setLoading(false);
           });
       });
-  }, [token]);
+  }, [hydrated, token]);
 
   // Load Global Collections
   useEffect(() => {
@@ -247,7 +262,7 @@ export function HolidayPMListView() {
   }, [availableCollections, searchTerm]);
 
   const totalHolidaysCount = useMemo(() => {
-    return availableCollections.reduce((acc, c) => acc + (c.items?.length || 0), 0) || 10;
+    return availableCollections.reduce((acc, c) => acc + (c.items?.length || 0), 0);
   }, [availableCollections]);
 
   // Tab 1 Pagination (Collections)

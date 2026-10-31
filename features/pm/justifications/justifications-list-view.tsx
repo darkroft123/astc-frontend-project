@@ -107,13 +107,13 @@ const getPeriodDates = (p: Period): { from: string; to: string } => {
 };
 
 export function JustificationsListView() {
-  const { token } = useAuth();
+  const { token, hydrated } = useAuth();
   const [activePeriod, setActivePeriod] = useState<Period>("month");
-  const [data, setData] = useState<{ items: JustificationRow[]; total: number }>({
+  const [rawData, setRawData] = useState<{ items: any[]; total: number }>({
     items: [],
     total: 0,
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const size = 5;
   const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
@@ -123,11 +123,11 @@ export function JustificationsListView() {
     setDateRange(getPeriodDates(activePeriod));
   }, [activePeriod]);
 
-  const [filters, setFilters] = useState({
-    project: "all",
+  const [filters, setFilters] = useState(() => ({
+    project: typeof window !== "undefined" ? localStorage.getItem("selected_project_id") || "all" : "all",
     user: "all",
     status: "TODOS",
-  });
+  }));
 
   const [projects, setProjects] = useState<any[]>([]);
   const [userOptions, setUserOptions] = useState<any[]>([]);
@@ -261,48 +261,54 @@ export function JustificationsListView() {
       console.log("[JustificationsList PM] fetchData received items:", items.length, "total:", total);
 
       if (items.length > 0) {
-        setData({
-          items: items.map((i: any) => {
-            const usr = userOptions.find((u) => u.id === i.userId);
-            const userName = usr
-              ? usr.name
-              : (i.user ? `${i.user.firstName || ""} ${i.user.lastName || ""}`.trim() || i.user.username : (i.userName || "Colaborador"));
-            const userEmail = usr?.email || i.userEmail || "";
-            const avatarUrl = usr?.avatarUrl || i.avatarUrl || null;
-            return {
-              id: i.id,
-              userId: i.userId,
-              userName,
-              userRoleBadge: "Trabajador",
-              userEmail,
-              avatarUrl,
-              motivo: i.description || "Sin descripción",
-              documentUrl: i.documentUrl || null,
-              fecha: i.absenceDate || (i.submittedAt ? new Date(i.submittedAt).toLocaleDateString("es-PE") : "-"),
-              estado: i.status || "SUBMITTED",
-            };
-          }),
-          total,
-        });
+        setRawData({ items, total });
       } else {
-        setData({ items: [], total: 0 });
+        setRawData({ items: [], total: 0 });
       }
     } catch {
-      setData({ items: [], total: 0 });
+      setRawData({ items: [], total: 0 });
     } finally {
       setIsLoading(false);
     }
-  }, [token, page, filters, userOptions]);
+  }, [token, page, filters.user, filters.status]);
+
+  const data = useMemo<{ items: JustificationRow[]; total: number }>(() => {
+    return {
+      items: rawData.items.map((i: any) => {
+        const usr = userOptions.find((u) => u.id === i.userId);
+        const userName = usr
+          ? usr.name
+          : (i.user ? `${i.user.firstName || ""} ${i.user.lastName || ""}`.trim() || i.user.username : (i.userName || "Colaborador"));
+        const userEmail = usr?.email || i.userEmail || "";
+        const avatarUrl = usr?.avatarUrl || i.avatarUrl || null;
+        return {
+          id: i.id,
+          userId: i.userId,
+          userName,
+          userRoleBadge: "Trabajador",
+          userEmail,
+          avatarUrl,
+          motivo: i.description || "Sin descripción",
+          documentUrl: i.documentUrl || null,
+          fecha: i.absenceDate || (i.submittedAt ? new Date(i.submittedAt).toLocaleDateString("es-PE") : "-"),
+          estado: i.status || "SUBMITTED",
+        };
+      }),
+      total: rawData.total,
+    };
+  }, [rawData, userOptions]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (!hydrated) return;
+    if (token) fetchData();
+    else setIsLoading(false);
+  }, [hydrated, token, fetchData]);
 
   const handleQuickApprove = async (id: string) => {
     if (!token) {
-      setData((prev) => ({
+      setRawData((prev) => ({
         ...prev,
-        items: prev.items.map((i) => (i.id === id ? { ...i, estado: "APPROVED" } : i)),
+        items: prev.items.map((i) => (i.id === id ? { ...i, status: "APPROVED" } : i)),
       }));
       return;
     }
@@ -311,9 +317,9 @@ export function JustificationsListView() {
       await fetchData();
       if (typeof window !== "undefined") window.dispatchEvent(new Event("astc-justification-updated"));
     } catch {
-      setData((prev) => ({
+      setRawData((prev) => ({
         ...prev,
-        items: prev.items.map((i) => (i.id === id ? { ...i, estado: "APPROVED" } : i)),
+        items: prev.items.map((i) => (i.id === id ? { ...i, status: "APPROVED" } : i)),
       }));
     }
   };
@@ -321,9 +327,9 @@ export function JustificationsListView() {
   const handleQuickReject = async (id: string) => {
     const reason = prompt("Motivo del rechazo (opcional):") || "Rechazada por el jefe de proyecto";
     if (!token) {
-      setData((prev) => ({
+      setRawData((prev) => ({
         ...prev,
-        items: prev.items.map((i) => (i.id === id ? { ...i, estado: "REJECTED" } : i)),
+        items: prev.items.map((i) => (i.id === id ? { ...i, status: "REJECTED" } : i)),
       }));
       return;
     }
@@ -332,9 +338,9 @@ export function JustificationsListView() {
       await fetchData();
       if (typeof window !== "undefined") window.dispatchEvent(new Event("astc-justification-updated"));
     } catch {
-      setData((prev) => ({
+      setRawData((prev) => ({
         ...prev,
-        items: prev.items.map((i) => (i.id === id ? { ...i, estado: "REJECTED" } : i)),
+        items: prev.items.map((i) => (i.id === id ? { ...i, status: "REJECTED" } : i)),
       }));
     }
   };

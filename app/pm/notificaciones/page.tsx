@@ -36,14 +36,14 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [selected, setSelected] = useState<InAppNotification | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
   const [page, setPage] = useState(1);
 
-  const fetchNotifications = useCallback(async () => {
+  const fetchNotifications = useCallback(async (silent = false) => {
     if (!user?.id) return;
-    setLoading(true);
+    if (!silent) setLoading(true);
     try {
       const res = await notificationService.getNotifications(user.id, 1, 100);
       if (res?.items) {
@@ -70,7 +70,7 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     const handleNotificationUpdate = () => {
-      if (user?.id) fetchNotifications();
+      if (user?.id) fetchNotifications(true);
     };
     window.addEventListener("astc-notification-updated", handleNotificationUpdate);
     return () =>
@@ -172,16 +172,6 @@ export default function NotificationsPage() {
   useEffect(() => {
     setPage(1);
   }, [filter, searchQuery]);
-
-  if (!hydrated || loading) {
-    return (
-      <div className="min-h-screen bg-transparent flex items-center justify-center">
-        <div className="text-muted-foreground font-medium text-sm">
-          Cargando notificaciones...
-        </div>
-      </div>
-    );
-  }
 
   /* ================= DETAIL VIEW ================= */
   if (selected) {
@@ -354,7 +344,14 @@ export default function NotificationsPage() {
         </div>
 
         {/* 4. NOTIFICATIONS LIST */}
-        {filtered.length === 0 ? (
+        {!hydrated || loading ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-7 h-7 rounded-full border-2 border-primary border-t-transparent animate-spin mb-3" />
+            <p className="text-muted-foreground font-medium text-sm">
+              Cargando notificaciones...
+            </p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="w-14 h-14 rounded-full bg-muted/60 dark:bg-surface flex items-center justify-center mb-3 text-muted-foreground">
               <Bell className="w-7 h-7 opacity-40" />
