@@ -23,6 +23,64 @@ import type {
 
 import { getGraphQLUrl } from "@/lib/api-host";
 
+/* ================= ADMIN FILTER & REQUEST CACHE ================= */
+
+const knownAdminIds = new Set<string>(["00000000-0000-0000-0000-000000000001"]);
+
+export function isAdminUser(u: any): boolean {
+  if (!u) return false;
+  const id = String(u.id || u.userId || "").toLowerCase().trim();
+  if (id && knownAdminIds.has(id)) return true;
+  const rc = String(u.roleCode || u.role?.code || u.role || "").toUpperCase().trim();
+  const rn = String(u.roleName || u.role?.name || "").toUpperCase().trim();
+  const em = String(u.email || "").toLowerCase().trim();
+  const un = String(u.username || "").toLowerCase().trim();
+  const isAdm =
+    rc === "ADMIN" ||
+    rc === "ROLE_ADMIN" ||
+    rc === "BACKOFFICE" ||
+    rc === "SUPER_ADMIN" ||
+    rn === "ADMIN" ||
+    rn === "ADMINISTRADOR" ||
+    rn === "ADMINISTRATOR" ||
+    em === "admin@astc.com" ||
+    un === "admin";
+  if (isAdm && id) knownAdminIds.add(id);
+  return isAdm;
+}
+
+export function isAdminUserId(userId?: string | null): boolean {
+  if (!userId) return false;
+  return knownAdminIds.has(String(userId).toLowerCase().trim());
+}
+
+function sanitizeProjectMembers(projects: Project[]): Project[] {
+  if (!Array.isArray(projects)) return [];
+  return projects.map((p: any) => ({
+    ...p,
+    members: Array.isArray(p?.members)
+      ? p.members.filter(
+          (m: any) =>
+            !isAdminUserId(m?.userId) &&
+            !isAdminUser(m?.user) &&
+            String(m?.role || "").toUpperCase() !== "ADMIN"
+        )
+      : [],
+  }));
+}
+
+const CACHE_TTL_MS = 60_000;
+let projectsCache: { token: string; ts: number; data: Project[] } | null = null;
+let projectsInFlight: { token: string; promise: Promise<Project[]> } | null = null;
+
+let usersCache: { token: string; ts: number; data: User[] } | null = null;
+let usersInFlight: { token: string; promise: Promise<User[]> } | null = null;
+
+export function invalidateProjectsCache() {
+  projectsCache = null;
+  projectsInFlight = null;
+}
+
 /* ================= UTILS ================= */
 
 function safeJson(res: Response) {
@@ -256,7 +314,8 @@ export async function listTeamAttendance(
   );
 
   const res = data?.listTeamAttendance;
-  return Array.isArray(res) ? res : (res?.items || []);
+  const items = Array.isArray(res) ? res : (res?.items || []);
+  return items.filter((item: any) => !isAdminUserId(item?.userId));
 }
 
 /* ================= EXPORT ================= */
@@ -332,6 +391,11 @@ export async function listAttendanceAlerts(
     token
   );
 
+  if (data?.listAttendanceAlerts?.items) {
+    data.listAttendanceAlerts.items = data.listAttendanceAlerts.items.filter(
+      (item: any) => !isAdminUserId(item?.userId)
+    );
+  }
   return data.listAttendanceAlerts;
 }
 
@@ -436,6 +500,11 @@ export async function listTeamAbsences(
     token
   );
 
+  if (data?.listTeamAbsences?.items) {
+    data.listTeamAbsences.items = data.listTeamAbsences.items.filter(
+      (item: any) => !isAdminUserId(item?.userId)
+    );
+  }
   return data.listTeamAbsences;
 }
 
@@ -589,6 +658,7 @@ export async function createProject(
     token
   );
 
+  invalidateProjectsCache();
   return data.createProject;
 }
 
@@ -607,6 +677,7 @@ export async function deleteProject(
     token
   );
 
+  invalidateProjectsCache();
   return data.deleteProject;
 }
 
@@ -616,45 +687,68 @@ type GetAllProjectsResponse = {
   getAllProjects: Project[];
 };
 export async function getAllProjects(
-  token: string
-) {
-  const data = await graphqlRequest<GetAllProjectsResponse>(
-    `
-    query getAllProjects {
-      getAllProjects {
-        id
-        name
-        description
-        status
-        startDate
-        endDate
-        budget
-        currency
-        workStartTime
-        workEndTime
-        graceMinutes
-        absenceCutoffTime
-        vacationEligibilityDays
-        holidays
-        timezone
-        shiftType
-        responsibleId
-        latitude
-        longitude
-        createdAt
-        members {
-          id
-          userId
-          role
+  token: string,
+  forceRefresh = false
+): Promise<Project[]> {
+  if (!token) return [];
+  const now = Date.now();
+  if (!forceRefresh && projectsCache && projectsCache.token === token && now - projectsCache.ts < CACHE_TTL_MS) {
+    return projectsCache.data;
+  }
+  if (!forceRefresh && projectsInFlight && projectsInFlight.token === token) {
+    return projectsInFlight.promise;
+  }
+
+  const promise = (async () => {
+    try {
+      const data = await graphqlRequest<GetAllProjectsResponse>(
+        `
+        query getAllProjects {
+          getAllProjects {
+            id
+            name
+            description
+            status
+            startDate
+            endDate
+            budget
+            currency
+            workStartTime
+            workEndTime
+            graceMinutes
+            absenceCutoffTime
+            vacationEligibilityDays
+            holidays
+            timezone
+            shiftType
+            responsibleId
+            latitude
+            longitude
+            createdAt
+            members {
+              id
+              userId
+              role
+            }
+          }
         }
+        `,
+        {},
+        token
+      );
+
+      const cleaned = sanitizeProjectMembers(data?.getAllProjects || []);
+      projectsCache = { token, ts: Date.now(), data: cleaned };
+      return cleaned;
+    } finally {
+      if (projectsInFlight?.promise === promise) {
+        projectsInFlight = null;
       }
     }
-    `,
-    {},
-    token
-  );
+  })();
 
-  return data.getAllProjects;
+  projectsInFlight = { token, promise };
+  return promise;
 }
 
 type GetMyProjectsResponse = {
@@ -698,7 +792,7 @@ export async function getMyProjects(token: string): Promise<Project[]> {
       {},
       token
     );
-    return data?.getMyProjects || [];
+    return sanitizeProjectMembers(data?.getMyProjects || []);
   } catch (e) {
     console.error("Error getMyProjects:", e);
     return [];
@@ -982,7 +1076,9 @@ export async function listScheduleOverrides(
     token
   );
 
-  return data.listScheduleOverrides;
+  return (data.listScheduleOverrides || []).filter(
+    (ov: any) => !isAdminUserId(ov?.userId)
+  );
 }
 
 type GetProjectMembersResponse = {
@@ -1020,48 +1116,75 @@ export async function getProjectMembers(
     token
   );
 
-  return data.getProjectMembers;
+  return (data.getProjectMembers || []).filter(
+    (m: any) =>
+      !isAdminUserId(m?.userId) &&
+      !isAdminUser(m?.user) &&
+      String(m?.role || "").toUpperCase() !== "ADMIN"
+  );
 }
 
 type GetAllUsersResponse = {
   listUsers: User[];
 };
 
-export async function getAllUsers(token: string): Promise<User[]> {
-  try {
-    const data = await graphqlRequest<any>(
-      `
-      query ListUsers {
-        listUsers {
-          id
-          username
-          email
-          firstName
-          lastName
-          avatarUrl
-          roleId
-          roleCode
-          roleName
-        }
-      }
-      `,
-      {},
-      token
-    );
-
-    const raw = data?.listUsers ?? data?.getAllUsers ?? [];
-    const list = Array.isArray(raw) ? raw : (Array.isArray(raw?.items) ? raw.items : []);
-    return list.map((u: any) => {
-      const fullName = [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || u.email || "Usuario";
-      return {
-        ...u,
-        name: fullName,
-        fullName,
-      };
-    });
-  } catch {
-    return [];
+export async function getAllUsers(token: string, forceRefresh = false): Promise<User[]> {
+  if (!token) return [];
+  const now = Date.now();
+  if (!forceRefresh && usersCache && usersCache.token === token && now - usersCache.ts < CACHE_TTL_MS) {
+    return usersCache.data;
   }
+  if (!forceRefresh && usersInFlight && usersInFlight.token === token) {
+    return usersInFlight.promise;
+  }
+
+  const promise = (async () => {
+    try {
+      const data = await graphqlRequest<any>(
+        `
+        query ListUsers {
+          listUsers {
+            id
+            username
+            email
+            firstName
+            lastName
+            avatarUrl
+            roleId
+            roleCode
+            roleName
+          }
+        }
+        `,
+        {},
+        token
+      );
+
+      const raw = data?.listUsers ?? data?.getAllUsers ?? [];
+      const list = Array.isArray(raw) ? raw : (Array.isArray(raw?.items) ? raw.items : []);
+      const filtered = list
+        .filter((u: any) => !isAdminUser(u))
+        .map((u: any) => {
+          const fullName = [u.firstName, u.lastName].filter(Boolean).join(" ").trim() || u.username || u.email || "Usuario";
+          return {
+            ...u,
+            name: fullName,
+            fullName,
+          };
+        });
+      usersCache = { token, ts: Date.now(), data: filtered };
+      return filtered;
+    } catch {
+      return [];
+    } finally {
+      if (usersInFlight?.promise === promise) {
+        usersInFlight = null;
+      }
+    }
+  })();
+
+  usersInFlight = { token, promise };
+  return promise;
 }
 
 type GetUserResponse = {
@@ -1185,6 +1308,7 @@ export async function addProjectMember(
     { input: { projectId, userId, role } },
     token
   );
+  invalidateProjectsCache();
   return data.addProjectMember;
 }
 
@@ -1201,6 +1325,7 @@ export async function deleteProjectMember(
     { id },
     token
   );
+  invalidateProjectsCache();
   return data.deleteProjectMember;
 }
 
@@ -1239,6 +1364,7 @@ export async function updateProject(
     token
   );
 
+  invalidateProjectsCache();
   return data.updateProject;
 }
 
@@ -1457,7 +1583,9 @@ export async function listVacations(
     { userId, status },
     token
   );
-  return data.listVacations;
+  return (data.listVacations || []).filter(
+    (v: any) => !isAdminUserId(v?.userId)
+  );
 }
 
 export async function getVacationBalance(

@@ -79,11 +79,11 @@ export function useUserProject() {
       setLoadingProject(true);
       cachedPromise = (async () => {
         try {
-          let list = await getMyProjects(token);
+          let list = await getAllProjects(token);
           if (!list || list.length === 0) {
-            const all = await getAllProjects(token);
-            if (Array.isArray(all) && all.length > 0) {
-              list = all;
+            const mine = await getMyProjects(token);
+            if (Array.isArray(mine) && mine.length > 0) {
+              list = mine;
             }
           }
           cachedProjects = list || [];
@@ -91,7 +91,7 @@ export function useUserProject() {
           return cachedProjects;
         } catch (_) {
           try {
-            const fallback = await getAllProjects(token);
+            const fallback = await getMyProjects(token);
             if (Array.isArray(fallback) && fallback.length > 0) {
               cachedProjects = fallback;
               hasFetched = true;

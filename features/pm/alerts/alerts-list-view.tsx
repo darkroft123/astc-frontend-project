@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { getGraphQLUrl } from "@/lib/api-host";
-import { getAllProjects, getAllUsers, cancelAlert, approveAlert } from "@/app/services/project.assistance.service";
+import { getAllProjects, getAllUsers, cancelAlert, approveAlert, isAdminUser, isAdminUserId } from "@/app/services/project.assistance.service";
 import { DateRangeModal, DateRange } from "@/components/ui/date-range-modal";
 import { formatAlertType, formatAlertMessage } from "@/lib/formatters";
 
@@ -265,11 +265,13 @@ export function AlertsListView() {
       });
       const json = await res.json();
       const items = json?.data?.listAttendanceAlerts?.items;
-      const totalAlertsCount = Number(json?.data?.listAttendanceAlerts?.total) || items?.length || 0;
-      console.log("[AlertsList PM] fetchAlerts received items:", items?.length, "total:", totalAlertsCount);
+      const rawItems = Array.isArray(items) ? items : [];
+      const nonAdminItems = rawItems.filter((i: any) => !isAdminUserId(i?.userId));
+      const totalAlertsCount = nonAdminItems.length;
+      console.log("[AlertsList PM] fetchAlerts received items:", nonAdminItems.length, "total:", totalAlertsCount);
       setTotalAlerts(totalAlertsCount);
-      if (Array.isArray(items) && items.length > 0) {
-        setRawAlerts(items);
+      if (nonAdminItems.length > 0) {
+        setRawAlerts(nonAdminItems);
       } else {
         setRawAlerts([]);
       }
@@ -282,27 +284,36 @@ export function AlertsListView() {
   }, [token, page, selectedStatus, selectedProject, selectedUser]);
 
   const alerts: AlertRow[] = useMemo(() => {
-    return rawAlerts.map((i: any) => {
-      const proj = projects.find((p) => p.id === i.projectId);
-      const usr = users.find((u) => u.id === i.userId);
-      const userName = usr
-        ? `${usr.firstName || ""} ${usr.lastName || ""}`.trim() || usr.username
-        : "Trabajador";
-      return {
-        id: i.id,
-        type: i.type || "ASISTENCIA_TARDE",
-        rawType: i.type || "ASISTENCIA_TARDE",
-        status: i.status || "PENDING",
-        message: i.message || "Análisis completado sin anomalías",
-        projectId: i.projectId,
-        projectName: proj?.name || "Proyecto",
-        userId: i.userId,
-        userName,
-        dateStr: i.createdAt ? new Date(i.createdAt).toLocaleDateString("es-PE") : "-",
-        locationName: "Ubicación registrada",
-      };
-    });
-  }, [rawAlerts, projects, users]);
+    return rawAlerts
+      .filter((i: any) => {
+        if (isAdminUserId(i?.userId)) return false;
+        const usr = users.find((u) => u.id === i.userId);
+        if (usr && isAdminUser(usr)) return false;
+        if (selectedProject !== "all" && i.projectId !== selectedProject) return false;
+        if (selectedUser !== "all" && i.userId !== selectedUser) return false;
+        return true;
+      })
+      .map((i: any) => {
+        const proj = projects.find((p) => p.id === i.projectId);
+        const usr = users.find((u) => u.id === i.userId);
+        const userName = usr
+          ? `${usr.firstName || ""} ${usr.lastName || ""}`.trim() || usr.username
+          : "Trabajador";
+        return {
+          id: i.id,
+          type: i.type || "ASISTENCIA_TARDE",
+          rawType: i.type || "ASISTENCIA_TARDE",
+          status: i.status || "PENDING",
+          message: i.message || "Análisis completado sin anomalías",
+          projectId: i.projectId,
+          projectName: proj?.name || "Proyecto",
+          userId: i.userId,
+          userName,
+          dateStr: i.createdAt ? new Date(i.createdAt).toLocaleDateString("es-PE") : "-",
+          locationName: "Ubicación registrada",
+        };
+      });
+  }, [rawAlerts, projects, users, selectedProject, selectedUser]);
 
   useEffect(() => {
     if (!hydrated) return;

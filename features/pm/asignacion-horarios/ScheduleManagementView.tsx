@@ -8,6 +8,8 @@ import {
   getAllUsers,
   listScheduleOverrides,
   deleteSchedule,
+  isAdminUser,
+  isAdminUserId,
 } from "@/app/services/project.assistance.service";
 import PageHeader from "@/components/layout/page-header";
 
@@ -95,16 +97,19 @@ export function ScheduleManagementView() {
       }
 
       const list: UserSchedule[] = [];
-      const userList = Array.isArray(users) ? users : [];
+      const userList = (Array.isArray(users) ? users : []).filter(
+        (u: any) => !isAdminUser(u) && !isAdminUserId(u?.id)
+      );
 
       for (const u of userList) {
         let uProjects = u.projects && u.projects.length > 0 ? u.projects : [];
         if (uProjects.length === 0 && projectList.length > 0) {
           const memberOf = projectList.filter((pr: any) =>
             pr.members?.some((m: any) => m.userId === u.id) ||
+            pr.responsibleId === u.id ||
             overrideMap.has(`${u.id}:${pr.id}`)
           );
-          uProjects = memberOf.length > 0 ? memberOf : [projectList[0]];
+          uProjects = memberOf;
         }
         if (uProjects.length === 0) continue;
 

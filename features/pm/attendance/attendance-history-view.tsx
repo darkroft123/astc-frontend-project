@@ -32,6 +32,8 @@ import {
   getAllUsers,
   listTeamAttendance,
   exportAttendance,
+  isAdminUser,
+  isAdminUserId,
 } from "@/app/services/project.assistance.service";
 
 type Period =
@@ -285,7 +287,7 @@ export function AttendanceHistoryView() {
   }, [hydrated, token, loadData]);
 
   const handleExport = async () => {
-    if (!token) return;
+    if (!token || loading || enrichedRecords.length === 0) return;
     try {
       const result = await exportAttendance(token, {
         projectId: selectedProjectId === "all" ? undefined : selectedProjectId,
@@ -296,9 +298,18 @@ export function AttendanceHistoryView() {
       });
       if (result?.content) {
         let content = result.content.replace(/^(\uFEFF)?sep=;[\r\n]+/, "");
-        if (!content.startsWith("\uFEFF")) {
-          content = "\uFEFF" + content;
+        const lines = content
+          .split(/\r?\n/)
+          .filter(
+            (line) =>
+              line.trim().length > 0 &&
+              !line.toLowerCase().includes("admin@astc.com") &&
+              !line.includes(";Admin;")
+          );
+        if (lines.length <= 1) {
+          return;
         }
+        content = "\uFEFF" + lines.join("\r\n");
         const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -332,29 +343,33 @@ export function AttendanceHistoryView() {
   }, [users]);
 
   const enrichedRecords = useMemo(() => {
-    return records.map((r) => {
-      const u = userMap.get(r.userId);
-      const userName =
-        r.userName ||
-        (u
-          ? `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || u.name
-          : r.userId
-          ? `Usuario (${r.userId.slice(0, 8)})`
-          : "Colaborador");
-      const userEmail = r.userEmail || u?.email || "";
-      const avatarUrl = u?.avatarUrl || r.avatarUrl || null;
-      const projectName =
-        r.projectName ||
-        projectMap.get(r.projectId) ||
-        (r.projectId ? `Proyecto (${r.projectId.slice(0, 8)})` : "Sin proyecto");
-      return {
-        ...r,
-        userName,
-        userEmail,
-        projectName,
-        avatarUrl,
-      };
-    });
+    return records
+      .filter((r) => !isAdminUserId(r?.userId))
+      .map((r) => {
+        const u = userMap.get(r.userId);
+        if (u && isAdminUser(u)) return null;
+        const userName =
+          r.userName ||
+          (u
+            ? `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || u.name
+            : r.userId
+            ? `Usuario (${r.userId.slice(0, 8)})`
+            : "Colaborador");
+        const userEmail = r.userEmail || u?.email || "";
+        const avatarUrl = u?.avatarUrl || r.avatarUrl || null;
+        const projectName =
+          r.projectName ||
+          projectMap.get(r.projectId) ||
+          (r.projectId ? `Proyecto (${r.projectId.slice(0, 8)})` : "Sin proyecto");
+        return {
+          ...r,
+          userName,
+          userEmail,
+          projectName,
+          avatarUrl,
+        };
+      })
+      .filter(Boolean) as any[];
   }, [records, projectMap, userMap]);
 
   const PAGE_SIZE = 5;
@@ -366,9 +381,9 @@ export function AttendanceHistoryView() {
     return enrichedRecords.slice(start, start + PAGE_SIZE);
   }, [enrichedRecords, currentPage]);
 
-  const total = records.length;
-  const presentes = records.filter((r) => r.status === "PRESENTE").length;
-  const faltas = records.filter(
+  const total = enrichedRecords.length;
+  const presentes = enrichedRecords.filter((r) => r.status === "PRESENTE").length;
+  const faltas = enrichedRecords.filter(
     (r) => r.status === "FALTA" || r.status === "TARDE" || r.status === "SALIDA_TEMPRANA"
   ).length;
   const porcentaje = total > 0 ? Math.round((presentes / total) * 100) : 0;
@@ -399,7 +414,13 @@ export function AttendanceHistoryView() {
           <button
             type="button"
             onClick={handleExport}
-            className="h-10 px-4 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold flex items-center gap-2 shadow-md shadow-purple-500/20 cursor-pointer transition-all shrink-0"
+            disabled={loading || enrichedRecords.length === 0}
+            title={
+              enrichedRecords.length === 0
+                ? "No hay asistencias registradas para exportar"
+                : "Exportar asistencias a CSV"
+            }
+            className="h-10 px-4 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold flex items-center gap-2 shadow-md shadow-purple-500/20 cursor-pointer transition-all shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download className="w-4 h-4" />
             <span>Exportar CSV</span>
@@ -412,7 +433,13 @@ export function AttendanceHistoryView() {
       <button
         type="button"
         onClick={handleExport}
-        className="md:hidden w-full h-12 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 cursor-pointer transition-all"
+        disabled={loading || enrichedRecords.length === 0}
+        title={
+          enrichedRecords.length === 0
+            ? "No hay asistencias registradas para exportar"
+            : "Exportar asistencias a CSV"
+        }
+        className="md:hidden w-full h-12 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Download className="w-4 h-4" />
         Exportar CSV

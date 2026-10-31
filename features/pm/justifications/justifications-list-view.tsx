@@ -29,6 +29,7 @@ import {
   getAllProjects,
   approveJustification,
   rejectJustification,
+  isAdminUserId,
 } from "@/app/services/project.assistance.service";
 import { getGraphQLUrl } from "@/lib/api-host";
 
@@ -256,8 +257,9 @@ export function JustificationsListView() {
         }),
       });
       const json = await res.json();
-      const items = json?.data?.listJustificationsPM?.items || [];
-      const total = json?.data?.listJustificationsPM?.total ?? items.length;
+      const rawItems = json?.data?.listJustificationsPM?.items || [];
+      const items = rawItems.filter((i: any) => !isAdminUserId(i?.userId));
+      const total = items.length;
       console.log("[JustificationsList PM] fetchData received items:", items.length, "total:", total);
 
       if (items.length > 0) {

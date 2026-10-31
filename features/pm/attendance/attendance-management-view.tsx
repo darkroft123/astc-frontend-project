@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogClose, DialogTitle, DialogDescription } fr
 import PeriodSelector from "@/components/period-selector";
 import PageHeader from "@/components/layout/page-header";
 import { DataTable, Column } from "@/components/DataTable";
-import { getAllProjects, getAllUsers } from "@/app/services/project.assistance.service";
+import { getAllProjects, getAllUsers, isAdminUserId } from "@/app/services/project.assistance.service";
 import { getGraphQLUrl } from "@/lib/api-host";
 import { LocationCell } from "@/components/atoms/LocationCell";
 import { formatAvatarUrl } from "@/lib/avatar-url";
@@ -218,9 +218,10 @@ export function AttendanceManagementView() {
       });
 
       const json = await res.json();
-      const items: RawAttendanceItem[] = json.data?.listTeamAttendance?.items ?? [];
+      const rawItems: RawAttendanceItem[] = json.data?.listTeamAttendance?.items ?? [];
+      const items = rawItems.filter((item) => !isAdminUserId(item?.userId));
 
-      const totalCount = Number(json.data?.listTeamAttendance?.total) || items.length;
+      const totalCount = items.length;
       console.log("[AttendanceManagement PM] fetchAttendance received items:", items.length, "total:", totalCount);
       setAttendance({ rawItems: items, total: totalCount });
     } finally {

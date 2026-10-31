@@ -22,7 +22,7 @@ import PageHeader from "@/components/layout/page-header";
 import { DataTable, Column } from "@/components/DataTable";
 import { SubMetricCard } from "@/components/dashboard/SubMetricCard";
 import { getGraphQLUrl } from "@/lib/api-host";
-import { getAllUsers } from "@/app/services/project.assistance.service";
+import { getAllUsers, isAdminUserId } from "@/app/services/project.assistance.service";
 import {
   Select,
   SelectTrigger,
@@ -122,8 +122,9 @@ export function FaltasListView() {
 
       const json = await res.json();
       const result = json.data?.listTeamAbsences ?? { items: [], total: 0 };
+      const filteredItems = (result.items || []).filter((i: any) => !isAdminUserId(i?.userId));
 
-      setRawData({ items: result.items || [], total: result.total || 0 });
+      setRawData({ items: filteredItems, total: filteredItems.length });
     } catch {
       setRawData({ items: [], total: 0 });
     } finally {
