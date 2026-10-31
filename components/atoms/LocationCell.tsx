@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { getDistrictFromCoords } from "@/lib/geocoding";
 import { MapPin } from "lucide-react";
+
 export function LocationCell({
   lat,
   lng,
@@ -34,6 +35,10 @@ export function LocationCell({
     return <span className="text-muted-foreground text-xs">-</span>;
   }
 
+  const parts = district ? district.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  const primaryText = parts[0] || district || "Cargando...";
+  const secondaryText = parts.length > 1 ? parts.slice(1).join(", ") : null;
+
   const mapsUrl = `https://www.google.com/maps?q=${effectiveLat},${effectiveLng}`;
 
   return (
@@ -41,11 +46,16 @@ export function LocationCell({
       href={mapsUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 text-link hover:text-primary font-medium hover:underline text-xs"
+      className="inline-flex items-start gap-1.5 text-link hover:text-primary font-medium hover:underline text-xs max-w-[170px]"
       title={`Coordenadas: ${effectiveLat}, ${effectiveLng} (Ver en Google Maps)`}
     >
-      <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
-      <span className="whitespace-nowrap">{district || "Cargando..."}</span>
+      <MapPin className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+      <span className="flex flex-col leading-tight text-left">
+        <span className="font-medium text-foreground">{primaryText}</span>
+        {secondaryText && (
+          <span className="text-[11px] text-muted-foreground font-normal">{secondaryText}</span>
+        )}
+      </span>
     </a>
   );
 }
