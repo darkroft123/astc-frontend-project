@@ -17,6 +17,8 @@ import {
   Info,
   Globe,
   Check,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatAvatarUrl } from "@/lib/avatar-url";
@@ -43,6 +45,8 @@ import {
 
 import type { ProjectInput, User } from "@/components/types/dashboard";
 
+const ITEMS_PER_PAGE = 5;
+
 export default function ProjectForm({ mode = "create", initialData }: any) {
   const { token, hydrated } = useAuth();
   const router = useRouter();
@@ -62,8 +66,12 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
   const [teamMembers, setTeamMembers] = useState<User[]>([]);
 
   const [responsibleId, setResponsibleId] = useState<string>("");
+  const [pmSearch, setPmSearch] = useState("");
+  const [pmPage, setPmPage] = useState(1);
+
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
   const [memberSearch, setMemberSearch] = useState("");
+  const [memberPage, setMemberPage] = useState(1);
 
   const [vacationEligibilityDays, setVacationEligibilityDays] = useState<number>(90);
 
@@ -173,12 +181,32 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
   }
 
   const selectedResponsible = projectManagers.find((u) => u.id === responsibleId);
+
+  const filteredPMs = projectManagers.filter((u) => {
+    const q = pmSearch.toLowerCase();
+    const fullName = `${u.firstName} ${u.lastName}`.toLowerCase();
+    const username = (u.username || "").toLowerCase();
+    return fullName.includes(q) || username.includes(q);
+  });
+  const totalPmPages = Math.max(1, Math.ceil(filteredPMs.length / ITEMS_PER_PAGE));
+  const safePmPage = Math.min(pmPage, totalPmPages);
+  const paginatedPMs = filteredPMs.slice(
+    (safePmPage - 1) * ITEMS_PER_PAGE,
+    safePmPage * ITEMS_PER_PAGE
+  );
+
   const filteredMembers = teamMembers.filter((u) => {
     const q = memberSearch.toLowerCase();
     const fullName = `${u.firstName} ${u.lastName}`.toLowerCase();
     const username = (u.username || "").toLowerCase();
     return fullName.includes(q) || username.includes(q);
   });
+  const totalMemberPages = Math.max(1, Math.ceil(filteredMembers.length / ITEMS_PER_PAGE));
+  const safeMemberPage = Math.min(memberPage, totalMemberPages);
+  const paginatedMembers = filteredMembers.slice(
+    (safeMemberPage - 1) * ITEMS_PER_PAGE,
+    safeMemberPage * ITEMS_PER_PAGE
+  );
 
   return (
     <div className="relative min-h-screen bg-transparent overflow-hidden pb-12">
@@ -414,21 +442,102 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
               </div>
 
               <div className="space-y-4 pt-1">
-                {/* Project Manager selector */}
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium text-foreground">Jefe de proyecto responsable</Label>
-                  <Select value={responsibleId} onValueChange={(val) => setResponsibleId(val)}>
-                    <SelectTrigger className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-foreground text-xs shadow-xs">
-                      <SelectValue placeholder="Selecciona un responsable" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {projectManagers.map((u) => (
-                        <SelectItem key={u.id} value={u.id}>
-                          {u.firstName} {u.lastName} (@{u.username})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                {/* Project Manager selector with 5-by-5 pagination */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-medium text-foreground">Jefe de proyecto responsable</Label>
+                    <span className="text-[11px] font-semibold text-primary">
+                      {selectedResponsible ? "1 asignado" : "Sin asignar"}
+                    </span>
+                  </div>
+
+                  <div className="relative">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <Input
+                      type="text"
+                      placeholder="Buscar responsable por nombre o usuario..."
+                      value={pmSearch}
+                      onChange={(e) => {
+                        setPmSearch(e.target.value);
+                        setPmPage(1);
+                      }}
+                      className="h-10 pl-10 pr-3.5 text-xs rounded-xl border border-border bg-background shadow-xs"
+                    />
+                  </div>
+
+                  <div className="border border-border rounded-xl p-2 space-y-1 bg-background/50">
+                    {paginatedPMs.length === 0 ? (
+                      <p className="text-[11px] text-muted-foreground text-center py-4">No hay responsables disponibles</p>
+                    ) : (
+                      paginatedPMs.map((u) => {
+                        const isSelected = responsibleId === u.id;
+                        const initials = `${(u.firstName?.[0] || "").toUpperCase()}${(u.lastName?.[0] || "").toUpperCase()}` || "U";
+                        return (
+                          <label
+                            key={u.id}
+                            onClick={() => setResponsibleId(isSelected ? "" : u.id)}
+                            className={`flex items-center justify-between p-2 rounded-xl cursor-pointer text-xs transition-colors ${
+                              isSelected ? "bg-primary/10 border border-primary/20" : "hover:bg-muted/60"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <input
+                                type="radio"
+                                name="responsiblePm"
+                                checked={isSelected}
+                                onChange={() => {}}
+                                className="w-4 h-4 text-primary border-border focus:ring-primary cursor-pointer"
+                              />
+                              <Avatar className="w-7 h-7 rounded-full shrink-0 shadow-2xs">
+                                {formatAvatarUrl(u.avatarUrl) && (
+                                  <AvatarImage src={formatAvatarUrl(u.avatarUrl)!} alt={u.firstName || u.username} className="object-cover" />
+                                )}
+                                <AvatarFallback className="bg-gradient-to-tr from-purple-500 to-indigo-500 text-white font-bold text-[10px]">
+                                  {initials}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="font-medium text-foreground truncate">{u.firstName} {u.lastName}</span>
+                            </div>
+                            <span className="text-[10px] text-muted-foreground font-mono shrink-0 ml-2">@{u.username}</span>
+                          </label>
+                        );
+                      })
+                    )}
+                  </div>
+
+                  {/* Pagination Footer for Responsible PMs (5 per page) */}
+                  {filteredPMs.length > 0 && (
+                    <div className="flex items-center justify-between pt-1 px-1">
+                      <span className="text-[11px] text-muted-foreground">
+                        Mostrando {(safePmPage - 1) * ITEMS_PER_PAGE + 1}-
+                        {Math.min(safePmPage * ITEMS_PER_PAGE, filteredPMs.length)} de {filteredPMs.length}
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          disabled={safePmPage <= 1}
+                          onClick={() => setPmPage((p) => Math.max(1, p - 1))}
+                          className="w-7 h-7 rounded-lg border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer hover:bg-muted/50 transition-colors"
+                          title="Página anterior"
+                        >
+                          <ChevronLeft className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="text-[11px] text-muted-foreground font-medium px-1">
+                          {safePmPage} / {totalPmPages}
+                        </span>
+                        <button
+                          type="button"
+                          disabled={safePmPage >= totalPmPages}
+                          onClick={() => setPmPage((p) => Math.min(totalPmPages, p + 1))}
+                          className="w-7 h-7 rounded-lg border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer hover:bg-muted/50 transition-colors"
+                          title="Página siguiente"
+                        >
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   {selectedResponsible && (
                     <p className="text-[11px] text-primary bg-primary/10 p-2.5 rounded-xl border border-primary/20">
                       Asignado: <strong>{selectedResponsible.firstName} {selectedResponsible.lastName}</strong> ({selectedResponsible.email || selectedResponsible.username})
@@ -436,8 +545,8 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
                   )}
                 </div>
 
-                {/* Team Members search and list */}
-                <div className="space-y-2 pt-1 border-t border-border">
+                {/* Team Members search and list with 5-by-5 pagination */}
+                <div className="space-y-2 pt-3 border-t border-border">
                   <div className="flex items-center justify-between">
                     <Label className="text-xs font-medium text-foreground">Miembros del proyecto</Label>
                     <span className="text-[11px] font-semibold text-primary">{selectedMemberIds.length} seleccionados</span>
@@ -449,16 +558,19 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
                       type="text"
                       placeholder="Buscar por nombre o usuario..."
                       value={memberSearch}
-                      onChange={(e) => setMemberSearch(e.target.value)}
+                      onChange={(e) => {
+                        setMemberSearch(e.target.value);
+                        setMemberPage(1);
+                      }}
                       className="h-10 pl-10 pr-3.5 text-xs rounded-xl border border-border bg-background shadow-xs"
                     />
                   </div>
 
-                  <div className="border border-border rounded-xl p-2 max-h-52 overflow-y-auto space-y-1 bg-background/50">
-                    {filteredMembers.length === 0 ? (
+                  <div className="border border-border rounded-xl p-2 space-y-1 bg-background/50">
+                    {paginatedMembers.length === 0 ? (
                       <p className="text-[11px] text-muted-foreground text-center py-4">No hay miembros disponibles</p>
                     ) : (
-                      filteredMembers.map((u) => {
+                      paginatedMembers.map((u) => {
                         const isChecked = selectedMemberIds.includes(u.id);
                         const initials = `${(u.firstName?.[0] || "").toUpperCase()}${(u.lastName?.[0] || "").toUpperCase()}` || "U";
                         return (
@@ -491,6 +603,39 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
                       })
                     )}
                   </div>
+
+                  {/* Pagination Footer for Team Members (5 per page) */}
+                  {filteredMembers.length > 0 && (
+                    <div className="flex items-center justify-between pt-1 px-1">
+                      <span className="text-[11px] text-muted-foreground">
+                        Mostrando {(safeMemberPage - 1) * ITEMS_PER_PAGE + 1}-
+                        {Math.min(safeMemberPage * ITEMS_PER_PAGE, filteredMembers.length)} de {filteredMembers.length}
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          disabled={safeMemberPage <= 1}
+                          onClick={() => setMemberPage((p) => Math.max(1, p - 1))}
+                          className="w-7 h-7 rounded-lg border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer hover:bg-muted/50 transition-colors"
+                          title="Página anterior"
+                        >
+                          <ChevronLeft className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="text-[11px] text-muted-foreground font-medium px-1">
+                          {safeMemberPage} / {totalMemberPages}
+                        </span>
+                        <button
+                          type="button"
+                          disabled={safeMemberPage >= totalMemberPages}
+                          onClick={() => setMemberPage((p) => Math.min(totalMemberPages, p + 1))}
+                          className="w-7 h-7 rounded-lg border border-border bg-card flex items-center justify-center text-muted-foreground disabled:opacity-40 cursor-pointer hover:bg-muted/50 transition-colors"
+                          title="Página siguiente"
+                        >
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

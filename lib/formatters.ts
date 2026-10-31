@@ -27,6 +27,9 @@ export function formatAlertType(type: string | null | undefined): string {
     PHOTO_DOWNLOAD_FAILED: "Error de descarga de foto",
     ANALYSIS_ERROR: "Error de análisis biométrico",
     FACE_FRAUD: "Alerta biométrica",
+    FRAUDE_FACIAL: "Alerta biométrica",
+    ROSTRO_NO_DETECTADO: "Rostro no detectado",
+    SUPLANTACION_IDENTIDAD: "Suplantación de identidad",
     FACE_MISMATCH: "Rostro no coincide",
     NO_MATCH: "Rostro no coincide",
     OUT_OF_AREA: "Fuera de rango",
@@ -71,11 +74,12 @@ export function formatAlertMessage(msg: string | null | undefined, type?: string
   if (!cleanMsg || cleanMsg === "-" || lowerMsg === "test alert" || lowerMsg === "no_photo") {
     if (t === "LATE_ARRIVAL" || t === "ASISTENCIA_TARDE") return "Registro de asistencia con tardanza respecto al horario programado.";
     if (t === "NO_PHOTO") return "Asistencia registrada sin fotografía adjunta.";
-    if (t === "NO_MATCH" || t === "FACE_MISMATCH") return "El rostro de la foto no coincide con el trabajador.";
+    if (t === "ROSTRO_NO_DETECTADO") return "No se detectó ningún rostro humano en la fotografía.";
+    if (t === "NO_MATCH" || t === "FACE_MISMATCH" || t === "SUPLANTACION_IDENTIDAD") return "El rostro de la foto no coincide con el trabajador.";
     if (t === "OUT_OF_RANGE" || t === "OUT_OF_AREA") return "Registro de asistencia fuera del rango geográfico permitido.";
     if (t === "OUTSIDE_SCHEDULE") return "Registro de asistencia fuera del horario laboral establecido.";
     if (t === "EARLY_CHECKIN") return "Registro de entrada anticipada antes de la hora fijada.";
-    if (t === "FACE_FRAUD") return "Fotografía con inconsistencia biométrica detectada.";
+    if (t === "FACE_FRAUD" || t === "FRAUDE_FACIAL") return "Fotografía con inconsistencia biométrica detectada.";
     if (t === "PHOTO_DOWNLOAD_FAILED") return "No se pudo cargar la imagen para la validación.";
     return "Incidencia registrada en el proceso de asistencia.";
   }

@@ -1,52 +1,100 @@
 "use client";
-import * as React from 'react'
-import * as AvatarPrimitive from '@radix-ui/react-avatar'
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-import { cn } from '@/lib/utils'
+type AvatarContextValue = {
+  hasValidImage: boolean;
+  setHasValidImage: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const AvatarContext = React.createContext<AvatarContextValue | null>(null);
 
 function Avatar({
   className,
+  children,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Root>) {
+}: React.HTMLAttributes<HTMLSpanElement>) {
+  const [hasValidImage, setHasValidImage] = React.useState(false);
+
   return (
-    <AvatarPrimitive.Root
-      data-slot="avatar"
-      className={cn(
-        'relative flex size-8 shrink-0 overflow-hidden rounded-full',
-        className,
-      )}
-      {...props}
-    />
-  )
+    <AvatarContext.Provider value={{ hasValidImage, setHasValidImage }}>
+      <span
+        data-slot="avatar"
+        className={cn(
+          "relative flex size-8 shrink-0 overflow-hidden rounded-full",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </span>
+    </AvatarContext.Provider>
+  );
 }
 
 function AvatarImage({
   className,
+  src,
+  alt = "",
+  onError,
+  onLoad,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+}: React.ImgHTMLAttributes<HTMLImageElement>) {
+  const ctx = React.useContext(AvatarContext);
+  const [errored, setErrored] = React.useState(false);
+
+  React.useEffect(() => {
+    setErrored(false);
+    ctx?.setHasValidImage(Boolean(src));
+    return () => {
+      ctx?.setHasValidImage(false);
+    };
+  }, [src]);
+
+  if (!src || errored) {
+    return null;
+  }
+
   return (
-    <AvatarPrimitive.Image
+    <img
       data-slot="avatar-image"
-      className={cn('aspect-square size-full', className)}
+      src={src}
+      alt={alt}
+      loading="eager"
+      decoding="sync"
+      onLoad={(e) => {
+        ctx?.setHasValidImage(true);
+        onLoad?.(e);
+      }}
+      onError={(e) => {
+        setErrored(true);
+        ctx?.setHasValidImage(false);
+        onError?.(e);
+      }}
+      className={cn("aspect-square size-full object-cover relative z-10", className)}
       {...props}
     />
-  )
+  );
 }
 
 function AvatarFallback({
   className,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
+}: React.HTMLAttributes<HTMLSpanElement>) {
+  const ctx = React.useContext(AvatarContext);
+  if (ctx?.hasValidImage) {
+    return null;
+  }
   return (
-    <AvatarPrimitive.Fallback
+    <span
       data-slot="avatar-fallback"
       className={cn(
-        'bg-muted flex size-full items-center justify-center rounded-full',
-        className,
+        "bg-muted flex size-full items-center justify-center rounded-full",
+        className
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { Avatar, AvatarImage, AvatarFallback }
+export { Avatar, AvatarImage, AvatarFallback };

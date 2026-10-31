@@ -1,10 +1,18 @@
 /**
  * Helper to normalize and format any avatarUrl representation:
  * - Raw Base64 string -> Data URI
- * - Cloudflare R2 / S3 Presigned URL -> returns as-is
+ * - Cloudflare R2 / S3 Presigned URL -> returns stable cached URL by object path so browser cache hits instantly
  * - Old dead MinIO URLs (astc-minio, minio-s3, localhost:9010) -> null (shows clean fallback)
  * - Empty / null / mock -> null
  */
+
+const PRESIGNED_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const presignedUrlCache = new Map<string, { url: string; ts: number }>();
+
+export function invalidateAvatarCache() {
+  presignedUrlCache.clear();
+}
+
 export function formatAvatarUrl(url: string | null | undefined): string | null {
   if (!url || typeof url !== "string" || url.trim() === "" || url.includes("test.com")) {
     return null;
@@ -19,7 +27,6 @@ export function formatAvatarUrl(url: string | null | undefined): string | null {
 
   // 2. HTTP / HTTPS (Cloudflare R2 / S3 / External)
   if (clean.startsWith("http://") || clean.startsWith("https://")) {
-    // If it's an old dead MinIO reference that no longer exists in DNS, discard it so UI shows fallback
     if (
       clean.includes("astc-minio.joyit.io") ||
       clean.includes("minio-s3.astc.joyit.io") ||
@@ -30,6 +37,16 @@ export function formatAvatarUrl(url: string | null | undefined): string | null {
       return null;
     }
 
+    if (clean.includes("X-Amz-Signature=")) {
+      const baseKey = clean.split("?")[0];
+      const now = Date.now();
+      const existing = presignedUrlCache.get(baseKey);
+      if (existing && now - existing.ts < PRESIGNED_CACHE_TTL_MS) {
+        return existing.url;
+      }
+      presignedUrlCache.set(baseKey, { url: clean, ts: now });
+    }
+
     return clean;
   }
 
@@ -38,8 +55,7 @@ export function formatAvatarUrl(url: string | null | undefined): string | null {
     return clean;
   }
 
-  // 4. Relative S3 Key without domain (e.g. avatars/... or document/...)
-  // In private R2, unsigned relative paths cannot be loaded directly without a backend presigned URL
+  // 4. Relative S3 Key without domain
   if (clean.startsWith("avatars/") || clean.startsWith("document/") || clean.startsWith("smms-assistance/")) {
     return null;
   }

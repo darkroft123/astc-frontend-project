@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarIcon, Check, X } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -61,12 +61,29 @@ export default function PeriodSelector({
   const [customDialogOpen, setCustomDialogOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
+  const fromInputRef = useRef<HTMLInputElement>(null);
+  const toInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  const openPicker = (ref: React.RefObject<HTMLInputElement | null>) => {
+    if (!ref.current) return;
+    try {
+      if (typeof (ref.current as any).showPicker === "function") {
+        (ref.current as any).showPicker();
+      } else {
+        ref.current.focus();
+        ref.current.click();
+      }
+    } catch {
+      ref.current.focus();
+    }
+  };
 
   const periodOptions = [
     { key: "today" as Period, label: "Hoy" },
@@ -255,24 +272,48 @@ export default function PeriodSelector({
             <label className="block text-xs font-semibold text-foreground dark:text-white mb-1.5">
               Desde
             </label>
-            <input
-              type="date"
-              value={customFromStr}
-              onChange={(e) => setCustomFromStr(e.target.value)}
-              className="w-full h-11 px-3.5 rounded-xl bg-slate-50 dark:bg-[#0D0F1A] border border-slate-200 dark:border-[#22283A] text-sm text-foreground dark:text-white font-mono focus:outline-none focus:border-purple-500/50 [color-scheme:dark]"
-            />
+            <div className="relative">
+              <input
+                ref={fromInputRef}
+                type="date"
+                value={customFromStr}
+                onChange={(e) => setCustomFromStr(e.target.value)}
+                className="w-full h-11 pl-3.5 pr-10 rounded-xl bg-slate-50 dark:bg-[#0D0F1A] border border-slate-200 dark:border-[#22283A] text-sm text-foreground dark:text-white font-mono focus:outline-none focus:border-purple-500/50 cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-10 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+              />
+              <button
+                type="button"
+                onClick={() => openPicker(fromInputRef)}
+                tabIndex={-1}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A855F7] hover:text-purple-400 transition-colors cursor-pointer"
+                aria-label="Abrir calendario Desde"
+              >
+                <CalendarIcon className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-foreground dark:text-white mb-1.5">
               Hasta
             </label>
-            <input
-              type="date"
-              value={customToStr}
-              onChange={(e) => setCustomToStr(e.target.value)}
-              className="w-full h-11 px-3.5 rounded-xl bg-slate-50 dark:bg-[#0D0F1A] border border-slate-200 dark:border-[#22283A] text-sm text-foreground dark:text-white font-mono focus:outline-none focus:border-purple-500/50 [color-scheme:dark]"
-            />
+            <div className="relative">
+              <input
+                ref={toInputRef}
+                type="date"
+                value={customToStr}
+                onChange={(e) => setCustomToStr(e.target.value)}
+                className="w-full h-11 pl-3.5 pr-10 rounded-xl bg-slate-50 dark:bg-[#0D0F1A] border border-slate-200 dark:border-[#22283A] text-sm text-foreground dark:text-white font-mono focus:outline-none focus:border-purple-500/50 cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-10 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+              />
+              <button
+                type="button"
+                onClick={() => openPicker(toInputRef)}
+                tabIndex={-1}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A855F7] hover:text-purple-400 transition-colors cursor-pointer"
+                aria-label="Abrir calendario Hasta"
+              >
+                <CalendarIcon className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Accesos rápidos */}
@@ -409,4 +450,3 @@ export default function PeriodSelector({
     </div>
   );
 }
-

@@ -378,7 +378,15 @@ export function AlertsListView() {
           <button
             type="button"
             onClick={handleMarkAllReviewed}
-            className="h-10 px-4 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold flex items-center gap-2 shadow-md shadow-purple-500/20 cursor-pointer transition-all shrink-0"
+            disabled={isLoading || alerts.length === 0 || pendientes === 0}
+            title={
+              alerts.length === 0
+                ? "No hay alertas registradas"
+                : pendientes === 0
+                ? "Todas las alertas ya están revisadas"
+                : "Marcar todas las alertas pendientes como revisadas"
+            }
+            className="h-10 px-4 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-xs font-semibold flex items-center gap-2 shadow-md shadow-purple-500/20 cursor-pointer transition-all shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Check className="w-4 h-4 stroke-[2.5]" />
             <span>Marcar todas como revisadas</span>
@@ -391,7 +399,15 @@ export function AlertsListView() {
       <button
         type="button"
         onClick={handleMarkAllReviewed}
-        className="md:hidden w-full h-12 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 cursor-pointer transition-all"
+        disabled={isLoading || alerts.length === 0 || pendientes === 0}
+        title={
+          alerts.length === 0
+            ? "No hay alertas registradas"
+            : pendientes === 0
+            ? "Todas las alertas ya están revisadas"
+            : "Marcar todas las alertas pendientes como revisadas"
+        }
+        className="md:hidden w-full h-12 rounded-xl bg-brand-gradient hover:opacity-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/10 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Check className="w-4 h-4 stroke-[2.5]" />
         Marcar todas como revisadas

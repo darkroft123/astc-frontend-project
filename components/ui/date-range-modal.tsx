@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Calendar as CalendarIcon, X, Check } from "lucide-react";
 
@@ -20,6 +20,41 @@ export interface DateRangeModalProps {
   onApply: ((from: string, to: string) => void) | ((range: DateRange) => void);
 }
 
+/**
+ * Converts dd/mm/yyyy or yyyy-mm-dd into yyyy-mm-dd for <input type="date" />
+ */
+function toIsoDate(val: string | undefined, fallback: Date): string {
+  if (!val) {
+    const y = fallback.getFullYear();
+    const m = String(fallback.getMonth() + 1).padStart(2, "0");
+    const d = String(fallback.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+  const clean = val.trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(clean)) {
+    return clean.slice(0, 10);
+  }
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(clean)) {
+    const [dd, mm, yyyy] = clean.split("/");
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  const y = fallback.getFullYear();
+  const m = String(fallback.getMonth() + 1).padStart(2, "0");
+  const d = String(fallback.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+/**
+ * Converts yyyy-mm-dd into dd/mm/yyyy
+ */
+function toSlashDate(iso: string): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+    const [yyyy, mm, dd] = iso.split("-");
+    return `${dd}/${mm}/${yyyy}`;
+  }
+  return iso;
+}
+
 export function DateRangeModal({
   isOpen,
   open,
@@ -33,35 +68,34 @@ export function DateRangeModal({
   const visible = open !== undefined ? open : (isOpen ?? false);
   const [mounted, setMounted] = useState(false);
 
+  const fromInputRef = useRef<HTMLInputElement>(null);
+  const toInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const formatDateStr = (d: Date) => {
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
+  const now = new Date();
+  const defaultFromDate = new Date(now.getFullYear(), now.getMonth(), 1);
+  const defaultToDate = now;
 
-  const getDefaultFrom = () => {
-    const now = new Date();
-    return formatDateStr(new Date(now.getFullYear(), now.getMonth(), 1));
-  };
-  const getDefaultTo = () => {
-    return formatDateStr(new Date());
-  };
-
-  const initialFrom = initialRange?.from || fromDate || getDefaultFrom();
-  const initialTo = initialRange?.to || toDate || getDefaultTo();
-
-  const [tempFrom, setTempFrom] = useState(initialFrom);
-  const [tempTo, setTempTo] = useState(initialTo);
+  const [tempFromIso, setTempFromIso] = useState<string>(() =>
+    toIsoDate(initialRange?.from || fromDate, defaultFromDate)
+  );
+  const [tempToIso, setTempToIso] = useState<string>(() =>
+    toIsoDate(initialRange?.to || toDate, defaultToDate)
+  );
 
   useEffect(() => {
     if (visible) {
-      setTempFrom(initialRange?.from || fromDate || getDefaultFrom());
-      setTempTo(initialRange?.to || toDate || getDefaultTo());
+      const currentNow = new Date();
+      setTempFromIso(
+        toIsoDate(
+          initialRange?.from || fromDate,
+          new Date(currentNow.getFullYear(), currentNow.getMonth(), 1)
+        )
+      );
+      setTempToIso(toIsoDate(initialRange?.to || toDate, currentNow));
     }
   }, [visible, fromDate, toDate, initialRange]);
 
@@ -76,30 +110,48 @@ export function DateRangeModal({
     const end = new Date();
     const start = new Date();
     start.setDate(end.getDate() - days);
-    setTempFrom(formatDateStr(start));
-    setTempTo(formatDateStr(end));
+    setTempFromIso(toIsoDate(undefined, start));
+    setTempToIso(toIsoDate(undefined, end));
   };
 
   const applyThisMonth = () => {
-    const now = new Date();
-    const first = new Date(now.getFullYear(), now.getMonth(), 1);
-    const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    setTempFrom(formatDateStr(first));
-    setTempTo(formatDateStr(last));
+    const current = new Date();
+    const first = new Date(current.getFullYear(), current.getMonth(), 1);
+    const last = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+    setTempFromIso(toIsoDate(undefined, first));
+    setTempToIso(toIsoDate(undefined, last));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!tempFrom || !tempTo) return;
-    
-    // Call onApply supporting both signatures
-    (onApply as any)({ from: tempFrom, to: tempTo });
-    try {
-      (onApply as any)(tempFrom, tempTo);
-    } catch {
-      // safe
+    if (!tempFromIso || !tempToIso) return;
+
+    const usesIsoArgs =
+      !initialRange &&
+      ((fromDate && /^\d{4}-\d{2}-\d{2}/.test(fromDate)) || onApply.length >= 2);
+
+    if (usesIsoArgs && onApply.length >= 2) {
+      (onApply as (from: string, to: string) => void)(tempFromIso, tempToIso);
+    } else {
+      const slashFrom = toSlashDate(tempFromIso);
+      const slashTo = toSlashDate(tempToIso);
+      (onApply as (range: DateRange) => void)({ from: slashFrom, to: slashTo });
     }
     handleClose();
+  };
+
+  const openPicker = (ref: React.RefObject<HTMLInputElement | null>) => {
+    if (!ref.current) return;
+    try {
+      if (typeof (ref.current as any).showPicker === "function") {
+        (ref.current as any).showPicker();
+      } else {
+        ref.current.focus();
+        ref.current.click();
+      }
+    } catch {
+      ref.current.focus();
+    }
   };
 
   const modalNode = (
@@ -125,6 +177,7 @@ export function DateRangeModal({
             </div>
           </div>
           <button
+            type="button"
             onClick={handleClose}
             className="w-8 h-8 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
             aria-label="Cerrar"
@@ -137,30 +190,52 @@ export function DateRangeModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
+              <label className="text-xs font-semibold text-foreground block">
                 Desde
               </label>
-              <input
-                type="text"
-                placeholder="dd/mm/aaaa"
-                value={tempFrom}
-                onChange={(e) => setTempFrom(e.target.value)}
-                required
-                className="w-full bg-background/50 border border-border rounded-xl px-3 py-2 text-xs sm:text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all cursor-pointer"
-              />
+              <div className="relative">
+                <input
+                  ref={fromInputRef}
+                  type="date"
+                  value={tempFromIso}
+                  onChange={(e) => setTempFromIso(e.target.value)}
+                  required
+                  className="w-full h-10 bg-background/50 border border-border rounded-xl pl-3 pr-9 py-2 text-xs sm:text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-9 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                />
+                <button
+                  type="button"
+                  onClick={() => openPicker(fromInputRef)}
+                  tabIndex={-1}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#A855F7] hover:text-purple-400 transition-colors cursor-pointer pointer-events-auto"
+                  aria-label="Abrir calendario Desde"
+                >
+                  <CalendarIcon className="w-4 h-4" />
+                </button>
+              </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
+              <label className="text-xs font-semibold text-foreground block">
                 Hasta
               </label>
-              <input
-                type="text"
-                placeholder="dd/mm/aaaa"
-                value={tempTo}
-                onChange={(e) => setTempTo(e.target.value)}
-                required
-                className="w-full bg-background/50 border border-border rounded-xl px-3 py-2 text-xs sm:text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all cursor-pointer"
-              />
+              <div className="relative">
+                <input
+                  ref={toInputRef}
+                  type="date"
+                  value={tempToIso}
+                  onChange={(e) => setTempToIso(e.target.value)}
+                  required
+                  className="w-full h-10 bg-background/50 border border-border rounded-xl pl-3 pr-9 py-2 text-xs sm:text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all cursor-pointer [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-9 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                />
+                <button
+                  type="button"
+                  onClick={() => openPicker(toInputRef)}
+                  tabIndex={-1}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#A855F7] hover:text-purple-400 transition-colors cursor-pointer pointer-events-auto"
+                  aria-label="Abrir calendario Hasta"
+                >
+                  <CalendarIcon className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
 
