@@ -41,12 +41,12 @@ const navigation = [
   { name: "Mis asistencias", href: "/pm/mis-asistencias", icon: Clock },
   { name: "Alertas", href: "/pm/alertas", icon: AlertTriangle },
   { name: "Justificaciones", href: "/pm/justificaciones", icon: FileText, badgeColor: "bg-amber text-white font-bold" },
-  { name: "Notificaciones", href: "/pm/notificaciones", icon: Bell, badgeColor: "bg-red text-white font-bold" },
   { name: "Proyectos", href: "/pm/proyectos", icon: FolderKanban },
   { name: "Asignación de horarios", href: "/pm/asignacion-horarios", icon: CalendarClock },
   { name: "Gestión de horarios", href: "/pm/horarios", icon: Timer },
   { name: "Feriados del proyecto", href: "/pm/feriados", icon: Calendar },
   { name: "Vacaciones", href: "/pm/vacaciones", icon: Sun },
+  { name: "Notificaciones", href: "/pm/notificaciones", icon: Bell, badgeColor: "bg-red text-white font-bold" },
 ];
 
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {

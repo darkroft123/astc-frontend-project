@@ -471,7 +471,7 @@ export function HolidayPMListView() {
                   Colecciones disponibles
                 </span>
                 <div className="text-2xl sm:text-3xl font-bold text-foreground leading-none mt-1">
-                  {availableCollections.length || 3}
+                  {availableCollections.length}
                 </div>
               </div>
             </div>
@@ -488,7 +488,7 @@ export function HolidayPMListView() {
                   Asignadas al proyecto
                 </span>
                 <div className="text-2xl sm:text-3xl font-bold text-foreground leading-none mt-1">
-                  {assignedCollectionId ? 1 : 0}
+                  {assignedCollectionId && availableCollections.some((c) => c.id === assignedCollectionId) ? 1 : 0}
                 </div>
               </div>
             </div>

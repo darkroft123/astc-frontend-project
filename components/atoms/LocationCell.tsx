@@ -45,7 +45,7 @@ export function LocationCell({
       title={`Coordenadas: ${effectiveLat}, ${effectiveLng} (Ver en Google Maps)`}
     >
       <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
-      <span className="truncate max-w-[140px]">{district || "Cargando..."}</span>
+      <span className="whitespace-nowrap">{district || "Cargando..."}</span>
     </a>
   );
 }
