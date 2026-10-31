@@ -1,5 +1,4 @@
 "use client";
-import { NotificationBell } from "@/components/layout/notification-bell";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -283,16 +282,20 @@ export default function NotificationsPage() {
       <div className="w-full py-1 md:py-2 space-y-3.5 relative z-10">
         {/* 1. HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight leading-tight">
-              Notificaciones
-            </h1>
-            <p className="text-xs sm:text-sm font-semibold text-[#818cf8] mt-0.5">
-              {unreadCount > 0 ? `${unreadCount} sin leer` : "Al día"}
-            </p>
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-avatar-gradient flex items-center justify-center text-white shrink-0 shadow-md">
+              <Bell className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight leading-tight">
+                Notificaciones
+              </h1>
+              <p className="text-xs sm:text-sm font-semibold text-[#818cf8] mt-0.5">
+                {unreadCount > 0 ? `${unreadCount} sin leer` : "Al día"}
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-3 self-end sm:self-auto"><NotificationBell /></div>
-
+          
           {unreadCount > 0 && (
             <>
               {/* Desktop: pure text with Navigo font */}
