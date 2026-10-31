@@ -14,7 +14,7 @@ import { notificationService, InAppNotification, getNotificationColor, getNotifi
 import { useAuth } from "@/app/jwt/auth/auth.provider";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 const ICON_MAP = {
   AlertTriangle,
@@ -31,32 +31,42 @@ const ICON_MAP = {
 };
 
 export function NotificationBell() {
-  const { user, hydrated } = useAuth();
+  const { user, token } = useAuth();
   const router = useRouter();
-  const effectiveUserId = user?.id || "";
+  const pathname = usePathname();
+  const effectiveUserId = user?.id || user?.sub || "";
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const handleNotificationClick = async (n: InAppNotification) => {
-    await handleMarkAsRead(n);
-    setOpen(false);
-    if (n.actionLink) {
-      let target = n.actionLink;
-      if (target.includes("/asistencias")) {
-        target = "/pm/asistencias";
-      } else if (target.includes("/justificar") || target.includes("/justificaciones")) {
-        target = "/pm/justificaciones";
-      } else if (target.includes("/notificaciones")) {
-        target = "/pm/notificaciones";
-      } else if (target.startsWith("/team-member")) {
-        target = "/pm/notificaciones";
-      }
-      router.push(target);
-    } else {
-      router.push("/pm/notificaciones");
+  useEffect(() => {
+    if (token) {
+      notificationService.setToken(token);
     }
+  }, [token]);
+
+  const handleNotificationClick = (n: InAppNotification) => {
+    void handleMarkAsRead(n);
+    setOpen(false);
+    const link = (n.actionLink || "").toLowerCase();
+    let target = `/pm/notificaciones?id=${encodeURIComponent(n.id)}`;
+    if (link.includes("/justificar") || link.includes("/justificaciones")) {
+      target = "/pm/justificaciones";
+    } else if (link.includes("/alertas") || link.includes("/alerta")) {
+      target = "/pm/alertas";
+    } else if (link.includes("/vacaciones") || link.includes("/vacacion")) {
+      target = "/pm/vacaciones";
+    } else if (link.includes("/feriados") || link.includes("/feriado")) {
+      target = "/pm/feriados";
+    } else if (link.includes("/horarios") || link.includes("/horario")) {
+      target = "/pm/asignacion-horarios";
+    } else if (link.includes("/proyectos") || link.includes("/proyecto")) {
+      target = "/pm/proyectos";
+    } else if (link.includes("/asistencias") || link.includes("/historial")) {
+      target = "/pm/historial-asistencias";
+    }
+    router.push(target);
   };
 
   const fetchUnreadCount = useCallback(async () => {
@@ -72,7 +82,10 @@ export function NotificationBell() {
   }, [effectiveUserId]);
 
   const fetchNotifications = useCallback(async (silent = false) => {
-    if (!effectiveUserId) return;
+    if (!effectiveUserId) {
+      setLoading(false);
+      return;
+    }
     if (!silent) setLoading(true);
     try {
       const res = await notificationService.getNotifications(effectiveUserId, 1, 10);
@@ -141,6 +154,10 @@ export function NotificationBell() {
     setUnreadCount(0);
     notifyUnreadCountChanged();
   };
+
+  if (pathname?.includes("/notificaciones")) {
+    return null;
+  }
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -214,7 +231,7 @@ export function NotificationBell() {
                       "flex items-start gap-3 p-3 transition-all relative overflow-hidden group cursor-pointer",
                       n.read ? "bg-card hover:bg-raised" : "bg-primary/10 hover:bg-primary/15"
                     )}
-                    onClick={() => handleNotificationClick(n)}
+                    onSelect={() => handleNotificationClick(n)}
                     inset
                   >
                     {/* Semantic side border indicator */}

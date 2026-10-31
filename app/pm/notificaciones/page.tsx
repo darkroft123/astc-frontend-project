@@ -32,7 +32,8 @@ const PAGE_SIZE = 5;
 type FilterType = "all" | "unread" | "read" | "attendance" | "justification";
 
 export default function NotificationsPage() {
-  const { user, hydrated } = useAuth();
+  const { user, token, hydrated } = useAuth();
+  const effectiveUserId = user?.id || user?.sub || "";
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [selected, setSelected] = useState<InAppNotification | null>(null);
@@ -41,17 +42,38 @@ export default function NotificationsPage() {
   const [filter, setFilter] = useState<FilterType>("all");
   const [page, setPage] = useState(1);
 
+  useEffect(() => {
+    if (token) {
+      notificationService.setToken(token);
+    }
+  }, [token]);
+
   const fetchNotifications = useCallback(async (silent = false) => {
-    if (!user?.id) return;
+    if (!effectiveUserId) {
+      setLoading(false);
+      return;
+    }
     if (!silent) setLoading(true);
     try {
-      const res = await notificationService.getNotifications(user.id, 1, 100);
-      if (res?.items) {
-        setNotifications(res.items);
-      } else {
-        setNotifications([]);
+      const res = await notificationService.getNotifications(effectiveUserId, 1, 100);
+      const items = res?.items || [];
+      setNotifications(items);
+      if (typeof window !== "undefined") {
+        const idParam = new URLSearchParams(window.location.search).get("id");
+        if (idParam) {
+          const match = items.find((item) => item.id === idParam);
+          if (match) {
+            setSelected(match);
+            if (!match.read) {
+              notificationService.markAsRead(effectiveUserId, match.id).catch(() => {});
+              setNotifications((prev) =>
+                prev.map((it) => (it.id === match.id ? { ...it, read: true } : it))
+              );
+            }
+          }
+        }
       }
-      const count = await notificationService.getUnreadCount(user.id);
+      const count = await notificationService.getUnreadCount(effectiveUserId);
       setUnreadCount(count || 0);
     } catch (e) {
       console.error("Failed to fetch notifications", e);
@@ -59,29 +81,29 @@ export default function NotificationsPage() {
     } finally {
       setLoading(false);
     }
-  }, [user?.id]);
+  }, [effectiveUserId]);
 
   useEffect(() => {
     if (hydrated) {
-      if (user?.id) fetchNotifications();
+      if (effectiveUserId) fetchNotifications();
       else setLoading(false);
     }
-  }, [hydrated, user?.id, fetchNotifications]);
+  }, [hydrated, effectiveUserId, fetchNotifications]);
 
   useEffect(() => {
     const handleNotificationUpdate = () => {
-      if (user?.id) fetchNotifications(true);
+      if (effectiveUserId) fetchNotifications(true);
     };
     window.addEventListener("astc-notification-updated", handleNotificationUpdate);
     return () =>
       window.removeEventListener("astc-notification-updated", handleNotificationUpdate);
-  }, [user?.id, fetchNotifications]);
+  }, [effectiveUserId, fetchNotifications]);
 
   const markAllRead = async () => {
-    if (!user?.id) return;
+    if (!effectiveUserId) return;
     const unread = notifications.filter((n) => !n.read);
     try {
-      await notificationService.markAllAsRead([user.id], unread.map((n) => n.id));
+      await notificationService.markAllAsRead([effectiveUserId], unread.map((n) => n.id));
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       setUnreadCount(0);
       notifyUnreadCountChanged();
@@ -95,9 +117,9 @@ export default function NotificationsPage() {
 
   const handleClick = async (n: InAppNotification) => {
     setSelected(n);
-    if (!n.read && user?.id) {
+    if (!n.read && effectiveUserId) {
       try {
-        await notificationService.markAsRead(user.id, n.id);
+        await notificationService.markAsRead(effectiveUserId, n.id);
         setNotifications((prev) =>
           prev.map((item) => (item.id === n.id ? { ...item, read: true } : item))
         );
@@ -111,9 +133,9 @@ export default function NotificationsPage() {
 
   const handleDelete = async (n: InAppNotification, e?: React.MouseEvent) => {
     e?.stopPropagation();
-    if (!user?.id) return;
+    if (!effectiveUserId) return;
     try {
-      await notificationService.deleteNotification(user.id, n.id);
+      await notificationService.deleteNotification(effectiveUserId, n.id);
       setNotifications((prev) => prev.filter((item) => item.id !== n.id));
       if (!n.read) setUnreadCount((prev) => Math.max(0, prev - 1));
       notifyUnreadCountChanged();
@@ -249,18 +271,13 @@ export default function NotificationsPage() {
       <div className="w-full py-1 md:py-2 space-y-3.5 relative z-10">
         {/* 1. HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-avatar-gradient flex items-center justify-center text-white shrink-0 shadow-md">
-              <Bell className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight leading-tight">
-                Notificaciones
-              </h1>
-              <p className="text-xs sm:text-sm font-semibold text-[#818cf8] mt-0.5">
-                {unreadCount > 0 ? `${unreadCount} sin leer` : "Al día"}
-              </p>
-            </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight leading-tight">
+              Notificaciones
+            </h1>
+            <p className="text-xs sm:text-sm font-semibold text-[#818cf8] mt-0.5">
+              {unreadCount > 0 ? `${unreadCount} sin leer` : "Al día"}
+            </p>
           </div>
 
           {unreadCount > 0 && (

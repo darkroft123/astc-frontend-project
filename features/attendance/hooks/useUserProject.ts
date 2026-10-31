@@ -21,7 +21,12 @@ let cachedToken: string | null = null;
 export function useUserProject() {
   const { token, role, hydrated } = useAuth();
   const [projects, setProjects] = useState<Project[]>(cachedProjects);
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
+  const [selectedProjectId, setSelectedProjectId] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("selected_project_id") || "all";
+    }
+    return "all";
+  });
   const [loadingProject, setLoadingProject] = useState<boolean>(false);
 
   useEffect(() => {

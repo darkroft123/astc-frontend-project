@@ -208,13 +208,7 @@ export function AttendanceHistoryView() {
       const handleProj = (e: Event) => {
         const customEvent = e as CustomEvent<string>;
         const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
-        setSelectedProjectId((current) => {
-          if (current !== newId) {
-            handleProjectSelect(newId, false);
-            return newId;
-          }
-          return current;
-        });
+        handleProjectSelect(newId, false);
       };
 
       window.addEventListener("astc-project-changed", handleProj);
@@ -741,7 +735,12 @@ export function AttendanceHistoryView() {
 
       {/* 7. MOBILE CARDS VIEW (md:hidden) Matching SVG dark-historial asistencia.svg */}
       <div className="space-y-3 md:hidden">
-        {records.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center p-12 text-muted-foreground bg-card rounded-2xl border border-border gap-2">
+            <RotateCw className="w-6 h-6 animate-spin text-primary" />
+            <span className="text-xs font-medium">Cargando asistencias...</span>
+          </div>
+        ) : records.length === 0 ? (
           <div className="text-center p-8 text-muted-foreground bg-card rounded-2xl border border-border">
             No hay registros de asistencias disponibles
           </div>
@@ -866,7 +865,16 @@ export function AttendanceHistoryView() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {records.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-muted-foreground text-sm font-medium">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <RotateCw className="w-6 h-6 animate-spin text-primary" />
+                      <span>Cargando asistencias...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : records.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-muted-foreground text-sm font-medium">
                     No hay registros de asistencias disponibles

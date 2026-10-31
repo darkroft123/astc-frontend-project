@@ -77,9 +77,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       window.history.replaceState({}, "", window.location.pathname);
     }
 
-    // limpiar URL
-    window.history.replaceState({}, "", window.location.pathname);
-
     setHydrated(true);
 
     if (tokenFromUrl && loginStartStr) {
@@ -97,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!token) return null;
     try {
       const decoded = jwtDecode<JwtPayload>(token);
-      return { ...decoded, id: decoded.sub };
+      return { ...decoded, id: decoded.sub || decoded.id };
     } catch {
       return null;
     }

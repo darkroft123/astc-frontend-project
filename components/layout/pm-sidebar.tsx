@@ -25,6 +25,7 @@ import { notificationService } from "@/lib/notification.service";
 import { useUserProject } from "@/features/attendance/hooks/useUserProject";
 import { getGraphQLUrl } from "@/lib/api-host";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { useMobileSidebar } from "@/components/layout/MobileSidebar";
 import {
   Select,
   SelectTrigger,
@@ -51,6 +52,7 @@ const navigation = [
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { user, role, token, logout, hydrated } = useAuth();
+  const { setOpen } = useMobileSidebar();
   const { projects, selectProject, selectedProjectId } = useUserProject();
   const [unreadCount, setUnreadCount] = useState(0);
   const [pendingJustifications, setPendingJustifications] = useState(0);
@@ -86,11 +88,9 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
     updateLabel();
     window.addEventListener("astc-attendance-updated", updateLabel);
-    window.addEventListener("focus", updateLabel);
     window.addEventListener("storage", updateLabel);
     return () => {
       window.removeEventListener("astc-attendance-updated", updateLabel);
-      window.removeEventListener("focus", updateLabel);
       window.removeEventListener("storage", updateLabel);
     };
   }, [hydrated, token, selectedProjectId]);
@@ -283,7 +283,10 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
             <Link
               key={item.name}
               href={item.href}
-              onClick={onNavigate}
+              onClick={() => {
+                setOpen(false);
+                onNavigate?.();
+              }}
               className={cn(
                 "flex items-center justify-between rounded-[var(--radius-nav)] px-3.5 py-2.5 text-[15px] leading-[22.5px] font-normal transition-all group",
                 isActive

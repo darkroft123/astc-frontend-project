@@ -148,13 +148,7 @@ export function AlertsListView() {
       const handleProj = (e: Event) => {
         const customEvent = e as CustomEvent<string>;
         const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
-        setSelectedProject((current) => {
-          if (current !== newId) {
-            handleProjectSelect(newId, false);
-            return newId;
-          }
-          return current;
-        });
+        handleProjectSelect(newId, false);
       };
 
       window.addEventListener("astc-project-changed", handleProj);

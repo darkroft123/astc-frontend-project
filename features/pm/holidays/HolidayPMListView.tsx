@@ -217,7 +217,29 @@ export function HolidayPMListView() {
   }, [token, selectedProjectId]);
 
   const fetchData = async () => {
-    if (!token || !selectedProjectId) return;
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    if (!selectedProjectId) {
+      setLoading(true);
+      try {
+        const [gCols, gAssigned] = await Promise.all([
+          getGlobalCollections(token).catch(() => []),
+          getAdminSetting(token, "GLOBAL_ASSIGNED_COLLECTION_ID").catch(() => null),
+        ]);
+        setProjectCollections([]);
+        setGlobalCollections(Array.isArray(gCols) ? gCols : []);
+        if (gAssigned) {
+          setAssignedCollectionId(gAssigned);
+        }
+      } catch {
+        setGlobalCollections([]);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
     setLoading(true);
     try {
       const [pCols, gCols, gAssigned] = await Promise.all([

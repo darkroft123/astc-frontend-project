@@ -175,13 +175,7 @@ export function AttendanceManagementView() {
       const handleProj = (e: Event) => {
         const customEvent = e as CustomEvent<string>;
         const newId = customEvent.detail ?? localStorage.getItem("selected_project_id") ?? "all";
-        setSelectedProject((current) => {
-          if (current !== newId) {
-            handleProjectSelect(newId);
-            return newId;
-          }
-          return current;
-        });
+        handleProjectSelect(newId);
       };
       window.addEventListener("astc-project-changed", handleProj);
       window.addEventListener("storage", handleProj);

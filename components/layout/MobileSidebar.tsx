@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, createContext, useContext, useCallback } from "react";
+import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,12 @@ export function useMobileSidebar() {
 
 export function MobileSidebarProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   return (
     <MobileSidebarContext.Provider value={{ open, setOpen }}>
       {children}
@@ -81,7 +88,7 @@ export function MobileSidebar({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto no-scrollbar">
-          {children}
+          {open ? children : null}
         </div>
       </div>
     </>

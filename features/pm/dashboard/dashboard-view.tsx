@@ -117,7 +117,12 @@ export function DashboardView() {
   }, [activePeriod]);
   const [activeProjects, setActiveProjects] = useState<any[]>([]);
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
+  const [selectedProjectId, setSelectedProjectId] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("selected_project_id") || "all";
+    }
+    return "all";
+  });
   const [metrics, setMetrics] = useState({
     totalAttendances: 0,
     totalAbsences: 0,
