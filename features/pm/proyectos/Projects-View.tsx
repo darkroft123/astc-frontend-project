@@ -297,7 +297,7 @@ export function ProjectsManagementView({
               return (
                 <div
                   key={row.id}
-                  className="rounded-2xl border border-border bg-card p-4 space-y-3.5 shadow-xs"
+                  className="rounded-2xl border border-border bg-card p-5 sm:p-5.5 space-y-4 shadow-xs"
                 >
                   {/* Top row */}
                   <div className="flex items-center justify-between gap-3">
@@ -331,7 +331,7 @@ export function ProjectsManagementView({
 
                   {/* Middle row: 2 boxes (INICIO & FIN) */}
                   <div className="grid grid-cols-2 gap-2.5">
-                    <div className="rounded-xl border border-border bg-background/50 p-2.5">
+                    <div className="rounded-xl border border-border bg-background/50 p-3.5">
                       <span className="text-[9.5px] font-mono text-[#8B7BD8] uppercase tracking-wider block font-semibold">
                         INICIO
                       </span>

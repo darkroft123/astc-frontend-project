@@ -753,7 +753,7 @@ export function AlertsListView() {
           </div>
         ) : (
           alerts.map((alert) => (
-            <div key={alert.id} className="bg-card border border-border rounded-2xl p-4 space-y-3">
+            <div key={alert.id} className="bg-card border border-border rounded-2xl p-5 sm:p-5.5 space-y-4">
               {/* Header: Type icon, Type Name, Status Badge */}
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">

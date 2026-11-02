@@ -588,7 +588,7 @@ export default function PMAsistenciasPage() {
             const checkOutPhoto = photos.find((p: string) => p.toLowerCase().includes("_checkout") || p.toLowerCase().includes("checkout")) || null;
 
             return (
-            <div key={r.id || idx} className="bg-card border border-border rounded-2xl p-4 space-y-3">
+            <div key={r.id || idx} className="bg-card border border-border rounded-2xl p-5 sm:p-5.5 space-y-4">
               {/* Top Row: Date & Status Badge */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-foreground font-semibold text-sm">

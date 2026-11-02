@@ -719,7 +719,7 @@ export function JustificationsListView() {
             const isPending = row.estado === "SUBMITTED" || row.estado === "PENDING";
 
             return (
-              <div key={row.id} className="bg-card border border-border rounded-2xl p-4 space-y-3">
+              <div key={row.id} className="bg-card border border-border rounded-2xl p-5 sm:p-5.5 space-y-4">
                 {/* Header: Avatar, Name, Email, Status Badge */}
                 <div className="flex items-start justify-between gap-2.5">
                   <div className="flex items-start gap-3 min-w-0 flex-1">
@@ -745,7 +745,7 @@ export function JustificationsListView() {
                 </div>
 
                 {/* Motivo Box */}
-                <div className="bg-background/60 border border-border/60 rounded-xl p-3">
+                <div className="bg-background/60 border border-border/60 rounded-xl p-3.5">
                   <span className="text-[10px] font-mono tracking-wider uppercase text-muted-foreground block mb-1">
                     MOTIVO
                   </span>

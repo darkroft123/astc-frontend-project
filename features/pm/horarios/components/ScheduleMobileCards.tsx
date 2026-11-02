@@ -47,7 +47,7 @@ export function ScheduleMobileCards({
   return (
     <div className="md:hidden space-y-3">
       {/* Card 1: Horarios del proyecto & Search */}
-      <div className="rounded-2xl border border-[#E2E4EB] dark:border-[#1E2335] bg-white dark:bg-[#0C0E18] p-4 space-y-3 shadow-sm dark:shadow-md">
+      <div className="rounded-2xl border border-[#E2E4EB] dark:border-[#1E2335] bg-white dark:bg-[#0C0E18] p-5 sm:p-5.5 space-y-4 shadow-sm dark:shadow-md">
         <div>
           <h2 className="text-base font-bold text-[#11131C] dark:text-white">Horarios del proyecto</h2>
           <p className="text-xs text-[#5D6378] dark:text-[#8F96AE] mt-0.5">

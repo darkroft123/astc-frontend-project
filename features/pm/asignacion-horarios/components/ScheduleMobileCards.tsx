@@ -46,7 +46,7 @@ export function ScheduleMobileCards({
           return (
             <div
               key={`${r.userId}:${r.projectId || idx}`}
-              className="bg-card border border-border rounded-2xl p-4 space-y-3"
+              className="bg-card border border-border rounded-2xl p-5 sm:p-5.5 space-y-4"
             >
               {/* Top user row */}
               <div className="flex items-start gap-3">

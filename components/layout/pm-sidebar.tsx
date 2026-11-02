@@ -299,7 +299,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
               className={cn(
                 "flex items-center justify-between rounded-[var(--radius-nav)] px-3.5 py-2.5 text-[15px] leading-[22.5px] font-normal transition-all group",
                 isActive
-                  ? "bg-raised text-foreground border border-primary/30 shadow-sm font-medium"
+                  ? "bg-raised text-foreground border border-primary/30 shadow-sm font-bold"
                   : "text-text-3 hover:text-foreground hover:bg-raised"
               )}
             >

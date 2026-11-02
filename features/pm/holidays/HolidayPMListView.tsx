@@ -736,7 +736,7 @@ export function HolidayPMListView() {
                               return (
                                 <div
                                   key={item.id || idx}
-                                  className="rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] p-3 flex items-center justify-between shadow-2xs"
+                                  className="rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#12141F] p-4 flex items-center justify-between shadow-2xs"
                                 >
                                   <div className="flex items-center gap-3">
                                     {/* Date Squircle (SEP 12) */}
@@ -894,7 +894,7 @@ export function HolidayPMListView() {
                     return (
                       <div
                         key={m.userId || idx}
-                        className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-4 space-y-3 shadow-2xs"
+                        className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18] p-5 sm:p-5.5 space-y-4 shadow-2xs"
                       >
                         <div className="flex items-center gap-3">
                           <Avatar className="w-10 h-10 rounded-2xl shrink-0 shadow-xs">
