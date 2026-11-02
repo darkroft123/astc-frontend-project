@@ -310,7 +310,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
 
   if (!justification) {
     return (
-      <div className="w-full max-w-5xl mx-auto px-4 py-12 text-center space-y-4">
+      <div className="w-full px-4 py-12 text-center space-y-4">
         <h2 className="text-xl font-bold text-foreground">Justificación no encontrada</h2>
         <p className="text-sm text-muted-foreground">La solicitud solicitada no existe o no se pudo cargar.</p>
         <Link href="/pm/justificaciones" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 text-white text-xs font-semibold hover:bg-purple-700">
@@ -321,7 +321,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-4 pb-12 -mt-1">
+    <div className="w-full space-y-4 md:space-y-6 pb-12 -mt-1">
       {/* Desktop Top Navigation (hidden on mobile where layout provides Image 5 Topbar) */}
       <div className="hidden md:flex items-center justify-between gap-3">
         <Link

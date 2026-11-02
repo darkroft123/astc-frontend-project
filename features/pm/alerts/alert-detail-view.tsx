@@ -198,7 +198,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
   const lng = alert.longitude ?? -77.0818;
 
   return (
-    <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-16 max-w-5xl mx-auto -mt-1">
+    <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-16 -mt-1">
       {/* 1. TOP HEADER ROW (desktop only, on mobile layout provides edge-to-edge topbar) */}
       <div className="hidden md:flex items-center justify-between gap-3">
         <Link
