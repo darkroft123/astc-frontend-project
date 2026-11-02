@@ -26,6 +26,16 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
     );
   }, [pathname]);
 
+
+  if (!hydrated || checkingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+ (fix: responsive padding, pm selector avatar & gradient, auth guard flash, and project modal syntax)
   return (
     <div className="flex min-h-screen w-full">
       <MobileSidebarProvider>

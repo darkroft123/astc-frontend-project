@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import { TimezoneSelector } from "@/components/ui/timezone-selector";
 import { DEFAULT_TIMEZONE } from "@/lib/timezones";
+import { formatAvatarUrl, getInitials } from "@/lib/avatar-url";
 
 import {
   createProject,
@@ -209,7 +210,7 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
   );
 
   return (
-    <div className="relative min-h-screen bg-transparent overflow-hidden pb-12">
+    <div className="relative min-h-screen bg-transparent overflow-x-hidden pb-12 pt-1 md:pt-0">
       <div className="relative max-w-6xl mx-auto px-4 sm:px-8 py-6 space-y-6 z-10">
 
         {/* MOBILE TOP BAR (MATCHING SVG: <- Proyectos + Notification Bell) */}
@@ -228,7 +229,7 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
         {/* SECTION HEADER */}
         <div className="flex items-start md:items-center justify-between gap-4">
           <div className="flex items-start md:items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#6366F1] to-[#A855F7] flex items-center justify-center text-white shadow-md shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5B8CFF] via-[#A855F7] to-[#22C3E6] flex items-center justify-center text-white shadow-md shrink-0">
               <FolderKanban className="w-6 h-6" />
             </div>
             <div>
@@ -759,3 +760,4 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
     </div>
   );
 }
+

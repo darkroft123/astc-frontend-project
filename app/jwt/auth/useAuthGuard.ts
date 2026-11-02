@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useRef, useMemo } from "react";
+
 import { useAuth } from "./auth.provider";
 import { tokenService } from "./token.service";
 import { jwtDecode } from "jwt-decode";
@@ -56,7 +57,9 @@ export function useAuthGuard(allowedRoles: string[]) {
       token,
       user,
       role,
-      checkingAuth: checking,
+
+      checkingAuth: checking || !hydrated || !token || !user,
+ (fix: responsive padding, pm selector avatar & gradient, auth guard flash, and project modal syntax)
     }),
     [hydrated, token, user, role, checking]
   );

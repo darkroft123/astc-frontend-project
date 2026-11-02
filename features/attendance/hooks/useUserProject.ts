@@ -3,15 +3,15 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/app/jwt/auth/auth.provider";
 import { getMyProjects, getAllProjects } from "@/app/services/project.assistance.service";
 
-export interface Project {
-  id: string;
-  name: string;
-  workStartTime?: string;
-  workEndTime?: string;
-  graceMinutes?: number;
-  timezone?: string | null;
-  holidays?: string[];
-}
+export const DEFAULT_MOCK_PROJECT: Project = {
+  id: "proj-general",
+  name: "Proyecto General",
+  workStartTime: "08:00",
+  workEndTime: "17:00",
+  graceMinutes: 15,
+  timezone: "America/Lima",
+  holidays: [],
+};
 
 let cachedProjects: Project[] = [];
 if (typeof window !== "undefined") {

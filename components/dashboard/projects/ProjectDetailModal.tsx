@@ -750,6 +750,66 @@ export default function ProjectDetailModal({
                 </div>
               </div>
 
+
+              {/* Form to add member */}
+              {showAddMember && (
+                <div className="p-4 rounded-2xl border border-border dark:border-white/10 bg-muted/40 dark:bg-[#101322] space-y-3">
+                  <h4 className="text-xs font-bold text-foreground dark:text-white">Asignar nuevo miembro</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[11px] font-semibold text-muted-foreground block mb-1">
+                        Usuario
+                      </label>
+                      <select
+                        value={selectedNewUserId}
+                        onChange={(e) => setSelectedNewUserId(e.target.value)}
+                        className="w-full h-9 px-3 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs text-foreground dark:text-white"
+                      >
+                        <option value="">Selecciona usuario...</option>
+                        {allUsers
+                          .filter((u) => !membersList.some((m) => (m.userId || m.id) === u.id))
+                          .map((u) => (
+                            <option key={u.id} value={u.id}>
+                              {u.firstName} {u.lastName} (@{u.username})
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-semibold text-muted-foreground block mb-1">
+                        Rol en el proyecto
+                      </label>
+                      <select
+                        value={selectedNewUserRole}
+                        onChange={(e) => setSelectedNewUserRole(e.target.value)}
+                        className="w-full h-9 px-3 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] text-xs text-foreground dark:text-white"
+                      >
+                        <option value="TEAM_MEMBER">Colaborador</option>
+                        <option value="PROJECT_MANAGER">Jefe de proyecto</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddMember(false)}
+                      className="px-3 py-1.5 rounded-xl border border-border dark:border-[#1E2335] text-xs font-medium cursor-pointer"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!selectedNewUserId || isAddingMember}
+                      onClick={handleAddMemberSubmit}
+                      className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-[#5B8CFF] to-[#A855F7] text-white text-xs font-semibold disabled:opacity-50 cursor-pointer shadow-xs"
+                    >
+                      {isAddingMember ? "Asignando..." : "Asignar"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+ (fix: responsive padding, pm selector avatar & gradient, auth guard flash, and project modal syntax)
               {/* Members List matching SVG */}
               <div className="space-y-2.5">
                 {paginatedMembers.map((mem, idx) => {
