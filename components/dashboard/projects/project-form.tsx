@@ -117,6 +117,13 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
     }
   }, [mode, initialData]);
 
+    useEffect(() => {
+    window.dispatchEvent(new CustomEvent("astc-hide-mobile-header", { detail: { hide: true } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent("astc-hide-mobile-header", { detail: { hide: false } }));
+    };
+  }, []);
+
   function toggleMember(userId: string) {
     setSelectedMemberIds((prev) =>
       prev.includes(userId)
@@ -212,17 +219,19 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
     <div className="relative min-h-screen bg-transparent overflow-x-hidden pb-12 pt-3 md:pt-0">
       <div className="relative max-w-6xl mx-auto px-4 sm:px-8 py-6 space-y-6 z-10">
 
-        {/* MOBILE TOP BAR (MATCHING SVG: <- Proyectos + Notification Bell) */}
-        <div className="flex md:hidden items-center justify-between pt-1 pb-2 px-0.5">
+        {/* MOBILE TOP BAR (MATCHING IMAGE 4 / SVG: <- Proyectos + Notification Bell) */}
+        <div className="flex md:hidden items-center justify-between h-14 px-4 bg-background/95 dark:bg-[#0C0E18]/95 backdrop-blur-md border-b border-border dark:border-[#1E2335] sticky top-0 z-30 -mx-4 sm:-mx-6 md:-mx-8 mb-4">
           <button
             type="button"
             onClick={() => router.push("/projects")}
-            className="flex items-center gap-2 text-sm font-semibold text-foreground hover:opacity-80 transition-opacity cursor-pointer"
+            className="flex items-center gap-2.5 text-sm font-semibold text-foreground dark:text-white hover:text-purple-500 dark:hover:text-purple-400 transition-colors cursor-pointer"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 text-purple-500 dark:text-[#A855F7]" />
             <span>Proyectos</span>
           </button>
-          <NotificationBell />
+          <div className="shrink-0 flex items-center pr-0.5">
+            <NotificationBell />
+          </div>
         </div>
 
         {/* SECTION HEADER */}
@@ -380,7 +389,7 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
 
                 <div className="space-y-2 pt-1">
                   <Label className="text-xs font-medium text-foreground">Días de antigüedad para vacaciones</Label>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-nowrap overflow-x-auto pb-0.5">
                     <Input
                       type="number"
                       min={0}
@@ -388,11 +397,11 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
                       onChange={(e) => setVacationEligibilityDays(Number(e.target.value) || 0)}
                       className="h-11 px-3.5 rounded-xl border border-border bg-background text-foreground text-xs w-24 shadow-xs"
                     />
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex items-center gap-2 flex-nowrap shrink-0">
                       <button
                         type="button"
                         onClick={() => setVacationEligibilityDays(90)}
-                        className={`text-xs px-3 py-2 rounded-xl border transition-all cursor-pointer font-medium ${
+                        className={`text-xs px-3 py-2 rounded-xl border transition-all cursor-pointer font-medium whitespace-nowrap shrink-0 ${
                           vacationEligibilityDays === 90
                             ? "bg-primary/10 border-primary/40 text-primary font-semibold shadow-xs"
                             : "bg-background border-border text-muted-foreground hover:bg-muted"
@@ -403,7 +412,7 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
                       <button
                         type="button"
                         onClick={() => setVacationEligibilityDays(180)}
-                        className={`text-xs px-3 py-2 rounded-xl border transition-all cursor-pointer font-medium ${
+                        className={`text-xs px-3 py-2 rounded-xl border transition-all cursor-pointer font-medium whitespace-nowrap shrink-0 ${
                           vacationEligibilityDays === 180
                             ? "bg-primary/10 border-primary/40 text-primary font-semibold shadow-xs"
                             : "bg-background border-border text-muted-foreground hover:bg-muted"

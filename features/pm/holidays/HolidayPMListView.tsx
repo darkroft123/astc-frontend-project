@@ -651,36 +651,49 @@ export function HolidayPMListView() {
                           : "border-border dark:border-[#1E2335] bg-card dark:bg-[#0C0E18]"
                       }`}
                     >
-                      {/* Card Header Row */}
-                      <div
-                        onClick={() => setExpandedId(isExpanded ? null : col.id)}
-                        className="p-4 flex items-center justify-between gap-3 cursor-pointer select-none"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-[#281B0C] border border-amber-200 dark:border-[#483713] flex items-center justify-center text-amber-600 dark:text-[#FBBF24] shrink-0">
-                            <Layers className="w-5 h-5" />
+                      {/* Card Header: 2 Rows (Image 2) */}
+                      <div className="p-4 flex flex-col">
+                        {/* Row 1: Icon + Title/Subtitle + Expand Chevron */}
+                        <div
+                          onClick={() => setExpandedId(isExpanded ? null : col.id)}
+                          className="flex items-center justify-between gap-3 cursor-pointer select-none"
+                        >
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-[#281B0C] border border-amber-200 dark:border-[#483713] flex items-center justify-center text-amber-600 dark:text-[#FBBF24] shrink-0">
+                              <Layers className="w-5 h-5" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h4 className="text-sm font-bold text-foreground truncate">
+                                {col.name}
+                              </h4>
+                              <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                                {col.items?.length || 0} feriados · {col.scope === "GLOBAL" ? "Global" : "Proyecto"}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <h4 className="text-sm font-bold text-foreground">
-                              {col.name}
-                            </h4>
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              {col.items?.length || 0} feriados · {col.scope === "GLOBAL" ? "Global" : "Proyecto"}
-                            </p>
+
+                          <div className="w-8 h-8 rounded-xl bg-background dark:bg-[#12141F] border border-border dark:border-[#1E2335] flex items-center justify-center text-muted-foreground shrink-0 transition-transform">
+                            {isExpanded ? (
+                              <ChevronUp className="w-4 h-4" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4" />
+                            )}
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          {isAssigned ? (
-                            <div className="w-8 h-8 rounded-xl bg-background dark:bg-[#12141F] border border-border dark:border-[#1E2335] flex items-center justify-center text-muted-foreground">
-                              {isExpanded ? (
-                                <ChevronUp className="w-4 h-4" />
-                              ) : (
-                                <ChevronDown className="w-4 h-4" />
-                              )}
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-2">
+                        {/* Row 2: Tag & Action Buttons */}
+                        <div className="flex items-center justify-between pt-3 mt-3 border-t border-border/40 dark:border-[#1E2335]">
+                          <span className="font-mono text-[9px] font-bold px-2 py-0.5 rounded-md bg-[#FEF3C7] dark:bg-[#282114] text-[#D97706] dark:text-[#EAB308] border border-[#FDE68A] dark:border-[#483718] uppercase tracking-wider shrink-0">
+                            {col.scope === "GLOBAL" ? "GLOBAL" : "PROYECTO"}
+                          </span>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            {isAssigned ? (
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-[#0C251C] dark:text-[#34D399] dark:border-[#194B37]">
+                                <CheckCircle className="w-3.5 h-3.5" />
+                                <span>Asignado</span>
+                              </span>
+                            ) : (
                               <button
                                 type="button"
                                 onClick={(e) => {
@@ -692,11 +705,8 @@ export function HolidayPMListView() {
                               >
                                 Asignar
                               </button>
-                              <div className="w-8 h-8 rounded-xl bg-background dark:bg-[#12141F] border border-border dark:border-[#1E2335] flex items-center justify-center text-muted-foreground">
-                                <ChevronRight className="w-4 h-4" />
-                              </div>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
                       </div>
 
