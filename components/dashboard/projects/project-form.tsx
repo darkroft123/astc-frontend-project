@@ -298,7 +298,7 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Detalles sobre el alcance o entregables..."
                     rows={3}
-                    className="w-full border border-border rounded-xl p-3 text-xs bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-xs transition-colors"
+                    className="w-full border border-border rounded-xl p-3 text-xs bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-xs transition-colors resize-none"
                   />
                 </div>
 
