@@ -227,7 +227,7 @@ export function HorarioCreationView() {
             <button
               type="button"
               onClick={() => router.push("/pm/horarios")}
-              className="flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground dark:hover:text-white transition-colors cursor-pointer group mb-1.5"
+              className="hidden md:flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground dark:hover:text-white transition-colors cursor-pointer group mb-1.5"
             >
               <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
               <span>Gestión de horarios</span>

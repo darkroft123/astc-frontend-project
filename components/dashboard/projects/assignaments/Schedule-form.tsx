@@ -314,7 +314,7 @@ export default function ScheduleForm({
         <div>
           <Link
             href="/pm/asignacion-horarios"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors mb-2 cursor-pointer"
+            className="hidden md:inline-flex items-center gap-1.5 text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors mb-2 cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
             <span>Asignación de horarios</span>
@@ -327,7 +327,7 @@ export default function ScheduleForm({
           </p>
         </div>
 
-        <div className="shrink-0">
+        <div className="hidden md:block shrink-0">
           <NotificationBell />
         </div>
       </div>
