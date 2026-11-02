@@ -164,12 +164,24 @@ export function NotificationBell({ iconOnly }: { iconOnly?: boolean } = {}) {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="relative w-11 h-11 rounded-2xl bg-white dark:bg-[#141829] border border-border dark:border-[#1E2335] flex items-center justify-center hover:bg-muted/60 dark:hover:bg-[#1C2238] transition-colors cursor-pointer text-muted-foreground dark:text-[#8F96AE] hover:text-foreground dark:hover:text-white shadow-xs shrink-0"
+          className={cn(
+            "relative flex items-center justify-center transition-colors cursor-pointer shrink-0",
+            iconOnly
+              ? "p-1.5 bg-transparent border-0 shadow-none text-muted-foreground dark:text-[#8F96AE] hover:text-foreground dark:hover:text-white"
+              : "w-11 h-11 rounded-2xl bg-white dark:bg-[#141829] border border-border dark:border-[#1E2335] hover:bg-muted/60 dark:hover:bg-[#1C2238] text-muted-foreground dark:text-[#8F96AE] hover:text-foreground dark:hover:text-white shadow-xs"
+          )}
           aria-label="Notificaciones"
         >
           <Bell className="w-5 h-5 text-muted-foreground dark:text-[#8F96AE]" strokeWidth={1.8} />
           {unreadCount > 0 && (
-            <span className="absolute top-0.5 right-0.5 flex h-4 min-w-[18px] px-1 items-center justify-center rounded-full bg-[#EF4444] text-[10px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-[#141829]">
+            <span
+              className={cn(
+                "absolute flex items-center justify-center rounded-full bg-[#EF4444] font-bold text-white shadow-sm",
+                iconOnly
+                  ? "top-0 right-0 h-3.5 min-w-[14px] px-0.5 text-[9px] ring-1.5 ring-background"
+                  : "top-0.5 right-0.5 h-4 min-w-[18px] px-1 text-[10px] ring-2 ring-white dark:ring-[#141829]"
+              )}
+            >
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
