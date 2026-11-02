@@ -244,32 +244,32 @@ export function DateRangeModal({
             <label className="font-mono text-[10px] uppercase font-semibold text-muted-foreground tracking-wider block">
               ACCESOS RÁPIDOS
             </label>
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
               <button
                 type="button"
                 onClick={() => applyPreset(7)}
-                className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-accent text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                className="w-full px-1 py-1.5 rounded-xl border border-border text-[11px] sm:text-xs font-medium text-center whitespace-nowrap hover:bg-accent text-muted-foreground hover:text-foreground transition-all cursor-pointer"
               >
                 7 días
               </button>
               <button
                 type="button"
                 onClick={() => applyPreset(15)}
-                className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-accent text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                className="w-full px-1 py-1.5 rounded-xl border border-border text-[11px] sm:text-xs font-medium text-center whitespace-nowrap hover:bg-accent text-muted-foreground hover:text-foreground transition-all cursor-pointer"
               >
                 15 días
               </button>
               <button
                 type="button"
                 onClick={() => applyPreset(30)}
-                className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-accent text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                className="w-full px-1 py-1.5 rounded-xl border border-border text-[11px] sm:text-xs font-medium text-center whitespace-nowrap hover:bg-accent text-muted-foreground hover:text-foreground transition-all cursor-pointer"
               >
                 30 días
               </button>
               <button
                 type="button"
                 onClick={applyThisMonth}
-                className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-accent text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                className="w-full px-1 py-1.5 rounded-xl border border-border text-[11px] sm:text-xs font-medium text-center whitespace-nowrap hover:bg-accent text-muted-foreground hover:text-foreground transition-all cursor-pointer"
               >
                 Este mes
               </button>

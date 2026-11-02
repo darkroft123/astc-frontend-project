@@ -209,11 +209,11 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
   );
 
   return (
-    <div className="relative min-h-screen bg-transparent overflow-x-hidden pb-12 pt-1 md:pt-0">
+    <div className="relative min-h-screen bg-transparent overflow-x-hidden pb-12 pt-3 md:pt-0">
       <div className="relative max-w-6xl mx-auto px-4 sm:px-8 py-6 space-y-6 z-10">
 
         {/* MOBILE TOP BAR (MATCHING SVG: <- Proyectos + Notification Bell) */}
-        <div className="flex md:hidden items-center justify-between pb-1">
+        <div className="flex md:hidden items-center justify-between pt-1 pb-2 px-0.5">
           <button
             type="button"
             onClick={() => router.push("/projects")}
@@ -471,7 +471,9 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
                     ) : (
                       paginatedPMs.map((u) => {
                         const isSelected = responsibleId === u.id;
-                        const initials = `${(u.firstName?.[0] || "").toUpperCase()}${(u.lastName?.[0] || "").toUpperCase()}` || "U";
+                        const mFullName = `${u.firstName || ""} ${u.lastName || ""}`.trim();
+                        const mDisplayName = mFullName || u.username || "Usuario";
+                        const initials = getInitials(mDisplayName);
                         return (
                           <label
                             key={u.id}
@@ -492,13 +494,15 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
                                 {formatAvatarUrl(u.avatarUrl) && (
                                   <AvatarImage src={formatAvatarUrl(u.avatarUrl)!} alt={u.firstName || u.username} className="object-cover" />
                                 )}
-                                <AvatarFallback className="bg-gradient-to-tr from-purple-500 to-indigo-500 text-white font-bold text-[10px]">
+                                <AvatarFallback className="bg-gradient-to-tr from-[#5B8CFF] via-[#A855F7] to-[#22C3E6] text-white font-bold text-[10px]">
                                   {initials}
                                 </AvatarFallback>
                               </Avatar>
-                              <span className="font-medium text-foreground truncate">{u.firstName} {u.lastName}</span>
+                              <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                                <span className="font-medium text-foreground text-xs">{mDisplayName}</span>
+                                <span className="text-[10px] text-muted-foreground font-mono">@{u.username}</span>
+                              </div>
                             </div>
-                            <span className="text-[10px] text-muted-foreground font-mono shrink-0 ml-2">@{u.username}</span>
                           </label>
                         );
                       })
@@ -591,7 +595,7 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
                                 {formatAvatarUrl(u.avatarUrl) && (
                                   <AvatarImage src={formatAvatarUrl(u.avatarUrl)!} alt={u.firstName || u.username} className="object-cover" />
                                 )}
-                                <AvatarFallback className="bg-gradient-to-tr from-purple-500 to-indigo-500 text-white font-bold text-[10px]">
+                                <AvatarFallback className="bg-gradient-to-tr from-[#5B8CFF] via-[#A855F7] to-[#22C3E6] text-white font-bold text-[10px]">
                                   {initials}
                                 </AvatarFallback>
                               </Avatar>

@@ -321,32 +321,32 @@ export default function PeriodSelector({
             <p className="text-[10.5px] font-mono uppercase tracking-[0.05em] text-muted-foreground dark:text-[#8F98B2] font-semibold mt-4 mb-2">
               ACCESOS RÁPIDOS
             </p>
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
               <button
                 type="button"
                 onClick={() => handleQuickPreset(7)}
-                className="px-3.5 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-[#141828] border border-slate-200 dark:border-[#232A40] text-foreground dark:text-[#C8D1E6] hover:bg-slate-200 dark:hover:bg-[#1E243A] hover:text-foreground dark:hover:text-white transition-colors cursor-pointer"
+                className="w-full px-1 py-1.5 rounded-xl text-[11px] sm:text-xs font-medium text-center whitespace-nowrap bg-slate-100 dark:bg-[#141828] border border-slate-200 dark:border-[#232A40] text-foreground dark:text-[#C8D1E6] hover:bg-slate-200 dark:hover:bg-[#1E243A] hover:text-foreground dark:hover:text-white transition-colors cursor-pointer"
               >
                 7 días
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickPreset(15)}
-                className="px-3.5 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-[#141828] border border-slate-200 dark:border-[#232A40] text-foreground dark:text-[#C8D1E6] hover:bg-slate-200 dark:hover:bg-[#1E243A] hover:text-foreground dark:hover:text-white transition-colors cursor-pointer"
+                className="w-full px-1 py-1.5 rounded-xl text-[11px] sm:text-xs font-medium text-center whitespace-nowrap bg-slate-100 dark:bg-[#141828] border border-slate-200 dark:border-[#232A40] text-foreground dark:text-[#C8D1E6] hover:bg-slate-200 dark:hover:bg-[#1E243A] hover:text-foreground dark:hover:text-white transition-colors cursor-pointer"
               >
                 15 días
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickPreset(30)}
-                className="px-3.5 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-[#141828] border border-slate-200 dark:border-[#232A40] text-foreground dark:text-[#C8D1E6] hover:bg-slate-200 dark:hover:bg-[#1E243A] hover:text-foreground dark:hover:text-white transition-colors cursor-pointer"
+                className="w-full px-1 py-1.5 rounded-xl text-[11px] sm:text-xs font-medium text-center whitespace-nowrap bg-slate-100 dark:bg-[#141828] border border-slate-200 dark:border-[#232A40] text-foreground dark:text-[#C8D1E6] hover:bg-slate-200 dark:hover:bg-[#1E243A] hover:text-foreground dark:hover:text-white transition-colors cursor-pointer"
               >
                 30 días
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickPreset("month")}
-                className="px-3.5 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-[#141828] border border-slate-200 dark:border-[#232A40] text-foreground dark:text-[#C8D1E6] hover:bg-slate-200 dark:hover:bg-[#1E243A] hover:text-foreground dark:hover:text-white transition-colors cursor-pointer"
+                className="w-full px-1 py-1.5 rounded-xl text-[11px] sm:text-xs font-medium text-center whitespace-nowrap bg-slate-100 dark:bg-[#141828] border border-slate-200 dark:border-[#232A40] text-foreground dark:text-[#C8D1E6] hover:bg-slate-200 dark:hover:bg-[#1E243A] hover:text-foreground dark:hover:text-white transition-colors cursor-pointer"
               >
                 Este mes
               </button>
