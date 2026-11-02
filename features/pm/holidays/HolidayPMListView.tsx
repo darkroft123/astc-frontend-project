@@ -437,29 +437,19 @@ export function HolidayPMListView() {
             </p>
           </div>
 
-          {/* Header Actions: 50/50 Importar & Crear colección */}
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="grid grid-cols-2 gap-2.5 w-full md:w-auto flex-1 md:flex-initial">
-              <button
-                type="button"
-                onClick={() => setIsImportModalOpen(true)}
-                className="h-11 px-4 rounded-xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1c2238] text-xs font-semibold text-foreground flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-xs"
-              >
-                <Upload className="w-3.5 h-3.5" />
-                <span>Importar</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsCreateModalOpen(true)}
-                className="h-11 px-4 rounded-xl text-white font-semibold text-xs shadow-md shadow-purple-500/25 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
-                style={{
-                  background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 100%)",
-                }}
-              >
-                <Plus className="w-4 h-4 stroke-[2.5]" />
-                <span>Crear colección</span>
-              </button>
-            </div>
+          {/* Desktop Right Header Actions */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="w-full md:w-auto h-11 px-5 rounded-2xl text-foreground font-semibold text-xs shadow-lg shadow-[#A855F7]/25 hover:opacity-95 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
+              style={{
+                background: "linear-gradient(90deg, #5B8CFF 0%, #A855F7 100%)",
+              }}
+            >
+              <Plus className="w-4 h-4 stroke-[2.5]" />
+              <span>Crear colección</span>
+            </button>
             <div className="hidden md:block">
               <NotificationBell />
             </div>
