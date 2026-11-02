@@ -35,7 +35,6 @@ export default function PmLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
- (fix: responsive padding, pm selector avatar & gradient, auth guard flash, and project modal syntax)
   return (
     <div className="flex min-h-screen w-full">
       <MobileSidebarProvider>

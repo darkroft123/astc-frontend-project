@@ -809,7 +809,6 @@ export default function ProjectDetailModal({
                 </div>
               )}
 
- (fix: responsive padding, pm selector avatar & gradient, auth guard flash, and project modal syntax)
               {/* Members List matching SVG */}
               <div className="space-y-2.5">
                 {paginatedMembers.map((mem, idx) => {
