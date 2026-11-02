@@ -198,7 +198,7 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
   const lng = alert.longitude ?? -77.0818;
 
   return (
-    <div className="w-full space-y-6 text-foreground font-sans bg-transparent pb-16 max-w-5xl mx-auto ">
+    <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-16 max-w-5xl mx-auto -mt-1">
       {/* 1. TOP HEADER ROW */}
       <div className="flex items-center justify-between gap-3">
         <Link

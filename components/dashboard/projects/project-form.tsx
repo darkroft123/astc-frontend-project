@@ -219,20 +219,7 @@ export default function ProjectForm({ mode = "create", initialData }: any) {
     <div className="relative min-h-screen bg-transparent overflow-x-hidden pb-12 pt-3 md:pt-0">
       <div className="relative max-w-6xl mx-auto px-4 sm:px-8 py-6 space-y-6 z-10">
 
-        {/* MOBILE TOP BAR (MATCHING IMAGE 4 / SVG: <- Proyectos + Notification Bell) */}
-        <div className="flex md:hidden items-center justify-between h-14 px-4 bg-background/95 dark:bg-[#0C0E18]/95 backdrop-blur-md border-b border-border dark:border-[#1E2335] sticky top-0 z-30 -mx-4 sm:-mx-6 md:-mx-8 mb-4">
-          <button
-            type="button"
-            onClick={() => router.push("/projects")}
-            className="flex items-center gap-2.5 text-sm font-semibold text-foreground dark:text-white hover:text-purple-500 dark:hover:text-purple-400 transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="w-4 h-4 text-purple-500 dark:text-[#A855F7]" />
-            <span>Proyectos</span>
-          </button>
-          <div className="shrink-0 flex items-center pr-0.5">
-            <NotificationBell />
-          </div>
-        </div>
+        
 
         {/* SECTION HEADER */}
         <div className="flex items-start md:items-center justify-between gap-4">

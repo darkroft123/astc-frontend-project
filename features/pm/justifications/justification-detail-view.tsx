@@ -321,7 +321,7 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6 pb-12">
+    <div className="w-full max-w-5xl mx-auto space-y-4 pb-12 -mt-1">
       {/* Top Navigation & Bell */}
       <div className="flex items-center justify-between gap-3">
         <Link

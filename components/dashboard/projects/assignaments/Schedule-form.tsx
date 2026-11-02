@@ -440,7 +440,7 @@ export default function ScheduleForm({
             </div>
 
             {/* Desktop: top 3, bottom 2; Mobile: 2 cols */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
               {SHIFT_OPTIONS.map((opt) => {
                 const isSelected = shiftType === opt.key;
                 return (
@@ -451,8 +451,7 @@ export default function ScheduleForm({
                     className={`text-left p-3.5 rounded-xl border transition-all flex flex-col justify-between cursor-pointer ${
                       isSelected
                         ? "border-purple-500 bg-purple-50 text-purple-700 ring-1 ring-purple-500/30 dark:bg-purple-950/30 dark:text-purple-300 shadow-xs"
-                        : "border-border dark:border-[#1E2335] bg-card/60 dark:bg-[#141829] hover:bg-muted/40 text-foreground"
-                    }`}
+                        : "border-border dark:border-[#1E2335] bg-card/60 dark:bg-[#141829] hover:bg-muted/40 text-foreground"} ${opt.key === "TRANSITORY" ? "sm:col-span-2" : ""}`}
                   >
                     <p className={`text-xs sm:text-sm font-bold leading-tight ${isSelected ? "text-purple-700 dark:text-purple-300" : "text-foreground"}`}>
                       {opt.title}
