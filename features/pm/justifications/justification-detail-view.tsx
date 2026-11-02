@@ -322,8 +322,8 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-4 pb-12 -mt-1">
-      {/* Top Navigation & Bell */}
-      <div className="flex items-center justify-between gap-3">
+      {/* Desktop Top Navigation (hidden on mobile where layout provides Image 5 Topbar) */}
+      <div className="hidden md:flex items-center justify-between gap-3">
         <Link
           href="/pm/justificaciones"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors cursor-pointer"
@@ -333,7 +333,6 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
         </Link>
 
         <div className="flex items-center gap-2">
-          {/* ID Badge Pill */}
           <button
             type="button"
             onClick={handleCopyId}
@@ -345,6 +344,19 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
           </button>
           <NotificationBell />
         </div>
+      </div>
+
+      {/* Mobile ID Badge Pill (top right) */}
+      <div className="flex md:hidden justify-end">
+        <button
+          type="button"
+          onClick={handleCopyId}
+          className="h-8 px-2.5 rounded-xl border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1c2238] text-[11px] font-mono text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors cursor-pointer"
+          title="Copiar ID"
+        >
+          <span>ID {justificationId ? justificationId.slice(0, 8) : "just-001"}...</span>
+          {copiedId ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+        </button>
       </div>
 
       {/* CARD 1: Status Hero Banner matching exact SVG pattern */}

@@ -721,8 +721,8 @@ export function JustificationsListView() {
             return (
               <div key={row.id} className="bg-card border border-border rounded-2xl p-4 space-y-3">
                 {/* Header: Avatar, Name, Email, Status Badge */}
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-3">
+                <div className="flex items-start justify-between gap-2.5">
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
                     <Avatar className="w-10 h-10 rounded-xl shrink-0 shadow-sm mt-0.5">
                       {formatAvatarUrl(row.avatarUrl) && (
                         <AvatarImage src={formatAvatarUrl(row.avatarUrl)!} alt={row.userName} className="object-cover rounded-xl" />
@@ -731,15 +731,15 @@ export function JustificationsListView() {
                         {initials}
                       </AvatarFallback>
                     </Avatar>
-                    <div>
-                      <h4 className="font-bold text-base text-foreground leading-tight">{row.userName}</h4>
-                      <p className="text-xs text-muted-foreground truncate max-w-[180px] mt-0.5">
+                    <div className="min-w-0 flex-1 overflow-hidden">
+                      <h4 className="font-bold text-base text-foreground leading-tight truncate">{row.userName}</h4>
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">
                         {row.userEmail}
                       </p>
                     </div>
                   </div>
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${row.estado === "APPROVED" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40" : row.estado === "REJECTED" ? "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40" : row.estado === "SUBMITTED" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40" : "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40"}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${row.estado === "APPROVED" ? "bg-emerald-500" : row.estado === "REJECTED" ? "bg-rose-500" : row.estado === "SUBMITTED" ? "bg-blue-500" : "bg-amber-500"}`} />
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 whitespace-nowrap ${row.estado === "APPROVED" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40" : row.estado === "REJECTED" ? "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40" : row.estado === "SUBMITTED" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40" : "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40"}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${row.estado === "APPROVED" ? "bg-emerald-500" : row.estado === "REJECTED" ? "bg-rose-500" : row.estado === "SUBMITTED" ? "bg-blue-500" : "bg-amber-500"}`} />
                     {row.estado === "SUBMITTED" ? "Enviada" : row.estado === "APPROVED" ? "Aprobada" : row.estado === "REJECTED" ? "Rechazada" : "Pendiente"}
                   </span>
                 </div>

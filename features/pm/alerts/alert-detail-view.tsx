@@ -199,8 +199,8 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
 
   return (
     <div className="w-full space-y-4 text-foreground font-sans bg-transparent pb-16 max-w-5xl mx-auto -mt-1">
-      {/* 1. TOP HEADER ROW */}
-      <div className="flex items-center justify-between gap-3">
+      {/* 1. TOP HEADER ROW (desktop only, on mobile layout provides edge-to-edge topbar) */}
+      <div className="hidden md:flex items-center justify-between gap-3">
         <Link
           href="/pm/alertas"
           className="inline-flex items-center gap-1.5 text-base font-bold text-[#C084FC] hover:text-purple-300 transition-colors"
@@ -209,7 +209,6 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
           <span>Alertas</span>
         </Link>
 
-        {/* Right side: ID pill and desktop bell */}
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -221,6 +220,18 @@ export function AlertDetailView({ alertId }: AlertDetailViewProps) {
           </button>
           <NotificationBell />
         </div>
+      </div>
+
+      {/* Mobile only: ID pill */}
+      <div className="flex md:hidden justify-end">
+        <button
+          type="button"
+          onClick={handleCopyId}
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-border bg-card dark:bg-[#141829] text-xs font-mono text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        >
+          <span>ID {alert.id.slice(0, 8)}...</span>
+          {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+        </button>
       </div>
 
       {/* 2. TOP BANNER CARD */}
