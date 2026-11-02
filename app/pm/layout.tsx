@@ -11,7 +11,7 @@ const PM_ROLES = ["PROJECT_MANAGER"];
 
 export default function PmLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  useAuthGuard(PM_ROLES);
+  const { hydrated, checkingAuth } = useAuthGuard(PM_ROLES);
 
   const isSubPage = useMemo(() => {
     if (!pathname) return false;
