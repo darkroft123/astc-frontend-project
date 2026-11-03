@@ -1,6 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatAvatarUrl } from "@/lib/avatar-url";
 import { Clock, Pencil, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ScheduleDesktopTableProps {
@@ -77,9 +79,18 @@ export function ScheduleDesktopTable({
                     >
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-brand-gradient text-white flex items-center justify-center font-bold text-xs shrink-0">
-                            {getInitials(r.userName)}
-                          </div>
+                          <Avatar className="w-8 h-8 rounded-lg shrink-0 overflow-hidden">
+                            {formatAvatarUrl(r.avatarUrl) && (
+                              <AvatarImage
+                                src={formatAvatarUrl(r.avatarUrl)!}
+                                alt={r.userName}
+                                className="w-full h-full object-cover rounded-lg"
+                              />
+                            )}
+                            <AvatarFallback className="w-8 h-8 rounded-lg bg-brand-gradient text-white flex items-center justify-center font-bold text-xs shrink-0">
+                              {getInitials(r.userName)}
+                            </AvatarFallback>
+                          </Avatar>
                           <div className="min-w-0">
                             <p className="font-semibold text-foreground text-sm truncate">
                               {r.userName}

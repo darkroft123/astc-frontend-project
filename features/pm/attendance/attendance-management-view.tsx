@@ -110,6 +110,7 @@ function getInitialRange(p: Period): DateRange {
 export function AttendanceManagementView() {
   const { token, hydrated } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
+  const [usersLoading, setUsersLoading] = useState(true);
   const [attendance, setAttendance] = useState<AttendanceState | null>(null);
   const [projects, setProjects] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
@@ -162,8 +163,11 @@ export function AttendanceManagementView() {
 
   useEffect(() => {
     if (!token) return;
-    getAllProjects(token).then(setProjects).catch((e) => console.error("[AttendanceManagement] Error loading projects:", e));
-    getAllUsers(token).then(setUsers).catch((e) => console.error("[AttendanceManagement] Error loading users:", e));
+    setUsersLoading(true);
+    Promise.all([
+      getAllProjects(token).then(setProjects).catch((e) => console.error("[AttendanceManagement] Error loading projects:", e)),
+      getAllUsers(token).then(setUsers).catch((e) => console.error("[AttendanceManagement] Error loading users:", e)),
+    ]).finally(() => setUsersLoading(false));
   }, [token]);
 
   useEffect(() => {
@@ -267,12 +271,12 @@ export function AttendanceManagementView() {
       const projName = proj?.name || (item.projectId ? `Proyecto (${item.projectId.substring(0, 8)})` : "Sin proyecto");
 
       const userObj = userMap.get(uId);
-      let uName = "Usuario Desconocido";
+      let uName = "Colaborador";
       if (userObj) {
         const parts = [userObj.firstName, userObj.lastName].filter(Boolean);
-        uName = parts.length > 0 ? parts.join(" ") : userObj.username || userObj.email || "Usuario";
+        uName = parts.length > 0 ? parts.join(" ") : userObj.username || userObj.email || "Colaborador";
       } else if (item.userId) {
-        uName = `Trabajador (${item.userId.substring(0, 8)})`;
+        uName = "Colaborador";
       }
 
       const fecha = formatLocalDateString(item.date);
@@ -478,7 +482,7 @@ export function AttendanceManagementView() {
             <DataTable
               data={registros}
               columns={columns}
-              loading={isLoading}
+              loading={isLoading || usersLoading}
               emptyText="No hay registros de asistencia"
               maxHeight="480px"
             />
