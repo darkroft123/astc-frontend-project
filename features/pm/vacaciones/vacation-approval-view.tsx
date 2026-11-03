@@ -652,36 +652,34 @@ export function VacationApprovalView() {
 
       {/* 7. PAGINATION FOOTER */}
       {filteredVacations.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 px-1 text-xs text-muted-foreground">
+        <div className="relative flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 px-1 text-xs text-muted-foreground">
           <div>
             <span>
               Mostrando <strong className="text-foreground">{Math.min((page - 1) * PAGE_SIZE + 1, filteredVacations.length)}</strong> - <strong className="text-foreground">{Math.min(page * PAGE_SIZE, filteredVacations.length)}</strong> de <strong className="text-foreground">{filteredVacations.length}</strong> solicitudes
             </span>
           </div>
-          <div className="flex items-center gap-3">
-            <span>
+          <div className="sm:absolute sm:left-1/2 sm:-translate-x-1/2 flex items-center gap-2">
+            <button
+              type="button"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="w-8 h-8 rounded-lg border border-border bg-card/60 hover:bg-card flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+              title="Página anterior"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="font-medium px-1">
               Página <strong className="text-foreground">{page}</strong> de <strong className="text-foreground">{totalPages}</strong>
             </span>
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="w-8 h-8 rounded-lg border border-border bg-card/60 hover:bg-card flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
-                title="Página anterior"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="w-8 h-8 rounded-lg border border-border bg-card/60 hover:bg-card flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
-                title="Página siguiente"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+            <button
+              type="button"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="w-8 h-8 rounded-lg border border-border bg-card/60 hover:bg-card flex items-center justify-center text-foreground disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+              title="Página siguiente"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
       )}

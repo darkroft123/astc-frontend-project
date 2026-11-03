@@ -837,11 +837,11 @@ export default function PMAsistenciasPage() {
       </div>
 
         {/* 9. PAGINATION FOOTER */}
-        <div className="flex items-center justify-between pt-1 px-1">
+        <div className="relative flex items-center justify-between pt-1 px-1">
           <span className="text-xs text-muted-foreground font-medium">
             {total} registro{total === 1 ? "" : "s"} total{total === 1 ? "" : "es"}
           </span>
-          <div className="flex items-center gap-2">
+          <div className="sm:absolute sm:left-1/2 sm:-translate-x-1/2 flex items-center gap-2">
             <button
               type="button"
               disabled={page <= 1}

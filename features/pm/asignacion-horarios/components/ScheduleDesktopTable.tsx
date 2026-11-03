@@ -195,7 +195,7 @@ export function ScheduleDesktopTable({
           <span className="text-xs text-muted-foreground">
             {filtered.length} asignacion{filtered.length === 1 ? "" : "es"}
           </span>
-          <div className="flex items-center gap-2">
+          <div className="sm:absolute sm:left-1/2 sm:-translate-x-1/2 flex items-center gap-2">
             <button
               type="button"
               onClick={() => setPage((p) => Math.max(1, p - 1))}

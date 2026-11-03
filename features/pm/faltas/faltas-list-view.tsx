@@ -261,30 +261,28 @@ export function FaltasListView() {
 
           {/* PAGINACIÓN */}
           
-            <div className="flex items-center justify-between px-5 py-3 border-t border-line">
-              <p className="text-xs text-text-4">
+            <div className="flex items-center justify-center gap-3 px-5 py-3 border-t border-line text-xs">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page <= 1}
+                onClick={() => setPage(p => p - 1)}
+                className="h-7 text-xs"
+              >
+                Anterior
+              </Button>
+              <span className="text-xs text-text-4 font-medium px-1">
                 Página {page} de {totalPages}
-              </p>
-              <div className="flex gap-1.5">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page <= 1}
-                  onClick={() => setPage(p => p - 1)}
-                  className="h-7 text-xs"
-                >
-                  Anterior
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= totalPages}
-                  onClick={() => setPage(p => p + 1)}
-                  className="h-7 text-xs"
-                >
-                  Siguiente
-                </Button>
-              </div>
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page >= totalPages}
+                onClick={() => setPage(p => p + 1)}
+                className="h-7 text-xs"
+              >
+                Siguiente
+              </Button>
             </div>
 
         </div>

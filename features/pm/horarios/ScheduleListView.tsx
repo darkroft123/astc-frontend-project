@@ -28,6 +28,8 @@ import { ScheduleMobileCards } from "./components/ScheduleMobileCards";
 
 const SHIFT_CONFIG: Record<string, { label: string; icon: any }> = {
   REGULAR: { label: "Regular", icon: Clock },
+  STANDARD: { label: "Estándar", icon: Clock },
+  ESTANDAR: { label: "Estándar", icon: Clock },
   FIXED: { label: "Fijo", icon: Clock },
   ROTATING: { label: "Rotativo", icon: Repeat },
   ROTATING_4X4: { label: "Rotativo 4×4", icon: Repeat },
@@ -55,6 +57,9 @@ function getShiftConfig(shiftType?: string) {
   }
   if (upper === "FIXED" || upper === "FIJO") {
     return { label: "Fijo", icon: Clock };
+  }
+  if (upper === "STANDARD" || upper === "ESTANDAR") {
+    return { label: "Estándar", icon: Clock };
   }
   if (upper === "REGULAR") {
     return { label: "Regular", icon: Clock };

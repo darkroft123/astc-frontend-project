@@ -581,11 +581,11 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
                   </div>
 
                   {totalHistoryPages > 1 && (
-                    <div className="flex items-center justify-between pt-3 border-t border-border dark:border-[#1E2335] text-xs">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-3 border-t border-border dark:border-[#1E2335] text-xs">
                       <span className="text-muted-foreground font-mono text-[11px]">
                         Página <strong className="text-foreground">{safePage}</strong> de {totalHistoryPages}
                       </span>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center justify-center gap-1.5">
                         <button
                           type="button"
                           disabled={safePage <= 1}
