@@ -30,6 +30,7 @@ import { AttendanceRequirementsCard } from "./components/AttendanceRequirementsC
 import { AttendanceCameraCard } from "./components/AttendanceCameraCard";
 import { AttendanceSummaryCard } from "./components/AttendanceSummaryCard";
 import { AttendanceWarningModal } from "./components/AttendanceWarningModal";
+import { AllProjectsAttendanceModal } from "./components/AllProjectsAttendanceModal";
 
 interface BiometricRegistrationViewProps {
   allowedRoles: string[];
@@ -60,6 +61,7 @@ export default function BiometricRegistrationView({
   const [schedule, setSchedule] = useState<any>(null);
   const [activeVacations, setActiveVacations] = useState<VacationRequest[]>([]);
   const [showWarningModal, setShowWarningModal] = useState(false);
+  const [showAllProjectsModal, setShowAllProjectsModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<"PHOTO" | "NO_PHOTO" | null>(
     null
   );
@@ -290,7 +292,23 @@ export default function BiometricRegistrationView({
     router.push(previewRoute);
   };
 
+  const isAllProjectsSelected =
+    projects &&
+    projects.length > 1 &&
+    (!project ||
+      (typeof window !== "undefined" &&
+        localStorage.getItem("selected_project_id") === "all"));
+
   const handleActionClick = (action: "PHOTO" | "NO_PHOTO") => {
+    if (isAllProjectsSelected) {
+      setPendingAction(action);
+      setShowAllProjectsModal(true);
+      return;
+    }
+    continueActionClick(action);
+  };
+
+  const continueActionClick = (action: "PHOTO" | "NO_PHOTO") => {
     if ((schedule && !schedule.workDay) || isHoliday || isOnVacation) {
       setPendingAction(action);
       setShowWarningModal(true);
@@ -371,6 +389,22 @@ export default function BiometricRegistrationView({
           if (pendingAction === "PHOTO") executeCapture();
           else executeNoPhoto();
         }}
+      />
+
+      {/* 4. ALL PROJECTS ATTENDANCE MODAL */}
+      <AllProjectsAttendanceModal
+        isOpen={showAllProjectsModal}
+        projects={projects}
+        onConfirmAll={() => {
+          setShowAllProjectsModal(false);
+          continueActionClick(pendingAction || "PHOTO");
+        }}
+        onSelectProject={(chosenId) => {
+          selectProject(chosenId);
+          setShowAllProjectsModal(false);
+          continueActionClick(pendingAction || "PHOTO");
+        }}
+        onCancel={() => setShowAllProjectsModal(false)}
       />
     </div>
   );
