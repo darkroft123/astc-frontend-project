@@ -37,8 +37,20 @@ export function MonthCalendarPicker({
   selectedDates,
   onToggleDate,
 }: MonthCalendarPickerProps) {
-  const [currentYear, setCurrentYear] = useState(2026);
-  const [currentMonth, setCurrentMonth] = useState(8); // 8 = September (0-indexed)
+  const [currentYear, setCurrentYear] = useState(() => {
+    if (selectedDates && selectedDates.length > 0) {
+      const parsed = new Date(selectedDates[0] + "T12:00:00");
+      if (!isNaN(parsed.getTime())) return parsed.getFullYear();
+    }
+    return new Date().getFullYear();
+  });
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    if (selectedDates && selectedDates.length > 0) {
+      const parsed = new Date(selectedDates[0] + "T12:00:00");
+      if (!isNaN(parsed.getTime())) return parsed.getMonth();
+    }
+    return new Date().getMonth();
+  });
 
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
