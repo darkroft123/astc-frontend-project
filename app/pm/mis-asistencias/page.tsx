@@ -239,7 +239,7 @@ export default function PMAsistenciasPage() {
     return records.filter((r) => {
       const rComp = parseComparable(r.date);
       const inRange = (!fromComp || rComp >= fromComp) && (!toComp || rComp <= toComp);
-      const matchesDate = !searchDate || r.date.includes(searchDate);
+      const matchesDate = !searchDate || r.date.includes(searchDate) || rComp.includes(searchDate);
       const matchesStatus = statusFilter === "all" || r.status === statusFilter;
       return inRange && matchesDate && matchesStatus;
     });
@@ -479,13 +479,21 @@ export default function PMAsistenciasPage() {
             </label>
             <div className="relative">
               <input
-                type="text"
-                placeholder="dd/mm/aaaa"
+                type="date"
                 value={searchDate}
                 onChange={(e) => setSearchDate(e.target.value)}
-                className="w-full h-10 px-3.5 pr-10 rounded-xl border border-border bg-background/50 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full h-10 px-3.5 pr-8 rounded-xl border border-border bg-background/50 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
               />
-              <Calendar className="w-4 h-4 text-muted-foreground absolute right-3.5 top-3 pointer-events-none" />
+              {searchDate && (
+                <button
+                  type="button"
+                  onClick={() => setSearchDate("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 cursor-pointer"
+                  title="Limpiar fecha"
+                >
+                  <XIcon className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           </div>
 
@@ -532,13 +540,21 @@ export default function PMAsistenciasPage() {
           </label>
           <div className="relative">
             <input
-              type="text"
-              placeholder="dd/mm/aaaa"
+              type="date"
               value={searchDate}
               onChange={(e) => setSearchDate(e.target.value)}
-              className="w-full h-10 px-3.5 pr-10 rounded-xl border border-border bg-background/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full h-10 px-3.5 pr-8 rounded-xl border border-border bg-background/50 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
             />
-            <Calendar className="w-4 h-4 text-muted-foreground absolute right-3.5 top-3 pointer-events-none" />
+            {searchDate && (
+              <button
+                type="button"
+                onClick={() => setSearchDate("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 cursor-pointer"
+                title="Limpiar fecha"
+              >
+                <XIcon className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
 
