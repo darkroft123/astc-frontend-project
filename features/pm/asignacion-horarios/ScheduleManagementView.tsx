@@ -32,6 +32,7 @@ type UserSchedule = {
   hasOverride: boolean;
   overrideId: string | null;
   shiftType?: string;
+  avatarUrl?: string | null;
 };
 
 
@@ -125,6 +126,7 @@ export function ScheduleManagementView() {
             userId: u.id,
             userName: `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || u.email,
             userEmail: u.email,
+            avatarUrl: u.avatarUrl || u.image || u.photoUrl || null,
             projectId: realProject.id || p.id,
             projectName: pName,
             projectStartHour: pStart,

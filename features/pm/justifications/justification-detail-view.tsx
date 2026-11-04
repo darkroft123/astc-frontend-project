@@ -10,6 +10,7 @@ import {
   Briefcase,
   Calendar,
   ChevronLeft,
+  ChevronRight,
   Eye,
   EyeOff,
   History,
@@ -146,6 +147,8 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
   const [userName, setUserName] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
   const [copiedId, setCopiedId] = useState(false);
+  const [historyPage, setHistoryPage] = useState(1);
+  const HISTORY_PAGE_SIZE = 3;
 
   useEffect(() => {
     async function fetchJustification() {
@@ -526,41 +529,89 @@ export function JustificationDetailView({ justificationId }: JustificationDetail
         <div className="space-y-5 sm:space-y-6">
           {/* CARD 4: Historial de Cambios */}
           <div className="rounded-2xl border border-border dark:border-[#1E2335] bg-card dark:bg-[#101322] p-5 sm:p-6 shadow-sm space-y-4">
-            <h2 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
-              <History className="w-4 h-4 text-purple-400" />
-              <span>Historial de cambios</span>
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
+                <History className="w-4 h-4 text-purple-400" />
+                <span>Historial de cambios</span>
+              </h2>
+              {currentJustification.history && currentJustification.history.length > 0 && (
+                <span className="text-[11px] text-muted-foreground font-mono">
+                  {currentJustification.history.length} {currentJustification.history.length === 1 ? "cambio" : "cambios"}
+                </span>
+              )}
+            </div>
 
-            <div className="space-y-3">
-              {(currentJustification.history && currentJustification.history.length > 0
+            {(() => {
+              const historyList = (currentJustification.history && currentJustification.history.length > 0)
                 ? currentJustification.history
                 : [
                     {
                       id: "hist-1",
                       newStatus: currentJustification.status || "SUBMITTED",
-                      changedAt: currentJustification.submittedAt || "2026-09-02T09:15:00Z",
+                      changedAt: currentJustification.submittedAt || new Date().toISOString(),
                       comment: "Solicitud de justificación enviada para revisión.",
                     },
-                  ]
-              ).map((entry: any, idx: number) => (
-                <div key={entry.id || idx} className="flex items-start gap-3 text-xs">
-                  <div className="w-2.5 h-2.5 rounded-full bg-purple-400 mt-1.5 shrink-0" />
-                  <div className="flex-1 bg-background dark:bg-[#141829] border border-border dark:border-[#1E2335] rounded-xl p-3 space-y-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="font-semibold text-foreground">{eventLabel(entry)}</p>
-                      <p className="text-[10px] text-muted-foreground font-mono">
-                        {formatDate(entry.changedAt)}
-                      </p>
-                    </div>
-                    {entry.comment && (
-                      <p className="text-[11px] text-muted-foreground leading-relaxed">
-                        {entry.comment}
-                      </p>
-                    )}
+                  ];
+              const totalHistoryPages = Math.max(1, Math.ceil(historyList.length / HISTORY_PAGE_SIZE));
+              const safePage = Math.min(Math.max(1, historyPage), totalHistoryPages);
+              const start = (safePage - 1) * HISTORY_PAGE_SIZE;
+              const paginatedHistory = historyList.slice(start, start + HISTORY_PAGE_SIZE);
+
+              return (
+                <div className="space-y-3">
+                  <div className="space-y-3">
+                    {paginatedHistory.map((entry: any, idx: number) => (
+                      <div key={entry.id || idx} className="flex items-start gap-3 text-xs">
+                        <div className="w-2.5 h-2.5 rounded-full bg-purple-400 mt-1.5 shrink-0" />
+                        <div className="flex-1 bg-background dark:bg-[#141829] border border-border dark:border-[#1E2335] rounded-xl p-3 space-y-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="font-semibold text-foreground">{eventLabel(entry)}</p>
+                            <p className="text-[10px] text-muted-foreground font-mono">
+                              {formatDate(entry.changedAt)}
+                            </p>
+                          </div>
+                          {entry.comment && (
+                            <p className="text-[11px] text-muted-foreground leading-relaxed">
+                              {entry.comment}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
+
+                  {totalHistoryPages > 1 && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-3 border-t border-border dark:border-[#1E2335] text-xs">
+                      <span className="text-muted-foreground font-mono text-[11px]">
+                        Página <strong className="text-foreground">{safePage}</strong> de {totalHistoryPages}
+                      </span>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          type="button"
+                          disabled={safePage <= 1}
+                          onClick={() => setHistoryPage((p) => Math.max(1, p - 1))}
+                          className="w-8 h-8 rounded-lg border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1A1D2E] flex items-center justify-center text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                          aria-label="Página anterior"
+                          title="Página anterior"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          disabled={safePage >= totalHistoryPages}
+                          onClick={() => setHistoryPage((p) => Math.min(totalHistoryPages, p + 1))}
+                          className="w-8 h-8 rounded-lg border border-border dark:border-[#1E2335] bg-background dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1A1D2E] flex items-center justify-center text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                          aria-label="Página siguiente"
+                          title="Página siguiente"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
+              );
+            })()}
           </div>
 
           {/* CARD 5: Revisión y Comentarios */}

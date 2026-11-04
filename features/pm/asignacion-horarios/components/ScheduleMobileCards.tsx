@@ -1,6 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatAvatarUrl } from "@/lib/avatar-url";
 import { Clock, Pencil, RotateCcw } from "lucide-react";
 
 interface ScheduleMobileCardsProps {
@@ -50,9 +52,18 @@ export function ScheduleMobileCards({
             >
               {/* Top user row */}
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-gradient text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-sm">
-                  {getInitials(r.userName)}
-                </div>
+                <Avatar className="w-10 h-10 rounded-xl shrink-0 overflow-hidden shadow-sm">
+                  {formatAvatarUrl(r.avatarUrl) && (
+                    <AvatarImage
+                      src={formatAvatarUrl(r.avatarUrl)!}
+                      alt={r.userName}
+                      className="w-full h-full object-cover rounded-xl"
+                    />
+                  )}
+                  <AvatarFallback className="w-10 h-10 rounded-xl bg-brand-gradient text-white font-bold text-sm flex items-center justify-center shrink-0">
+                    {getInitials(r.userName)}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="min-w-0 flex-1">
                   <p className="font-bold text-base text-foreground leading-tight truncate">
                     {r.userName}

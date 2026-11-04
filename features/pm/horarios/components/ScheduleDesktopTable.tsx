@@ -185,31 +185,33 @@ export function ScheduleDesktopTable({
       </div>
 
       {/* Desktop Pagination inside Card */}
-      <div className="flex items-center justify-end gap-3 pt-2 text-xs text-[#5D6378] dark:text-[#8F96AE]">
-        <span>
-          Página {currentPage} de {totalPages}
+      <div className="relative flex items-center justify-between pt-2 text-xs text-[#5D6378] dark:text-[#8F96AE]">
+        <span className="font-mono text-xs text-[#5D6378] dark:text-[#8F96AE]">
+          {filteredTemplates.length} horario{filteredTemplates.length === 1 ? "" : "s"}
         </span>
-        <div className="flex items-center gap-1.5">
+        <div className="sm:absolute sm:left-1/2 sm:-translate-x-1/2 flex items-center gap-2">
           <button
             type="button"
             disabled={currentPage <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             className="w-8 h-8 rounded-lg bg-[#F1F3F9] dark:bg-[#141827] border border-[#E2E4EB] dark:border-[#23293E] text-[#5D6378] dark:text-[#8F96AE] hover:text-[#11131C] dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer"
+            aria-label="Página anterior"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
+          <span className="font-medium px-1">
+            Página {currentPage} de {totalPages}
+          </span>
           <button
             type="button"
             disabled={currentPage >= totalPages}
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             className="w-8 h-8 rounded-lg bg-[#F1F3F9] dark:bg-[#141827] border border-[#E2E4EB] dark:border-[#23293E] text-[#5D6378] dark:text-[#8F96AE] hover:text-[#11131C] dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer"
+            aria-label="Página siguiente"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
-        <span className="font-mono text-xs text-[#5D6378] dark:text-[#8F96AE]">
-          {filteredTemplates.length} horario{filteredTemplates.length === 1 ? "" : "s"}
-        </span>
       </div>
     </div>
   );

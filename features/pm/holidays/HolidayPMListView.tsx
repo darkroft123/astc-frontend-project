@@ -836,39 +836,37 @@ export function HolidayPMListView() {
 
                 {/* PAGINACIÓN DE COLECCIONES DEL PROYECTO */}
                 {filteredCollections.length > 0 && (
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 px-1 text-xs text-muted-foreground">
+                  <div className="relative flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 px-1 text-xs text-muted-foreground">
                     <div>
                       <span>
                         Mostrando <strong className="text-foreground">{Math.min((currentPage - 1) * pageSize + 1, filteredCollections.length)}</strong> - <strong className="text-foreground">{Math.min(currentPage * pageSize, filteredCollections.length)}</strong> de <strong className="text-foreground">{filteredCollections.length}</strong> colecciones
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <span>
+                    <div className="sm:absolute sm:left-1/2 sm:-translate-x-1/2 flex items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={currentPage <= 1}
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
+                        title="Página anterior"
+                      >
+                        <ChevronLeft className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline text-xs">Anterior</span>
+                      </button>
+                      <span className="font-medium px-1">
                         Página <strong className="text-foreground">{currentPage}</strong> de <strong className="text-foreground">{totalPages}</strong>
                       </span>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          disabled={currentPage <= 1}
-                          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                          className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
-                          title="Página anterior"
-                        >
-                          <ChevronLeft className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline text-xs">Anterior</span>
-                        </button>
-                        <button
-                          type="button"
-                          disabled={currentPage >= totalPages}
-                          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                          className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
-                          title="Página siguiente"
-                        >
-                          <span className="hidden sm:inline text-xs">Siguiente</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        disabled={currentPage >= totalPages}
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
+                        title="Página siguiente"
+                      >
+                        <span className="hidden sm:inline text-xs">Siguiente</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
                 )}
@@ -952,39 +950,37 @@ export function HolidayPMListView() {
 
                 {/* PAGINACIÓN DE MIEMBROS */}
                 {filteredMembers.length > 0 && (
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 px-1 text-xs text-muted-foreground">
+                  <div className="relative flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 px-1 text-xs text-muted-foreground">
                     <div>
                       <span>
                         Mostrando <strong className="text-foreground">{Math.min((membersPage - 1) * membersPageSize + 1, filteredMembers.length)}</strong> - <strong className="text-foreground">{Math.min(membersPage * membersPageSize, filteredMembers.length)}</strong> de <strong className="text-foreground">{filteredMembers.length}</strong> miembros
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <span>
+                    <div className="sm:absolute sm:left-1/2 sm:-translate-x-1/2 flex items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={membersPage <= 1}
+                        onClick={() => setMembersPage((p) => Math.max(1, p - 1))}
+                        className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
+                        title="Página anterior"
+                      >
+                        <ChevronLeft className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline text-xs">Anterior</span>
+                      </button>
+                      <span className="font-medium px-1">
                         Página <strong className="text-foreground">{membersPage}</strong> de <strong className="text-foreground">{totalMemberPages}</strong>
                       </span>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          disabled={membersPage <= 1}
-                          onClick={() => setMembersPage((p) => Math.max(1, p - 1))}
-                          className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
-                          title="Página anterior"
-                        >
-                          <ChevronLeft className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline text-xs">Anterior</span>
-                        </button>
-                        <button
-                          type="button"
-                          disabled={membersPage >= totalMemberPages}
-                          onClick={() => setMembersPage((p) => Math.min(totalMemberPages, p + 1))}
-                          className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
-                          title="Página siguiente"
-                        >
-                          <span className="hidden sm:inline text-xs">Siguiente</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        disabled={membersPage >= totalMemberPages}
+                        onClick={() => setMembersPage((p) => Math.min(totalMemberPages, p + 1))}
+                        className="h-8 px-2.5 rounded-lg border border-border dark:border-[#22283D] bg-card dark:bg-[#141829] hover:bg-muted dark:hover:bg-[#1C2238] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 text-foreground transition-colors cursor-pointer"
+                        title="Página siguiente"
+                      >
+                        <span className="hidden sm:inline text-xs">Siguiente</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
                 )}

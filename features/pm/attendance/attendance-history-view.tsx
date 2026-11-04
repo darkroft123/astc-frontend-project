@@ -148,6 +148,7 @@ export function AttendanceHistoryView() {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [usersLoading, setUsersLoading] = useState(true);
   const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>(() => getPeriodDates("month"));
 
@@ -234,6 +235,7 @@ export function AttendanceHistoryView() {
       }
     };
 
+    setUsersLoading(true);
     Promise.all([fetchProjs(), getAllUsers(token).catch(() => [])])
       .then(([pRes, uRes]) => {
         if (Array.isArray(pRes) && pRes.length > 0) {
@@ -248,7 +250,8 @@ export function AttendanceHistoryView() {
           setAllUsers(mapped);
         }
       })
-      .catch((err) => console.error("Error loading filters data:", err));
+      .catch((err) => console.error("Error loading filters data:", err))
+      .finally(() => setUsersLoading(false));
   }, [token]);
 
   const loadData = useCallback(async () => {
@@ -326,6 +329,8 @@ export function AttendanceHistoryView() {
   };
 
 
+  const isDataLoading = loading || usersLoading;
+
   const projectMap = useMemo(() => {
     const map = new Map<string, string>();
     for (const p of projects) {
@@ -353,10 +358,10 @@ export function AttendanceHistoryView() {
           (u
             ? `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || u.name
             : r.userId
-            ? "Usuario"
+            ? "Colaborador"
             : "Colaborador");
         const userEmail = r.userEmail || u?.email || "";
-        const avatarUrl = u?.avatarUrl || r.avatarUrl || null;
+        const avatarUrl = u?.avatarUrl || u?.image || u?.photoUrl || r.avatarUrl || null;
         const projectName =
           r.projectName ||
           projectMap.get(r.projectId) ||
@@ -414,7 +419,7 @@ export function AttendanceHistoryView() {
           <button
             type="button"
             onClick={handleExport}
-            disabled={loading || enrichedRecords.length === 0}
+            disabled={isDataLoading || enrichedRecords.length === 0}
             title={
               enrichedRecords.length === 0
                 ? "No hay asistencias registradas para exportar"
@@ -433,7 +438,7 @@ export function AttendanceHistoryView() {
       <button
         type="button"
         onClick={handleExport}
-        disabled={loading || enrichedRecords.length === 0}
+        disabled={isDataLoading || enrichedRecords.length === 0}
         title={
           enrichedRecords.length === 0
             ? "No hay asistencias registradas para exportar"
@@ -676,10 +681,10 @@ export function AttendanceHistoryView() {
           <button
             type="button"
             onClick={loadData}
-            disabled={loading}
+            disabled={isDataLoading}
             className="w-full h-10 rounded-xl border border-border bg-background/50 hover:bg-background text-foreground text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
           >
-            <RotateCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            <RotateCw className={`w-4 h-4 ${isDataLoading ? "animate-spin" : ""}`} />
             <span>Actualizar</span>
           </button>
         </div>
@@ -750,11 +755,11 @@ export function AttendanceHistoryView() {
             <button
               type="button"
               onClick={loadData}
-              disabled={loading}
+              disabled={isDataLoading}
               className="w-10 h-10 rounded-xl border border-border bg-background/50 hover:bg-background text-muted-foreground hover:text-foreground flex items-center justify-center shrink-0 transition-colors"
               title="Actualizar"
             >
-              <RotateCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+              <RotateCw className={`w-4 h-4 ${isDataLoading ? "animate-spin" : ""}`} />
             </button>
           </div>
         </div>
@@ -762,7 +767,7 @@ export function AttendanceHistoryView() {
 
       {/* 7. MOBILE CARDS VIEW (md:hidden) Matching SVG dark-historial asistencia.svg */}
       <div className="space-y-3 md:hidden">
-        {loading ? (
+        {isDataLoading ? (
           <div className="flex flex-col items-center justify-center p-12 text-muted-foreground bg-card rounded-2xl border border-border gap-2">
             <RotateCw className="w-6 h-6 animate-spin text-primary" />
             <span className="text-xs font-medium">Cargando asistencias...</span>
@@ -887,7 +892,7 @@ export function AttendanceHistoryView() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {loading ? (
+              {isDataLoading ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-muted-foreground text-sm font-medium">
                     <div className="flex flex-col items-center justify-center gap-2">
@@ -987,11 +992,11 @@ export function AttendanceHistoryView() {
       </div>
 
         {/* 9. PAGINATION FOOTER */}
-        <div className="flex items-center justify-between pt-1 px-1">
+        <div className="relative flex items-center justify-between pt-1 px-1">
           <span className="text-xs text-muted-foreground font-medium">
             {enrichedRecords.length} {enrichedRecords.length === 1 ? "registro total" : "registros totales"}
           </span>
-          <div className="flex items-center gap-2">
+          <div className="sm:absolute sm:left-1/2 sm:-translate-x-1/2 flex items-center gap-2">
             <button
               type="button"
               disabled={currentPage <= 1}

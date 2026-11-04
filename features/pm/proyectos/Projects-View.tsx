@@ -505,9 +505,9 @@ export function ProjectsManagementView({
         </div>
 
         {/* 6. FOOTER PAGINATION */}
-        <div className="flex items-center justify-between text-xs text-[#8F96AE] pt-2">
+        <div className="relative flex items-center justify-between text-xs text-[#8F96AE] pt-2">
           <span>{total} proyectos</span>
-          <div className="flex items-center gap-2">
+          <div className="sm:absolute sm:left-1/2 sm:-translate-x-1/2 flex items-center gap-2">
             <button
               type="button"
               disabled={page <= 1}
